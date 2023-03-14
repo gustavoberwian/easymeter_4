@@ -1,0 +1,77 @@
+.sidebar-left {
+    background: #333;
+}
+.sidebar-left .sidebar-header .sidebar-toggle {
+	right: unset;
+	background-color: unset;
+}
+html.no-overflowscrolling .sidebar-left .nano {
+    background: #333;
+}
+@media only screen and (min-width: 768px) {
+    html.fixed .page-header {
+        left: 152px;
+    }
+    html.fixed .content-body {
+        margin-left: 152px;
+    }    
+}
+.page-header {
+    background: #03aeef;
+    border-bottom: none;
+    border-left: 1px solid #03aeef;
+}
+html .card-easymeter .card-header {
+    background: #03aeef;
+    border-color: #03aeef;
+}
+html .card-easymeter .card-actions a, 
+html .card-easymeter .card-title {
+    color: #FFF;
+    font-weight: 500;
+}
+table thead th {
+    font-weight: 600;
+}
+.card-footer .dataTables_paginate {
+    float: right;
+}
+
+.badge-agua {
+    background: #007bff;
+    color: #FFF;
+}
+.badge-gas {
+    background: #ed9c28;
+    color: #FFF;
+}
+.card-actions.buttons {
+    top: 10px;
+}
+.card-actions.buttons .btn-primary {
+    background-color: #0088cc;
+    border-color: #0088cc #0088cc #006699;
+    color: #ffffff;
+}
+.card-body-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: 500;
+}
+h1, h2, h3, h4, h5, h6 {
+    letter-spacing: 0;
+}
+.card-previsao .card-body {
+    background-color: #03aeef;
+}
+.chart-container {
+    position: relative;
+    margin: auto;
+    height: 375px;
+    width: 100%;
+}
+.chart-container canvas {
+    width: 100% !important;
+    max-height: 100%;
+    min-height: unset;
+}

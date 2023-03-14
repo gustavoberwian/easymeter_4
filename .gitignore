@@ -85,7 +85,7 @@ phpunit
 #-------------------------
 vendor/
 
-public/null
+public/null/
 
 #-------------------------
 # IDE / Development Files

@@ -57,15 +57,4 @@ abstract class BaseController extends Controller
 
         // E.g.: $this->session = \Config\Services::session();
     }
-
-    protected function render($view, $data = NULL)
-    {
-        $data['class']  = service('router')->controllerName();
-        $data['method'] = service('router')->methodName();
-        //$data['user']   = $this->user;
-
-        return view('site/template/header', $data)
-            . view('site/' . $view, $data)
-            . view('site/template/footer', $data);
-    }
 }

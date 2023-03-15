@@ -2,12 +2,13 @@
 
 namespace App\Controllers;
 
-class Home extends BaseController
+class Site extends UNO_Controller
 {
     public function index()
     {
         helper('auth');
+        $data = array();
         // echo "<pre>"; print_r(auth()->user()); echo "</pre>"; return;
-        return $this->render('home');
+        return $this->render('home', $data, false);
     }
 }

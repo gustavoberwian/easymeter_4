@@ -1,4 +1,35 @@
-# CodeIgniter 4 Application Starter
+# CodeIgniter 4 Easymeter Application
+
+## Getting Started
+
+### Prerequisites
+
+- Git
+- Xampp
+- PHP 7.4 or superior
+- GitHub Desktop
+
+### Instalation
+
+Step 1
+- Open Xampp, start Apache and MySQL
+
+Step 2
+- Open GitHub Desktop
+- Login with your account
+- Clone easymeter_4 repository
+- Select option `Open in (your editor)`
+
+Step 3
+- Open any Database editor `(Navicat is better)`
+- Create a database `easymeter_ci4`
+- Execute the .sql file
+
+Step 4
+- Open the editor that you opened before
+- Open the terminal
+- Execute `php spark serve`
+- Open in browser http://localhost:8080/
 
 ## What is CodeIgniter?
 

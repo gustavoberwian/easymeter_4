@@ -278,7 +278,7 @@
 									<a role="menuitem" tabindex="-1" href="<?php echo site_url('shopping/profile/'); ?>"><i class="fas fa-user"></i> Minha Conta</a>
 								</li>
 								<li>
-									<a role="menuitem" tabindex="-1" href="<?php echo site_url('auth/logout'); ?>"><i class="fas fa-power-off"></i> Sair</a>
+									<a role="menuitem" tabindex="-1" href="<?php echo site_url('logout'); ?>"><i class="fas fa-power-off"></i> Sair</a>
 								</li>
 							</ul>
 						</div>

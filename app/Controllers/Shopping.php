@@ -7,7 +7,14 @@ use App\Models\Energy_model;
 
 class Shopping extends UNO_Controller
 {
+    /**
+     * @var Shopping_model
+     */
     private Shopping_model $shopping_model;
+
+    /**
+     * @var Energy_model
+     */
     private Energy_model $energy_model;
 
     public function __construct()
@@ -54,6 +61,6 @@ class Shopping extends UNO_Controller
 
     public function energy($grp = null)
     {
-        echo $grp ?? 2;
+        return $grp ?? 2;
     }
 }

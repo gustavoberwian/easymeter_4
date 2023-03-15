@@ -48,12 +48,26 @@
     <div class="nav-container">
         <nav>
             <div class="nav-utility color-primary border-0 d-flex flex-row-reverse justify-content-sm-center justify-content-md-center justify-content-lg-start justify-content-xl-start">
-                <div class="module right">
-                    <a class="link_nav" href="<?php echo base_url('/login'); ?>">
-                        <i class="fas fa-user sub" style="top: 0"></i>
-                        <span class="sub bold">Entrar</span>
-                    </a>
-                </div>
+
+                <?php if (auth()->loggedIn()) : ?>
+                    <div class="module right">
+                        <a class="link_nav pr-3" href="<?php echo base_url(auth()->user()->page); ?>">
+                            <i class="fas fa-sign-in-alt sub" style="top: 0"></i>
+                            <span class="sub bold">Painel</span>
+                        </a>
+                        <a class="link_nav" href="<?php echo base_url('/logout'); ?>">
+                            <i class="fas fa-sign-out-alt sub" style="top: 0"></i>
+                            <span class="sub bold">Sair</span>
+                        </a>
+                    </div>
+                <?php else : ?>
+                    <div class="module right">
+                        <a class="link_nav" href="<?php echo base_url('/login'); ?>">
+                            <i class="fas fa-user sub" style="top: 0"></i>
+                            <span class="sub bold">Entrar</span>
+                        </a>
+                    </div>
+                <?php endif; ?>
 
                 <div class="d-flex">
                     <i class="ti-email d-flex align-self-center">&nbsp;</i>

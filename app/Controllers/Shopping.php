@@ -51,4 +51,9 @@ class Shopping extends UNO_Controller
 
         }
     }
+
+    public function energy($grp = null)
+    {
+        echo $grp ?? 2;
+    }
 }

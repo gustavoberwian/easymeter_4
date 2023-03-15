@@ -31,6 +31,8 @@ $routes->set404Override();
 // route since we don't have to scan directories.
 $routes->get('/', 'Site::index');
 $routes->get('/shopping', 'Shopping::index');
+$routes->get('/shopping/(:any)', 'Shopping::$1');
+$routes->get('/shopping/(:any)/(:num)', 'Shopping::$1/$2');
 $routes->post('/user-login','Api\AuthController::UserLogin');
 $routes->get('/get-users','Api\ApiController::getUsers',['filter'=>'checkApiAuth']);
 $routes->get('/logged-out','Api\AuthController::loggedOut');

@@ -30,9 +30,9 @@ $routes->set404Override();
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
 $routes->get('/', 'Site::index');
-$routes->get('/shopping', 'Shopping::index');
-$routes->get('/shopping/(:any)', 'Shopping::$1');
-$routes->get('/shopping/(:any)/(:num)', 'Shopping::$1/$2');
+$routes->get('/shopping', 'Shopping::index',['filter'=>'checkApiAuth']);
+$routes->get('/shopping/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+$routes->get('/shopping/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/user-login','Api\AuthController::UserLogin');
 $routes->get('/get-users','Api\ApiController::getUsers',['filter'=>'checkApiAuth']);
 $routes->get('/logged-out','Api\AuthController::loggedOut');

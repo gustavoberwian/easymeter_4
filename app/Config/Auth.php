@@ -144,7 +144,7 @@ class Auth extends BaseConfig
      * Determines the amount of time, in seconds, that an unused
      * access token can be used.
      */
-    public int $unusedTokenLifetime = YEAR;
+    public int $unusedTokenLifetime = MINUTE;
 
     /**
      * --------------------------------------------------------------------

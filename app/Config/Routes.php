@@ -37,7 +37,7 @@ $routes->post('/user-login','Api\AuthController::UserLogin');
 $routes->get('/get-users','Api\ApiController::getUsers',['filter'=>'checkApiAuth']);
 $routes->get('/logged-out','Api\AuthController::loggedOut');
 $routes->get('/login-view','Api\AuthController::loginView');
-$routes->get('/update_password', 'updatePassword::index');
+$routes->get('/verify-magic-link', 'MagicLinkController::verify');
 
 service('auth')->routes($routes);
 

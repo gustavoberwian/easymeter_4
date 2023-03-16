@@ -4,20 +4,30 @@ namespace App\Models;
 
 class Shopping_model extends Base_model
 {
-    public function get_entity_by_user($user): bool
+    public function get_user_relation($user)
     {
-        $builder = $this->db->table('auth_users_entity');
-        // Aplica filtro na query
-        $builder->select('*')->where('user_id', $user);
+        $query = $this->db->query("
+            SELECT 
+                * 
+            FROM 
+                auth_user_relation
+            WHERE 
+                user_id = $user
+        ");
 
-        // realiza a consulta
-        $query = $builder->get();
-
-        // verifica se retornou algo
-        if ($query->getNumRows() == 0)
+        if ($query->getNumRows() <= 0)
             return false;
 
-        return $query->getRow()->entity_id;
+        if (is_null($query->getRow()->entity_id) && is_null($query->getRow()->group_id))
+            return (object) array("type" => "unity", "unity_id" => $query->getRow()->unity_id);
+
+        if (is_null($query->getRow()->group_id) && is_null($query->getRow()->unity_id))
+            return (object) array("type" => "entity", "entity_id" => $query->getRow()->entity_id);
+
+        if (is_null($query->getRow()->entity_id) && is_null($query->getRow()->unity_id))
+            return (object) array("type" => "group", "group_id" => $query->getRow()->group_id);
+
+        return $query->getRow();
     }
 
     public function get_groups_by_entity($entity)
@@ -36,5 +46,27 @@ class Shopping_model extends Base_model
             return false;
 
         return $this->db->query($query)->getResult();
+    }
+
+    public function get_client_config($gid)
+    {
+        echo "SELECT 
+                *
+            FROM esm_client_config
+            WHERE 
+                group_id = $gid"; return;
+        $result = $this->db->query("
+            SELECT 
+                *
+            FROM esm_client_config
+            WHERE 
+                group_id = $gid
+        ");
+
+        if ($result->getnumRows()) {
+            return $result->getRow();
+        }
+
+        return false;
     }
 }

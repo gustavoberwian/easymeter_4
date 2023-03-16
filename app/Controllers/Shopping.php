@@ -33,13 +33,13 @@ class Shopping extends UNO_Controller
 
         if ($this->user->inGroup('shopping', 'admin')) {
 
-            $data['entity_id'] = $this->shopping_model->get_entity_by_user($this->user->id);
-            $data['groups'] = $this->shopping_model->get_groups_by_entity($data['entity_id']);
+            $data['entity_id'] = $this->user->type->entity_id;
+            $data['groups'] = $this->shopping_model->get_groups_by_entity($this->user->type->entity_id);
             $data['overall_c'] = $this->energy_model->GetOverallConsumption(1);
             $data['overall_l'] = $this->energy_model->GetOverallConsumption(2);
-            $data['area_comum'] = '';//$this->user->config->area_comum;
+            //$data['area_comum'] = $this->user->config->area_comum;
 
-            //echo "<pre>"; print_r($data); echo "</pre>"; return;
+            echo "<pre>"; print_r($data); echo "</pre>"; return;
 
             return $this->render("index", $data);
 

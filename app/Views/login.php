@@ -4,7 +4,7 @@
 
 <?= $this->section('main') ?>
 
-<!doctype html>
+
 <html class="fixed">
 	<head>
 
@@ -141,4 +141,4 @@
 		<script src="<?= base_url('assets/js/theme.init.js'); ?>"></script>
 
 	</body>
-</html>
+	

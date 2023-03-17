@@ -131,7 +131,7 @@
                                                             <td align="center" valign="top">
                                                                 <table width="190" border="0" align="center" cellpadding="0" cellspacing="0">
                                                                     <tr>
-                                                                        <td height="50" align="center" valign="middle" bgcolor="#03b0ef" style="font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#FFF; font-weight:bold; -moz-border-radius: 30px; border-radius: 30px;" mc:edit="bm16-05"><multiline><a href="<?=url_to('verify-magic-link'); ?>" style="text-decoration:none; color:#FFF;">Redefinir Senha</a></multiline></td>
+                                                                        <td height="50" align="center" valign="middle" bgcolor="#03b0ef" style="font-family:Arial, Helvetica, sans-serif; font-size:16px; color:#FFF; font-weight:bold; -moz-border-radius: 30px; border-radius: 30px;" mc:edit="bm16-05"><multiline><a href="<?= url_to('verify-magic-link') ?>?token=<?= $token ?>" style="text-decoration:none; color:#FFF;">Redefinir Senha</a></multiline></td>
                                                                     </tr>
                                                                 </table>
                                                             </td>

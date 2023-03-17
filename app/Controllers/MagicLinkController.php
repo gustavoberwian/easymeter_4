@@ -15,6 +15,8 @@ use CodeIgniter\Shield\Models\UserIdentityModel;
 use CodeIgniter\Shield\Models\UserModel;
 use CodeIgniter\Shield\Traits\Viewable;
 
+
+
 /**
  * Handles "Magic Link" logins - an email-based
  * no-password login protocol. This works much
@@ -25,9 +27,103 @@ use CodeIgniter\Shield\Traits\Viewable;
  */
 class MagicLinkController extends BaseController
 {
+    /**
+     * @var UserModel
+     */
+    protected $provider;
 
+    public function __construct()
+    {
+        helper('setting');
+        $providerClass  = setting('Auth.userProvider');
+        $this->provider = new $providerClass();
+    }
 
-public function verify(): RedirectResponse
+    /**
+     * Displays the view to enter their email address
+     * so an email can be sent to them.
+     *
+     * @return RedirectResponse|string
+     */
+    public function loginView()
+    {
+        if (auth()->loggedIn()) {
+            return redirect()->to(config('Auth')->loginRedirect());
+        }
+
+        return view(setting('Auth.views')['magic-link-login']);
+    }
+
+    /**
+     * Receives the email from the user, creates the hash
+     * to a user identity, and sends an email to the given
+     * email address.
+     *
+     * @return RedirectResponse|string
+     */
+    public function loginAction()
+    {
+        // Validate email format
+        $rules = $this->getValidationRules();
+        if (! $this->validate($rules)) {
+            return redirect()->route('magic-link')->with('errors', $this->validator->getErrors());
+        }
+
+        // Check if the user exists
+        $email = $this->request->getPost('email');
+        $user  = $this->provider->findByCredentials(['email' => $email]);
+
+        if ($user === null) {
+            return redirect()->route('magic-link')->with('error', lang('Auth.invalidEmail'));
+        }
+
+        /** @var UserIdentityModel $identityModel */
+        $identityModel = model(UserIdentityModel::class);
+
+        // Delete any previous magic-link identities
+        $identityModel->deleteIdentitiesByType($user, Session::ID_TYPE_MAGIC_LINK);
+
+        // Generate the code and save it as an identity
+        helper('text');
+        $token = random_string('crypto', 20);
+
+        $identityModel->insert([
+            'user_id' => $user->id,
+            'type'    => Session::ID_TYPE_MAGIC_LINK,
+            'secret'  => $token,
+            'expires' => Time::now()->addSeconds(setting('Auth.magicLinkLifetime'))->format('Y-m-d H:i:s'),
+        ]);
+
+        // Send the user an email with the code
+        $email = emailer()->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
+        $email->setTo($user->email);
+        $email->setSubject(lang('Auth.magicLinkSubject'));
+        $email->setMessage(view(setting('Auth.views')['magic-link-email'], ['token' => $token]));
+
+        if ($email->send(false) === false) {
+            log_message('error', $email->printDebugger(['headers']));
+
+            return redirect()->route('magic-link')->with('error', lang('Auth.unableSendEmailToUser', [$user->email]));
+        }
+
+        // Clear the email
+        $email->clear();
+
+        return $this->displayMessage();
+    }
+
+    /**
+     * Display the "What's happening/next" message to the user.
+     */
+    protected function displayMessage(): string
+    {
+        return view(setting('Auth.views')['magic-link-message']);
+    }
+
+    /**
+     * Handles the GET request from the email
+     */
+    public function verify(): RedirectResponse
     {
         $token = $this->request->getGet('token');
 
@@ -64,11 +160,6 @@ public function verify(): RedirectResponse
         /** @var Session $authenticator */
         $authenticator = auth('session')->getAuthenticator();
 
-        // If an action has been defined
-        if ($authenticator->hasAction($identity->user_id)) {
-            return redirect()->route('auth-action-show')->with('error', lang('Auth.needActivate'));
-        }
-
         // Log the user in
         $authenticator->loginById($identity->user_id);
 
@@ -86,8 +177,7 @@ public function verify(): RedirectResponse
         return redirect()->to(config('Auth')->loginRedirect());
     }
 
-
-     /**
+    /**
      * @param int|string|null $userId
      */
     private function recordLoginAttempt(
@@ -106,5 +196,20 @@ public function verify(): RedirectResponse
             (string) $this->request->getUserAgent(),
             $userId
         );
+    }
+
+    /**
+     * Returns the rules that should be used for validation.
+     *
+     * @return array<string, array<string, string>>
+     */
+    protected function getValidationRules(): array
+    {
+        return [
+            'email' => [
+                'label' => 'Auth.email',
+                'rules' => config('AuthSession')->emailValidationRules,
+            ],
+        ];
     }
 }

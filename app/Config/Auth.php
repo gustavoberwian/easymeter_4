@@ -87,6 +87,7 @@ class Auth extends BaseConfig
         'login'       => '/',
         'logout'      => 'login',
         'force_reset' => '/',
+        
     ];
 
     /**

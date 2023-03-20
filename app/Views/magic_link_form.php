@@ -105,7 +105,7 @@
 
                 
                     <button type="submit" class="btn btn-primary btn-block"><?= lang('Auth.send') ?></button>
-                        </div>
+                    </div>
                        
 
                  <p class="text-center">Lembrou? <a href="<?= url_to('login') ?>"><?= lang('Entrar') ?></a></p>

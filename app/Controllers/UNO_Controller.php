@@ -7,7 +7,7 @@ use App\Models\Shopping_model;
 class UNO_Controller extends BaseController {
 
     protected $user = false;
-
+    
     /**
      * @var Shopping_model
      */
@@ -20,8 +20,10 @@ class UNO_Controller extends BaseController {
         if (auth()->loggedIn()) {
 
             $this->user           = auth()->user();
-            $this->user->group    = $this->user->getGroups()[0];
-            $this->user->nickname = explode(' ', trim($this->user->username))[0];
+            if  (auth()->user()->getGroups()) {
+                $this->user->group    = auth()->user()->getGroups()[0]; 
+            }
+            $this->user->nickname = explode(' ', trim(auth()->user()->username))[0];
             $this->user->alerts   = 0;
             $this->user->type     = $this->shopping_model->get_user_relation($this->user->id);
             //$this->user->config   = $this->shopping_model->get_client_config($this->user->group);

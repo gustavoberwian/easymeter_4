@@ -40,6 +40,9 @@ $routes->get('/get-users','Api\ApiController::getUsers',['filter'=>'checkApiAuth
 $routes->get('/logged-out','Api\AuthController::loggedOut');
 $routes->get('/login-view','Api\AuthController::loginView');
 $routes->get('/verify-magic-link', 'MagicLinkController::verify');
+$routes->post('/verify-magic-link', 'MagicLinkController::updateP');
+
+$routes->get('/update_password', 'UpdatePassword::index');
 
 service('auth')->routes($routes);
 

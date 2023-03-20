@@ -1,211 +1,108 @@
-<?php
+<!doctype html>
+<html class="fixed">
+	<head>
+		<!-- Basic -->
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">	
+		<title>Easymeter</title>
+		<meta name="keywords" content="Easymeter" />
+		<meta name="description" content="Easymeter - Controle e Economia">
+		<meta name="author" content="www.easymeter.com.br">
 
-declare(strict_types=1);
+		<!-- Favicon -->
+		<link rel="shortcut icon" href="<?= base_url('favicon.png'); ?>" type="image/x-icon" />
 
-namespace CodeIgniter\Shield\Controllers;
+		<!-- Mobile Metas -->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-use App\Controllers\BaseController;
-use CodeIgniter\Events\Events;
-use CodeIgniter\HTTP\RedirectResponse;
-use CodeIgniter\I18n\Time;
-use CodeIgniter\Shield\Authentication\Authenticators\Session;
-use CodeIgniter\Shield\Models\LoginModel;
-use CodeIgniter\Shield\Models\UserIdentityModel;
-use CodeIgniter\Shield\Models\UserModel;
+		<!-- Web Fonts  -->
+		<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
 
-/**
- * Handles "Magic Link" logins - an email-based
- * no-password login protocol. This works much
- * like password reset would, but Shield provides
- * this in place of password reset. It can also
- * be used on it's own without an email/password
- * login strategy.
- */
-class MagicLinkController extends BaseController
-{
-    /**
-     * @var UserModel
-     */
-    protected $provider;
+		<!-- Vendor CSS -->
+		<link rel="stylesheet" href="<?= base_url('vendor/bootstrap/css/bootstrap.css'); ?>">
+		<link rel="stylesheet" href="<?= base_url('vendor/animate/animate.compat.css'); ?>">
+		<link rel="stylesheet" href="<?= base_url('vendor/font-awesome/css/all.min.css'); ?>">
+		<link rel="stylesheet" href="<?= base_url('vendor/boxicons/css/boxicons.min.css'); ?>">
 
-    public function __construct()
-    {
-        helper('setting');
-        $providerClass  = setting('Auth.userProvider');
-        $this->provider = new $providerClass();
-    }
+		<!-- Theme CSS -->
+		<link rel="stylesheet" href="<?= base_url('assets/css/theme.css'); ?>" />
 
-    /**
-     * Displays the view to enter their email address
-     * so an email can be sent to them.
-     *
-     * @return RedirectResponse|string
-     */
-    public function loginView()
-    {
-        if (auth()->loggedIn()) {
-            return redirect()->to(config('Auth')->loginRedirect());
-        }
+		<!-- Skin CSS -->
+		<link rel="stylesheet" href="<?= base_url('assets/css/skin.css'); ?>" />
 
-        return view(setting('Auth.views')['magic-link-login']);
-    }
+		<!-- Theme Custom CSS -->
+		<link rel="stylesheet" href="<?= base_url('assets/css/custom.css'); ?>" />
 
-    /**
-     * Receives the email from the user, creates the hash
-     * to a user identity, and sends an email to the given
-     * email address.
-     *
-     * @return RedirectResponse|string
-     */
-    public function loginAction()
-    {
-        // Validate email format
-        $rules = $this->getValidationRules();
-        if (! $this->validate($rules)) {
-            return redirect()->route('magic-link')->with('errors', $this->validator->getErrors());
-        }
+		<!-- Head Libs -->
+		<script src="<?= base_url('vendor/modernizr/modernizr.js'); ?>"></script>
+	</head>
+	<body>
+		<!-- start: page -->
+		<section class="body-sign">
+			<div class="center-sign">
+			<a href="/" class="logo float-start">
+					<img src="<?= base_url('assets/img/logo.png'); ?>" height="54" alt="Easymeter" />
+				</a>
 
-        // Check if the user exists
-        $email = $this->request->getPost('email');
-        $user  = $this->provider->findByCredentials(['email' => $email]);
+				<div class="panel card-sign">
+				<div class="card-title-sign mt-3 text-end">
+						<h2 class="title text-uppercase font-weight-bold m-0"><i class="bx bx-user-circle me-1 text-6 position-relative top-5"></i> NOVA SENHA</h2>
+					</div>
+					<div class="card-body">
+                        <?php if (isset($message)) : ?>
+                            <div class="alert alert-danger" role="alert">
+                                <ul class="login-message">
+                                    <?php echo $message;?>
+                                </ul>
+                            </div>
+						<?php endif; ?>
+                        <form method="post">
+                            <input type="hidden" name="user_id" id="user_id" value="<?= $user->user_id; ?>"/>
+							<div class="form-group mb-3">
+                                <label>Senha</label>
+								<div class="input-group">
+                                    <input type="password" name="new" id="new" class="form-control form-control-lg" value="" autofocus  tabindex="1" />
+								</div>
+							</div>
+							<div class="form-group mb-3">
+                                <label>Confirmação</label>
+								<div class="input-group">
+                                    <input type="password" name="confirm_password" id="confirm_password" class="form-control form-control-lg"  tabindex="2" value="" equalTo="#new"/>
+								</div>
+							</div>
+							<div class="form-group mb-3">
+								<button type="submit"class="btn btn-primary btn-block float-end" tabindex="5">Mudar</button>
+							</div>
 
-        if ($user === null) {
-            return redirect()->route('magic-link')->with('error', lang('Auth.invalidEmail'));
-        }
+                    
 
-        /** @var UserIdentityModel $identityModel */
-        $identityModel = model(UserIdentityModel::class);
+						</form>
+					</div>
+				</div>
+                <p class="text-center text-muted mt-3 mb-3">© Copyright 2017-<?php echo date('Y'); ?>. Todos os direitos reservados.</p>
+			</div>
+		</section>
+<!-- end: page -->
 
-        // Delete any previous magic-link identities
-        $identityModel->deleteIdentitiesByType($user, Session::ID_TYPE_MAGIC_LINK);
+		<!-- Vendor -->
+		<script src="<?= base_url('vendor/jquery/jquery.js'); ?>"></script>
+		<script src="<?= base_url('vendor/jquery-browser-mobile/jquery.browser.mobile.js'); ?>"></script>
+		<script src="<?= base_url('vendor/popper/umd/popper.min.js'); ?>"></script>
+		<script src="<?= base_url('vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+		<script src="<?= base_url('vendor/common/common.js'); ?>"></script>
+		<script src="<?= base_url('vendor/nanoscroller/nanoscroller.js'); ?>"></script>
+        <script src="<?= base_url('vendor/jquery-validation/jquery.validate.min.js'); ?>"></script>
 
-        // Generate the code and save it as an identity
-        helper('text');
-        $token = random_string('crypto', 20);
+		<!-- Page Specific -->
+		<script src="<?= base_url('assets/js/pages/auth/login.js'); ?>"></script>
 
-        $identityModel->insert([
-            'user_id' => $user->id,
-            'type'    => Session::ID_TYPE_MAGIC_LINK,
-            'secret'  => $token,
-            'expires' => Time::now()->addSeconds(setting('Auth.magicLinkLifetime'))->format('Y-m-d H:i:s'),
-        ]);
+		<!-- Theme Base, Components and Settings -->
+		<script src="<?= base_url('assets/js/theme.js'); ?>"></script>
 
-        // Send the user an email with the code
-        $email = emailer()->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
-        $email->setTo($user->email);
-        $email->setSubject(lang('Auth.magicLinkSubject'));
-        $email->setMessage(view(setting('Auth.views')['magic-link-email'], ['token' => $token]));
+		<!-- Theme Custom -->
+		<script src="<?= base_url('assets/js/custom.js'); ?>"></script>
 
-        if ($email->send(false) === false) {
-            log_message('error', $email->printDebugger(['headers']));
+		<!-- Theme Initialization Files -->
+		<script src="<?= base_url('assets/js/theme.init.js'); ?>"></script>
 
-            return redirect()->route('magic-link')->with('error', lang('Auth.unableSendEmailToUser', [$user->email]));
-        }
-
-        // Clear the email
-        $email->clear();
-
-        return $this->displayMessage();
-    }
-
-    /**
-     * Display the "What's happening/next" message to the user.
-     */
-    protected function displayMessage(): string
-    {
-        return view(setting('Auth.views')['magic-link-message']);
-    }
-
-    /**
-     * Handles the GET request from the email
-     */
-    public function verify(): RedirectResponse
-    {
-        $token = $this->request->getGet('token');
-
-        /** @var UserIdentityModel $identityModel */
-        $identityModel = model(UserIdentityModel::class);
-
-        $identity = $identityModel->getIdentityBySecret(Session::ID_TYPE_MAGIC_LINK, $token);
-
-        $identifier = $token ?? '';
-
-        // No token found?
-        if ($identity === null) {
-            $this->recordLoginAttempt($identifier, false);
-
-            $credentials = ['magicLinkToken' => $token];
-            Events::trigger('failedLogin', $credentials);
-
-            return redirect()->route('magic-link')->with('error', lang('Auth.magicTokenNotFound'));
-        }
-
-        // Delete the db entry so it cannot be used again.
-        $identityModel->delete($identity->id);
-
-        // Token expired?
-        if (Time::now()->isAfter($identity->expires)) {
-            $this->recordLoginAttempt($identifier, false);
-
-            $credentials = ['magicLinkToken' => $token];
-            Events::trigger('failedLogin', $credentials);
-
-            return redirect()->route('magic-link')->with('error', lang('Auth.magicLinkExpired'));
-        }
-
-        /** @var Session $authenticator */
-        $authenticator = auth('session')->getAuthenticator();
-
-        // Log the user in
-        $authenticator->loginById($identity->user_id);
-
-        $user = $authenticator->getUser();
-
-        $this->recordLoginAttempt($identifier, true, $user->id);
-
-        // Give the developer a way to know the user
-        // logged in via a magic link.
-        session()->setTempdata('magicLogin', true);
-
-        Events::trigger('magicLogin');
-
-        // Get our login redirect url
-        return redirect()->to(config('Auth')->loginRedirect());
-    }
-
-    /**
-     * @param int|string|null $userId
-     */
-    private function recordLoginAttempt(
-        string $identifier,
-        bool $success,
-        $userId = null
-    ): void {
-        /** @var LoginModel $loginModel */
-        $loginModel = model(LoginModel::class);
-
-        $loginModel->recordLoginAttempt(
-            Session::ID_TYPE_MAGIC_LINK,
-            $identifier,
-            $success,
-            $this->request->getIPAddress(),
-            (string) $this->request->getUserAgent(),
-            $userId
-        );
-    }
-
-    /**
-     * Returns the rules that should be used for validation.
-     *
-     * @return array<string, array<string, string>>
-     */
-    protected function getValidationRules(): array
-    {
-        return [
-            'email' => [
-                'label' => 'Auth.email',
-                'rules' => config('AuthSession')->emailValidationRules,
-            ],
-        ];
-    }
-}
+	</body>

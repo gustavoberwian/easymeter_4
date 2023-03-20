@@ -27,103 +27,14 @@ use CodeIgniter\Shield\Traits\Viewable;
  */
 class MagicLinkController extends BaseController
 {
-    /**
-     * @var UserModel
-     */
-    protected $provider;
 
     public function __construct()
     {
-        helper('setting');
-        $providerClass  = setting('Auth.userProvider');
-        $this->provider = new $providerClass();
+        $this->input = \Config\Services::request();
     }
 
-    /**
-     * Displays the view to enter their email address
-     * so an email can be sent to them.
-     *
-     * @return RedirectResponse|string
-     */
-    public function loginView()
-    {
-        if (auth()->loggedIn()) {
-            return redirect()->to(config('Auth')->loginRedirect());
-        }
 
-        return view(setting('Auth.views')['magic-link-login']);
-    }
-
-    /**
-     * Receives the email from the user, creates the hash
-     * to a user identity, and sends an email to the given
-     * email address.
-     *
-     * @return RedirectResponse|string
-     */
-    public function loginAction()
-    {
-        // Validate email format
-        $rules = $this->getValidationRules();
-        if (! $this->validate($rules)) {
-            return redirect()->route('magic-link')->with('errors', $this->validator->getErrors());
-        }
-
-        // Check if the user exists
-        $email = $this->request->getPost('email');
-        $user  = $this->provider->findByCredentials(['email' => $email]);
-
-        if ($user === null) {
-            return redirect()->route('magic-link')->with('error', lang('Auth.invalidEmail'));
-        }
-
-        /** @var UserIdentityModel $identityModel */
-        $identityModel = model(UserIdentityModel::class);
-
-        // Delete any previous magic-link identities
-        $identityModel->deleteIdentitiesByType($user, Session::ID_TYPE_MAGIC_LINK);
-
-        // Generate the code and save it as an identity
-        helper('text');
-        $token = random_string('crypto', 20);
-
-        $identityModel->insert([
-            'user_id' => $user->id,
-            'type'    => Session::ID_TYPE_MAGIC_LINK,
-            'secret'  => $token,
-            'expires' => Time::now()->addSeconds(setting('Auth.magicLinkLifetime'))->format('Y-m-d H:i:s'),
-        ]);
-
-        // Send the user an email with the code
-        $email = emailer()->setFrom(setting('Email.fromEmail'), setting('Email.fromName') ?? '');
-        $email->setTo($user->email);
-        $email->setSubject(lang('Auth.magicLinkSubject'));
-        $email->setMessage(view(setting('Auth.views')['magic-link-email'], ['token' => $token]));
-
-        if ($email->send(false) === false) {
-            log_message('error', $email->printDebugger(['headers']));
-
-            return redirect()->route('magic-link')->with('error', lang('Auth.unableSendEmailToUser', [$user->email]));
-        }
-
-        // Clear the email
-        $email->clear();
-
-        return $this->displayMessage();
-    }
-
-    /**
-     * Display the "What's happening/next" message to the user.
-     */
-    protected function displayMessage(): string
-    {
-        return view(setting('Auth.views')['magic-link-message']);
-    }
-
-    /**
-     * Handles the GET request from the email
-     */
-    public function verify(): RedirectResponse
+    public function verify()
     {
         $token = $this->request->getGet('token');
 
@@ -145,7 +56,7 @@ class MagicLinkController extends BaseController
         }
 
         // Delete the db entry so it cannot be used again.
-        $identityModel->delete($identity->id);
+        //$identityModel->delete($identity->id);
 
         // Token expired?
         if (Time::now()->isAfter($identity->expires)) {
@@ -158,23 +69,26 @@ class MagicLinkController extends BaseController
         }
 
         /** @var Session $authenticator */
-        $authenticator = auth('session')->getAuthenticator();
+       // $authenticator = auth('session')->getAuthenticator();
 
         // Log the user in
-        $authenticator->loginById($identity->user_id);
+      //  $authenticator->loginById($identity->user_id);
 
-        $user = $authenticator->getUser();
+      //  $user = $authenticator->getUser();
 
-        $this->recordLoginAttempt($identifier, true, $user->id);
+      //  $this->recordLoginAttempt($identifier, true, $user->id);
 
         // Give the developer a way to know the user
         // logged in via a magic link.
-        session()->setTempdata('magicLogin', true);
+      //  session()->setTempdata('magicLogin', true);
 
-        Events::trigger('magicLogin');
+     //   Events::trigger('magicLogin');
 
         // Get our login redirect url
-        return redirect()->to(config('Auth')->loginRedirect());
+         
+        $data['user'] = $identity;
+ 
+        return view('update_password', $data);
     }
 
     /**
@@ -212,4 +126,20 @@ class MagicLinkController extends BaseController
             ],
         ];
     }
+
+
+
+    public function updateP(){
+        /** @var Passwords $passwords */
+        $passwords = service('passwords');
+       $credentials = array('confirm_password' => $this->input->getPost('confirm_password'), );
+
+        $db = \Config\Database::connect();
+        $identityModel =  $db->table('auth_identities');
+        $identityModel->set('secret2',$passwords -> hash($credentials['confirm_password']));
+        $identityModel->where('user_id', $this->input->getPost('user_id'));
+        $identityModel->where('type', 'email_password');
+        $identityModel->update();
+
+     }
 }

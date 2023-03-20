@@ -8,6 +8,8 @@ class UpdatePassword extends BaseController
 {
     public function index()
     {
-        return view('update_password');
+        $data['teste'] = 'teste';
+        
+        return view('update_password', $data);
     }
 }

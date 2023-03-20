@@ -35,11 +35,12 @@ class Shopping extends UNO_Controller
 
             $data['entity_id'] = $this->user->type->entity_id;
             $data['groups'] = $this->shopping_model->get_groups_by_entity($this->user->type->entity_id);
-            $data['overall_c'] = $this->energy_model->GetOverallConsumption(1);
-            $data['overall_l'] = $this->energy_model->GetOverallConsumption(2);
-            //$data['area_comum'] = $this->user->config->area_comum;
+            $data['area_comum'] = 'Área Comum';//$this->user->config->area_comum;
 
-            echo "<pre>"; print_r($data); echo "</pre>"; return;
+            foreach ($data['groups'] as $grp) {
+                $data['overall_c'][] = $this->energy_model->GetOverallConsumption_(1, $grp->bloco_id);
+                $data['overall_l'][] = $this->energy_model->GetOverallConsumption_(2, $grp->bloco_id);
+            }
 
             return $this->render("index", $data);
 
@@ -59,8 +60,21 @@ class Shopping extends UNO_Controller
         }
     }
 
-    public function energy($grp = null)
+    public function energy($group_id = null)
     {
-        return $grp ?? 2;
+        $data['permission'] = $this->shopping_model->get_user_permission($this->user->id);
+
+        $data['user']    = $this->user;
+        $data['group_id'] = $group_id;
+        $data['group'] = $this->shopping_model->get_group_info($group_id);
+
+        $data['area_comum'] = "Área Comum";
+
+        $data['unidades'] = $this->shopping_model->get_units($group_id, "energia");
+        $data['device_groups'] = $this->shopping_model->get_device_groups(72);
+
+        //echo "<pre>"; print_r($data); echo "</pre>";
+
+        return $this->render('energy', $data);
     }
 }

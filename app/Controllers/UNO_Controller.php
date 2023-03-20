@@ -24,7 +24,7 @@ class UNO_Controller extends BaseController {
             $this->user->nickname = explode(' ', trim($this->user->username))[0];
             $this->user->alerts   = 0;
             $this->user->type     = $this->shopping_model->get_user_relation($this->user->id);
-            $this->user->config   = $this->shopping_model->get_client_config($this->user->group);
+            //$this->user->config   = $this->shopping_model->get_client_config($this->user->group);
 
             date_default_timezone_set('America/Sao_Paulo');
         }
@@ -32,10 +32,15 @@ class UNO_Controller extends BaseController {
 
     protected function render($view, $data = NULL, $menu = true): string
     {
+        $db = \Config\Database::connect();
+        $request = \Config\Services::request();
+        $builder = $db->table('esm_user_logs');
         $controller = explode('\\', service('router')->controllerName());
         $data['class']  = end($controller);
         $data['method'] = service('router')->methodName();
         $data['user']   = $this->user;
+
+        $data['logs']   = $builder->get()->getNumRows();
 
         if ($menu) {
             return view($data['class'] . '/template/header', $data)

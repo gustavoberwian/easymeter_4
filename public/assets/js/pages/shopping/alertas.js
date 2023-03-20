@@ -8,8 +8,8 @@
         columns: [
             {data: "type", className: "dt-body-center", orderable: false},
             {data: "tipo", className: "dt-body-center", orderable: false},
-            {data: "device", className: "dt-body-center"},
-            {data: "nome"},
+            {data: "device", className: "dt-body-center filter"},
+            {data: "nome", className: "filter" },
             {data: "titulo"},
             {data: "enviada", className: "dt-body-center"},
             {data: "actions", className: "dt-body-center", orderable: false},
@@ -34,9 +34,43 @@
         },
         fnDrawCallback: function(oSettings) { 
             $("#" + this.api().context[0].sTableId + "_wrapper .table-responsive").removeClass("processing");
-            if ($('#dt-alerts tbody tr').hasClass('unread'))
+            if ($('#dt-alerts tbody tr').hasClass('unread') && !$('.dataTables_paginate').children().hasClass('select-all'))
                 $('#dt-alerts_paginate').prepend('<div class="select-all"><a href="#" class="mark-all">Marcar todos como lidos</a></div>')
         }
+    });
+
+    // duplica thead
+    $('#dt-alerts thead tr').clone(true).appendTo( '#dt-alerts thead' ).addClass('filter');
+
+    // adiciona campos de filtro
+    $('#dt-alerts thead tr:eq(1) th.filter').each( function (i) {
+
+        $(this).html( '<input type="text" class="form-control input-block" value="">' );
+
+        $( 'input', this ).on( 'keyup change', function () {
+            if ( dtAlerts.column(i).search() !== this.value ) {
+                dtAlerts
+                    .column(i+1)
+                    .search( this.value )
+                    .draw();
+            }
+        } );
+    } );
+
+    // limpa campos q não são filtros
+    $('#dt-alerts thead tr:eq(1) th:not(.filter)').each( function (i) {
+        $(this).text('')
+    });
+
+    // inclui botão limpar filtros
+    $('#dt-alerts thead tr:eq(1) th:eq(6)').html('<a href="#" class="clear-filter" title="Limpa filtros"><i class="fas fa-times"></i></a>').addClass('actions text-center');
+
+    // handler botão limpar filtros
+    $('.clear-filter').on('click', function (e) {
+        $('#dt-alerts thead tr:eq(1) th.filter input').each( function () {
+            this.value = '';
+        });
+        dtAlerts.columns().search('').draw();
     });
 
     $(".btn-alert-config").on("click", function (event) {

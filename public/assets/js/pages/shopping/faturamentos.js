@@ -506,6 +506,7 @@
     $('#tar-water-competencia').mask('00/0000');
     $('#tar-water-data-ini').mask('00/00/0000');
     $('#tar-water-data-fim').mask('00/00/0000');
+    
     // configura validação
     $(".form-fechamento").validate();
     $(".form-water-fechamento").validate();

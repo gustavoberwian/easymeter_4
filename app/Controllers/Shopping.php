@@ -38,8 +38,8 @@ class Shopping extends UNO_Controller
             $data['area_comum'] = 'Área Comum';//$this->user->config->area_comum;
 
             foreach ($data['groups'] as $grp) {
-                $data['overall_c'][] = $this->energy_model->GetOverallConsumption_(1, $grp->bloco_id);
-                $data['overall_l'][] = $this->energy_model->GetOverallConsumption_(2, $grp->bloco_id);
+                $data['overall_c'][] = $this->energy_model->GetOverallConsumption(1, $grp->bloco_id);
+                $data['overall_l'][] = $this->energy_model->GetOverallConsumption(2, $grp->bloco_id);
             }
 
             return $this->render("index", $data);

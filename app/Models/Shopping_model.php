@@ -55,7 +55,7 @@ class Shopping_model extends Base_model
                 *
             FROM esm_client_config
             WHERE 
-                group_id = $gid
+                group_id = '$gid'
         ");
 
         if ($result->getnumRows()) {

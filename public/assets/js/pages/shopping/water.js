@@ -9,15 +9,6 @@
     var end_last;
     var device = 0;
 
-    var notifyError = function (msg, title = "Ocorreu um erro", visibility = true) {
-        new PNotify({
-            title: title,
-            text: msg,
-            type: "error",
-            buttons: { sticker: false },
-        });
-    };
-
     function apexchart(start = moment().subtract(6, 'days'), end = moment()) {
 
         $(".chart-main").each(function() {
@@ -194,6 +185,7 @@
         paging: true,
         columns: [
             {data: "device", className: "dt-body-center"},
+            {data: "luc", className: "dt-body-center"},
             {data: "name", className: "dt-body-left"},
             {data: "type", className: "dt-body-center"},
             {data: "value_read", className: "dt-body-center"},

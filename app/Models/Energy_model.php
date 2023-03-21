@@ -1216,16 +1216,16 @@ class Energy_model extends Base_model
 
         // inicia transação
         $failure = array();
-        $this->db->trans_start();
+        $this->db->transStart();
 
         // insere novo registro
-        if (!$this->db->insert('esm_fechamentos_energia', $data)) {
+        if (!$this->db->table('esm_fechamentos_energia')->insert($data)) {
             // se erro, salva info do erro
             $failure[] = $this->db->error();
         }
 
         // retorna fechamento id
-        $data['id'] = $this->db->insert_id();
+        $data['id'] = $this->db->insertID();
 
         $query = $this->CalculateQuery($data, $inicio, $fim, $config, 1);
 
@@ -1262,36 +1262,45 @@ class Energy_model extends Base_model
         }
 
         // inclui dados na tabela esm_fechamentos_entradas
-        if (!$this->db->insert_batch('esm_fechamentos_energia_entradas', $comum)) {
+        if (!$this->db->table('esm_fechamentos_energia_entradas')->insertBatch($comum)) {
             $failure[] = $this->db->error();
         }
 
-        if (!$this->db->insert_batch('esm_fechamentos_energia_entradas', $unidades)) {
+        if (!$this->db->table('esm_fechamentos_energia_entradas')->insertBatch($unidades)) {
             $failure[] = $this->db->error();
         }
 
         // atualiza tabela esm_fechamento com dados da área comum
-        if (!$this->db->update('esm_fechamentos_energia', array(
-            'consumo' => $consumo_c,
-            'consumo_p' => $consumo_c_p,
-            'consumo_f' => $consumo_c_f,
-            'demanda' => ($demanda_c_p > $demanda_c_f) ? $demanda_c_p : $demanda_c_f,
-            'demanda_p' => $demanda_c_p,
-            'demanda_f' => $demanda_c_f,
-            'consumo_u' => $consumo_u,
-            'consumo_u_p' => $consumo_u_p,
-            'consumo_u_f' => $consumo_u_f,
-            'demanda_u' => ($demanda_u_p > $demanda_u_f) ? $demanda_u_p : $demanda_u_f,
-            'demanda_u_p' => $demanda_u_p,
-            'demanda_u_f' => $demanda_u_f
-        ), array('id' => $data['id']))) {
-
+        if (!$this->db
+            ->table('esm_fechamentos_energia')
+            ->set(
+                array(
+                    'consumo' => $consumo_c,
+                    'consumo_p' => $consumo_c_p,
+                    'consumo_f' => $consumo_c_f,
+                    'demanda' => ($demanda_c_p > $demanda_c_f) ? $demanda_c_p : $demanda_c_f,
+                    'demanda_p' => $demanda_c_p,
+                    'demanda_f' => $demanda_c_f,
+                    'consumo_u' => $consumo_u,
+                    'consumo_u_p' => $consumo_u_p,
+                    'consumo_u_f' => $consumo_u_f,
+                    'demanda_u' => ($demanda_u_p > $demanda_u_f) ? $demanda_u_p : $demanda_u_f,
+                    'demanda_u_p' => $demanda_u_p,
+                    'demanda_u_f' => $demanda_u_f
+                )
+            )
+            ->where(
+                array(
+                    'id' => $data['id']
+                )
+            )
+        ) {
             $failure[] = $this->db->error();
         }
 
-        $this->db->trans_complete();
+        $this->db->transComplete();
 
-        if ($this->db->trans_status() === FALSE) {
+        if ($this->db->transStatus() === FALSE) {
             return json_encode(array("status" => "error", "message" => $failure[0]));
         } else {
             return json_encode(array("status" => "success", "message" => "Lançamento calculado com sucesso!", "id" => $data['id']));
@@ -1415,7 +1424,7 @@ class Energy_model extends Base_model
     // **
     public function DeleteLancamento($id)
     {
-        if (!$this->db->delete('esm_fechamentos_energia', array('id' => $id))) {
+        if (!$this->db->table('esm_fechamentos_energia')->where(array('id' => $id))->delete()) {
             echo json_encode(array("status" => "error", "message" => $this->db->error()));
         } else {
             echo json_encode(array("status" => "success", "message" => "Lançamento excluído com sucesso"));

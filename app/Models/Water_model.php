@@ -308,16 +308,16 @@ class Water_model extends Base_model
 
         // inicia transação
         $failure = array();
-        $this->db->trans_start();
+        $this->db->transStart();
 
         // insere novo registro
-        if (!$this->db->insert('esm_fechamentos_agua', $data)) {
+        if (!$this->db->table('esm_fechamentos_agua')->insert($data)) {
             // se erro, salva info do erro
             $failure[] = $this->db->error();
         }
 
         // retorna fechamento id
-        $data['id'] = $this->db->insert_id();
+        $data['id'] = $this->db->insertID();
 
         $query = $this->CalculateQuery($data, $inicio, $fim, 1, $config);
 
@@ -346,29 +346,28 @@ class Water_model extends Base_model
         }
 
         // inclui dados na tabela esm_fechamentos_entradas
-        if (!$this->db->insert_batch('esm_fechamentos_agua_entradas', $comum)) {
+        if (!$this->db->table('esm_fechamentos_agua_entradas')->insertBatch($comum)) {
             $failure[] = $this->db->error();
         }
 
-        if (!$this->db->insert_batch('esm_fechamentos_agua_entradas', $unidades)) {
+        if (!$this->db->table('esm_fechamentos_agua_entradas')->insertBatch($unidades)) {
             $failure[] = $this->db->error();
         }
 
-        if (!$this->db->update('esm_fechamentos_agua', array(
-            'consumo_c'        => $consumo_c, 
-            'consumo_u'        => $consumo_u, 
-            'consumo_c_c'      => $consumo_c_c, 
-            'consumo_c_o'      => $consumo_c_o, 
-            'consumo_u_c'      => $consumo_u_c, 
-            'consumo_u_o'      => $consumo_u_o, 
-        ), array('id' => $data['id']))) {
-
+        if (!$this->db->table('esm_fechamentos_agua')->set(array(
+            'consumo_c'        => $consumo_c,
+            'consumo_u'        => $consumo_u,
+            'consumo_c_c'      => $consumo_c_c,
+            'consumo_c_o'      => $consumo_c_o,
+            'consumo_u_c'      => $consumo_u_c,
+            'consumo_u_o'      => $consumo_u_o,
+        ))->where(array('id' => $data['id']))->update()) {
             $failure[] = $this->db->error();
         }
 
-        $this->db->trans_complete();
+        $this->db->transComplete();
 
-        if ($this->db->trans_status() === FALSE) {
+        if ($this->db->transStatus() === FALSE) {
             return json_encode(array("status"  => "error", "message" => $failure[0]));
         } else {
             return json_encode(array("status"  => "success", "message" => "Lançamento calculado com sucesso!", "id" => $data['id']));
@@ -464,7 +463,7 @@ class Water_model extends Base_model
 
     public function DeleteLancamento($id)
     {
-        if (!$this->db->delete('esm_fechamentos_agua', array('id' => $id))) {
+        if (!$this->db->table('esm_fechamentos_agua')->where(array('id' => $id))->delete()) {
             echo json_encode(array("status"  => "error", "message" => $this->db->error()));
         } else {
             echo json_encode(array("status"  => "success", "message" => "Lançamento excluído com sucesso"));

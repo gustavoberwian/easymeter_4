@@ -2865,7 +2865,7 @@ class Energia extends UNO_Controller
             return number_format($data['demanda_p'], 3, ",", ".");
         });
 
-        $dt->edit('demanda_g', function ($data) {
+        $dt->edit('demanda_f', function ($data) {
             return number_format($data['demanda_f'], 3, ",", ".");
         });
 

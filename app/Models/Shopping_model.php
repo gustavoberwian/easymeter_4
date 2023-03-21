@@ -4,6 +4,41 @@ namespace App\Models;
 
 class Shopping_model extends Base_model
 {
+    public function get_unidades($group_id)
+    {        $query = "
+            SELECT
+                esm_unidades.id AS unidade_id,
+                esm_medidores.id as medidor_id,
+                esm_unidades.nome AS unidade_nome,
+            CONCAT(
+                    esm_shoppings.logradouro,
+                    ', ',
+                    esm_shoppings.numero,
+                    ' - ',
+                    esm_shoppings.bairro,
+                    ', ',
+                    esm_shoppings.cidade,
+                    ' - ',
+                    esm_shoppings.uf 
+                ) as endereco
+            FROM
+                esm_unidades
+                JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
+                JOIN esm_shoppings ON esm_shoppings.bloco_id = esm_blocos.id
+                JOIN esm_medidores ON esm_unidades.id = esm_medidores.unidade_id
+            WHERE
+                esm_unidades.bloco_id = $group_id
+        ";
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0) {
+
+            return false;
+        }
+
+        return $result->getResult();
+    }
+
     public function get_user_relation($user)
     {
         $query = $this->db->query("
@@ -153,5 +188,96 @@ class Shopping_model extends Base_model
                 users
             WHERE
                 id = $uid")->getRow();
+    }
+
+    public function GetGroup($gid)
+    {
+        $result = $this->db->query("
+            SELECT 
+                esm_blocos.nome, 
+                esm_shoppings.*
+            FROM 
+                esm_shoppings
+            JOIN 
+                esm_blocos ON esm_blocos.id = esm_shoppings.bloco_id
+            WHERE 
+                bloco_id = $gid
+        ");
+
+        if ($result->getNumRows()) {
+            return $result->getRow();
+        }
+
+        return false;
+    }
+
+    public function GetFechamento($type, $fid)
+    {
+        $result = $this->db->query("
+            SELECT 
+                *
+            FROM 
+                esm_fechamentos_{$type}
+            WHERE 
+                id = $fid
+        ");
+
+        if ($result->getNumRows()) {
+            return $result->getRow();
+        }
+
+        return false;
+    }
+
+    public function GetFechamentoUnidade($type, $rid)
+    {
+        $result = $this->db->query("
+            SELECT 
+                esm_unidades.nome, 
+                esm_unidades_config.tipo,
+                esm_fechamentos_{$type}_entradas.* 
+            FROM 
+                esm_fechamentos_{$type}_entradas
+            JOIN
+                esm_medidores ON esm_medidores.nome = esm_fechamentos_{$type}_entradas.device
+            JOIN 
+                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            LEFT JOIN 
+                esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+            WHERE 
+                esm_fechamentos_{$type}_entradas.id = $rid
+        ");
+
+        if ($result->getNumRows()) {
+            return $result->getRow();
+        }
+
+        return false;
+    }
+
+    public function GetFechamentoHistoricoUnidade($type, $device, $date)
+    {
+        $result = $this->db->query("
+            SELECT 
+                esm_unidades.nome, 
+                esm_fechamentos_{$type}_entradas.*,
+                esm_fechamentos_{$type}.competencia
+            FROM 
+                esm_fechamentos_{$type}_entradas
+            JOIN 
+                esm_fechamentos_{$type} ON esm_fechamentos_{$type}.id = esm_fechamentos_{$type}_entradas.fechamento_id
+            JOIN
+                esm_medidores ON esm_medidores.nome = esm_fechamentos_{$type}_entradas.device
+            JOIN 
+                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            WHERE 
+                esm_fechamentos_{$type}_entradas.device = '$device' AND esm_fechamentos_{$type}.cadastro < '$date'
+        ");
+
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
+        }
+
+        return false;
     }
 }

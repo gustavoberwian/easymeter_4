@@ -133,7 +133,7 @@ class Water extends UNO_Controller
 
 	public function GetLancamentosAgua()
 	{
-		$gid = $this->input->getGet('gid');
+        $gid = $this->input->getGet('gid') ?? $this->input->getPost('gid');
 
 		if (is_null($gid)) 
             $gid = $this->user->group;

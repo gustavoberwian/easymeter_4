@@ -2,8 +2,6 @@
 
 namespace App\Models;
 
-use CodeIgniter\Model;
-
 class Energy_model extends Base_model
 {
     public function GetOverallConsumption($type, $grp)

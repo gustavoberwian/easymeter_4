@@ -7,7 +7,6 @@ namespace App\Controllers;
 
 use App\Models\Energy_model;
 use App\Models\Shopping_model;
-use Config\Database;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
@@ -17,17 +16,9 @@ use Ozdemir\Datatables\DB\Codeigniter4Adapter;
 class Energia extends UNO_Controller
 {
     protected $input;
-
     protected Datatables $datatables;
 
-    /**
-     * @var Shopping_model
-     */
     private Shopping_model $shopping_model;
-
-    /**
-     * @var Energy_model
-     */
     private Energy_model $energy_model;
 
     public function __construct()

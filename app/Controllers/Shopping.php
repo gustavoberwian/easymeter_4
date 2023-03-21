@@ -77,4 +77,19 @@ class Shopping extends UNO_Controller
 
         return $this->render('energy', $data);
     }
+
+    public function water($group_id)
+    {
+        $data['group_id'] = $group_id;
+        $data['group'] = $this->shopping_model->get_group_info($group_id);
+
+        $data['user']    = $this->user;
+
+        $data['unidades'] = $this->shopping_model->get_units($group_id, "agua");
+        $data['device_groups'] = $this->shopping_model->get_device_groups(73);
+
+        $data['area_comum'] = "Área Comum";
+
+        return $this->render('water', $data);
+    }
 }

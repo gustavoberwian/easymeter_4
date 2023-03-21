@@ -35,6 +35,8 @@ $routes->get('/shopping/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/shopping/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/energia/(:any)', 'Energia::$1',['filter'=>'checkApiAuth']);
 $routes->post('/energia/(:any)/(:num)', 'Energia::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/water/(:any)', 'Water::$1',['filter'=>'checkApiAuth']);
+$routes->post('/water/(:any)/(:num)', 'Water::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/user-login','Api\AuthController::UserLogin');
 $routes->get('/get-users','Api\ApiController::getUsers',['filter'=>'checkApiAuth']);
 $routes->get('/logged-out','Api\AuthController::loggedOut');

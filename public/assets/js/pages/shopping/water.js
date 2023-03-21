@@ -22,7 +22,8 @@
                 start   : start.format("YYYY-MM-DD"),
                 end     : end.format("YYYY-MM-DD"),
                 field   : el.data("field"),
-                compare : $('#compare').find(':selected').val()
+                compare : $('#compare').find(':selected').val(),
+                shopping_id : $('.content-body').data('group')
             };
 
             $.ajax({

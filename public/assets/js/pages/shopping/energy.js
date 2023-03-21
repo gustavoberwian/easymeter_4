@@ -432,6 +432,7 @@
         let data = dtResume.row(this).data();
         $("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
         $('#sel-device').trigger('change');
+        $('button[data-bs-target="#charts"]').trigger('click');
         $('button[data-bs-target="#data"]').removeClass("disabled");
         $('button[data-bs-target="#analysis"]').removeClass("disabled");
     });

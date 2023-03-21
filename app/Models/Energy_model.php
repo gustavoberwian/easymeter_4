@@ -82,8 +82,8 @@ class Energy_model extends Base_model
             GROUP BY $group
         ");
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -91,6 +91,7 @@ class Energy_model extends Base_model
 
     public function GetActivePositive($device, $start, $end, $st = array(), $gp = false)
     {
+        $query = "";
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -129,7 +130,7 @@ class Energy_model extends Base_model
             if (!$gp)
                 $group = "GROUP BY esm_hours.num";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
@@ -143,7 +144,7 @@ class Energy_model extends Base_model
                     $dvc
                 $group
                 ORDER BY esm_hours.num
-            ");
+            ";
 
         } else {
 
@@ -162,7 +163,7 @@ class Energy_model extends Base_model
             if (!$gp)
                 $group = "GROUP BY esm_calendar.dt";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
@@ -179,11 +180,16 @@ class Energy_model extends Base_model
                     esm_calendar.dt <= '$end' 
                 $group
                 ORDER BY esm_calendar.dt
-            ");
+            ";
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        // if you need to see te query, just uncomment
+        //return $query;
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -246,8 +252,8 @@ class Energy_model extends Base_model
             ) d
         ");
 
-        if ($result->num_rows()) {
-            return $result->row()->value;
+        if ($result->getNumRows()) {
+            return $result->getRow()->value;
         }
 
         return false;
@@ -286,8 +292,8 @@ class Energy_model extends Base_model
                 timestamp
         ");
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -356,8 +362,8 @@ class Energy_model extends Base_model
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -425,8 +431,8 @@ class Energy_model extends Base_model
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -494,8 +500,8 @@ class Energy_model extends Base_model
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -571,8 +577,8 @@ class Energy_model extends Base_model
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -638,8 +644,8 @@ class Energy_model extends Base_model
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -715,8 +721,8 @@ class Energy_model extends Base_model
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -786,8 +792,8 @@ class Energy_model extends Base_model
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -823,8 +829,8 @@ class Energy_model extends Base_model
         $result = $this->db->query($query);
 
 
-        if ($result->num_rows()) {
-            return $result->row()->value;
+        if ($result->getNumRows()) {
+            return $result->getRow()->value;
         }
 
         return false;
@@ -840,8 +846,8 @@ class Energy_model extends Base_model
                 group_id = $gid
         ");
 
-        if ($result->num_rows()) {
-            return $result->row();
+        if ($result->getNumRows()) {
+            return $result->getRow();
         }
 
         return false;
@@ -862,8 +868,8 @@ class Energy_model extends Base_model
                 esm_alertas_cfg.active = 1 AND esm_alertas_cfg.type = $aid
         ");
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -912,7 +918,7 @@ class Energy_model extends Base_model
                 ) last
             ");
 
-            return ($result->num_rows()) ? $result->row() : false;
+            return ($result->getNumRows()) ? $result->getRow() : false;
 
         } else if ($aid == 2) {
 
@@ -940,7 +946,7 @@ class Energy_model extends Base_model
                     AND device = '$device'
             ");
 
-            return array("previous" => max(round($previous->row()->value), round($previous->row()->alerta_consumo)), "current" => round($current->row()->value), "unidade_id" => $previous->row()->unidade_id);
+            return array("previous" => max(round($previous->getRow()->value), round($previous->getRow()->alerta_consumo)), "current" => round($current->getRow()->value), "unidade_id" => $previous->getRow()->unidade_id);
 
         } else if ($aid == 4) {
 
@@ -965,8 +971,8 @@ class Energy_model extends Base_model
                     timestamp > UNIX_TIMESTAMP() - 600
             ");
 
-            if ($result->num_rows()) {
-                return $result->result();
+            if ($result->getNumRows()) {
+                return $result->getResult();
             }
         }
 
@@ -1002,8 +1008,8 @@ class Energy_model extends Base_model
                 esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
         ");
 
-        if ($result->num_rows()) {
-            return $result->row()->value;
+        if ($result->getNumRows()) {
+            return $result->getRow()->value;
         }
 
         return false;
@@ -1021,7 +1027,7 @@ class Energy_model extends Base_model
             LIMIT 1
         ");
 
-        return ($result->num_rows());
+        return ($result->getNumRows());
     }
 
     private function GetLastFechamento($entrada_id)
@@ -1038,8 +1044,8 @@ class Energy_model extends Base_model
             LIMIT 1
         ");
 
-        if ($result->num_rows()) {
-            return $result->row()->id;
+        if ($result->getNumRows()) {
+            return $result->getRow()->id;
         }
 
         return 0;
@@ -1059,8 +1065,8 @@ class Energy_model extends Base_model
                 esm_fechamentos_energia.id = $fid
         ");
 
-        if ($result->num_rows()) {
-            return $result->row();
+        if ($result->getNumRows()) {
+            return $result->getRow();
         }
 
         return 0;
@@ -1091,8 +1097,8 @@ class Energy_model extends Base_model
             ORDER BY cadastro DESC
         ");
 
-        if ($result->num_rows()) {
-            return $result->result_array();
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
         }
 
         return false;
@@ -1130,8 +1136,8 @@ class Energy_model extends Base_model
                 $type   
         ");
 
-        if ($result->num_rows()) {
-            return $result->result_array();
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
         }
 
         return false;
@@ -1225,7 +1231,7 @@ class Energy_model extends Base_model
 
         $query = $this->CalculateQuery($data, $inicio, $fim, $config, 1);
 
-        $comum = $query->result();
+        $comum = $query->getResult();
         $consumo_c = 0;
         $consumo_c_f = 0;
         $consumo_c_p = 0;
@@ -1242,7 +1248,7 @@ class Energy_model extends Base_model
 
         $query = $this->CalculateQuery($data, $inicio, $fim, $config, 2);
 
-        $unidades = $query->result();
+        $unidades = $query->getResult();
         $consumo_u = 0;
         $consumo_u_p = 0;
         $consumo_u_f = 0;
@@ -1320,7 +1326,7 @@ class Energy_model extends Base_model
 
         $query = $this->CalculateQuery($data, $inicio, $fim, $config, "fracionar");
 
-        $unidades         = $query->result();
+        $unidades         = $query->getResult();
         $fracao_consumo   = 0;
         $fracao_consumo_f = 0;
         $fracao_consumo_p = 0;
@@ -1334,11 +1340,11 @@ class Energy_model extends Base_model
         $query = $this->CalculateQuery($data, $inicio, $fim, $config, "incluir");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0) {
+        if ($query->getNumRows() == 0) {
             $failure[] = array('code' => 0, 'message' => 'Nenhuma leitura encontrada no período.');
         }
 
-        $leituras  = $query->result();
+        $leituras  = $query->getResult();
         $consumo   = 0;
         $consumo_p = 0;
         $consumo_f = 0;
@@ -1397,8 +1403,8 @@ class Energy_model extends Base_model
                 nome = '$device'
         ");
 
-        if ($result->num_rows()) {
-            return $result->row()->value;
+        if ($result->getNumRows()) {
+            return $result->getRow()->value;
         }
 
         return false;
@@ -1505,8 +1511,8 @@ class Energy_model extends Base_model
                 esm_unidades.nome
         ");
 
-        if ($result->num_rows()) {
-            return $result->result_array();
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
         }
 
         return false;
@@ -1554,8 +1560,8 @@ class Energy_model extends Base_model
             ORDER BY timestamp
         ");
 
-        if ($result->num_rows()) {
-            return $result->result_array();
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
         }
 
         return false;
@@ -1576,10 +1582,10 @@ class Energy_model extends Base_model
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        $ret = $query->row();
+        $ret = $query->getRow();
 
         if ($readed) {
             // atualiza esm_alertas
@@ -1620,10 +1626,10 @@ class Energy_model extends Base_model
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return 0;
 
-        return $query->row()->count;
+        return $query->getRow()->count;
     }
 
     public function ReadAllAlert($user_id)
@@ -1651,8 +1657,8 @@ class Energy_model extends Base_model
             WHERE esm_medidores.nome = '$device'        
         ");
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -1671,8 +1677,8 @@ class Energy_model extends Base_model
             )
         ");
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;

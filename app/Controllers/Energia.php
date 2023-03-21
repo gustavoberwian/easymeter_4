@@ -142,9 +142,9 @@ class Energia extends UNO_Controller
 
     private function chartMainActivePositive()
     {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
 
         if ($start == $end && date("N", strtotime($start)) >= 6) {
 
@@ -280,9 +280,9 @@ class Energia extends UNO_Controller
 
     private function chartMainStation()
     {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
 
         if ($start == $end && date("N", strtotime($start)) >= 6) {
 
@@ -344,9 +344,9 @@ class Energia extends UNO_Controller
 
     private function chartMainActiveDemand()
     {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
 
         if ($start == $end) {
 
@@ -397,9 +397,9 @@ class Energia extends UNO_Controller
 
     private function chartMainFactor()
     {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
 
         $limite = "Limite: " . 0.92;
         $value  = array();
@@ -468,9 +468,9 @@ class Energia extends UNO_Controller
 
     private function chartFactorPhases()
     {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
 
         $limite  = "Limite: " . 0.92;
         $value_a = array();
@@ -564,7 +564,7 @@ class Energia extends UNO_Controller
 
     private function chartConsumption()
     {
-        $device  = $this->input->getPost('device', true);
+        $device  = $this->input->getPost('device');
 
         $value = array();
         $labels  = array();
@@ -604,9 +604,9 @@ class Energia extends UNO_Controller
 
     private function chartMainReactive()
     {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
 
 
         $period = $this->energy_model->GetMainReactive($device, $start, $end);
@@ -676,9 +676,9 @@ class Energia extends UNO_Controller
 
     private function chartMainLoad()
     {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
 
         $value_load = array();
         $labels     = array();
@@ -733,9 +733,9 @@ class Energia extends UNO_Controller
 
     private function chartMainCarbon()
     {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
 
         $value  = array();
         $labels = array();
@@ -781,7 +781,7 @@ class Energia extends UNO_Controller
 
     public function chart_engineering()
     {
-        $field    = $this->input->getPost('field', true);
+        $field    = $this->input->getPost('field');
         $divisor  = 1;
         $decimals = 0;
         $unidade  = "";
@@ -840,9 +840,9 @@ class Energia extends UNO_Controller
             return;
         }
 
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
 
         $value_a = array();
         $value_b = array();
@@ -988,10 +988,10 @@ class Energia extends UNO_Controller
 
     public function chart_active()
     {
-        $medidor_id = $this->input->getPost('mid', true);
-        $start = $this->input->getPost('start', true);
-        $end = $this->input->getPost('end', true);
-        $period = $this->input->getPost('period', true);
+        $medidor_id = $this->input->getPost('mid');
+        $start      = $this->input->getPost('start');
+        $end        = $this->input->getPost('end');
+        $period     = $this->input->getPost('period');
 
         $semana  = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab');
         $current = strtotime($start);
@@ -1121,10 +1121,10 @@ class Energia extends UNO_Controller
 
     public function chart_current()
     {
-        $medidor_id = $this->input->getPost('mid', true);
-        $start      = $this->input->getPost('start', true);
-        $end        = $this->input->getPost('end', true);
-        $period     = $this->input->getPost('period', true);
+        $medidor_id = $this->input->getPost('mid');
+        $start      = $this->input->getPost('start');
+        $end        = $this->input->getPost('end');
+        $period     = $this->input->getPost('period');
 
         $semana  = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab');
         $current = strtotime($start);
@@ -1264,10 +1264,10 @@ class Energia extends UNO_Controller
 
     public function chart_voltage()
     {
-        $medidor_id = $this->input->getPost('mid', true);
-        $start      = $this->input->getPost('start', true);
-        $end        = $this->input->getPost('end', true);
-        $period     = $this->input->getPost('period', true);
+        $medidor_id = $this->input->getPost('mid');
+        $start      = $this->input->getPost('start');
+        $end        = $this->input->getPost('end');
+        $period     = $this->input->getPost('period');
 
         $semana  = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab');
         $current = strtotime($start);
@@ -1553,10 +1553,10 @@ class Energia extends UNO_Controller
 */
     private function chart_carbon()
     {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
-        $interval = $this->input->getPost('interval', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
+        $interval = $this->input->getPost('interval');
 
         $semana  = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab');
         $current = strtotime($start);
@@ -2002,10 +2002,10 @@ class Energia extends UNO_Controller
 */
     public function chart_heat_map_power()
     {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
-        $interval = $this->input->getPost('interval', true);
+        $device   = $this->input->getPost('device');
+        $start    = $this->input->getPost('start');
+        $end      = $this->input->getPost('end');
+        $interval = $this->input->getPost('interval');
         //$interval = 'day';
 
         $semana  = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab');
@@ -2248,9 +2248,11 @@ class Energia extends UNO_Controller
             return date("d/m/Y H:i", $data['date']);
         });
 
-        $dt->edit('activePositive', function ($data) {
-            return str_pad(round($data["activePositive"]), 6 , '0' , STR_PAD_LEFT);
-        });
+        if ($field === 'activePositive') {
+            $dt->edit('activePositive', function ($data) {
+                return str_pad(round($data["activePositive"]), 6, '0', STR_PAD_LEFT);
+            });
+        }
 
         $dt->edit('voltageA', function ($data) use ($type, $max, $min) {
             $val = number_format($data["voltageA"], 3, ",", ".");
@@ -2400,19 +2402,7 @@ class Energia extends UNO_Controller
             }
             return $val;
         });
-/*
-        $dt->edit('factor', function ($data) use ($type, $max, $min) {
-            $val = floatval(substr($data["factor"], 0, strlen($data["factor"]) - 2));
-            if ($type == "factor") {
-                if ($val > $max)
-                    return "<span class='text-danger'>$val</span>";
-                else if ($val < $min)
-                    return "<span class='text-warning'>$val</span>";
-            }
 
-            return ($val == 1.00) ? substr($data["factor"], 0, strlen($data["factor"]) - 2) : $data["factor"];
-        });
-*/
         // gera resultados
         echo $dt->generate();
     }
@@ -2766,7 +2756,7 @@ class Energia extends UNO_Controller
      */
     public function GetFaturamentos()
     {
-        $group = $this->input->getPost('gid', true);
+        $group = $this->input->getPost('gid');
 
 /*
             SELECT
@@ -2828,7 +2818,7 @@ class Energia extends UNO_Controller
 
     public function GetFechamentoUnidades($type)
     {
-        $fid = $this->input->getPost('fid', true);
+        $fid = $this->input->getPost('fid');
 
         $dt = $this->datatables->query("
             SELECT 

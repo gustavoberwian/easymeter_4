@@ -75,3 +75,6 @@ h1, h2, h3, h4, h5, h6 {
     max-height: 100%;
     min-height: unset;
 }
+.table-hover.table-click tbody tr {
+    cursor: pointer;
+}

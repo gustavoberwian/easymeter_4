@@ -8,7 +8,9 @@
     "require": {
         "php": "^7.4 || ^8.0",
         "codeigniter4/framework": "^4.0",
-        "codeigniter4/shield": "^1.0@beta"
+        "codeigniter4/shield": "^1.0@beta",
+        "ozdemir/datatables": "^2.3",
+        "phpoffice/phpspreadsheet": "^1.28"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",

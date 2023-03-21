@@ -56,7 +56,7 @@ class MagicLinkController extends BaseController
         }
 
         // Delete the db entry so it cannot be used again.
-        //$identityModel->delete($identity->id);
+        $identityModel->delete($identity->id);
 
         // Token expired?
         if (Time::now()->isAfter($identity->expires)) {
@@ -140,6 +140,6 @@ class MagicLinkController extends BaseController
         $identityModel->where('user_id', $this->input->getPost('user_id'));
         $identityModel->where('type', 'email_password');
         $identityModel->update();
-
+        return redirect()->route('/');
      }
 }

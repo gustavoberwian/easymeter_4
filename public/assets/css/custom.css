@@ -75,3 +75,21 @@ h1, h2, h3, h4, h5, h6 {
     max-height: 100%;
     min-height: unset;
 }
+
+
+html .wizard-progress .wizard-steps li a {
+    cursor: default;
+}
+
+
+html .wizard-progress .wizard-steps li a, html.dark .wizard-progress .wizard-steps li a {
+    position: relative;
+    display: block;
+    padding: 25px 8px 0;
+    font-size: 11px;
+    color: #33333F;
+    font-weight: bold;
+    line-height: 1;
+    text-align: center;
+    text-decoration: none;
+}

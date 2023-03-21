@@ -25,7 +25,7 @@ class Auth extends BaseConfig
      */
     public array $views = [
         'login'                       => '\App\Views\login',
-        'register'                    => '\CodeIgniter\Shield\Views\register',
+        'register'                    => '\App\Views\register',
         'layout'                      => '\CodeIgniter\Shield\Views\layout',
         'action_email_2fa'            => '\App\Views\email_2fa_show',
         'action_email_2fa_verify'     => '\App\Views\email_2fa_verify',
@@ -269,7 +269,7 @@ class Auth extends BaseConfig
      */
     public array $validFields = [
         'email',
-        // 'username',
+        'username',
     ];
 
     /**

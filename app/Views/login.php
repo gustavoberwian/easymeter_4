@@ -99,8 +99,8 @@
                         </div>
                     <?php endif; ?>
 
-                    <div class="d-grid col-12 col-md-8 mx-auto m-3">
-                        <button type="submit" class="btn btn-primary btn-block"><?= lang('Auth.login') ?></button>
+					<div class="form-group mb-3">
+                        <button type="submit" class="btn btn-primary btn-block float-end"><?= lang('Auth.login') ?></button>
                     </div>
 
                     <?php if (setting('Auth.allowMagicLinkLogins')) : ?>

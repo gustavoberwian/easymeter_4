@@ -5,9 +5,14 @@ namespace App\Controllers;
 use App\Models\Shopping_model;
 use App\Models\Energy_model;
 use App\Models\Water_model;
+use Ozdemir\Datatables\Datatables;
+use Ozdemir\Datatables\DB\Codeigniter4Adapter;
 
 class Shopping extends UNO_Controller
 {
+    protected $input;
+    protected Datatables $datatables;
+
     /**
      * @var Shopping_model
      */
@@ -27,9 +32,16 @@ class Shopping extends UNO_Controller
     {
         parent::__construct();
 
+        // load requests
+        $this->input = \Config\Services::request();
+
+        // load models
         $this->shopping_model = new Shopping_model();
         $this->energy_model = new Energy_model();
         $this->water_model = new Water_model();
+
+        // load libraries
+        $this->datatables = new Datatables(new Codeigniter4Adapter);
     }
 
     public function index()
@@ -171,5 +183,13 @@ class Shopping extends UNO_Controller
         $data['unidades']   = $this->shopping_model->get_units($group_id);
 
         return $this->render('alertas', $data);
+    }
+
+    public function insights($group_id)
+    {
+        $data['group_id'] = $group_id;
+        $data['group'] = $this->shopping_model->get_group_info($group_id);
+
+        return $this->render('insights', $data);
     }
 }

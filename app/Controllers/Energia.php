@@ -3321,7 +3321,7 @@ class Energia extends UNO_Controller
 
     public function GetAlerts()
     {
-        $user_id = $this->ion_auth->user()->row()->id;
+        $user_id = auth()->user()->id;
 
         $dt = $this->datatables->query("
             SELECT 
@@ -3386,12 +3386,11 @@ class Energia extends UNO_Controller
 
 		// verifica e informa erros
 		if (!$data['alerta']) {
-			$this->load->view('modals/erro', array('message' => 'Alerta não encontrado!'));
-			return;
+			return view('modals/erro', array('message' => 'Alerta não encontrado!'));
 		}
 
 		// carrega a modal
-		$this->load->view('modals/alert', $data);
+		return view('modals/alert', $data);
 	}
 
 	// **

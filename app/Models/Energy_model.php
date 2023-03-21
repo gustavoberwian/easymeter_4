@@ -1596,9 +1596,11 @@ class Energy_model extends Base_model
 
         if ($readed) {
             // atualiza esm_alertas
-            $this->db->where('id', $id);
-            $this->db->where('lida', NULL);
-            $this->db->update('esm_alertas_energia_envios', array('lida' => date("Y-m-d H:i:s")));
+            $this->db->table('esm_alertas_energia_envios')
+                ->where('id', $id)
+                ->where('lida', NULL)
+                ->set(array('lida' => date("Y-m-d H:i:s")))
+                ->update();
         }
 
         return $ret;
@@ -1611,7 +1613,7 @@ class Energy_model extends Base_model
     // **
     public function DeleteAlert($id)
     {
-        if (!$this->db->update('esm_alertas_energia_envios', array('visibility' => 'delbyuser'), array('id' => $id))) {
+        if (!$this->db->table('esm_alertas_energia_envios')->where(array('id' => $id))->set(array('visibility' => 'delbyuser'))->update()) {
             echo json_encode(array("status" => "error", "message" => $this->db->error()));
             return;
         }

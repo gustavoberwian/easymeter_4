@@ -78,3 +78,7 @@ h1, h2, h3, h4, h5, h6 {
 .table-hover.table-click tbody tr {
     cursor: pointer;
 }
+.unread {
+    background-color: #ebebeb !important;
+    font-weight: bold !important;
+}

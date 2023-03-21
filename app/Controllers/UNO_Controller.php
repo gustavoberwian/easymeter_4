@@ -22,7 +22,7 @@ class UNO_Controller extends BaseController {
             $this->user           = auth()->user();
             $this->user->group    = $this->user->getGroups()[0];
             $this->user->nickname = explode(' ', trim($this->user->username))[0];
-            $this->user->alerts   = 0;
+            $this->user->alerts   = $this->shopping_model->CountAlerts($this->user->id);
             $this->user->type     = $this->shopping_model->get_user_relation($this->user->id);
             $this->user->config   = $this->shopping_model->get_client_config($this->user->group);
 

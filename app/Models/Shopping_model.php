@@ -280,4 +280,24 @@ class Shopping_model extends Base_model
 
         return false;
     }
+
+    public function CountAlerts($uid)
+    {
+        $query = $this->db->query("
+            SELECT 
+                COUNT(*) AS count
+            FROM 
+                esm_alertas_energia_envios
+            WHERE 
+                esm_alertas_energia_envios.user_id = $uid AND
+                ISNULL(lida) AND
+                visibility = 'normal'
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return 0;
+
+        return $query->getRow()->count;
+    }
 }

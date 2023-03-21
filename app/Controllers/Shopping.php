@@ -162,4 +162,14 @@ class Shopping extends UNO_Controller
             return $this->render('relatorio_water', $data);
         }
     }
+
+    public function alertas($group_id)
+    {
+        $data['user']       = $this->user;
+        $data['group_id']   = $group_id;
+        $data['group']      = $this->shopping_model->get_group_info($group_id);
+        $data['unidades']   = $this->shopping_model->get_units($group_id);
+
+        return $this->render('alertas', $data);
+    }
 }

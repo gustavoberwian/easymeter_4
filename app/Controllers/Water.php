@@ -744,5 +744,5 @@ class Water extends UNO_Controller
         );
 
         echo json_encode($response);
-    }    
+    }
 }

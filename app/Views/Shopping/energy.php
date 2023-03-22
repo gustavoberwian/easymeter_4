@@ -12,23 +12,23 @@
 
     <ul class="nav nav-pills nav-pills-primary mb-3">
         <?php if (!$user->inGroup("unity", "shopping")): ?>
-            <li class="nav-item me-2" role="presentation">
-                <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#resume" type="button">Resumo</button>
+            <li class="nav-item configs" role="presentation">
+                <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#resume" type="button">Resumo</button>
             </li>
         <?php endif; ?>
-        <li class="nav-item me-2" role="presentation">
-            <button class="nav-link <?= $user->inGroup("unity_shopping") ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#charts" type="button">Medição</button>
+        <li class="nav-item configs" role="presentation">
+            <button class="nav-link configs <?= $user->inGroup("unity_shopping") ? 'left active' : '' ?>" data-bs-toggle="pill" data-bs-target="#charts" type="button">Medição</button>
         </li>
         <?php if (!$user->inGroup("unity_shopping") || $permission->acessar_engenharia): ?>
-            <li class="nav-item me-2" role="presentation">
-                <button class="nav-link" data-bs-toggle="pill" data-bs-target="#engineering" type="button">Engenharia</button>
+            <li class="nav-item configs" role="presentation">
+                <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#engineering" type="button">Engenharia</button>
             </li>
         <?php endif; ?>
-        <li class="nav-item me-2" role="presentation">
-            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#analysis" type="button">Análises</button>
+        <li class="nav-item configs" role="presentation">
+            <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#analysis" type="button">Análises</button>
         </li>
-        <li class="nav-item me-2" role="presentation">
-            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#data" type="button">Dados</button>
+        <li class="nav-item configs" role="presentation">
+            <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#data" type="button">Dados</button>
         </li>
 
     </ul>

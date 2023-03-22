@@ -300,4 +300,152 @@ class Shopping_model extends Base_model
 
         return $query->getRow()->count;
     }
+
+    public function get_alert_config($group, $grp = false)
+    {
+        $gr = "";
+        if ($grp) {
+            $gr = " GROUP BY type ";
+        }
+        $result = $this->db->query("
+            SELECT
+                esm_alertas_cfg.*
+            FROM
+                esm_alertas_cfg
+            WHERE
+                esm_alertas_cfg.group_id = $group
+            $gr"
+        );
+
+        if ($result->getNumRows())
+            return $result->getResult();
+
+        return false;
+    }
+
+    public function get_devices($group, $type)
+    {
+        $result = $this->db->query("
+            SELECT
+                esm_alertas_cfg_devices.device
+            FROM
+                esm_alertas_cfg
+	    JOIN esm_alertas_cfg_devices ON esm_alertas_cfg_devices.config_id = esm_alertas_cfg.id
+            WHERE
+                esm_alertas_cfg.group_id = $group AND esm_alertas_cfg.type = $type"
+        );
+
+        if ($result->getNumRows()) {
+            $list = array();
+            foreach($result->getResult() as $d) {
+                $list[] = $d->device;
+            }
+
+            return $list;
+        }
+
+        return false;
+    }
+
+    public function getToken($group_id)
+    {
+        // seleciona todos os campos
+        $query = $this->db->query("
+            SELECT token
+            FROM esm_api_keys
+            WHERE group_id = $group_id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow()->token;
+    }
+
+    public function GetUserAlert($id, $monitoramento = null, $readed = false)
+    {
+        $m = "";
+        if (!is_null($monitoramento)) {
+            if ($monitoramento === 'energia')
+                $m = "_" . $monitoramento;
+            elseif ($monitoramento === 'agua')
+                $m = $monitoramento;
+        }
+        $query = $this->db->query("
+            SELECT 
+                esm_alertas" . $m . ".tipo, 
+                esm_alertas" . $m . ".titulo, 
+                esm_alertas" . $m . ".texto, 
+                COALESCE(esm_alertas" . $m . ".enviada, 0) AS enviada,
+                COALESCE(esm_alertas" . $m . "_envios.lida, '') AS lida
+            FROM esm_alertas" . $m . "_envios
+            JOIN esm_alertas" . $m . " ON esm_alertas" . $m . ".id = esm_alertas" . $m . "_envios.alerta_id
+            WHERE esm_alertas" . $m . "_envios.id = $id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        $ret = $query->getRow();
+
+        if ($readed) {
+            // atualiza esm_alertas
+            $this->db->table('esm_alertas' . $m . '_envios')
+                ->where('id', $id)
+                ->where('lida', NULL)
+                ->set(array('lida' => date("Y-m-d H:i:s")))
+                ->update();
+        }
+
+        return $ret;
+    }
+
+    public function DeleteAlert($id, $monitoramento = null)
+    {
+        $m = "";
+        if (!is_null($monitoramento)) {
+            if ($monitoramento === 'energia')
+                $m = "_" . $monitoramento;
+            elseif ($monitoramento === 'agua')
+                $m = $monitoramento;
+        }
+
+        if (!$this->db->table('esm_alertas' . $m . '_envios')->where(array('id' => $id))->set(array('visibility' => 'delbyuser'))->update()) {
+            echo json_encode(array("status" => "error", "message" => $this->db->error()));
+            return;
+        }
+
+        echo json_encode(array("status" => "success", "message" => "Alerta excluído com sucesso.", "id" => $id));
+    }
+    public function ReadAllAlert($user_id, $monitoramento = null)
+    {
+        $m = "";
+        if (!is_null($monitoramento)) {
+            if ($monitoramento === 'energia')
+                $m = "_" . $monitoramento;
+            elseif ($monitoramento === 'agua')
+                $m = $monitoramento;
+        }
+
+        // atualiza data
+        $this->db->transStart();
+
+        $this->db->table('esm_alertas' . $m . '_envios')
+            ->where('user_id', $user_id)
+            ->where('lida', NULL)
+            ->set(array('lida' => date("Y-m-d H:i:s")))
+            ->update();
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            echo json_encode(array("status" => "error", "message" => $this->db->error()));
+            return;
+        }
+        
+        echo json_encode(array("status" => "success", "message" => "Alertas marcados com sucesso."));
+    }
+
 }

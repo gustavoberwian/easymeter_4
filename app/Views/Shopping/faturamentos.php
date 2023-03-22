@@ -7,11 +7,11 @@
     <img src="<?php echo base_url('assets/img/logo-north.png'); ?>" alt="<?= "North"; ?>" class="mb-4" height="80"/>
 
     <ul class="nav nav-pills nav-pills-primary mb-3">
-        <li class="nav-item me-2" role="presentation">
-            <button class="nav-link active" data-bs-toggle="pill" data-bs-target="#energy" type="button">Energia</button>
+        <li class="nav-item configs" role="presentation">
+            <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#energy" type="button">Energia</button>
         </li>
         <li class="nav-item me-2" role="presentation">
-            <button class="nav-link" data-bs-toggle="pill" data-bs-target="#water" type="button">Água</button>
+            <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#water" type="button">Água</button>
         </li>
     </ul>
 

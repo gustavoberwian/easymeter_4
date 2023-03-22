@@ -33,6 +33,7 @@ $routes->get('/', 'Site::index');
 $routes->get('/shopping', 'Shopping::index',['filter'=>'checkApiAuth']);
 $routes->get('/shopping/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/shopping/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/shopping/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->post('/energia/(:any)', 'Energia::$1',['filter'=>'checkApiAuth']);
 $routes->post('/energia/(:any)/(:num)', 'Energia::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/water/(:any)', 'Water::$1',['filter'=>'checkApiAuth']);

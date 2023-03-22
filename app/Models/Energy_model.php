@@ -1574,53 +1574,6 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetUserAlert($id, $readed = false)
-    {
-        $query = $this->db->query("
-            SELECT 
-                esm_alertas_energia.tipo, 
-                esm_alertas_energia.titulo, 
-                esm_alertas_energia.texto, 
-                COALESCE(esm_alertas_energia.enviada, 0) AS enviada,
-                COALESCE(esm_alertas_energia_envios.lida, '') AS lida
-            FROM esm_alertas_energia_envios
-            JOIN esm_alertas_energia ON esm_alertas_energia.id = esm_alertas_energia_envios.alerta_id
-            WHERE esm_alertas_energia_envios.id = $id
-        ");
-
-        // verifica se retornou algo
-        if ($query->getNumRows() == 0)
-            return false;
-
-        $ret = $query->getRow();
-
-        if ($readed) {
-            // atualiza esm_alertas
-            $this->db->table('esm_alertas_energia_envios')
-                ->where('id', $id)
-                ->where('lida', NULL)
-                ->set(array('lida' => date("Y-m-d H:i:s")))
-                ->update();
-        }
-
-        return $ret;
-    }
-
-    // **
-    // Exclui alerta. Origem modal admin/confirm -> alertas
-    // [in] id
-    // [out] Json com status da operação
-    // **
-    public function DeleteAlert($id)
-    {
-        if (!$this->db->table('esm_alertas_energia_envios')->where(array('id' => $id))->set(array('visibility' => 'delbyuser'))->update()) {
-            echo json_encode(array("status" => "error", "message" => $this->db->error()));
-            return;
-        }
-
-        echo json_encode(array("status" => "success", "message" => "Alerta excluído com sucesso.", "id" => $id));
-    }
-
     public function CountAlerts($uid)
     {
         $query = $this->db->query("
@@ -1639,21 +1592,6 @@ class Energy_model extends Base_model
             return 0;
 
         return $query->getRow()->count;
-    }
-
-    public function ReadAllAlert($user_id)
-    {
-        // atualiza data
-        if (!$this->db->query("
-                UPDATE esm_alertas_energia_envios 
-                SET lida = '" . date('Y-m-d H:i:s') . "' 
-                WHERE user_id = $user_id AND ISNULL(lida)
-            ")) {
-
-            echo json_encode(array("status" => "error", "message" => $this->db->error()));
-        } else {
-            echo json_encode(array("status" => "success", "message" => "Alertas marcados com sucesso."));
-        }
     }
 
     private function GetUserIdByDevice($device)

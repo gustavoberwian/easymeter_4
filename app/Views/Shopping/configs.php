@@ -122,6 +122,10 @@
             <div class="row pt-0">
                 <div class="col-md-12 mb-4">
                     <section class="card card-agrupamentos card-easymeter h-100">
+                        <header class="card-header">
+                            <div class="card-actions buttons"></div>
+                            <h2 class="card-title">Unidades</h2>
+                        </header>
                         <div class="card-body bordered">
                             <ul class="nav nav-pills nav-pills-primary mb-3 position-absolute" role="tablist" style="z-index: 999;">
                                 <li class="nav-item me-2" role="presentation">
@@ -205,7 +209,7 @@
                             <h2 class="card-title">Agrupamentos</h2>
                         </header>
                         <div class="card-body bordered">
-                            <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
+                            <ul class="nav nav-pills nav-pills-primary mb-3 position-absolute" role="tablist" style="z-index: 999;">
                                 <li class="nav-item me-2" role="presentation">
                                     <button class="nav-link color-energy active" data-bs-toggle="pill" data-bs-target="#energia2" type="button" aria-selected="true" role="tab">Energia</button>
                                 </li>
@@ -267,7 +271,7 @@
             </div>
         </div>
 
-        <?php if ($user->inGroup("entity", "shopping")): ?>
+        <?php if ($user->inGroup("admin", "shopping")): ?>
             <div class="tab-pane fade" id="alertas" role="tabpanel">
                 <div class="row pt-0">
                     <div class="col-md-12 mb-4">

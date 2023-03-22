@@ -128,3 +128,9 @@ button.nav-link.configs {
     border-color: #6c757d;
     opacity: .65;
 }
+.tab-content.configs {
+    border: none;
+    box-shadow: none;
+    background: none;
+    padding: 0;
+}

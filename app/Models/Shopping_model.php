@@ -448,4 +448,117 @@ class Shopping_model extends Base_model
         echo json_encode(array("status" => "success", "message" => "Alertas marcados com sucesso."));
     }
 
+    public function get_devices_agrupamento($id)
+    {
+        $result = $this->db->query("
+            SELECT
+                esm_device_groups_entries.device as dvc,
+                esm_unidades.nome
+            FROM 
+                esm_device_groups_entries
+            JOIN esm_medidores ON esm_medidores.nome = esm_device_groups_entries.device
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            WHERE esm_device_groups_entries.group_id = $id"
+        );
+
+        if ($result->getNumRows()) {
+            return $result->getResult();
+        }
+
+        return false;
+    }
+
+    public function get_devices_alert($group, $type)
+    {
+        $result = $this->db->query("
+            SELECT
+                esm_alertas_cfg_devices.device as dvc,
+                esm_unidades.nome as nome
+            FROM
+                esm_alertas_cfg
+                JOIN esm_alertas_cfg_devices ON esm_alertas_cfg_devices.config_id = esm_alertas_cfg.id
+                JOIN esm_medidores ON esm_medidores.nome = esm_alertas_cfg_devices.device
+                JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            WHERE
+                esm_alertas_cfg.group_id = $group AND esm_alertas_cfg_devices.config_id = $type"
+        );
+
+        if ($result->getNumRows()) {
+            return $result->getResult();
+        }
+
+        return false;
+    }
+
+    public function edit_client_conf($dados)
+    {
+        $this->db->transStart();
+
+        foreach ($dados['tabela'] as $tabela => $campos) {
+
+            $this->db->table($tabela)
+                ->where('group_id', $dados['group_id'])
+                ->set($campos)
+                ->update();
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false)
+            return false;
+
+        return true;
+    }
+
+    public function get_shoppings_by_user($user_id)
+    {
+        $query = "
+            SELECT
+                esm_shoppings.*,
+                esm_blocos.nome AS nome 
+            FROM
+                esm_shoppings
+                JOIN esm_blocos ON esm_blocos.id = esm_shoppings.bloco_id
+                JOIN esm_condominios ON esm_condominios.id = esm_blocos.condo_id
+                JOIN auth_user_relation ON auth_user_relation.entity_id = esm_condominios.id 
+            WHERE
+                auth_user_relation.user_id = $user_id";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getResult();
+    }
+
+    public function get_user_info($user_id)
+    {
+        if ($user_id->inGroup("unity", "shopping")) {
+
+            return $this->db->table('users')
+                ->select("users.*, esm_unidades.id as unidade_id, esm_unidades.nome as unidade_nome, esm_blocos.id as bloco_id, esm_blocos.nome as bloco_nome")
+                ->join("auth_user_relation", "auth_user_relation.user_id = users.id")
+                ->join("esm_unidades", "esm_unidades.id = auth_user_relation.unity_id")
+                ->join("esm_blocos", "esm_blocos.id = esm_unidades.bloco_id")
+                ->where("users.id", $user_id)
+                ->get();
+        } elseif ($user_id->inGroup("shopping", "shopping")) {
+
+            return $this->db->table('users')
+                ->select("users.*, esm_blocos.id as bloco_id, esm_blocos.nome as bloco_nome")
+                ->join("auth_user_relation", "auth_user_relation.user_id = users.id")
+                ->join("esm_blocos", "esm_blocos.id = auth_user_relation.group_id")
+                ->where("users.id", $user_id)
+                ->get();
+        } else {
+
+            return $this->db->table('users')
+                ->select("users.*")
+                ->join("auth_user_relation", "auth_user_relation.user_id = users.id")
+                ->join("esm_condominios", "esm_condominios.id = auth_user_relation.entity_id")
+                ->where("users.id", $user_id)
+                ->get();
+        }
+    }
 }

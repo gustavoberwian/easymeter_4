@@ -211,6 +211,35 @@ class Shopping extends UNO_Controller
         return $this->render('configs', $data);
     }
 
+    public function users($group_id, $op = null, $user_id = null)
+    {
+        $data['group_id'] = $group_id;
+        $data['group'] = $this->shopping_model->get_group_info($group_id);
+
+        $data['shoppings'] = $this->shopping_model->get_shoppings_by_user($this->user->id);
+
+        $data['readonly'] = false;
+
+        $data['user'] = $this->user;
+
+        if (!is_null($user_id)) {
+            $data['user_info'] = $this->shopping_model->get_user_info($user_id);
+        }
+
+        // echo "<pre>"; print_r($data); echo "</pre>"; return;
+
+        if ($op === 'edit') {
+            return $this->render('user_edit', $data);
+        } elseif ($op === 'create') {
+            return $this->render('user_add', $data);
+        } elseif ($op === 'view') {
+            $data['readonly'] = true;
+            return $this->render('user_edit', $data);
+        } else {
+            redirect('shopping/configuracoes/' . $group_id, 'refresh');
+        }
+    }
+
     // FUNCTIONS BELOW
 
     public function get_unidades()
@@ -272,7 +301,7 @@ class Shopping extends UNO_Controller
         });
 
         $dt->add('actions', function ($data) {
-            if ($this->user->inGroup("entity", "shopping")){
+            if ($this->user->inGroup("admin", "shopping")){
                 return '
                     <a href="#" class="hidden on-editing btn-save save-row text-success"><i class="fas fa-save"></i></a>
                                         <a href="#" class="hidden on-editing btn-save cancel-row text-danger"><i
@@ -383,5 +412,294 @@ class Shopping extends UNO_Controller
     public function ReadAllAlert()
     {
         echo $this->shopping_model->ReadAllAlert(auth()->user()->id, $this->input->getPost('monitoramento'));
+    }
+
+    public function get_users()
+    {
+        //$this->setHistory("Requisição para buscar usuários shopping ".$this->input->post('group'), 'requisição');
+
+        if ($this->user->inGroup("admin", "shopping")) {
+            $groups = "(34, 35, 36)";
+        } else {
+            $groups = "(35, 36)";
+        }
+        $query = "
+            SELECT
+                users.id AS id,
+                users.username AS name,
+                auth_identities.secret AS email
+            FROM
+                users
+            JOIN auth_identities ON auth_identities.user_id = users.id
+            WHERE auth_identities.type = 'email_password'
+        ";
+
+        $dt = $this->datatables->query($query);
+
+        $dt->add('actions', function ($data) {
+            if ($this->user->inGroup("admin", "shopping")){
+                return '
+                    <a data-bs-toggle="tooltip" data-bs-placement="top" title="Ver" href="' . site_url('/shopping/users/' . $this->input->getPost('group') . '/view/' . $data['id']) . '" class="action-visualiza text-success"><i class="fas fa-eye me-2"></i></a>
+                    <a data-bs-toggle="tooltip" data-bs-placement="top" title="Editar" href="' . site_url('/shopping/users/' . $this->input->getPost('group') . '/edit/' . $data['id']) . '" class="action-access text-primary"><i class="fas fa-pen me-2"></i></a>
+                    <a data-bs-toggle="tooltip" data-bs-placement="top" title="Excluir" href="#" class="action-delete-user text-danger" data-id="' . $data['id'] . '"><i class="fas fa-trash me-2"></i></a>
+                ';
+            } else {
+                return '<a href="' . site_url('/shopping/users/' . $this->input->getPost('group') . '/view/' . $data['id']) . '" class="action-visualiza text-center text-success"><i class="fas fa-eye me-2"></i></a>';
+            }
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function get_agrupamentos()
+    {
+        $group_id = $this->input->getPost('group');
+        $type = $this->input->getPost('tipo');
+
+        $query = "
+            SELECT
+                    esm_device_groups.id as id,
+                    esm_unidades.bloco_id,
+                    esm_device_groups.name AS name
+            FROM 
+                    esm_device_groups
+            JOIN esm_medidores ON esm_medidores.entrada_id = esm_device_groups.entrada_id
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            WHERE esm_unidades.bloco_id = $group_id AND esm_medidores.tipo = '$type'
+            GROUP BY esm_device_groups.name";
+
+        $dt = $this->datatables->query($query);
+
+        $dt->add('unidades', function ($data) {
+            $unidades = $this->shopping_model->get_units($this->input->getPost("group"), $this->input->getPost("tipo"));
+            $medidores = $this->shopping_model->get_devices_agrupamento($data['id']);
+
+            $return = '<select class="form-control select-medidores" multiple="multiple" id="medidores-agrupamento" name="medidores_agrupamento[]" data-plugin-multiselect data-plugin-options=\'{ "buttonClass": "multiselect dropdown-toggle form-select text-center form-control", "maxHeight": 200, "buttonWidth": "100%", "numberDisplayed": 1, "includeSelectAllOption": true}\' disabled>';
+
+            foreach ($unidades as $u) {
+                if ($medidores) {
+                    foreach ($medidores as $j => $m) {
+                        if ($u['medidor_id'] === $m->dvc) {
+                            $return .= '<option selected value="' . $u['medidor_id'] . '">' . $u['unidade_nome'] . '</option>';
+                            continue 2;
+                        } elseif ($j == array_key_last($medidores)) {
+                            $return .= '<option value="' . $u['medidor_id'] . '">' . $u['unidade_nome'] . '</option>';
+                        }
+                    }
+                } else {
+                    $return .= '<option value="' . $u['medidor_id'] . '">' . $u['unidade_nome'] . '</option>';
+                }
+            }
+
+            return $return;
+        });
+
+        $dt->add('actions', function ($data) {
+            if ($this->user->inGroup("admin", "shopping")){
+                return '
+                    <a href="#" class="hidden on-editing btn-save save-row text-success"><i class="fas fa-save"></i></a>
+                                        <a href="#" class="hidden on-editing btn-save cancel-row text-danger"><i
+                                                    class="fas fa-times"></i></a>
+                                        <a href="#" class="on-default edit-row text-primary"><i class="fas fa-pen"></i></a>
+                                        <a href="#" class="on-default delete-row text-danger"><i class="fas fa-trash"></i></a>
+                ';
+            } else {
+                return '<a href="' . site_url('/shopping/unidades/' . $this->input->getPost('group') . '/view/' . $data['id']) . '" class="action-visualiza text-center text-success"><i class="fas fa-eye me-2"></i></a>';
+            }
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function get_alertas_conf()
+    {
+        $group_id = $this->input->getPost("group");
+        $type = $this->input->getPost("tipo");
+        
+        $query = "SELECT 
+                id,
+                group_id,
+                active as status,
+                description as alerta,
+                null as medidores,
+                when_type as quando,
+                notify_shopping as shopping,
+                notify_unity as unidade,
+                type as actions
+            FROM esm_alertas_cfg
+            WHERE group_id = $group_id AND subtipo = '$type'" ;
+
+        $dt = $this->datatables->query($query);
+
+        $dt->add('status', function ($data) {
+            if ($data['status']) {
+                return '
+                    <div class="switch switch-sm switch-primary disabled">
+                        <input type="checkbox" checked class="switch-input" name="active" data-plugin-ios-switch>
+                    </div>
+                ';
+            } else {
+                return '
+                    <div class="switch switch-sm switch-primary disabled">
+                        <input type="checkbox" class="switch-input" name="active" data-plugin-ios-switch>
+                    </div>
+                ';
+            }
+        });
+
+        $dt->add('medidores', function ($data) {
+            $medidores = $this->shopping_model->get_devices_alert($this->input->getPost("group"), $data['id']);
+            $unidades = $this->shopping_model->get_units($this->input->getPost("group"));
+
+            $return = '<select class="form-control select-medidores" multiple="multiple" id="medidores-type" name="medidores_type[]" data-plugin-multiselect data-plugin-options=\'{ "buttonClass": "multiselect dropdown-toggle form-select text-center form-control", "maxHeight": 200, "buttonWidth": "100%", "numberDisplayed": 1, "includeSelectAllOption": true}\' disabled>';
+
+            foreach ($unidades as $u) {
+                if ($medidores) {
+                    foreach ($medidores as $j => $m) {
+                        if ($u['medidor_id'] === $m->dvc) {
+                            $return .= '<option selected value="' . $u['medidor_id'] . '">' . $u['unidade_nome'] . '</option>';
+                            continue 2;
+                        } elseif ($j == array_key_last($medidores)) {
+                            $return .= '<option value="' . $u['medidor_id'] . '">' . $u['unidade_nome'] . '</option>';
+                        }
+                    }
+                } else {
+                    $return .= '<option value="' . $u['medidor_id'] . '">' . $u['unidade_nome'] . '</option>';
+                }
+            }
+
+            $return .= '</select>';
+
+            return $return;
+        });
+
+        $dt->add('quando', function ($data) {
+            $return = '<select class="form-control period" id="when-type" name="when_type" disabled>';
+
+            if ($data['quando'] === 'day') {
+                if ($data['actions'] != 3) {
+                    $return .= '<option selected value="day">No Dia</option>';
+                } else {
+                    $return .= '
+                        <option value="">Selecione</option>
+                        <option selected value="day">No Dia</option>
+                        <option value="hour">Na Hora</option>
+                        <option value="instant">No Instante</option>
+                    ';
+                }
+            } elseif ($data['quando'] === 'hour') {
+                if ($data['actions'] != 3) {
+                    $return .= '<option selected value="hour">Na Hora</option>';
+                } else {
+                    $return .= '
+                        <option value="">Selecione</option>
+                        <option value="day">No Dia</option>
+                        <option selected value="hour">Na Hora</option>
+                        <option value="instant">No Instante</option>
+                    ';
+                }
+            } elseif ($data['quando'] === 'instant') {
+                if ($data['actions'] != 3) {
+                    $return .= '<option selected value="instant">No Instante</option>';
+                } else {
+                    $return .= '
+                        <option value="">Selecione</option>
+                        <option value="day">No Dia</option>
+                        <option value="hour">Na Hora</option>
+                        <option selected value="instant">No Instante</option>
+                    ';
+                }
+            } else {
+                $return .= '
+                    <option value="">Selecione</option>
+                    <option value="day">No Dia</option>
+                    <option value="hour">Na Hora</option>
+                    <option value="instant">No Instante</option>
+                ';
+            }
+
+
+            $return .= '</select>';
+
+            return $return;
+        });
+
+        $dt->add('unidade', function ($data) {
+            if ($data['unidade']) {
+                return '
+                    <div class="switch switch-sm switch-primary disabled">
+                        <input type="checkbox" class="switch-input" checked name="notify_unity" data-plugin-ios-switch>
+                    </div>
+                ';
+            } else {
+                return '
+                    <div class="switch switch-sm switch-primary disabled">
+                        <input type="checkbox" class="switch-input" name="notify_unity" data-plugin-ios-switch>
+                    </div>
+                ';
+            }
+        });
+
+        $dt->add('shopping', function ($data) {
+            if ($data['shopping']) {
+                return '
+                    <div class="switch switch-sm switch-primary disabled">
+                        <input type="checkbox" class="switch-input" checked name="notify_shopping" data-plugin-ios-switch>
+                    </div>
+                ';
+            } else {
+                return '
+                    <div class="switch switch-sm switch-primary disabled">
+                        <input type="checkbox" class="switch-input" name="notify_shopping" data-plugin-ios-switch>
+                    </div>
+                ';
+            }
+        });
+
+        $dt->add('actions', function ($data) {
+            if ($this->user->inGroup("admin", "shopping")){
+                return '
+                    <a href="#" class="hidden on-editing btn-save save-row text-success"><i class="fas fa-save"></i></a>
+                                        <a href="#" class="hidden on-editing btn-save cancel-row text-danger"><i
+                                                    class="fas fa-times"></i></a>
+                                        <a href="#" class="on-default edit-row text-primary"><i class="fas fa-pen"></i></a>
+                ';
+            } else {
+                return '<a href="' . site_url('/shopping/unidades/' . $this->input->getPost('group') . '/view/' . $data['id']) . '" class="action-visualiza text-center text-success"><i class="fas fa-eye me-2"></i></a>';
+            }
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function edit_client_conf()
+    {
+        foreach ($this->input->getPost() as $i => $post) {
+            if ($post) {
+                if ($i === 'group_id') {
+                    $dados[$i] = $post;
+                    $this->setHistory("Configuração do shopping $post alterada", 'ação');
+                } elseif ($i === 'area_comum') {
+                    $dados['tabela']['esm_client_config'][$i] = $post;
+                } elseif ($i === 'split_report') {
+                    $dados['tabela']['esm_client_config'][$i] = 1;
+                } else {
+                    $dados['tabela']['esm_client_config'][$i] = strtotime('01-01-1970 ' . $post);
+                }
+            }
+        }
+
+        if (!$this->input->getPost('split_report')) {
+            $dados['tabela']['esm_client_config']['split_report'] = 0;
+        }
+
+        if ($this->shopping_model->edit_client_conf($dados)) {
+            echo json_encode(array('status' => 'success', 'message' => 'Configurações gerais alteradas com sucesso'));
+        } else {
+            echo json_encode(array('status' => 'error', 'message' => 'Falha na operação, tente novamente em instantes'));
+        }
     }
 }

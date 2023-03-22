@@ -66,86 +66,33 @@
 		<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
         <!-- Head Libs -->
 	</head>
-    <Style>
 
- .wizard-progress, html.dark .wizard-progress {
-    margin: 0 15px;
-          }
-    .ml-3, .mx-3 {
-    margin-left: 1rem !important;
-}
-.mr-3, .mx-3 {
-    margin-right: 1rem !important;
-}
-*, *::before, *::after {
-    box-sizing: border-box;
-}
-
-element.style {
-}
- .wizard-progress .steps-progress, html.dark .wizard-progress .steps-progress {
-    height: 2px;
-    margin: 0 38px;
-    position: relative;
-    top: 15px;
-    background: #CCC;
-}
- .wizard-progress .wizard-steps, html.dark .wizard-progress .wizard-steps {
-list-style: none;
-    margin: 0;
-    padding: 15px 0 0;
-    display: inline-block;
-    width: 100%;
-    font-size: 0;
-    text-align: justify;
-}
-
- .wizard-progress .wizard-steps li, html.dark .wizard-progress .wizard-steps li {
-    display: inline-block;
-    vertical-align: top;
-    min-width: 50px;
-    max-width: 100px;
-}
-    </Style>
-   
 	<body>
 		<!-- start: page -->
-		<section class="body-sign">
+				<!-- start: page -->
+                <section class="body-sign">
 			<div class="center-sign">
             <a href="/" class="logo float-start">
 					<img src="<?= base_url('assets/img/logo.png'); ?>" height="54" alt="Easymeter" />
 				</a>
 
+
 				<div class="panel card-sign">
                 <div class="card-title-sign mt-3 text-end">
-						<h2 class="title text-uppercase font-weight-bold m-0"><i class="bx bx-user-circle me-1 text-6 position-relative top-5"></i> Entrar</h2>
+						<h2 class="title text-uppercase font-weight-bold m-0"><i class="bx bx-user-circle me-1 text-6 position-relative top-5"></i> Registrar</h2>
 					</div>
-
-                    <section class="card form-wizard" id="w3">
+                    <section class="card" id="w3">
                         <div class="card-body">
-                            <div class="wizard-progress">
-                                <div class="steps-progress">
-                                    <div class="progress-indicator"></div>
-                                </div>
-                                <ul class="nav">
-                                    <li class="nav-item active">
-                                        <a class="nav-link" href="#w3-acesso" data-toggle="tab"><span>1</span>Acesso</a>
-                                    </li>
-                                    <li class="nav-item">
-                                        <a class="nav-link" href="#w3-unidade" data-toggle="tab"><span>2</span>Unidade</a>
-                                    </li>
-                                </ul>
-                            </div>
-                            <form class="form-horizontal" action="<?= url_to('register') ?>" method="post">
+                         
+                            <form id="regForm" class="form-horizontal" action="<?php echo site_url('register'); ?>" method="post" accept-charset="utf-8">
                                 <input type="hidden" name="cid" value="">
                                 <input type="hidden" name="uid" value="">
 
-                                <div class="tab-content p-0">
-                                    <div id="w3-acesso" class="tab-pane active">
+                                    <div id="w3-acesso" class="tab">
                                      
                                         <div class="form-group mb-3">
 								            <label>E-mail</label>
-                                            <input name="email" id="email" type="email" class="form-control form-control-lg" required autofocus tabindex="1" value=""/>
+                                            <input name="identity" id="identity" type="email" class="form-control form-control-lg" required autofocus tabindex="1" value=""/>
                                         </div>
                                         <div class="form-group mb-0">
                                             <div class="row">
@@ -154,11 +101,12 @@ list-style: none;
                                                     <input name="password" id="password" type="password" minlength="6" class="form-control form-control-lg" required tabindex="2" value=""/>
                                                 </div>
                                                 <div class="col-sm-6 mb-3">
-                                                    <label>Confirmação de senha</label>
+                                                    <label>Confirmação</label>
                                                     <input name="password_confirm" id="password_confirm" minlength="6" type="password" class="form-control form-control-lg" required tabindex="3" value="" equalTo="#password"/>
                                                 </div>
                                             </div>
                                         </div>
+                                      
 <?php /* ?>                                        
                							<span class="my-3 line-thru text-center text-uppercase">
                                             <span>ou</span>
@@ -169,7 +117,7 @@ list-style: none;
 <?php */ ?>                                        
                                     </div>
 
-                                    <div id="w3-unidade" class="tab-pane">
+                                    <div id="w3-unidade" class="tab">
                                         <div class="alert alert-danger" style="display:none">
                                             <ul class="login-message">
                                         </div>
@@ -198,33 +146,34 @@ list-style: none;
                                             </div>
                                         </div>
                                     </div>
-
+                                    <div id="" class="tab"><h1>registration successfuly</h1>
                                 </div>
-                            </form>
-                        </div>
-                        <div class="card-footer">
-                            <ul class="pager">
-                                <li class="back">
-                                    <a class="btn-link login" href="<?php echo site_url('login'); ?>">Login</a>
-                                </li>
-                                <li class="previous disabled">
-                                    <a class="btn-link"><i class="fas fa-angle-left"></i> Anterior</a>
-                                </li>
-                                <li class="finish hidden float-right">
-                                    <a class="btn-link">Finalizar</a>
-                                </li>
-                                <li class="next">
-                                    <a class="btn-link">Próxima <i class="fas fa-angle-right"></i></a>
-                                </li>
-                            </ul>
-                        </div>
-                    </section>
-				</div>
+
+
+ <div style="overflow:auto;">
+    <div style="float:right;">
+    <a  id="loginBtn" class='btn btn-primary btn-block float' href="<?= url_to('login') ?>">Login </a>
+      <a   id="prevBtn" class ='btn btn-primary btn-block float'onclick="nextPrev(-1)">Previous</a>
+      <a  id="nextBtn" class ='btn btn-primary btn-block float' onclick="nextPrev(1)">Next</a>
+    
+        </div>
+        </div>
+        <!-- Circles which indicates the steps of the form: -->
+        <div style="text-align:center;margin-top:40px;">
+            <span class="step"></span>
+            <span class="step"></span>
+
+        </div>
+                                
+           </form>
+                            
+             </div>
+                         
+         </section>
+		</div>
 				<p class="text-center text-muted mt-3 mb-3">© Copyright 2017-<?php echo date('Y'); ?>. Todos os direitos reservados.</p>
 			</div>
 		</section>
-		<!-- end: page -->
-
 		<!-- Vendor -->
 		<script src="<?php echo base_url('vendor/jquery/jquery.js'); ?>"></script>
 		<script src="<?php echo base_url('vendor/jquery-browser-mobile/jquery.browser.mobile.js'); ?>"></script>
@@ -233,7 +182,6 @@ list-style: none;
 		<script src="<?php echo base_url('vendor/jquery-placeholder/jquery.placeholder.js'); ?>"></script>
         <script src="<?php echo base_url('vendor/jquery-validation/jquery.validate.js'); ?>"></script>
         <script src="<?php echo base_url('vendor/jquery-mask-plugin/jquery.mask.js'); ?>"></script>
-        <script src="<?php echo base_url('vendor/bootstrap-wizard/jquery.bootstrap.wizard.js'); ?>"></script>
         <script src="<?php echo base_url('vendor/spinner/js/spinner.js'); ?>"></script>
 
 
@@ -246,3 +194,92 @@ list-style: none;
 
 	</body>
 </html>
+
+
+
+
+
+
+
+
+<script>
+var currentTab = 0; // Current tab is set to be the first tab (0)
+showTab(currentTab); // Display the current tab
+
+function showTab(n) {
+  // This function will display the specified tab of the form...
+  var x = document.getElementsByClassName("tab");
+  x[n].style.display = "initial";
+  //... and fix the Previous/Next buttons:
+   if (n == 0) {
+    document.getElementById("loginBtn").style.display = "";
+    document.getElementById("prevBtn").style.display = "none";
+  } else {
+    document.getElementById("loginBtn").style.display = "none";
+    document.getElementById("prevBtn").style.display = "";
+    }
+  if (n == (x.length - 1)) {
+    document.getElementById("loginBtn").style.display = "";
+
+    document.getElementById("nextBtn").innerHTML = "Submit";
+  } else {
+    document.getElementById("nextBtn").innerHTML = "Next";
+    
+   
+  }
+  //... and run a function that will display the correct step indicator:
+  fixStepIndicator(n)
+}
+
+function nextPrev(n) {
+  // This function will figure out which tab to display
+  var x = document.getElementsByClassName("tab");
+  // Exit the function if any field in the current tab is invalid:
+  if (n == 1 && !validateForm()) return false;
+  // Hide the current tab:
+  x[currentTab].style.display = "none";
+  // Increase or decrease the current tab by 1:
+  currentTab = currentTab + n;
+  // if you have reached the end of the form...
+  if (currentTab >= x.length) {
+    // ... the form gets submitted:
+    document.getElementById("regForm").submit();
+    return false;
+  }
+  // Otherwise, display the correct tab:
+  showTab(currentTab);
+}
+
+function validateForm() {
+  // This function deals with validation of the form fields
+  var x, y, i, valid = true;
+  x = document.getElementsByClassName("tab");
+  y = x[currentTab].getElementsByTagName("input");
+  // A loop that checks every input field in the current tab:
+  for (i = 0; i < y.length; i++) {
+    // If a field is empty...
+    if (y[i].value == "") {
+      // add an "invalid" class to the field:
+      y[i].className += " invalid";
+      // and set the current valid status to false
+      valid = false;
+    }
+  }
+  // If the valid status is true, mark the step as finished and valid:
+  if (valid) {
+    
+    document.getElementsByClassName("step")[currentTab].className += " finish";
+  }
+  return valid; // return the valid status
+}
+
+function fixStepIndicator(n) {
+  // This function removes the "active" class of all steps...
+  var i, x = document.getElementsByClassName("step");
+  for (i = 0; i < x.length; i++) {
+    x[i].className = x[i].className.replace(" active", "");
+  }
+  //... and adds the "active" class on the current step:
+  x[n].className += " active";
+}
+</script>

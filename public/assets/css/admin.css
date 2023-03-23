@@ -15303,7 +15303,7 @@ ul.widget-todo-list li {
 }
 
 ul.widget-todo-list li label.line-through span {
-	text-decoration: line-through;
+	text-decoration: none;
 }
 
 ul.widget-todo-list li .checkbox-custom {

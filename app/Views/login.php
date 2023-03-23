@@ -78,37 +78,52 @@
 
                 <form action="<?= url_to('login') ?>" method="post">
                     <?= csrf_field() ?>
-
-                    <!-- Email -->
-                    <div class="mb-2">
-                        <input type="email" class="form-control" name="email" inputmode="email" autocomplete="email" placeholder="<?= lang('Auth.email') ?>" value="<?= old('email') ?>" required />
-                    </div>
-
-                    <!-- Password -->
-                    <div class="mb-2">
-                        <input type="password" class="form-control" name="password" inputmode="text" autocomplete="current-password" placeholder="<?= lang('Auth.password') ?>" required />
-                    </div>
-
-                    <!-- Remember me -->
-                    <?php if (setting('Auth.sessionConfig')['allowRemembering']): ?>
-                        <div class="form-check">
-                            <label class="form-check-label">
-                                <input type="checkbox" name="remember" class="form-check-input" <?php if (old('remember')): ?> checked<?php endif ?>>
-                                <?= lang('Auth.rememberMe') ?>
-                            </label>
-                        </div>
-                    <?php endif; ?>
-
 					<div class="form-group mb-3">
-                        <button type="submit" class="btn btn-primary btn-block float-end"><?= lang('Auth.login') ?></button>
+					<label>Email</label>
+                    <!-- Email -->
+                    <div class="input-group">
+                        <input type="email"  class="form-control form-control-lg" data-msg-required="Campo Obrigatório" required  name="email" inputmode="email" autocomplete="email" placeholder="<?= lang('Auth.email') ?>" value="<?= old('email') ?>" required />
+						<span class="input-group-text">
+						<i class="bx bx-user text-4"></i>
+						</span>
                     </div>
-
-                    <?php if (setting('Auth.allowMagicLinkLogins')) : ?>
-                        <p class="text-center"><?= lang('Auth.forgotPassword') ?> <a href="<?= url_to('magic-link') ?>"><?= lang('Auth.useMagicLink') ?></a></p>
-                    <?php endif ?>
-
+				  </div>
+                    
+                    <!-- Password -->
+					<div class="form-group mb-3">
+					<div class="clearfix">
+									<label class="float-start">Senha</label>
+									<?php if (setting('Auth.allowMagicLinkLogins')) : ?>
+									<a href="<?= url_to('magic-link'); ?>" class="float-end">Esqueceu a senha?</a>
+									<?php endif ?>
+					</div>
+			
+							<div class="input-group">
+                        <input type="password" name="password" class="form-control form-control-lg" data-msg-required="Campo Obrigatório" required inputmode="text" autocomplete="current-password" placeholder="<?= lang('Auth.password') ?>" required />
+						<span class="input-group-text">
+										<i class="bx bx-lock text-4"></i>
+									</span>
+                          </div></div>
+                   
+					<div class="row mb-3">
+								<div class="col-sm-8">
+									 <!-- Remember me -->
+									 <?php if (setting('Auth.sessionConfig')['allowRemembering']): ?>
+									<div class="checkbox-custom checkbox-default">
+										<input id="RememberMe" name="rememberme" type="checkbox" <?php if (old('remember')): ?> checked<?php endif ?>>
+										 
+										<label for="RememberMe">Lembrar</label>
+									</div>
+									<?php endif; ?>
+								</div>
+								<div class="col-sm-4 text-end">
+									<button type="submit" class="btn btn-primary mt-2" <?= lang('Auth.login') ?>>Entrar</button>
+								</div>
+							</div>
+					 
+                    
                     <?php if (setting('Auth.allowRegistration')) : ?>
-                        <p class="text-center"><?= lang('Auth.needAccount') ?> <a href="<?= url_to('register') ?>"><?= lang('Auth.register') ?></a></p>
+                        <p class="text-center">Não possui sua conta ainda? <a href="<?= url_to('register') ?>">Crie aqui!</a></p>
                     <?php endif ?>
 
                 </form>

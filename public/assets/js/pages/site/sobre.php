@@ -83,7 +83,7 @@
                                     <p>Vamos crescer juntos? Se você estiver interessado em se tornar um parceiro, por favor envie um email para <a href="mailto:parceiros@easymeter.com.br?Tenho interesse em uma parceria" target="_top">parceiros@easymeter.com.br</a></p>
 		                        </div>
 		                    </div>
-                        </div>
+                        </div>                            
                     </div>
                     <div class="row justify-content-md-center">
 		                <div class="col-sm-6 col-md-4 col-md-offset-2">

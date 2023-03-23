@@ -24,9 +24,9 @@ class UNO_Controller extends BaseController {
                 $this->user->group    = auth()->user()->getGroups()[0]; 
             }
             $this->user->nickname = explode(' ', trim(auth()->user()->username))[0];
-            $this->user->alerts   = 0;
+            $this->user->alerts   = $this->shopping_model->CountAlerts($this->user->id);
             $this->user->type     = $this->shopping_model->get_user_relation($this->user->id);
-            //$this->user->config   = $this->shopping_model->get_client_config($this->user->group);
+            $this->user->config   = $this->shopping_model->get_client_config($this->user->group);
 
             date_default_timezone_set('America/Sao_Paulo');
         }

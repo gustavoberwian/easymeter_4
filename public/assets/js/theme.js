@@ -485,9 +485,9 @@ window.theme.fn = {
 	if ( $.isFunction( $.fn[ 'dataTable' ] ) ) {
 
 		$.extend(true, $.fn.dataTable.defaults, {
-            language: {
+            /*language: {
                 url: '/vendor/datatables/pt-BR.json'
-            },
+            },*/
 /*			oLanguage: {
 				sLengthMenu: '_MENU_ registros por página',
 				sProcessing: '<i class="fas fa-spinner fa-spin"></i> Carregando...',
@@ -510,7 +510,7 @@ window.theme.fn = {
 
 				$search
 					.attr({
-						placeholder: typeof options.searchPlaceholder !== 'undefined' ? options.searchPlaceholder : 'Search...'
+						placeholder: typeof options.searchPlaceholder !== 'undefined' ? options.searchPlaceholder : 'Pesquisar...'
 					})
 					.removeClass('form-control-sm').addClass('form-control pull-right');
 

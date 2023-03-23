@@ -18,9 +18,9 @@
                     </div>
                 </div>
             </section>
-
+            
             <a id="cortar_colar" class="in-page-link"></a>
-
+            
             <section class="image-edge bg-secondary">
                 <div class="col-md-6 col-sm-4 p0">
                     <img alt="Cortar, Colar, Economizar" class="mb-xs-24" src="<?php echo base_url('assets/img/cpc.png'); ?>">

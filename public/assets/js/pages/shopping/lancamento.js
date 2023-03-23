@@ -48,6 +48,7 @@
             processing: true,
             columns: [
                 {data: "nome", className: "dt-body-left"},
+                {data: "luc", className: "dt-body-left"},
                 {data: "leitura_anterior", className: "dt-body-center"},
                 {data: "leitura_atual", className: "dt-body-center"},
                 {data: "consumo", className: "dt-body-center"},
@@ -85,6 +86,7 @@
             processing: true,
             columns: [
                 {data: "nome", className: "dt-body-left"},
+                {data: "luc", className: "dt-body-left"},
                 {data: "leitura_anterior", className: "dt-body-center"},
                 {data: "leitura_atual", className: "dt-body-center"},
                 {data: "consumo", className: "dt-body-center"},
@@ -175,6 +177,7 @@
             processing: true,
             columns: [
                 {data: "nome", className: "dt-body-left"},
+                {data: "luc", className: "dt-body-center"},
                 {data: "leitura_anterior", className: "dt-body-center"},
                 {data: "leitura_atual", className: "dt-body-center"},
                 {data: "consumo", className: "dt-body-center"},

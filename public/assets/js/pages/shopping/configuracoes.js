@@ -74,6 +74,7 @@
                     pageLength: 10,
                     order: _self.$order,
                     pagingType: "numbers",
+                    oLanguage: { sSearch: "" },
                     ajax: {
                         type: 'POST',
                         url: _self.$table.data("url"),
@@ -212,6 +213,9 @@
                     i,
                     data;
 
+                // Gambiarra para desfazer gambiarra !!!NAO APAGAR!!!
+                $("#dt-agrupamentos-energia").parent().css('min-height', 'unset');
+
                 data = this.datatable.row($row.get(0)).data();
                 this.datatable.row($row.get(0)).data(data);
 
@@ -262,13 +266,13 @@
                             $this.children().prop('disabled', false);
                         } else if ($this.hasClass('subtipo')) {
 
-                            html = '<select class="form-control" name="' + data[i] + '" id="' + data[i] + '">';
+                            html = '<select class="form-control" name="subtipo" id="subtipo">';
 
                             $this.text('');
-                            $this.append('<div class="snippet" data-title="dot-flashing">\n' +
-                                '          <div class="stage">\n' +
-                                '            <div class="dot-flashing"></div>\n' +
-                                '          </div>\n' +
+                            $this.append('<div class="workingAnimation">\n' +
+                                '           <span></span>' +
+                                '           <span></span>' +
+                                '           <span></span>\n' +
                                 '        </div>');
                             $.ajax({
                                 method: 'POST',
@@ -278,7 +282,11 @@
                                 },
                                 success: function (response) {
                                     options = [1, 2];
-                                    _options = [response, 'Unidades'];
+                                    if (response === 'Unidades') {
+                                        _options = ['Área Comum', response];
+                                    } else {
+                                        _options = [response, 'Unidades'];
+                                    }
                                 },
                                 error: function (xhr, status, error) {
                                 },
@@ -300,32 +308,44 @@
                             html = '<select class="form-control select-unidades" multiple="multiple" name="select_unidades" id="select-unidades">'
 
                             $this.text('');
-                            $this.append('<div class="snippet" data-title="dot-flashing">\n' +
-                                '          <div class="stage">\n' +
-                                '            <div class="dot-flashing"></div>\n' +
-                                '          </div>\n' +
+                            $this.append('<div class="workingAnimation">\n' +
+                                '           <span></span>' +
+                                '           <span></span>' +
+                                '           <span></span>\n' +
                                 '        </div>');
                             $.ajax({
                                 method: 'POST',
                                 url: '/shopping/get_unidades_select',
                                 data: {
-                                    group: $(".page-header").data("group")
+                                    group: $(".page-header").data("group"),
+                                    tipo: _self.$table.data("tipo")
                                 },
                                 dataType: 'json',
                                 success: function (response) {
                                     options = response.options;
                                     _options = response._options;
+
+                                    // CSS para uma tabela específica (gambiarra) !!!NAO APAGAR!!!
+                                    // Essa alteração é desfeita nas funções rowCancel, rowSave e deleteRow
+                                    $("#dt-agrupamentos-energia").parent().css('min-height', '400px');
                                 },
                                 error: function (xhr, status, error) {
                                 },
                                 complete: function () {
+                                    var medidores = $(data[i]).val();
+
                                     for (var j = 0; j < options.length; j++) {
-                                        if (_options[j] === data[i]) {
-                                            html += '<option value="' + options[j] + '" selected>' + _options[j] + '</option>';
-                                        } else {
-                                            html += '<option value="' + options[j] + '">' + _options[j] + '</option>';
+                                        if (medidores) {
+                                            for (var n = 0; n < medidores.length; n++) {
+                                                if (options[j] === medidores[n]) {
+                                                    html += '<option value="' + options[j] + '" selected>' + _options[j] + '</option>';
+                                                    j++;
+                                                }
+                                            }
                                         }
+                                        html += '<option value="' + options[j] + '">' + _options[j] + '</option>';
                                     }
+
                                     html += '</select>';
 
                                     $this.html(html);
@@ -376,6 +396,9 @@
                     $actions,
                     values = [];
 
+                // Gambiarra para desfazer gambiarra !!!NAO APAGAR!!!
+                $("#dt-agrupamentos-energia").parent().css('min-height', 'unset');
+
                 if ($row.hasClass('adding')) {
                     $(this.$add).removeAttr('disabled');
                     $row.removeClass('adding');
@@ -383,31 +406,49 @@
 
                 var data = {};
                 $row.children('td').each(function (i) {
-                    if (i === 0) {
+                    if ($(this).hasClass('id')) {
                         data['id'] = $(this).children('input').val();
-                    } else if (i === 1) {
+                    } else if ($(this).hasClass('medidor')) {
                         data['group_id'] = $(this).children('input').val();
-                    } else {
-                        if ($(this).hasClass('switch-dt')) {
-                            if ($(this).children().children('input').prop('checked')) {
-                                data[$(this).children().children('input').attr('name')] = 1;
-                            } else {
-                                data[$(this).children().children('input').attr('name')] = 0;
-                            }
-                        } else if ($(this).hasClass('select')) {
-                            if ($(this).hasClass('medidores')) {
-                                data[$(this).children().children('select').attr('name')] = $(this).children().children('select').val();
-                            } else if ($(this).hasClass('quando')) {
-                                data[$(this).children('select').attr('name')] = $(this).children('select').val();
-                            } else {
-                                data[$(this).find('select').attr('name')] = $(this).find('select').val();
-                            }
+                    } else if ($(this).hasClass('luc')) {
+                        data['luc'] = $(this).children('input').val();
+                    } else if ($(this).hasClass('identificador')) {
+                        data['identificador'] = $(this).children('input').val();
+                    } else if ($(this).hasClass('localizador')) {
+                        data['localizador'] = $(this).children('input').val();
+                    } else if ($(this).hasClass('capacidade')) {
+                        data['capacidade'] = $(this).children('input').val();
+                    } else if ($(this).hasClass('group')) {
+                        data['group_name'] = $(this).children('input').val();
+                    } else if ($(this).hasClass('config-id')) {
+                        data['config_id'] = $(this).children('input').val();
+                    } else if ($(this).hasClass('group-id')) {
+                        data['group_id'] = $(this).children('input').val();
+                    } else if ($(this).hasClass('select')) {
+                        if ($(this).hasClass('medidores')) {
+                            data[$(this).children().children('select').attr('name')] = $(this).children().children('select').val();
+                        } else if ($(this).hasClass('quando')) {
+                            data[$(this).children('select').attr('name')] = $(this).children('select').val();
+                        } else if ($(this).hasClass('subtipo')) {
+                            data['subtipo'] = $(this).children('select').val();
+                        } else if ($(this).hasClass('tipo')) {
+                            data['tipo'] = $(this).children('select').val();
+                        } else if ($(this).hasClass('faturamento')) {
+                            data['faturamento'] = $(this).children('select').val();
                         } else {
-                            if ($(this).children('input').length > 0) {
-                                data[$(this).children('input').attr('name')] = $(this).children('input').val();
-                            } else if ($(this).children('select').length > 0) {
-                                data[$(this).children('select').attr('name')] = $(this).children('select').val();
-                            }
+                            data[$(this).find('select').attr('name')] = $(this).find('select').val();
+                        }
+                    } else if ($(this).hasClass('switch-dt')) {
+                        if ($(this).children().children('input').prop('checked')) {
+                            data[$(this).children().children('input').attr('name')] = 1;
+                        } else {
+                            data[$(this).children().children('input').attr('name')] = 0;
+                        }
+                    } else {
+                        if ($(this).children('input').length > 0) {
+                            data[$(this).children('input').attr('name')] = $(this).children('input').val();
+                        } else if ($(this).children('select').length > 0) {
+                            data[$(this).children('select').attr('name')] = $(this).children('select').val();
                         }
                     }
                 });
@@ -451,6 +492,10 @@
 
             rowDelete: function ($row) {
                 var _self = this;
+
+                // Gambiarra para desfazer gambiarra !!!NAO APAGAR!!!
+                $("#dt-agrupamentos-energia").parent().css('min-height', 'unset');
+
                 // pega o valor do id
                 var id = $(_self.$modalId + ' .id').val();
                 var itemId = $(_self.$modalId + ' .id').data('uid');
@@ -498,13 +543,14 @@
     var energyUnitsTable = new EditableTable();
     energyUnitsTable.initialize("#dt-unidades-energia",
         [
-            {class: "d-none"},
-            {class: "dt-body-left align-middle"},
+            {class: "d-none id"},
+            {class: "dt-body-left align-middle medidor"},
+            {class: "dt-body-center align-middle luc"},
             {class: "dt-body-center align-middle select subtipo"},
             {class: "dt-body-center align-middle select tipo"},
-            {class: "dt-body-center align-middle"},
-            {class: "dt-body-center align-middle"},
-            {class: "dt-body-center align-middle"},
+            {class: "dt-body-center align-middle identificador"},
+            {class: "dt-body-center align-middle localizador"},
+            {class: "dt-body-center align-middle capacidade"},
             {class: "dt-body-center align-middle select faturamento"},
             {"bSortable": false, class: "dt-body-center align-middle actions",}
         ],
@@ -517,18 +563,19 @@
         '',
         '',
         '',
-        [[ 2, "asc" ], [ 1, "asc" ]]);
+        [[ 3, "asc" ], [ 1, "asc" ]]);
 
     var waterUnitsTable = new EditableTable();
     waterUnitsTable.initialize("#dt-unidades-agua",
         [
-            {class: "d-none"},
-            {class: "dt-body-left align-middle"},
+            {class: "d-none id"},
+            {class: "dt-body-left align-middle medidor"},
+            {class: "dt-body-center align-middle luc"},
             {class: "dt-body-center align-middle select subtipo"},
             {class: "dt-body-center align-middle select tipo"},
-            {class: "dt-body-center align-middle"},
-            {class: "dt-body-center align-middle"},
-            {class: "d-none"},
+            {class: "dt-body-center align-middle identificador"},
+            {class: "dt-body-center align-middle localizador"},
+            {class: "d-none dt-body-center align-middle capacidade"},
             {class: "dt-body-center align-middle select faturamento"},
             {"bSortable": false, class: "dt-body-center align-middle actions",}
         ],
@@ -541,14 +588,14 @@
         '',
         '',
         '',
-        [[ 2, "asc" ], [ 1, "asc" ]]);
+        [[ 3, "asc" ], [ 1, "asc" ]]);
 
     var energyGroupingsTable = new EditableTable();
     energyGroupingsTable.initialize("#dt-agrupamentos-energia",
         [
-            {class: "d-none"},
-            {class: "d-none"},
-            {class: "dt-body-left align-middle"},
+            {class: "d-none id"},
+            {class: "d-none bloco_id"},
+            {class: "dt-body-left align-middle group"},
             {class: "dt-body-center align-middle select unidades"},
             {"bSortable": false, class: "dt-body-center align-middle actions",}
         ],
@@ -565,9 +612,9 @@
     var waterGroupingsTable = new EditableTable();
     waterGroupingsTable.initialize("#dt-agrupamentos-agua",
         [
-            {class: "d-none"},
-            {class: "d-none"},
-            {class: "dt-body-left align-middle"},
+            {class: "d-none id"},
+            {class: "d-none bloco_id"},
+            {class: "dt-body-left align-middle group"},
             {class: "dt-body-center align-middle select unidades"},
             {"bSortable": false, class: "dt-body-center align-middle actions",}
         ],
@@ -584,8 +631,8 @@
     var alertsConfigTableEnergy = new EditableTable();
     alertsConfigTableEnergy.initialize("#dt-alertas-conf-energia",
         [
-            {"bSortable": false, class: "d-none"},
-            {"bSortable": false, class: "d-none"},
+            {"bSortable": false, class: "d-none config-id"},
+            {"bSortable": false, class: "d-none group-id"},
             {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
             {"bSortable": false, class: "dt-body-left align-middle static"},
             {"bSortable": false, class: "dt-body-center align-middle select medidores"},
@@ -603,8 +650,8 @@
     var alertsConfigTableWater = new EditableTable();
     alertsConfigTableWater.initialize("#dt-alertas-conf-agua",
         [
-            {"bSortable": false, class: "d-none"},
-            {"bSortable": false, class: "d-none"},
+            {"bSortable": false, class: "d-none config-id"},
+            {"bSortable": false, class: "d-none group-id"},
             {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
             {"bSortable": false, class: "dt-body-left align-middle static"},
             {"bSortable": false, class: "dt-body-center align-middle select medidores"},
@@ -685,6 +732,7 @@
         paging: true,
         pageLength: 10,
         pagingType: "numbers",
+        language: { search: "" },
         ajax: {
             type: 'POST',
             url: $("#dt-usuarios").data("url"),
@@ -788,33 +836,77 @@
     });
 
     $(document).on('click', '.btn-generate-token', function (e) {
+        // para propagação
         e.preventDefault();
-
-        $.ajax({
-            method: 'POST',
-            data: { group_id: $(".form-config-api").data("grupo") },
-            dataType: 'json',
-            url: '/shopping/generateToken',
-            success: function (json) {
-                if (json.status == "success") {
-                    // notifica êxito
-                    notifySuccess(json.message);
-                    $("#token").val(json.token);
-                } else {
-                    // notifica erro
-                    notifyError(json.message);
+        var user = $(this).data('id')
+        // abre a modal
+        $.magnificPopup.open({
+            items: {src: '#modalGenerateKey'}, type: 'inline',
+            callbacks: {
+                beforeOpen: function () {
+                    $('#modalGenerateKey .id').val(user);
+                    $('#modalGenerateKey .id').data('uid', user);
                 }
-            },
-            error: function (xhr, status, error) {
-            },
-            complete: function () {
             }
-        })
+        });
     });
 
-    $('#token').keypress(function(event) {
-        event.preventDefault();
-        return false;
+    // **
+    // * Handler Fechar Modal Confirmação Exclusão
+    // **
+    $(document).on('click', '.modal-dismiss', function (e) {
+        // para propagação
+        e.preventDefault();
+
+        // limpa id e data
+        $('#modalGenerateKey .id').val('').data('user', null);
+
+        // fecha a modal
+        $.magnificPopup.close();
+    });
+
+    // **
+    // * Handler Botão Excluir Modal Confirmação Exclusão
+    // **
+    $(document).on('click', '#modalGenerateKey .modal-confirm-key', function () {
+        // mostra indicador
+        var $btn = $(this);
+        $btn.trigger('loading-overlay:show');
+        // desabilita botões
+        var $btn_d = $('.btn:enabled').prop('disabled', true);
+        // pega o valor do id
+        var cid = $('#modalGenerateKey .id').val();
+        var uid = $('#modalGenerateKey .id').data('uid');
+        // faz a requisição
+        $.post("/shopping/generateToken", { group_id: $(".page-header").data("group") }, function (json) {
+            if (json.status == 'success') {
+                // fecha modal
+                $.magnificPopup.close();
+                // atualiza chave
+                $("#token").val(json.token);
+                // mostra notificação
+                notifySuccess(json.message);
+            } else {
+                // fecha modal
+                $.magnificPopup.close();
+                // mostra erro
+                notifyError(json.message);
+            }
+        }, 'json')
+            .fail(function (xhr, status, error) {
+                // fecha modal
+                $.magnificPopup.close();
+                // mostra erro
+                notifyError(error, 'Ajax Error');
+            })
+            .always(function () {
+                // oculta indicador e habilita botão
+                $btn.trigger('loading-overlay:hide');
+                // habilita botões
+                $btn_d.prop('disabled', false);
+                // limpa id
+                $('#modalGenerateKey .id').val('').data('uid', null);
+            });
     });
 
 }.apply(this, [jQuery]));

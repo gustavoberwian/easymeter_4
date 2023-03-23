@@ -2,21 +2,49 @@
 
     'use strict';
 
+    let dtResume = $("#dt-resume").DataTable({
+        dom: '<"table-responsive"t>r<"row"<"col-md-6"><"col-md-6"p>>',
+        processing : true,
+        paging     : true,
+        columns    : [
+            {data: "device", className: "dt-body-center"},
+            {data: "luc", className: "dt-body-center"},
+            {data: "name", className: "dt-body-left"},
+            {data: "type", className: "dt-body-center"},
+            {data: "value_read", className: "dt-body-center"},
+            {data: "value_month", className: "dt-body-center"},
+            {data: "value_month_open", className: "dt-body-center"},
+            {data: "value_month_closed", className: "dt-body-center"},
+            {data: "value_ponta", className: "dt-body-center"},
+            {data: "value_fora", className: "dt-body-center"},
+            {data: "value_last", className: "dt-body-center"},
+            {data: "value_future", className: "dt-body-center"},
+        ],
+        serverSide : true,
+        sorting    : [],
+        order      : [[ 2, "asc" ], [ 1, "asc" ]],
+        pagingType : "numbers",
+        pageLength : 36,
+        searching  : true,
+        ajax       : {
+            type: 'POST',
+            url: "/energia/resume",
+            error: function () {
+                notifyError(
+                    "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
+                );
+                $("#dt-resume").dataTable().fnProcessingIndicator(false);
+                $("#dt-resume_wrapper .table-responsive").removeClass("processing");
+            },
+        },
+    });
+
     var start = moment().subtract(6, 'days');
     var end = moment();
     var chart = {};
     var start_last;
     var end_last;
     var device = 0;
-
-    var notifyError = function (msg, title = "Ocorreu um erro", visibility = true) {
-        new PNotify({
-            title: title,
-            text: msg,
-            type: "error",
-            buttons: { sticker: false },
-        });
-    };
 
     function apexchart(start = moment().subtract(6, 'days'), end = moment()) {
 
@@ -207,7 +235,8 @@
             $('button[data-bs-target="#analysis"]').addClass("disabled");
             if ($('button[data-bs-toggle="pill"].active').html() == "Análises" || $('button[data-bs-toggle="pill"].active').html() == "Dados") {
                 setTimeout(function() {
-                    $('.nav-pills button[data-bs-target="#charts"]').tab('show');
+                    $('button[data-bs-target="#data"]').removeClass("disabled");
+                    $('button[data-bs-target="#analysis"]').removeClass("disabled");
                 }, 100);
             }
         } else {
@@ -339,42 +368,6 @@
         },
     });
 
-    let dtResume = $("#dt-resume").DataTable({
-        dom: '<"table-responsive"t>r<"row"<"col-md-6"><"col-md-6"p>>',
-        processing: true,
-        paging: true,
-        columns: [
-            {data: "device", className: "dt-body-center"},
-            {data: "name", className: "dt-body-left"},
-            {data: "type", className: "dt-body-center"},
-            {data: "value_read", className: "dt-body-center"},
-            {data: "value_month", className: "dt-body-center"},
-            {data: "value_month_open", className: "dt-body-center"},
-            {data: "value_month_closed", className: "dt-body-center"},
-            {data: "value_ponta", className: "dt-body-center"},
-            {data: "value_fora", className: "dt-body-center"},
-            {data: "value_last", className: "dt-body-center"},
-            {data: "value_future", className: "dt-body-center"},
-        ],
-        serverSide: true,
-        sorting: [],
-        order: [[ 2, "asc" ], [ 1, "asc" ]],
-        pagingType: "numbers",
-        pageLength: 36,
-        searching: true,
-        ajax: {
-            type: 'POST',
-            url: "/energia/resume",
-            error: function () {
-                notifyError(
-                    "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
-                );
-                $("#dt-resume").dataTable().fnProcessingIndicator(false);
-                $("#dt-resume_wrapper .table-responsive").removeClass("processing");
-            },
-        },
-    });
-
     $(".btn-view").on("click", function (event) {
         if ($("select.type").val() == null) return;
         $(".btn-download-abnormal").prop("disabled", true);
@@ -439,7 +432,9 @@
         let data = dtResume.row(this).data();
         $("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
         $('#sel-device').trigger('change');
-        $('.nav-pills button[data-bs-target="#charts"]').tab('show');
+        $('button[data-bs-target="#charts"]').trigger('click');
+        $('button[data-bs-target="#data"]').removeClass("disabled");
+        $('button[data-bs-target="#analysis"]').removeClass("disabled");
     });
 
     $(document).on("click", ".btn-download-abnormal", function () {

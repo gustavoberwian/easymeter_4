@@ -11,30 +11,30 @@
 		            <div class="row">
 		                <div class="col-md-4 col-sm-6">
 		                    <div class="outer-title text-center">
-		                        <a href="<?php echo base_url('site/downloads'); ?>#downloads">
+		                        <a href="<?php echo site_url('site/downloads'); ?>#downloads">
                                 <img alt="Downloads" src="<?php echo base_url('assets/img/downloads.png'); ?>"></a>
 		                        <div class="title mb16">
-		                            <a href="<?php echo base_url('site/downloads'); ?>#downloads"><h3 class="mb0">Downloads</h3></a>
+		                            <a href="<?php echo site_url('site/downloads'); ?>#downloads"><h3 class="mb0">Downloads</h3></a>
 		                        </div>
 		                        <p class="mb0">Guias do usuário, manuais e folders de produtos.</p>
 		                    </div>
 		                </div>
 		                <div class="col-md-4 col-sm-6">
 		                    <div class="outer-title text-center">
-		                        <a href="<?php echo base_url('site/faq'); ?>#perguntas">
+		                        <a href="<?php echo site_url('site/faq'); ?>#perguntas">
                                 <img alt="FAQs" src="<?php echo base_url('assets/img/faqs.png'); ?>"></a>
 		                        <div class="title mb16">
-                                    <a href="<?php echo base_url('site/faq'); ?>#perguntas"><h3 class="mb0">FAQs</h3></a>
+                                    <a href="<?php echo site_url('site/faq'); ?>#perguntas"><h3 class="mb0">FAQs</h3></a>
 		                        </div>
 		                        <p class="mb0">Perguntas frequentes.</p>
 		                    </div>
 		                </div>
 		                <div class="col-md-4 col-sm-6">
 		                    <div class="outer-title text-center">
-                                <a href="<?php echo base_url('site/chamados'); ?>#chamados">
+                                <a href="<?php echo site_url('site/chamados'); ?>#chamados">
 		                        <img alt="Support Tickets" src="<?php echo base_url('assets/img/tickets_pg.png'); ?>"></a>
 		                        <div class="title mb16">
-		                            <a href="<?php echo base_url('site/chamados'); ?>#chamados""><h3 class="mb0">Chamados</h3></a>
+		                            <a href="<?php echo site_url('site/chamados'); ?>#chamados""><h3 class="mb0">Chamados</h3></a>
 		                        </div>
 		                        <p class="mb0">Abra um chamado para solicitações de suporte.</p>
 		                    </div>

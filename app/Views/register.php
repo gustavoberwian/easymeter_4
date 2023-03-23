@@ -148,18 +148,9 @@
                                     </div>
                                     <div id="" class="tab"><h1>registration successfuly</h1>
                                 </div>
-
-
- <div style="overflow:auto;">
-    <div style="float:right;">
-    <a  id="loginBtn" class='btn btn-primary btn-block float' href="<?= url_to('login') ?>">Login </a>
-      <a   id="prevBtn" class ='btn btn-primary btn-block float'onclick="nextPrev(-1)">Previous</a>
-      <a  id="nextBtn" class ='btn btn-primary btn-block float' onclick="nextPrev(1)">Next</a>
-    
-        </div>
-        </div>
+          
         <!-- Circles which indicates the steps of the form: -->
-        <div style="text-align:center;margin-top:40px;">
+        <div hidden style="text-align:center;margin-top:40px;">
             <span class="step"></span>
             <span class="step"></span>
 
@@ -168,7 +159,24 @@
            </form>
                             
              </div>
+               
+             <div class="card-footer">
+                            <ul class="pager">
+                                <li class="back" id="back">
                          
+                                    <a class="btn-link login text-decoration-none" href="<?php echo site_url('login'); ?>">Login</a>
+                                </li>
+                                <li class="previous" id="previous">
+                                    <a class="btn-link text-decoration-none" onclick="nextPrev(-1)" ><i class="fas fa-angle-left"></i> Anterior</a>
+                                </li>
+                                <li class="finish hidden float-right" id="finish">
+                                    <a class="btn-link text-decoration-none">Finalizar</a>
+                                </li>
+                                <li class="next" id="next">
+                                    <a class="btn-link text-decoration-none"  onclick="nextPrev(1)">Próxima <i class="fas fa-angle-right"></i></a>
+                                </li>
+                            </ul>
+                        </div>
          </section>
 		</div>
 				<p class="text-center text-muted mt-3 mb-3">© Copyright 2017-<?php echo date('Y'); ?>. Todos os direitos reservados.</p>
@@ -212,21 +220,22 @@ function showTab(n) {
   x[n].style.display = "initial";
   //... and fix the Previous/Next buttons:
    if (n == 0) {
-    document.getElementById("loginBtn").style.display = "";
-    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("previous").style.display = "none";
+    document.getElementById("back").style.display = "";
   } else if(n==2)
-         {document.getElementById("prevBtn").style.display = "none";
-          document.getElementById("loginBtn").style.display = "none";
-          document.getElementById("nextBtn").style.display = "none";
+         {document.getElementById("previous").style.display = "none";
+          document.getElementById("back").style.display = "none";
+          document.getElementById("next").style.display = "none";
         }  
   else {
-    document.getElementById("loginBtn").style.display = "none";
-    document.getElementById("prevBtn").style.display = "";
+    document.getElementById("back").style.display = "none";
+    document.getElementById("previous").style.display = "";
     }
   if (n == (x.length - 1)) {
-    document.getElementById("loginBtn").style.display = "";
+    document.getElementById("back").style.display = "";
 
     document.getElementById("nextBtn").innerHTML = "Submit";
+    
   } else {
     document.getElementById("nextBtn").innerHTML = "Next";
     

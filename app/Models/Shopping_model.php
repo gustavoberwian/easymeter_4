@@ -561,4 +561,32 @@ class Shopping_model extends Base_model
                 ->get();
         }
     }
+
+    public function insertToken($token, $group_id)
+    {
+        $this->db->transStart();
+
+        $q = $this->db->table('esm_api_keys')
+            ->where('group_id', $group_id)
+            ->get();
+
+        if ( $q->getNumRows() > 0 ) {
+            $this->db->table('esm_api_keys')
+                ->where('group_id', $group_id)
+                ->set(array("token" => $token))
+                ->update();
+        } else {
+            $this->db->table('esm_api_keys')
+                ->set(array("group_id" => $group_id, "token" => $token))
+                ->insert();
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return false;
+        }
+
+        return true;
+    }
 }

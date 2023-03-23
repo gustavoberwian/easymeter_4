@@ -44,8 +44,13 @@ $routes->get('/logged-out','Api\AuthController::loggedOut');
 $routes->get('/login-view','Api\AuthController::loginView');
 $routes->get('/verify-magic-link', 'MagicLinkController::verify');
 $routes->post('/verify-magic-link', 'MagicLinkController::updateP');
-
 $routes->get('/update_password', 'UpdatePassword::index');
+$routes->get('/api', 'Api::index');
+$routes->get('/api/(:any)', 'Api::$1');
+$routes->get('/api/(:any)/(:num)', 'Api::$1/$2');
+$routes->post('/api', 'Api::index');
+$routes->post('/api/(:any)', 'Api::$1');
+$routes->post('/api/(:any)/(:num)', 'Api::$1/$2');
 
 service('auth')->routes($routes);
 

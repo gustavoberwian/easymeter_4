@@ -265,22 +265,22 @@ class Shopping extends UNO_Controller
 
         $dt = $this->datatables->query($query);
 
-        $dt->add('disjuntor', function ($data) {
+        $dt->edit('disjuntor', function ($data) {
             if (is_null($data['disjuntor']))
                 return "";
             else
                 return $data['disjuntor']." A";
         });
 
-        $dt->add('luc', function ($data) {
+        $dt->edit('luc', function ($data) {
             return $data['luc'];
         });
 
-        $dt->add('subtipo', function ($data) {
+        $dt->edit('subtipo', function ($data) {
             return $data['subtipo'];
         });
 
-        $dt->add('tipo', function ($data) {
+        $dt->edit('tipo', function ($data) {
             if ($data['tipo'] === 'iluminacao') {
                 return 'Iluminação';
             } elseif ($data['tipo'] === 'ar_condicionado') {
@@ -292,7 +292,7 @@ class Shopping extends UNO_Controller
             }
         });
 
-        $dt->add('faturamento', function ($data) {
+        $dt->edit('faturamento', function ($data) {
             if ($data['faturamento'] === 'incluir') {
                 return 'Incluir';
             } elseif ($data['faturamento'] === 'nao_incluir') {
@@ -533,7 +533,7 @@ class Shopping extends UNO_Controller
 
         $dt = $this->datatables->query($query);
 
-        $dt->add('status', function ($data) {
+        $dt->edit('status', function ($data) {
             if ($data['status']) {
                 return '
                     <div class="switch switch-sm switch-primary disabled">
@@ -549,7 +549,7 @@ class Shopping extends UNO_Controller
             }
         });
 
-        $dt->add('medidores', function ($data) {
+        $dt->edit('medidores', function ($data) {
             $medidores = $this->shopping_model->get_devices_alert($this->input->getPost("group"), $data['id']);
             $unidades = $this->shopping_model->get_units($this->input->getPost("group"));
 
@@ -575,7 +575,7 @@ class Shopping extends UNO_Controller
             return $return;
         });
 
-        $dt->add('quando', function ($data) {
+        $dt->edit('quando', function ($data) {
             $return = '<select class="form-control period" id="when-type" name="when_type" disabled>';
 
             if ($data['quando'] === 'day') {
@@ -626,7 +626,7 @@ class Shopping extends UNO_Controller
             return $return;
         });
 
-        $dt->add('unidade', function ($data) {
+        $dt->edit('unidade', function ($data) {
             if ($data['unidade']) {
                 return '
                     <div class="switch switch-sm switch-primary disabled">
@@ -642,7 +642,7 @@ class Shopping extends UNO_Controller
             }
         });
 
-        $dt->add('shopping', function ($data) {
+        $dt->edit('shopping', function ($data) {
             if ($data['shopping']) {
                 return '
                     <div class="switch switch-sm switch-primary disabled">
@@ -658,7 +658,7 @@ class Shopping extends UNO_Controller
             }
         });
 
-        $dt->add('actions', function ($data) {
+        $dt->edit('actions', function ($data) {
             if ($this->user->inGroup("admin", "shopping")){
                 return '
                     <a href="#" class="hidden on-editing btn-save save-row text-success"><i class="fas fa-save"></i></a>

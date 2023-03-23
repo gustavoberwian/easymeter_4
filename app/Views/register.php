@@ -214,7 +214,12 @@ function showTab(n) {
    if (n == 0) {
     document.getElementById("loginBtn").style.display = "";
     document.getElementById("prevBtn").style.display = "none";
-  } else {
+  } else if(n==2)
+         {document.getElementById("prevBtn").style.display = "none";
+          document.getElementById("loginBtn").style.display = "none";
+          document.getElementById("nextBtn").style.display = "none";
+        }  
+  else {
     document.getElementById("loginBtn").style.display = "none";
     document.getElementById("prevBtn").style.display = "";
     }
@@ -225,7 +230,6 @@ function showTab(n) {
   } else {
     document.getElementById("nextBtn").innerHTML = "Next";
     
-   
   }
   //... and run a function that will display the correct step indicator:
   fixStepIndicator(n)

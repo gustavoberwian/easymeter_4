@@ -16,21 +16,21 @@
                     </header>
                     <div class="card-body">
                         <div class="tab-form cadastro">
-                            <div class="form-group row">
+                            <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-lg-end pt-2" for="nome-user">Nome </label>
                                 <div class="col-lg-6">
                                     <input id="nome-user" name="nome-user" type="text" value="" class="form-control" placeholder="Nome do usuário">
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-lg-end pt-2" for="email-user">Email <span class="required">*</span></label>
                                 <div class="col-md-6">
                                     <input id="email-user" name="email-user" value="" placeholder="exemplo@exemplo.com" class="form-control" required>
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-lg-end pt-2" for="telefone-user">Contato</label>
                                 <div class="col-md-3">
                                     <input id="telefone-user" name="telefone-user" value="" placeholder="Telefone" class="form-control ">
@@ -40,14 +40,14 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-lg-end pt-2" for="username-user">Usuário <span class="required">*</span></label>
                                 <div class="col-lg-6">
                                     <input id="username-user" name="username-user" type="text" value="" class="form-control" placeholder="Seu nome de usuário" required>
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-lg-end pt-2" for="password-user">Senha <span class="required">*</span></label>
                                 <div class="col-lg-3 password-div">
                                     <input id="password-user" name="password_user" type="password" value="" class="form-control" placeholder="Senha" required><i class="fa fa-eye show-password d-none cur-pointer" style="position: absolute; right: 20px; top: 13px;"></i>
@@ -57,7 +57,7 @@
                                 </div>
                             </div>
 
-                            <div class="form-group row">
+                            <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-lg-end pt-2" for="username-user">Permissões</label>
                                 <div class="col-lg-2 d-flex align-items-center justify-content-center">
                                     <div class="switch switch-sm switch-primary">
@@ -80,7 +80,7 @@
                             </div>
 
                             <?php /*if ($this->ion_auth->in_group("entity_shopping")): */?><!--
-                                <div class="form-group row">
+                                <div class="form-group row pb-3">
                                     <label class="col-lg-3 control-label text-lg-end pt-2" for="select-shopping">Shopping <span class="required">*</span></label>
                                     <div class="col-lg-6">
                                         <select id="select-shopping" name="select-shopping" class="form-select form-control" required>
@@ -93,7 +93,7 @@
                                 </div>
                             --><?php /*endif; */?>
 
-                            <div class="form-group row">
+                            <div class="form-group row pb-3">
                                 <label class="col-lg-3 control-label text-lg-end pt-2" for="select-shopping">Loja</label>
                                 <div class="col-lg-6">
                                     <select id="select-loja" name="select-loja" class="form-select form-control">
@@ -104,7 +104,7 @@
                             <div class="row">
                                 <div class="col-lg-9 text-end">
                                     <button class="btn btn-primary btn-incluir-user mr-3">Salvar</button>
-                                    <button type="reset" class="btn btn-back">Voltar</button>
+                                    <button type="reset" class="btn btn-default btn-back">Voltar</button>
                                 </div>
                             </div>
                         </div>

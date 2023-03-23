@@ -534,7 +534,11 @@ class Shopping_model extends Base_model
 
     public function get_user_info($user_id)
     {
-        if ($user_id->inGroup("unity", "shopping")) {
+        $users = model('UserModel');
+
+        $user = $users->findById($user_id);
+
+        if ($user->inGroup("unity", "shopping")) {
 
             return $this->db->table('users')
                 ->select("users.*, esm_unidades.id as unidade_id, esm_unidades.nome as unidade_nome, esm_blocos.id as bloco_id, esm_blocos.nome as bloco_nome")
@@ -543,7 +547,7 @@ class Shopping_model extends Base_model
                 ->join("esm_blocos", "esm_blocos.id = esm_unidades.bloco_id")
                 ->where("users.id", $user_id)
                 ->get();
-        } elseif ($user_id->inGroup("shopping", "shopping")) {
+        } elseif ($user->inGroup("shopping", "shopping")) {
 
             return $this->db->table('users')
                 ->select("users.*, esm_blocos.id as bloco_id, esm_blocos.nome as bloco_nome")
@@ -588,5 +592,187 @@ class Shopping_model extends Base_model
         }
 
         return true;
+    }
+
+    public function edit_agrupamento($dados)
+    {
+        $this->db->transStart();
+
+        $this->db->table('esm_device_groups_entries')
+            ->where("group_id", $dados['id'])
+            ->delete();
+
+        if ($dados['devices']) {
+            foreach ($dados['devices'] as $dvc) {
+                $this->db->table("esm_device_groups_entries")
+                    ->set(array('group_id' => $dados['id'], 'device' => $dvc))
+                    ->insert();
+            }
+        }
+
+        $this->db->table('esm_device_groups')
+            ->where("id", $dados['id'])
+            ->set(array('name' => $dados['name']))
+            ->update();
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function delete_agrupamento($id)
+    {
+        $this->db->transStart();
+
+        $this->db->table("esm_device_groups_entries")
+            ->where("group_id", $id)
+            ->delete();
+
+        $this->db->table("esm_device_groups")
+            ->where("id", $id)
+            ->delete();
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function add_agrupamento($dados)
+    {
+        $this->db->transStart();
+
+        $this->db->table("esm_device_groups")
+            ->set(array("entrada_id" => $dados['entrada_id'], "name" => $dados['name']))
+            ->insert();
+
+        $inserted = $this->db->insertID();
+
+        if ($dados['devices']) {
+            foreach ($dados['devices'] as $dvc) {
+                $this->db->table("esm_device_groups_entries")
+                    ->set(array('group_id' => $inserted, 'device' => $dvc))
+                    ->insert();
+            }
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function get_subtipo_cliente_config($grp)
+    {
+        $this->db->query("
+            SELECT
+                IF(unc.type <= 1,(
+                    SELECT esm_client_config.area_comum 
+                    FROM esm_client_config 
+                    WHERE esm_client_config.group_id = $grp
+                ),'Unidades') as subtipo
+            FROM esm_medidores me
+            JOIN esm_unidades un ON un.id = me.unidade_id
+            JOIN esm_unidades_config unc ON unc.unidade_id = un.id
+            WHERE un.bloco_id = $grp AND me.tipo = 'energia'
+        ")->getRow()->subtipo;
+    }
+
+    public function edit_unidade($dados)
+    {
+        $this->db->transStart();
+
+        foreach ($dados['tabela'] as $tabela => $campos) {
+            if ($tabela === 'esm_unidades') {
+                $this->db->table($tabela)
+                    ->where('id', $dados['unidade_id'])
+                    ->set($campos)
+                    ->update();
+            } elseif ($tabela === 'esm_unidades_config') {
+                $this->db->table($tabela)
+                    ->where('unidade_id', $dados['unidade_id'])
+                    ->set($campos)
+                    ->update();
+            }
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false)
+            return false;
+
+        return true;
+    }
+
+    public function edit_alert_conf($dados)
+    {
+        $this->db->transStart();
+
+        $this->db->table("esm_alertas_cfg_devices")
+            ->where("config_id", $dados['config_id'])
+            ->delete();
+
+        if ($dados['esm_alertas_cfg_devices']) {
+            foreach ($dados['esm_alertas_cfg_devices'] as $dvc) {
+                $this->db->table('esm_alertas_cfg_devices')
+                    ->set(array('config_id' => $dados['config_id'], 'device' => $dvc))
+                    ->insert();
+            }
+        }
+
+        $this->db->table('esm_alertas_cfg')
+            ->where("group_id", $dados['group_id'])
+            ->where("id", $dados['config_id'])
+            ->set(array(
+                'when_type' => $dados['esm_alertas_cfg']['when_type'],
+                'notify_unity' => $dados['esm_alertas_cfg']['notify_unity'],
+                'notify_shopping' => $dados['esm_alertas_cfg']['notify_shopping'],
+                'active' => $dados['esm_alertas_cfg']['active'],
+            ))
+            ->update();
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false)
+            return false;
+
+        return true;
+    }
+
+    public function delete_user($user)
+    {
+        $status = true;
+        $users = model('UserModel');
+        if (!$users->delete($user, true)) {
+            $status = false;
+        }
+
+        return $status;
+    }
+
+    public function get_lojas_by_shopping($shopping_id)
+    {
+        $query = "
+            SELECT esm_unidades.*
+            FROM esm_unidades
+            JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades.id
+            WHERE esm_unidades.bloco_id = $shopping_id";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getResult();
     }
 }

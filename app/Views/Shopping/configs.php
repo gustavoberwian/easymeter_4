@@ -87,7 +87,7 @@
                     <section class="card card-users card-easymeter h-100">
                         <header class="card-header">
                             <div class="card-actions buttons">
-                                <?php if ($user->inGroup('entity', 'shopping')): ?>
+                                <?php if (!$user->inGroup('unity', 'shopping')): ?>
                                     <button class="btn btn-primary btn-new-user">Criar Usuário</button>
                                 <?php endif; ?>
                             </div>

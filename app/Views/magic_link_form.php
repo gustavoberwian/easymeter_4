@@ -104,23 +104,16 @@
                 
 
                 
-                    <button type="submit" class="btn btn-primary btn-block"><?= lang('Auth.send') ?></button>
+                    <button type="submit" class="btn btn-primary btn-block">enviar</button>
                     </div>
                        
 
                  <p class="text-center">Lembrou? <a href="<?= url_to('login') ?>"><?= lang('Entrar') ?></a></p>
-            </form>
- 
-
-
-
-
-
-</div>
+                 </form></div>
               </div>
 				<p class="text-center text-muted mt-3 mb-3">&copy; Copyright 2017-<?= date("Y"); ?>. Todos os direitos reservados.</p>
-			</div>
-		</section>
+		     </div>
+		    </section>
 		<!-- end: page -->
 
 		<!-- Vendor -->

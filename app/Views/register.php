@@ -146,8 +146,7 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div id="" class="tab"><h1>registration successfuly</h1>
-                                </div>
+                                    
           
         <!-- Circles which indicates the steps of the form: -->
         <div hidden style="text-align:center;margin-top:40px;">
@@ -164,7 +163,7 @@
                             <ul class="pager">
                                 <li class="back" id="back">
                          
-                                    <a class="btn-link login text-decoration-none" href="<?php echo site_url('login'); ?>">Login</a>
+                                    <a class="btn-link login text-decoration-none" href="<?php echo site_url('login'); ?>">Entrar</a>
                                 </li>
                                 <li class="previous" id="previous">
                                     <a class="btn-link text-decoration-none" onclick="nextPrev(-1)" ><i class="fas fa-angle-left"></i> Anterior</a>
@@ -175,6 +174,11 @@
                                 <li class="next" id="next">
                                     <a class="btn-link text-decoration-none"  onclick="nextPrev(1)">Próxima <i class="fas fa-angle-right"></i></a>
                                 </li>
+
+                                <li class="next" id="n">
+                                    <a class="btn-link text-decoration-none"  onclick="" href="<?= url_to('login') ?>">Próxima <i class="fas fa-angle-right"></i></a>
+                                </li>
+                                
                             </ul>
                         </div>
          </section>
@@ -218,28 +222,19 @@ function showTab(n) {
   // This function will display the specified tab of the form...
   var x = document.getElementsByClassName("tab");
   x[n].style.display = "initial";
+  document.getElementById("n").style.display = "none";
   //... and fix the Previous/Next buttons:
    if (n == 0) {
     document.getElementById("previous").style.display = "none";
+    document.getElementById("next").style.display = "";
     document.getElementById("back").style.display = "";
-  } else if(n==2)
-         {document.getElementById("previous").style.display = "none";
+  } else if(n==1)
+         {document.getElementById("previous").style.display = "";
           document.getElementById("back").style.display = "none";
           document.getElementById("next").style.display = "none";
-        }  
-  else {
-    document.getElementById("back").style.display = "none";
-    document.getElementById("previous").style.display = "";
-    }
-  if (n == (x.length - 1)) {
-    document.getElementById("back").style.display = "";
-
-    document.getElementById("nextBtn").innerHTML = "Submit";
-    
-  } else {
-    document.getElementById("nextBtn").innerHTML = "Next";
-    
-  }
+          document.getElementById("n").style.display = "";
+         }  
+ 
   //... and run a function that will display the correct step indicator:
   fixStepIndicator(n)
 }

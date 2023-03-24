@@ -220,11 +220,11 @@ class Shopping extends UNO_Controller
 
         $data['readonly'] = false;
 
-        $data['user'] = $this->user;
+        $data['user_info'] = $this->user;
 
-        if (!is_null($user_id)) {
+        /*if (!is_null($user_id)) {
             $data['user_info'] = $this->shopping_model->get_user_info($user_id);
-        }
+        }*/
 
         // echo "<pre>"; print_r($data); echo "</pre>"; return;
 
@@ -701,5 +701,184 @@ class Shopping extends UNO_Controller
         } else {
             echo json_encode(array('status' => 'error', 'message' => 'Falha na operação, tente novamente em instantes'));
         }
+    }
+
+    public function generateToken()
+    {
+        $group_id = $this->input->getPost("group_id");
+
+        $token = md5(strtotime(date("Y-m-d H:i:s")) . $group_id);
+
+        if ($this->shopping_model->insertToken($token, $group_id)) {
+            echo json_encode(array('status' => 'success', 'message' => 'Operação finalizada com sucesso', 'token' => $token));
+        } else {
+            echo json_encode(array('status' => 'error', 'message' => 'Falha na operação, tente novamente em instantes'));
+        }
+    }
+
+    public function get_unidades_select()
+    {
+        $group_id = $this->input->getPost('group');
+        $type = $this->input->getPost('tipo');
+
+        //$this->setHistory("Requisição para buscar unidades de $type do shopping $group_id", 'requisição');
+
+        $unidades = $this->shopping_model->get_units($group_id, $type);
+
+        $data = array();
+
+        foreach ($unidades as $unidade) {
+            $data['options'][] = $unidade['medidor_id'];
+            $data['_options'][] = $unidade['unidade_nome'];
+        }
+
+        echo json_encode($data);
+    }
+
+    public function edit_agrupamentos()
+    {
+        $dados = array();
+
+        if ($this->input->getPost("group_name")) {
+            $dados['name'] = $this->input->getPost("group_name");
+        }
+        foreach ($this->input->getPost("select_unidades") as $m) {
+            $dados['devices'][] = $m;
+        }
+
+        if ($this->input->getPost("entrada_id")) {
+            $dados['entrada_id'] = $this->input->getPost("entrada_id") === 'energia' ? 72 : 73;
+        }
+
+        if ($this->input->getPost("id")) {
+            $dados['id'] = $this->input->getPost("id");
+
+            if ($this->shopping_model->edit_agrupamento($dados)) {
+                echo json_encode(array('status' => 'success', 'message' => 'Agrupamento alterado com sucesso'));
+            } else {
+                echo json_encode(array('status' => 'error', 'message' => 'Falha na operação, tente novamente em instantes'));
+            }
+        } else {
+            $this->setHistory("Agrupamento criado", 'ação');
+
+            if ($this->shopping_model->add_agrupamento($dados)) {
+                echo json_encode(array('status' => 'success', 'message' => 'Agrupamento criado com sucesso'));
+            } else {
+                echo json_encode(array('status' => 'error', 'message' => 'Falha na operação, tente novamente em instantes'));
+            }
+        }
+    }
+
+    public function delete_agrupamento()
+    {
+        if ($this->shopping_model->delete_agrupamento($this->input->getPost("id"))) {
+            echo json_encode(array('status' => 'success', 'message' => 'Agrupamento excluído com sucesso'));
+        } else {
+            echo json_encode(array('status' => 'error', 'message' => 'Falha na operação, tente novamente em instantes'));
+        }
+    }
+
+    public function get_subtipo_cliente_config()
+    {
+        echo $this->shopping_model->get_subtipo_cliente_config($this->input->getPost("group"));
+    }
+
+    public function edit_unidade()
+    {
+        $dados = array();
+
+        foreach ($this->input->getPost() as $index => $post) {
+
+            if ($index === "id") {
+                $dados['unidade_id'] = $post;
+            } elseif ($index === "entrada_id") {
+                $dados['tipo'] = $post;
+            } elseif ($index === "group_id") {
+                $dados['tabela']['esm_unidades']['nome'] = $post;
+            } elseif ($index === "luc") {
+                $dados['tabela']['esm_unidades_config']['luc'] = $post;
+            } elseif ($index === "subtipo") {
+                $dados['tabela']['esm_unidades_config']['type'] = $post;
+            } elseif ($index === "tipo") {
+                $dados['tabela']['esm_unidades_config']['tipo'] = $post;
+            } elseif ($index === "identificador") {
+                $dados['tabela']['esm_unidades_config']['identificador'] = $post;
+            } elseif ($index === "localizador") {
+                $dados['tabela']['esm_unidades_config']['localizador'] = $post;
+            } elseif ($index === "capacidade") {
+                $dados['tabela']['esm_unidades_config']['disjuntor'] = intval($post);
+            } elseif ($index === "faturamento") {
+                $dados['tabela']['esm_unidades_config']['faturamento'] = $post;
+            }
+
+        }
+
+        if ($this->shopping_model->edit_unidade($dados)) {
+            echo json_encode(array('status' => 'success', 'message' => 'Unidade alterada com sucesso'));
+        } else {
+            echo json_encode(array('status' => 'error', 'message' => 'Falha na operação, tente novamente em instantes'));
+        }
+    }
+
+    public function edit_alert_conf()
+    {
+        $dados = array();
+
+        if ($this->input->getPost('config_id')) {
+            $dados['config_id'] = $this->input->getPost('config_id');
+        }
+        if ($this->input->getPost('group_id')) {
+            $dados['group_id'] = $this->input->getPost('group_id');
+        }
+        if ($this->input->getPost('when_type')) {
+            $dados['esm_alertas_cfg']['when_type'] = $this->input->getPost('when_type');
+        }
+        if ($this->input->getPost('active')) {
+            $dados['esm_alertas_cfg']['active'] = $this->input->getPost('active');
+        } else {
+            $dados['esm_alertas_cfg']['active'] = 0;
+        }
+        if ($this->input->getPost('notify_shopping')) {
+            $dados['esm_alertas_cfg']['notify_shopping'] = $this->input->getPost('notify_shopping');
+        } else {
+            $dados['esm_alertas_cfg']['notify_shopping'] = 0;
+        }
+        if ($this->input->getPost('notify_unity')) {
+            $dados['esm_alertas_cfg']['notify_unity'] = $this->input->getPost('notify_unity');
+        } else {
+            $dados['esm_alertas_cfg']['notify_unity'] = 0;
+        }
+        $dados['esm_alertas_cfg_devices'] = false;
+        if ($this->input->getPost('medidores_type')) {
+            foreach ($this->input->getPost('medidores_type') as $m) {
+                $dados['esm_alertas_cfg_devices'][] = $m;
+            }
+        }
+
+        if ($this->shopping_model->edit_alert_conf($dados)) {
+            echo json_encode(array('status' => 'success', 'message' => 'Configurações dos alertas alteradas com sucesso'));
+        } else {
+            echo json_encode(array('status' => 'error', 'message' => 'Falha na operação, tente novamente em instantes'));
+        }
+    }
+
+    public function delete_user()
+    {
+        $user = $this->input->getPost('user');
+
+        if ($this->shopping_model->delete_user($user)) {
+            echo json_encode(array('status' => 'success', 'message' => 'Usuário removido com sucesso'));
+        } else {
+            echo json_encode(array('status' => 'error', 'message' => 'Falha na operação, tente novamente em instantes'));
+        }
+    }
+
+    public function get_lojas()
+    {
+        $group_id = $this->input->getPost('shopping_id');
+
+        $dados = $this->shopping_model->get_lojas_by_shopping($group_id);
+
+        echo json_encode($dados);
     }
 }

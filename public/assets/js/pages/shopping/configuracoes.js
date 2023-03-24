@@ -157,11 +157,13 @@
                         });
                     });
 
-                $(_self.$modalId + ' .modal-confirm').on( 'click', function ( e ) {
-                    e.preventDefault();
+                if (_self.$modalId) {
+                    $(_self.$modalId + ' .modal-confirm').on('click', function (e) {
+                        e.preventDefault();
 
-                    _self.rowDelete($(this).closest('tr'));
-                });
+                        _self.rowDelete($(this).closest('tr'));
+                    });
+                }
 
                 $('.modal-dismiss').on( 'click', function( e ) {
                     e.preventDefault();

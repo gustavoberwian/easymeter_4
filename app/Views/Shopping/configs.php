@@ -87,7 +87,7 @@
                     <section class="card card-users card-easymeter h-100">
                         <header class="card-header">
                             <div class="card-actions buttons">
-                                <?php if ($user->inGroup('entity', 'shopping')): ?>
+                                <?php if (!$user->inGroup('unity', 'shopping')): ?>
                                     <button class="btn btn-primary btn-new-user">Criar Usuário</button>
                                 <?php endif; ?>
                             </div>
@@ -414,7 +414,7 @@ $data['modal_id'] = 'modalExcluiUser';
 $data['modal_title'] = 'Você tem certeza?';
 $data['modal_message'] = 'Deseja realmente excluir este Usuário?';
 $data['button'] = array('Excluir', 'Cancelar');
-view('modals/confirm', $data);
+echo view('modals/confirm', $data);
 ?>
 
 <?php
@@ -422,7 +422,7 @@ $data_unidade['modal_id'] = 'modalExcluiUnidade';
 $data_unidade['modal_title'] = 'Você tem certeza?';
 $data_unidade['modal_message'] = 'Deseja realmente excluir esta Unidade?';
 $data_unidade['button'] = array('Excluir', 'Cancelar');
-view('modals/confirm', $data_unidade);
+echo view('modals/confirm', $data_unidade);
 ?>
 
 <?php
@@ -430,7 +430,7 @@ $data_unidade['modal_id'] = 'modalExcluiAgrupamentoAgua';
 $data_unidade['modal_title'] = 'Você tem certeza?';
 $data_unidade['modal_message'] = 'Deseja realmente excluir este agrupamento?';
 $data_unidade['button'] = array('Excluir', 'Cancelar');
-view('modals/confirm', $data_unidade);
+echo view('modals/confirm', $data_unidade);
 ?>
 
 <?php
@@ -438,7 +438,7 @@ $data_unidade['modal_id'] = 'modalExcluiAgrupamentoEnergia';
 $data_unidade['modal_title'] = 'Você tem certeza?';
 $data_unidade['modal_message'] = 'Deseja realmente excluir este agrupamento?';
 $data_unidade['button'] = array('Excluir', 'Cancelar');
-view('modals/confirm', $data_unidade);
+echo view('modals/confirm', $data_unidade);
 ?>
 
 <?php
@@ -446,5 +446,5 @@ $dataKey['modal_id'] = 'modalGenerateKey';
 $dataKey['modal_title'] = 'Você tem certeza?';
 $dataKey['modal_message'] = 'Ao renovar, sua chave atual será invalidada, continuar?';
 $dataKey['button'] = array('Renovar', 'Cancelar');
-view('modals/confirm_key', $dataKey);
+echo view('modals/confirm_key', $dataKey);
 ?>

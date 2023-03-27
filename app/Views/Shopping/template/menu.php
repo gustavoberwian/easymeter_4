@@ -44,24 +44,38 @@
                                 </a>
                             </li>
                         <?php else: ?>
-                            <li class="<?php if (in_array($method, array('energy'))) echo 'nav-active'; ?>">
-                                <a class="nav-link" href="<?= site_url('shopping/energy/' . $group_id); ?>">
-                                    <i class="fas fa-bolt" aria-hidden="true"></i>
-                                    <span>Energia</span>
-                                </a>
-                            </li>
-                            <li class="<?php if (in_array($method, array('water'))) echo 'nav-active'; ?>">
-                                <a class="nav-link" href="<?= site_url('shopping/water/' . $group_id); ?>">
-                                    <i class="fas fa-tint" aria-hidden="true"></i>
-                                    <span>Água</span>
-                                </a>
-                            </li>
-                            <!--<li class="<?php if (in_array($method, array('unidades')) || in_array($method, array('unidade'))) echo 'nav-active'; ?>">
-                                <a class="nav-link" href="<?= site_url('shopping/unidades/' . $group_id); ?>">
-                                    <i class="fas fa-list"></i>
-                                    <span>Unidades</span>
-                                </a>
-                            </li>-->
+                            <?php if ($group->m_energia) : ?>
+                                <li class="<?php if (in_array($method, array('energy'))) echo 'nav-active'; ?>">
+                                    <a class="nav-link" href="<?= site_url('shopping/energy/' . $group_id); ?>">
+                                        <i class="fas fa-bolt" aria-hidden="true"></i>
+                                        <span>Energia</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                            <?php if ($group->m_agua) : ?>
+                                <li class="<?php if (in_array($method, array('water'))) echo 'nav-active'; ?>">
+                                    <a class="nav-link" href="<?= site_url('shopping/water/' . $group_id); ?>">
+                                        <i class="fas fa-tint" aria-hidden="true"></i>
+                                        <span>Água</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                            <?php if ($group->m_gas) : ?>
+                                <li class="<?php if (in_array($method, array('water'))) echo 'nav-active'; ?>">
+                                    <a class="nav-link" href="<?= site_url('shopping/water/' . $group_id); ?>">
+                                        <i class="fas fa-fire-alt" aria-hidden="true"></i>
+                                        <span>Gás</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
+                            <?php if ($group->m_nivel) : ?>
+                                <li class="<?php if (in_array($method, array('water'))) echo 'nav-active'; ?>">
+                                    <a class="nav-link" href="<?= site_url('shopping/water/' . $group_id); ?>">
+                                        <i class="fas fa-ruler-vertical" aria-hidden="true"></i>
+                                        <span>Nível</span>
+                                    </a>
+                                </li>
+                            <?php endif; ?>
 
                             <li class="<?php if (in_array($method, array('faturamentos', 'fechamento', 'relatorio', 'lancamento')) || in_array($method, array('fechamento')) || in_array($method, array('relatorio'))) echo 'nav-active'; ?>">
                                 <a class="nav-link" href="<?= site_url('shopping/faturamentos/' . $group_id); ?>">

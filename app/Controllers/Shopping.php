@@ -90,7 +90,7 @@ class Shopping extends UNO_Controller
         $data['area_comum'] = "Área Comum";
 
         $data['unidades'] = $this->shopping_model->get_units($group_id, "energia");
-        $data['device_groups'] = $this->shopping_model->get_device_groups(72);
+        $data['device_groups'] = $this->shopping_model->get_device_groups($group_id, "energia");
 
         //echo "<pre>"; print_r($data); echo "</pre>";
 

@@ -1,6 +1,6 @@
 <section role="main" class="content-body">
 
-    <header class="page-header" <?= $user->inGroup('shopping', 'unity') ? 'data-device="'.$unidade->device.'"' : '' ?>">
+    <header class="page-header" data-group="<?= $group_id; ?>" <?= $user->inGroup('shopping', 'unity') ? 'data-device="'.$unidade->device.'"' : '' ?>">
         <?php if ($user->inGroup('shopping', 'unity')): ?>
             <h2><?= $unidade->nome; ?></h2>
         <?php else: ?>
@@ -183,7 +183,9 @@
                 <section class="card card-easymeter mb-4">
                     <header class="card-header">
                         <div class="card-actions buttons">
-                            <button class="btn btn-primary btn-download" data-group="<?= $group_id; ?>" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
+                            <?php if (!empty($unidades)) : ?>
+                                <button class="btn btn-primary btn-download" data-group="<?= $group_id; ?>" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
+                            <?php endif; ?>
                         </div>
                         <h2 class="card-title">Resumo do Mês</h2>
                     </header>

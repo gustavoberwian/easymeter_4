@@ -28,6 +28,9 @@
         searching  : true,
         ajax       : {
             type: 'POST',
+            data: {
+                group: $(".page-header").data("group")
+            },
             url: "/energia/resume",
             error: function () {
                 notifyError(

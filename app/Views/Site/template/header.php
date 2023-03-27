@@ -55,7 +55,7 @@
                             <i class="fas fa-sign-in-alt sub" style="top: 0"></i>
                             <span class="sub bold">Painel</span>
                         </a>
-                        <a class="link_nav" href="<?php echo base_url('/logout'); ?>">
+                        <a class="link_nav" href="<?php echo base_url('/logged-out'); ?>">
                             <i class="fas fa-sign-out-alt sub" style="top: 0"></i>
                             <span class="sub bold">Sair</span>
                         </a>

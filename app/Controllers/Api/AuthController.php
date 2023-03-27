@@ -94,7 +94,7 @@ class AuthController extends BaseController
 
         auth()->logout();
 
-        return redirect()->to($url)->with('message', lang('Auth.successLogout'));
+        return redirect()->to($url);
     }
 
 

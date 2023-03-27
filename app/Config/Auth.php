@@ -24,18 +24,18 @@ class Auth extends BaseConfig
      * ////////////////////////////////////////////////////////////////////
      */
     public array $views = [
-        'login'                       => '\App\Views\login',
-        'register'                    => '\App\Views\register',
+        'login'                       => '\App\Views\Auth\login',
+        'register'                    => '\App\Views\Auth\register',
         'layout'                      => '\CodeIgniter\Shield\Views\layout',
         'action_email_2fa'            => '\App\Views\email_2fa_show',
         'action_email_2fa_verify'     => '\App\Views\email_2fa_verify',
         'action_email_2fa_email'      => '\App\Views\Email\email_2fa_email',
         'action_email_activate_show'  => '\App\Views\email_activate_show',
         'action_email_activate_email' => '\App\Views\Email\email_activate_email',
-        'magic-link-login'            => '\App\Views\magic_link_form',
-        'magic-link-message'          => '\App\Views\magic_link_message',
+        'magic-link-login'            => '\App\Views\Auth\magic_link_form',
+        'magic-link-message'          => '\App\Views\Auth\magic_link_message',
         'magic-link-email'            => '\App\Views\Email\magic_link_email',
-        'update_password'             => '\App\Views\update_password',
+        'update_password'             => '\App\Views\Auth\update_password',
     ];
 
     /**

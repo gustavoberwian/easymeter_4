@@ -84,7 +84,7 @@
                     <section class="card" id="w3">
                         <div class="card-body">
                          
-                            <form id="regForm" class="form-horizontal" action="<?php echo site_url('register'); ?>" method="post" accept-charset="utf-8">
+                     <form action="<?= url_to('register'); ?>" method="post" id="regForm" class="form-horizontal"  accept-charset="utf-8">
                                 <input type="hidden" name="cid" value="">
                                 <input type="hidden" name="uid" value="">
 
@@ -92,7 +92,7 @@
                                      
                                         <div class="form-group mb-3">
 								            <label>E-mail</label>
-                                            <input name="identity" id="identity" type="email" class="form-control form-control-lg" required autofocus tabindex="1" value=""/>
+                                            <input name="email" id="email" type="email" class="form-control form-control-lg" required autofocus tabindex="1" value=""/>
                                         </div>
                                         <div class="form-group mb-0">
                                             <div class="row">
@@ -107,14 +107,7 @@
                                             </div>
                                         </div>
                                       
-<?php /* ?>                                        
-               							<span class="my-3 line-thru text-center text-uppercase">
-                                            <span>ou</span>
-                                        </span>
-                                        <div class="mb-3 text-center">
-                                            <a class="btn btn-facebook" href="<?=getFacebookLoginUrl('auth/fb_callback')?>"><i class="fab fa-facebook mr-2"></i> Entrar pelo Facebook</a>
-                                        </div>
-<?php */ ?>                                        
+                                   
                                     </div>
 
                                     <div id="w3-unidade" class="tab">
@@ -123,7 +116,7 @@
                                         </div>
                                         <div class="form-group mb-3">
 								            <label>Nome Completo</label>
-                                            <input name="nome" id="nome" type="text" class="form-control form-control-lg vnome" required tabindex="4" value=""/>
+                                            <input name="username" id="username" type="text" class="form-control form-control-lg vnome" required tabindex="4" value=""/>
                                         </div>
                                         <div class="form-group mb-3">
                                             <label>Telefone</label>
@@ -154,11 +147,6 @@
             <span class="step"></span>
 
         </div>
-                                
-           </form>
-                            
-             </div>
-               
              <div class="card-footer">
                             <ul class="pager">
                                 <li class="back" id="back">
@@ -176,11 +164,14 @@
                                 </li>
 
                                 <li class="next" id="n">
-                                    <a class="btn-link text-decoration-none"  onclick="" href="<?= url_to('login') ?>">Próxima <i class="fas fa-angle-right"></i></a>
+                                    <button class="btn-link text-decoration-none" type="submit">Próxima <i class="fas fa-angle-right"></i></button>
                                 </li>
                                 
                             </ul>
                         </div>
+                  </form>
+                            
+             </div>
          </section>
 		</div>
 				<p class="text-center text-muted mt-3 mb-3">© Copyright 2017-<?php echo date('Y'); ?>. Todos os direitos reservados.</p>
@@ -290,4 +281,7 @@ function fixStepIndicator(n) {
   //... and adds the "active" class on the current step:
   x[n].className += " active";
 }
+
+ 
+
 </script>

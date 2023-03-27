@@ -52,6 +52,7 @@ $routes->post('/api', 'Api::index');
 $routes->post('/api/(:any)', 'Api::$1');
 $routes->post('/api/(:any)/(:num)', 'Api::$1/$2');
 
+
 service('auth')->routes($routes);
 
 /*

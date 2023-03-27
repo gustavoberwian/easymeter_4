@@ -177,6 +177,10 @@ class RegisterController extends BaseController
                 'label' => 'Auth.passwordConfirm',
                 'rules' => 'required|matches[password]',
             ],
+            'telefone' => [
+                'label' => 'Auth.telefone',
+                'rules' => 'required|regex_match[/^[0-9]{10}$/]',
+            ],
         ];
     }
 }

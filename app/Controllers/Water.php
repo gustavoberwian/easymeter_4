@@ -191,16 +191,16 @@ class Water extends UNO_Controller
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
 
-        $period   = $this->water_model->GetConsumption($device, $start, $end);
+        $period   = $this->water_model->GetConsumption($device, $shopping_id, $start, $end);
 
-        $period_o = $this->water_model->GetConsumption($device, $start, $end, array("opened", $this->user->config->open, $this->user->config->close), false)[0]->value;
-        $period_c = $this->water_model->GetConsumption($device, $start, $end, array("closed", $this->user->config->open, $this->user->config->close), false)[0]->value;
+        $period_o = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array("opened", $this->user->config->open, $this->user->config->close), false)[0]->value;
+        $period_c = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array("closed", $this->user->config->open, $this->user->config->close), false)[0]->value;
         $main     = $this->water_model->GetDeviceLastRead($device, $shopping_id);
-        $month_o  = $this->water_model->GetConsumption($device, date("Y-m-01"), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false)[0]->value;
-        $month_c  = $this->water_model->GetConsumption($device, date("Y-m-01"), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false)[0]->value;
+        $month_o  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false)[0]->value;
+        $month_c  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false)[0]->value;
 
-        $day_o  = $this->water_model->GetConsumption($device, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false)[0]->value;
-        $day_c  = $this->water_model->GetConsumption($device, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false)[0]->value;
+        $day_o  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false)[0]->value;
+        $day_c  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false)[0]->value;
 
         $values  = array();
         $labels  = array();

@@ -48,7 +48,8 @@
                         url: _self.$table.data("url"),
                         data: {
                             fid: $(".btn-download").data("id"),
-                            monitoramento: _self.$table.data("tipo")
+                            monitoramento: _self.$table.data("tipo"),
+                            group: $(".page-header").data("group")
                         },
                         error: function () {
                             notifyError(

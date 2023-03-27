@@ -60,7 +60,8 @@
                 device  : device,
                 start   : start.format("YYYY-MM-DD"),
                 end     : end.format("YYYY-MM-DD"),
-                field   : el.data("field")
+                field   : el.data("field"),
+                group   : $(".page-header").data("group"),
             };
 
             $.ajax({

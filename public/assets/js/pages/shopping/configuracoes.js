@@ -738,7 +738,10 @@
         ajax: {
             type: 'POST',
             url: $("#dt-usuarios").data("url"),
-            data: {group: $(".page-header").data('group')},
+            data: {
+                group: $(".page-header").data('group'),
+                unity: $(".page-header").data('unity')
+            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."

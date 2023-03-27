@@ -1,6 +1,6 @@
 <section role="main" class="content-body">
     <!-- start: page -->
-    <header class="page-header">
+    <header class="page-header" data-group="<?=$group_id ?>">
         <h2><?= $group->group_name; ?></h2>
     </header>
 

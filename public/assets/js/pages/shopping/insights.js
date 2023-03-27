@@ -21,6 +21,9 @@
         ajax: {
             type: 'POST',
             url: "/energia/insights/1",
+            data: {
+                group: $(".page-header").data("group")
+            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -54,6 +57,9 @@
         ajax: {
             type: 'POST',
             url: "/energia/insights/2",
+            data: {
+                group: $(".page-header").data("group")
+            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -87,6 +93,9 @@
         ajax: {
             type: 'POST',
             url: "/energia/insights/3",
+            data: {
+                group: $(".page-header").data("group")
+            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -120,6 +129,9 @@
         ajax: {
             type: 'POST',
             url: "/energia/insights/4",
+            data: {
+                group: $(".page-header").data("group")
+            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -153,6 +165,9 @@
         ajax: {
             type: 'POST',
             url: "/energia/insights/5",
+            data: {
+                group: $(".page-header").data("group")
+            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -185,6 +200,9 @@
         ajax: {
             type: 'POST',
             url: "/energia/insights/6",
+            data: {
+                group: $(".page-header").data("group")
+            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."

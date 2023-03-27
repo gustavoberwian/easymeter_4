@@ -61,16 +61,16 @@
                                 </li>
                             <?php endif; ?>
                             <?php if ($group->m_gas) : ?>
-                                <li class="<?php if (in_array($method, array('water'))) echo 'nav-active'; ?>">
-                                    <a class="nav-link" href="<?= site_url('shopping/water/' . $group_id); ?>">
+                                <li class="<?php if (in_array($method, array('gas'))) echo 'nav-active'; ?>">
+                                    <a class="nav-link" href="<?= site_url('shopping/gas/' . $group_id); ?>">
                                         <i class="fas fa-fire-alt" aria-hidden="true"></i>
                                         <span>Gás</span>
                                     </a>
                                 </li>
                             <?php endif; ?>
                             <?php if ($group->m_nivel) : ?>
-                                <li class="<?php if (in_array($method, array('water'))) echo 'nav-active'; ?>">
-                                    <a class="nav-link" href="<?= site_url('shopping/water/' . $group_id); ?>">
+                                <li class="<?php if (in_array($method, array('level'))) echo 'nav-active'; ?>">
+                                    <a class="nav-link" href="<?= site_url('shopping/level/' . $group_id); ?>">
                                         <i class="fas fa-ruler-vertical" aria-hidden="true"></i>
                                         <span>Nível</span>
                                     </a>
@@ -108,7 +108,7 @@
                                 </li>
                             <?php endif; ?>
                         <?php endif; ?>
-                        <?php if ($user->inGroup('admin')): ?>
+                        <?php if ($user->inGroup('superadmin')): ?>
                             <li class="<?php if (in_array($method, array('historico'))) echo 'nav-active'; ?>">
                                 <a class="nav-link" href="<?= site_url('shopping/historico/' . $group_id); ?>">
                                     <span class="float-right badge badge-danger badge-log" data-count="<?= $logs ?>"><?= $logs ?></span>

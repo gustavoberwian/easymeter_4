@@ -5,7 +5,7 @@ namespace App\Models;
 class Water_model extends Base_model
 {
 
-    public function GetConsumption($device, $start, $end, $st = array(), $group = true, $interval = null)
+    public function GetConsumption($device, $group_id, $start, $end, $st = array(), $group = true, $interval = null)
     {
         $dvc  = "";
         $dvc1 = "";
@@ -16,19 +16,24 @@ class Water_model extends Base_model
         } else if ($device == "C") {
 
             $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
-                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1";
+                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id
+                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1 AND esm_unidades.bloco_id = $group_id";
 
         } else if ($device == "U") {
 
             $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
-                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2";
+                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id
+                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2 AND esm_unidades.bloco_id = $group_id";
 
         } else if ($device == "T") {
 
+            $dvc = "JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                    JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id";
+
         } else if ($device == "ALL") {
 
-            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
-                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id";
+            $dvc = "JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                    JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id";
 
         }  else {
 

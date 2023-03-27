@@ -78,7 +78,7 @@ class Shopping_model extends Base_model
         ";
 
         if ($this->db->query($query)->getNumRows() <= 0)
-            return false;
+            return array();
 
         return $this->db->query($query)->getResult();
     }
@@ -97,7 +97,7 @@ class Shopping_model extends Base_model
             return $result->getRow();
         }
 
-        return false;
+        return array();
     }
 
     public function get_group_info($group_id)
@@ -326,7 +326,7 @@ class Shopping_model extends Base_model
         if ($result->getNumRows())
             return $result->getResult();
 
-        return false;
+        return array();
     }
 
     public function get_devices($group, $type)

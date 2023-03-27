@@ -44,28 +44,28 @@
                                 <div class="row">
                                     <div class="col-md-4 mb-3">
                                         <label for="ponta-start" class="form-label">Horário Início Ponta</label>
-                                        <input id="ponta-start" value="<?= date('H:i', $client_config->ponta_start); ?>" name="ponta_start" type="time" class="form-control" placeholder="">
+                                        <input id="ponta-start" value="<?= isset($client_config->ponta_start) ? date('H:i', $client_config->ponta_start) : ''; ?>" name="ponta_start" type="time" class="form-control" placeholder="">
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="ponta-end" class="form-label">Horário Fim Ponta</label>
-                                        <input id="ponta-end" value="<?= date('H:i', $client_config->ponta_end); ?>" name="ponta_end" type="time" class="form-control" placeholder="">
+                                        <input id="ponta-end" value="<?= isset($client_config->ponta_end) ? date('H:i', $client_config->ponta_end) : ''; ?>" name="ponta_end" type="time" class="form-control" placeholder="">
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="area-comum" class="form-label">Identificador da Área Comum</label>
-                                        <input id="area-comum" value="<?= $client_config->area_comum; ?>" name="area_comum" type="text" class="form-control" placeholder="">
+                                        <input id="area-comum" value="<?= $client_config->area_comum ?? ''; ?>" name="area_comum" type="text" class="form-control" placeholder="">
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="open" class="form-label">Horário Abertura Shopping</label>
-                                        <input id="open" value="<?= date('H:i', $client_config->open); ?>" name="open" type="time" class="form-control" placeholder="">
+                                        <input id="open" value="<?= isset($client_config->open) ? date('H:i', $client_config->open) : ''; ?>" name="open" type="time" class="form-control" placeholder="">
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="close" class="form-label">Horário Fechamento Shopping</label>
-                                        <input id="close" value="<?= date('H:i', $client_config->close); ?>" name="close" type="time" class="form-control" placeholder="">
+                                        <input id="close" value="<?= isset($client_config->close) ? date('H:i', $client_config->close) : ''; ?>" name="close" type="time" class="form-control" placeholder="">
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="split-report" class="form-label">Separar Área Comum e Unidades nos relatórios</label></br>
                                         <div class="switch switch-sm switch-primary">
-                                            <input type="checkbox" <?= $client_config->split_report ? 'checked' : ''; ?> class="switch-input" id="split-report" name="split_report" data-plugin-ios-switch>
+                                            <input type="checkbox" <?= $client_config->split_report ?? 0 ? 'checked' : ''; ?> class="switch-input" id="split-report" name="split_report" data-plugin-ios-switch>
                                         </div>
                                     </div>
                                 </div>

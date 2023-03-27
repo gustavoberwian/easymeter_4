@@ -17,7 +17,15 @@
                                     <div class="img-fluid rounded img-hover" data-group="<?= $groups[$i]->bloco_id; ?>"  style="background-image: url('<?= site_url("assets/img/" . $groups[$i]->img); ?>'); background-repeat: no-repeat; background-size: cover; height: 500px; background-position: center;"></div>
                                 <?php endif; ?>
                                 <div class="row m-0 fixed-card-top">
-                                    <div class="h5 color-f1"><?= $groups[$i]->nome; ?><span class="float-end"><i class="fas fa-bolt me-3"></i><i class="fas fa-tint me-2"></i></span></div>
+                                    <div class="h5 color-f1">
+                                        <?= $groups[$i]->nome; ?>
+                                        <span class="float-end">
+                                            <?= ($groups[$i]->m_energia) ? '<i class="fas fa-bolt me-3"></i>' : '' ?>
+                                            <?= ($groups[$i]->m_agua) ? '<i class="fas fa-tint me-3"></i>' : '' ?>
+                                            <?= ($groups[$i]->m_gas) ? '<i class="fas fa-fire me-3"></i>' : '' ?>
+                                            <?= ($groups[$i]->m_nivel) ? '<i class="fas fa-ruler-vertical me-3"></i>' : '' ?>
+                                        </span>
+                                    </div>
                                 </div>
                                 <div class="row m-0 fixed-card-bottom">
                                     <div class="col-md-3">

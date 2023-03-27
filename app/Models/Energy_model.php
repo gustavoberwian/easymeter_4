@@ -87,7 +87,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetActivePositive($device, $start, $end, $st = array(), $gp = false)
+    public function GetActivePositive($device, $group, $start, $end, $st = array(), $gp = false)
     {
         $query = "";
         $dvc = "";
@@ -100,11 +100,11 @@ class Energy_model extends Base_model
 
         } else if ($device == "C") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id WHERE type = 1)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.bloco_id = $grp)";
 
         } else if ($device == "U") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id WHERE type = 2)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.bloco_id = $grp)";
 
         } else {
             $dvc = " AND d.device = '$device'";
@@ -1431,7 +1431,7 @@ class Energy_model extends Base_model
         }
     }
 
-    public function GetResume($config, $split)
+    public function GetResume($group, $config, $split)
     {
         $type = "";
         if ($config->split_report) {
@@ -1513,7 +1513,8 @@ class Energy_model extends Base_model
                     GROUP BY d.device
                 ) p ON p.device = esm_medidores.nome
             WHERE 
-                entrada_id = 72
+                esm_unidades.bloco_id = $group AND
+                esm_medidores.tipo = 'energia'
             ORDER BY 
                 esm_unidades.nome
         ");

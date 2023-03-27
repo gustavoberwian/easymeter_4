@@ -19,14 +19,15 @@ class UNO_Controller extends BaseController {
 
         if (auth()->loggedIn()) {
 
-            $this->user           = auth()->user();
+            $this->user             = auth()->user();
             if  (auth()->user()->getGroups()) {
-                $this->user->group    = auth()->user()->getGroups()[0]; 
+                $this->user->group  = auth()->user()->getGroups()[0];
             }
-            $this->user->nickname = explode(' ', trim(auth()->user()->username))[0];
-            $this->user->alerts   = $this->shopping_model->CountAlerts($this->user->id);
-            $this->user->type     = $this->shopping_model->get_user_relation($this->user->id);
-            $this->user->config   = $this->shopping_model->get_client_config($this->user->group);
+            $this->user->nickname   = explode(' ', trim(auth()->user()->username))[0];
+            $this->user->alerts     = $this->shopping_model->CountAlerts($this->user->id);
+            $this->user->type       = $this->shopping_model->get_user_relation($this->user->id);
+            $this->user->config     = $this->shopping_model->get_client_config($this->user->group);
+            $this->user->condo      = $this->shopping_model->get_condo($this->user->type->entity_id);
 
             date_default_timezone_set('America/Sao_Paulo');
         }

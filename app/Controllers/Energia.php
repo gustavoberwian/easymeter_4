@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @property $energy_model
  */
@@ -136,21 +137,22 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
+        $grp      = $this->input->getPost('group');
 
         if ($start == $end && date("N", strtotime($start)) >= 6) {
 
             $period_p = false;
-            $period_f = $this->energy_model->GetActivePositive($device, $start, $end);
+            $period_f = $this->energy_model->GetActivePositive($device, $grp, $start, $end);
             $period_i = false;
 
         } else {
-            $period_p = $this->energy_model->GetActivePositive($device, $start, $end, array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end));
-            $period_f = $this->energy_model->GetActivePositive($device, $start, $end, array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end));
+            $period_p = $this->energy_model->GetActivePositive($device, $grp, $start, $end, array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end));
+            $period_f = $this->energy_model->GetActivePositive($device, $grp, $start, $end, array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end));
             $period_i = false;
         }
 
-        $month_p = $this->energy_model->GetActivePositive($device, date("Y-m-01"), date("Y-m-d"), array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end), true)[0]->value;
-        $month_f = $this->energy_model->GetActivePositive($device, date("Y-m-01"), date("Y-m-d"), array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end), true)[0]->value;
+        $month_p = $this->energy_model->GetActivePositive($device, $grp, date("Y-m-01"), date("Y-m-d"), array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end), true)[0]->value;
+        $month_f = $this->energy_model->GetActivePositive($device, $grp, date("Y-m-01"), date("Y-m-d"), array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end), true)[0]->value;
 
         $main  = $this->energy_model->GetDeviceLastRead($device);
         $day   = $this->energy_model->GetActivePositiveAverage($device);
@@ -2478,7 +2480,8 @@ class Energia extends UNO_Controller
                     GROUP BY d.device
                 ) p ON p.device = esm_medidores.nome
             WHERE 
-                entrada_id = 72
+                esm_unidades.bloco_id = " . $this->input->getPost("group") . " AND
+                esm_medidores.tipo = 'energia'
             ORDER BY 
             esm_unidades_config.type, esm_unidades.nome
         ");
@@ -3159,7 +3162,7 @@ class Energia extends UNO_Controller
 
         for ($i = 0; $i <= $split; $i++) {
 
-            $resume = $this->energy_model->GetResume($this->user->config, $i + 1);
+            $resume = $this->energy_model->GetResume($group_id, $this->user->config, $i + 1);
 
             $spreadsheet->setActiveSheetIndex($i);
 

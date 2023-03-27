@@ -107,7 +107,11 @@ class Shopping_model extends Base_model
                     esm_condominios.id as entity_id, 
                     esm_condominios.nome as entity_name, 
                     esm_blocos.id as group_id, 
-                    esm_blocos.nome as group_name
+                    esm_blocos.nome as group_name,
+                    esm_shoppings.m_agua,
+                    esm_shoppings.m_energia,
+                    esm_shoppings.m_gas,
+                    esm_shoppings.m_nivel
                 FROM esm_shoppings
                 JOIN esm_blocos ON esm_blocos.id = esm_shoppings.bloco_id
                 JOIN esm_condominios ON esm_condominios.id = esm_blocos.condo_id
@@ -152,27 +156,29 @@ class Shopping_model extends Base_model
             return $result->getResultArray();
         }
 
-        return false;
+        return array();
     }
 
-    public function get_device_groups($eid)
+    public function get_device_groups($group_id, $m)
     {
         $result = $this->db->query("
             SELECT
-                *
+                * 
             FROM
-                esm_device_groups
-            WHERE 
-                entrada_id = $eid
-            ORDER BY 
-                name
+                esm_device_groups 
+            JOIN esm_medidores ON esm_medidores.entrada_id = esm_device_groups.entrada_id
+            JOIN esm_unidades ON esm_medidores.unidade_id = esm_unidades.id
+            WHERE
+                esm_unidades.bloco_id = $group_id AND esm_medidores.tipo = '$m'
+            GROUP BY NAME
+            ORDER BY NAME
         ");
 
         if ($result->getRow()) {
             return $result->getResultArray();
         }
 
-        return false;
+        return array();
     }
 
     public function get_user_permission($uid)
@@ -774,5 +780,20 @@ class Shopping_model extends Base_model
             return false;
 
         return $result->getResult();
+    }
+
+    public function get_condo($condo)
+    {
+        $query = "
+            SELECT *
+            FROM esm_condominios
+            WHERE id = $condo";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getRow();
     }
 }

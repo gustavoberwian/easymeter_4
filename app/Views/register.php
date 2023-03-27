@@ -167,13 +167,13 @@
                                     <a class="btn-link login text-decoration-none" href="<?php echo site_url('login'); ?>">Login</a>
                                 </li>
                                 <li class="previous" id="previous">
-                                    <a class="btn-link text-decoration-none" onclick="nextPrev(-1)" ><i class="fas fa-angle-left"></i> Anterior</a>
+                                    <a class="btn-link text-decoration-none cur-pointer" onclick="nextPrev(-1)" ><i class="fas fa-angle-left"></i> Anterior</a>
                                 </li>
                                 <li class="finish hidden float-right" id="finish">
-                                    <a class="btn-link text-decoration-none">Finalizar</a>
+                                    <a class="btn-link text-decoration-none cur-pointer">Finalizar</a>
                                 </li>
                                 <li class="next" id="next">
-                                    <a class="btn-link text-decoration-none"  onclick="nextPrev(1)">Próxima <i class="fas fa-angle-right"></i></a>
+                                    <a class="btn-link text-decoration-none cur-pointer"  onclick="nextPrev(1)">Próxima <i class="fas fa-angle-right"></i></a>
                                 </li>
                             </ul>
                         </div>

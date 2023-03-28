@@ -2675,6 +2675,7 @@ class Energia extends UNO_Controller
     public function insights($iud)
     {
         $group = $this->input->getPost("group");
+        $this->user->config = $this->shopping_model->get_client_config($group);
         $station = "";
         $st = "";
         $total = false;

@@ -97,7 +97,7 @@ class Shopping_model extends Base_model
             return $result->getRow();
         }
 
-        return array();
+        return false;
     }
 
     public function get_group_info($group_id)
@@ -502,10 +502,21 @@ class Shopping_model extends Base_model
 
         foreach ($dados['tabela'] as $tabela => $campos) {
 
-            $this->db->table($tabela)
+            if ($this->db->table($tabela)
+
                 ->where('group_id', $dados['group_id'])
-                ->set($campos)
-                ->update();
+                ->get()->getNumRows()) {
+                $this->db->table($tabela)
+                    ->where('group_id', $dados['group_id'])
+                    ->set($campos)
+                    ->update();
+            } else {
+
+                $campos['group_id'] = $dados['group_id'];
+                $this->db->table($tabela)
+                    ->set($campos)
+                    ->insert();
+            }
         }
 
         $this->db->transComplete();

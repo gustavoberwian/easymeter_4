@@ -137,7 +137,7 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
-        $group      = $this->input->getPost('group');
+        $group    = $this->input->getPost('group');
 
         if ($start == $end && date("N", strtotime($start)) >= 6) {
 
@@ -781,6 +781,8 @@ class Energia extends UNO_Controller
     public function chart_engineering()
     {
         $field    = $this->input->getPost('field');
+        $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
+        print_r($this->user->config);
         $divisor  = 1;
         $decimals = 0;
         $unidade  = "";
@@ -2409,6 +2411,8 @@ class Energia extends UNO_Controller
 
     public function resume()
     {
+        $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 

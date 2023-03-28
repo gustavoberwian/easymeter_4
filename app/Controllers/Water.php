@@ -340,7 +340,7 @@ class Water extends UNO_Controller
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                entrada_id = 73
+                esm_unidades.bloco_id = ".$this->input->getPost("group")."
             ORDER BY 
             esm_unidades_config.type, esm_unidades.nome
         ");

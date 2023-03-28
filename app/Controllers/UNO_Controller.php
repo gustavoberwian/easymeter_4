@@ -28,10 +28,16 @@ class UNO_Controller extends BaseController {
             $this->user->nickname   = explode(' ', trim(auth()->user()->username))[0];
             $this->user->alerts     = $this->shopping_model->CountAlerts($this->user->id);
             $this->user->type       = $this->shopping_model->get_user_relation($this->user->id);
-            $this->user->condo      = $this->shopping_model->get_condo($this->user->type->entity_id);
 
             if (service('router')->methodName() !== 'index') {
                 $this->user->config = $this->shopping_model->get_client_config(service('uri')->getSegment(3));
+            }
+
+            if ($this->user->inGroup('superadmin')) {
+                $this->user->condo = (object)[];
+                $this->user->condo->classificacao = $this->user->page;
+            } else {
+                $this->user->condo = $this->shopping_model->get_condo($this->user->type->entity_id);
             }
 
             date_default_timezone_set('America/Sao_Paulo');

@@ -205,6 +205,9 @@
         ajax: {
             type: 'POST',
             url: "/water/resume",
+            data: {
+                group: $('.content-body').data('group')
+            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."

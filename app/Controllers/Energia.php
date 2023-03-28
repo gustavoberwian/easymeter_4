@@ -137,27 +137,27 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
-        $grp      = $this->input->getPost('group');
+        $group    = $this->input->getPost('group');
 
         if ($start == $end && date("N", strtotime($start)) >= 6) {
 
             $period_p = false;
-            $period_f = $this->energy_model->GetActivePositive($device, $grp, $start, $end);
+            $period_f = $this->energy_model->GetActivePositive($device, $group, $start, $end);
             $period_i = false;
 
         } else {
-            $period_p = $this->energy_model->GetActivePositive($device, $grp, $start, $end, array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end));
-            $period_f = $this->energy_model->GetActivePositive($device, $grp, $start, $end, array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end));
+            $period_p = $this->energy_model->GetActivePositive($device, $group, $start, $end, array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end));
+            $period_f = $this->energy_model->GetActivePositive($device, $group, $start, $end, array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end));
             $period_i = false;
         }
 
-        $month_p = $this->energy_model->GetActivePositive($device, $grp, date("Y-m-01"), date("Y-m-d"), array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end), true)[0]->value;
-        $month_f = $this->energy_model->GetActivePositive($device, $grp, date("Y-m-01"), date("Y-m-d"), array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end), true)[0]->value;
+        $month_p = $this->energy_model->GetActivePositive($device, $group, date("Y-m-01"), date("Y-m-d"), array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end), true)[0]->value;
+        $month_f = $this->energy_model->GetActivePositive($device, $group, date("Y-m-01"), date("Y-m-d"), array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end), true)[0]->value;
 
-        $main  = $this->energy_model->GetDeviceLastRead($device);
-        $day   = $this->energy_model->GetActivePositiveAverage($device);
-        $day_p = $this->energy_model->GetActivePositiveAverage($device, array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end));
-        $day_f = $this->energy_model->GetActivePositiveAverage($device, array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end));
+        $main  = $this->energy_model->GetDeviceLastRead($device, $group);
+        $day   = $this->energy_model->GetActivePositiveAverage($device, $group);
+        $day_p = $this->energy_model->GetActivePositiveAverage($device, $group, array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end));
+        $day_f = $this->energy_model->GetActivePositiveAverage($device, $group, array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end));
 
         $values_p  = array();
         $values_f  = array();
@@ -276,15 +276,16 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
+        $group      = $this->input->getPost('group');
 
         if ($start == $end && date("N", strtotime($start)) >= 6) {
 
             $period_p = false;
-            $period_f = $this->energy_model->GetActivePositive($device, $start, $end);
+            $period_f = $this->energy_model->GetActivePositive($device, $group, $start, $end);
 
         } else {
-            $period_p = $this->energy_model->GetActivePositive($device, $start, $end, array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end));
-            $period_f = $this->energy_model->GetActivePositive($device, $start, $end, array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end));
+            $period_p = $this->energy_model->GetActivePositive($device, $group, $start, $end, array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end));
+            $period_f = $this->energy_model->GetActivePositive($device, $group, $start, $end, array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end));
         }
 
         $consumption_p = 0;
@@ -340,15 +341,16 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
+        $group      = $this->input->getPost('group');
 
         if ($start == $end) {
 
-            $period = $this->energy_model->GetActiveDemand($device, $start, $end);
+            $period = $this->energy_model->GetActiveDemand($device, $group, $start, $end);
             $count  = 1;
 
         } else {
 
-            $period = $this->energy_model->GetActiveDemand($device, $start, $end);
+            $period = $this->energy_model->GetActiveDemand($device, $group, $start, $end);
             $count  = 24;
         }
 
@@ -393,6 +395,7 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
+        $group      = $this->input->getPost('group');
 
         $limite = "Limite: " . 0.92;
         $value  = array();
@@ -400,7 +403,7 @@ class Energia extends UNO_Controller
         $titles = array();
         $dates  = array();
         $max    = 0;
-        $values = $this->energy_model->GetMainFactor($device, $start, $end);
+        $values = $this->energy_model->GetMainFactor($device, $group, $start, $end);
 
         if ($values) {
 
@@ -464,6 +467,7 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
+        $group      = $this->input->getPost('group');
 
         $limite  = "Limite: " . 0.92;
         $value_a = array();
@@ -473,7 +477,7 @@ class Energia extends UNO_Controller
         $titles  = array();
         $dates   = array();
         $max     = 0;
-        $values  = $this->energy_model->GetFactorPhases($device, $start, $end);
+        $values  = $this->energy_model->GetFactorPhases($device, $group, $start, $end);
 
         if ($values) {
 
@@ -600,9 +604,9 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
+        $group      = $this->input->getPost('group');
 
-
-        $period = $this->energy_model->GetMainReactive($device, $start, $end);
+        $period = $this->energy_model->GetMainReactive($device, $group, $start, $end);
 
         $values_c = array();
         $values_i = array();
@@ -655,10 +659,10 @@ class Energia extends UNO_Controller
 
         $data = array(
             array("Máxima Capacitiva", number_format(round($max_c), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
-            array("Mínima Capacitiva", number_format(round($min_c), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
+            array("Mínima Capacitiva", number_format(round(($min_c == 999999999) ? 0 : $min_c), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
             array("Média Capacitiva", number_format(round($total_c / count($period)), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
             array("Máxima Indutiva", number_format(round($max_i), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
-            array("Mínima Indutiva", number_format(round($min_i), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
+            array("Mínima Indutiva", number_format(round(($min_i == 999999999) ? 0 : $min_i), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
             array("Média Indutiva", number_format(round($total_i / count($period)), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
         );
 
@@ -672,13 +676,14 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
+        $group      = $this->input->getPost('group');
 
         $value_load = array();
         $labels     = array();
         $titles     = array();
         $dates      = array();
 
-        $values = $this->energy_model->getMainLoad($device, $start, $end);
+        $values = $this->energy_model->getMainLoad($device, $group, $start, $end);
 
         if ($values) {
 
@@ -729,6 +734,7 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
+        $group      = $this->input->getPost('group');
 
         $value  = array();
         $labels = array();
@@ -738,7 +744,7 @@ class Energia extends UNO_Controller
         //Carbon factor
         $factor = 0.090;
 
-        $values = $this->energy_model->GetActivePositive($device, $start, $end);
+        $values = $this->energy_model->GetActivePositive($device, $group, $start, $end);
 
         if ($values) {
 
@@ -775,6 +781,8 @@ class Energia extends UNO_Controller
     public function chart_engineering()
     {
         $field    = $this->input->getPost('field');
+        $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
+        print_r($this->user->config);
         $divisor  = 1;
         $decimals = 0;
         $unidade  = "";
@@ -836,6 +844,7 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
+        $group      = $this->input->getPost('group');
 
         $value_a = array();
         $value_b = array();
@@ -855,9 +864,9 @@ class Energia extends UNO_Controller
         $min_c = 999999999;
 
         if ($field == "load")
-            $values = $this->energy_model->GetLoadPhases($device, $start, $end, $field);
+            $values = $this->energy_model->GetLoadPhases($device, $group, $start, $end, $field);
         else
-            $values = $this->energy_model->GetValuesPhases($device, $start, $end, $field);
+            $values = $this->energy_model->GetValuesPhases($device, $group, $start, $end, $field);
 
         if ($values) {
 
@@ -924,11 +933,11 @@ class Energia extends UNO_Controller
         $footer = "";
         if ($field == "current" || $field == "voltage") {
             $data = array(
-                array("Máx / Min R:", number_format(round($max_a, $decimals), $decimals, ",", ".") . $unidade. " / " . number_format(round($min_a, $decimals), $decimals, ",", ".") . $unidade, '#ff4560'),
+                array("Máx / Min R:", number_format(round($max_a, $decimals), $decimals, ",", ".") . $unidade. " / " . number_format(round(($min_a = 999999999) ? 0 : $min_a, $decimals), $decimals, ",", ".") . $unidade, '#ff4560'),
                 array("Méd R:", number_format(round($total_a / count($values), $decimals), $decimals, ",", ".") . $unidade, '#ff4560'),
-                array("Máx / Min S:", number_format(round($max_b, $decimals), $decimals, ",", ".")  . $unidade. " / " . number_format(round($min_b, $decimals), $decimals, ",", ".") . $unidade, '#00e396'),
+                array("Máx / Min S:", number_format(round($max_b, $decimals), $decimals, ",", ".")  . $unidade. " / " . number_format(round(($min_b = 999999999) ? 0 : $min_b, $decimals), $decimals, ",", ".") . $unidade, '#00e396'),
                 array("Méd S:", number_format(round($total_b / count($values), $decimals), $decimals, ",", ".") . $unidade, '#00e396'),
-                array("Máx / Min T:", number_format(round($max_c, $decimals), $decimals, ",", ".")  . $unidade . " / " . number_format(round($min_c, $decimals), $decimals, ",", ".") . $unidade, '#007ab8'),
+                array("Máx / Min T:", number_format(round($max_c, $decimals), $decimals, ",", ".")  . $unidade . " / " . number_format(round(($min_c = 999999999) ? 0 : $min_c, $decimals), $decimals, ",", ".") . $unidade, '#007ab8'),
                 array("Méd T:", number_format(round($total_c / count($values),$decimals), $decimals, ",", ".") . $unidade, '#007ab8'),
             );
 
@@ -937,13 +946,13 @@ class Energia extends UNO_Controller
         } else if ($field == "active" || $field == "power" || $field == "reactive") {
             $data = array(
                 array("Máx R:", number_format(round($max_a, $decimals), $decimals, ",", ".") . $unidade, "#ff4560"),
-                array("Mín R:", number_format(round($min_a, $decimals), $decimals, ",", ".") . $unidade, "#ff4560"),
+                array("Mín R:", number_format(round(($min_a = 999999999) ? 0 : $min_a, $decimals), $decimals, ",", ".") . $unidade, "#ff4560"),
                 array("Méd R:", number_format(round($total_a / count($values), $decimals), $decimals, ",", ".") . $unidade, "#ff4560"),
                 array("Máx S:", number_format(round($max_b, $decimals), $decimals, ",", ".") . $unidade, "#00e396"),
-                array("Mín S:", number_format(round($min_b, $decimals), $decimals, ",", ".") . $unidade, "#00e396"),
+                array("Mín S:", number_format(round(($min_b = 999999999) ? 0 : $min_b, $decimals), $decimals, ",", ".") . $unidade, "#00e396"),
                 array("Méd S:", number_format(round($total_b / count($values), $decimals), $decimals, ",", ".") . $unidade, "#00e396"),
                 array("Máx T:", number_format(round($max_c, $decimals), $decimals, ",", ".") . $unidade, "#007ab8"),
-                array("Mín T:", number_format(round($min_c, $decimals), $decimals, ",", ".") . $unidade, "#007ab8"),
+                array("Mín T:", number_format(round(($min_c = 999999999) ? 0 : $min_c, $decimals), $decimals, ",", ".") . $unidade, "#007ab8"),
                 array("Méd T:", number_format(round($total_c / count($values), $decimals), $decimals, ",", ".") . $unidade, "#007ab8"),
             );
             $footer = $this->chartFooter($data);
@@ -2402,6 +2411,8 @@ class Energia extends UNO_Controller
 
     public function resume()
     {
+        $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 
@@ -2613,7 +2624,7 @@ class Energia extends UNO_Controller
         }
     }
 
-    private function GetFactorInsight()
+    private function GetFactorInsight($group)
     {
         // realiza a query via dt
         $dt = $this->datatables->query("
@@ -2638,7 +2649,7 @@ class Energia extends UNO_Controller
                 GROUP BY d.device 
             ) p ON p.device = esm_medidores.nome
             WHERE 
-                entrada_id = 72
+               esm_unidades.bloco_id = $group
             ORDER BY 
                 p.value
             LIMIT 10
@@ -2664,6 +2675,7 @@ class Energia extends UNO_Controller
 
     public function insights($iud)
     {
+        $group = $this->input->getPost("group");
         $station = "";
         $st = "";
         $total = false;
@@ -2671,26 +2683,26 @@ class Energia extends UNO_Controller
         if ($iud == 1) {
             $station = "AND ((MOD((d.timestamp), 86400) >= {$this->user->config->ponta_start} AND MOD((d.timestamp), 86400) <= {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)";
             $st = "ponta";
-            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end));
+            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group);
         } else if ($iud == 2) {
             $station = "AND (((MOD((d.timestamp), 86400) < {$this->user->config->ponta_start} OR MOD((d.timestamp), 86400) > {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)";
             $st = "fora";
-            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end));
+            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group);
         } else if ($iud == 3) {
             $station = "AND (MOD((d.timestamp), 86400) >= {$this->user->config->open} AND MOD((d.timestamp), 86400) <= {$this->user->config->close})";
             $st = "open";
-            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->open, $this->user->config->close));
+            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->open, $this->user->config->close), $group);
         } else if ($iud == 4) {
             $station = "AND (MOD((d.timestamp), 86400) < {$this->user->config->open} OR MOD((d.timestamp), 86400) > {$this->user->config->close})";
             $st = "close";
-            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->open, $this->user->config->close));
+            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->open, $this->user->config->close), $group);
         } else if ($iud == 5) {
             $station = "";
             $factor = 0.090;
-            $total = $this->energy_model->GetMonthByStation(array()) * $factor;
+            $total = $this->energy_model->GetMonthByStation(array(), $group) * $factor;
         } else if ($iud == 6) {
 
-            echo $this->GetFactorInsight();
+            echo $this->GetFactorInsight($group);
             return;
         }
 
@@ -2716,7 +2728,7 @@ class Energia extends UNO_Controller
                     GROUP BY d.device
                 ) p ON p.device = esm_medidores.nome
             WHERE 
-                entrada_id = 72
+                esm_unidades.bloco_id = $group
             ORDER BY p.value DESC
             LIMIT 10
         ");

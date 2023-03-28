@@ -10,6 +10,13 @@
 
     <img src="<?php echo base_url('assets/img/logo-north.png'); ?>" alt="<?= "North"; ?>" class="mb-4" height="80"/>
 
+    <?php if (empty($user->config)) : ?>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Atenção!</strong> Configurações gerais do shopping não fornecidas. <a href="/shopping/configuracoes/<?=$group_id ?>" class="alert-link">Clique aqui</a> e configure-os para visualizar os dados corretamente.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
     <ul class="nav nav-pills nav-pills-primary mb-3">
         <?php if (!$user->inGroup("unity", "shopping")): ?>
             <li class="nav-item configs" role="presentation">

@@ -82,7 +82,7 @@
 					<label>Email</label>
                     <!-- Email -->
                     <div class="input-group">
-                        <input type="email"  class="form-control form-control-lg" data-msg-required="Campo Obrigatório" required  name="email" inputmode="email" autocomplete="email" placeholder="<?= lang('Auth.email') ?>" value="<?= old('email') ?>" required />
+                        <input type="email"  class="form-control form-control-lg" data-msg-required="Campo Obrigatório" required  name="email" inputmode="email" autocomplete="email" placeholder="" value="<?= old('email') ?>" required />
 						<span class="input-group-text">
 						<i class="bx bx-user text-4"></i>
 						</span>
@@ -99,7 +99,7 @@
 					</div>
 			
 							<div class="input-group">
-                        <input type="password" name="password" class="form-control form-control-lg" data-msg-required="Campo Obrigatório" required inputmode="text" autocomplete="current-password" placeholder="<?= lang('Auth.password') ?>" required />
+                        <input type="password" name="password" class="form-control form-control-lg" data-msg-required="Campo Obrigatório" required inputmode="text" autocomplete="current-password" placeholder="" required />
 						<span class="input-group-text">
 										<i class="bx bx-lock text-4"></i>
 									</span>

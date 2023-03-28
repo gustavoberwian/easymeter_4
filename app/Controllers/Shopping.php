@@ -105,11 +105,33 @@ class Shopping extends UNO_Controller
         $data['user']    = $this->user;
 
         $data['unidades'] = $this->shopping_model->get_units($group_id, "agua");
-        $data['device_groups'] = $this->shopping_model->get_device_groups(73);
+        $data['device_groups'] = $this->shopping_model->get_device_groups($group_id, "agua");
 
         $data['area_comum'] = "Área Comum";
 
         return $this->render('water', $data);
+    }
+
+    public function level($group_id = null)
+    {
+        $data['user']    = $this->user;
+        $data['group_id'] = $group_id;
+        $data['group'] = $this->shopping_model->get_group_info($group_id);
+
+        //echo "<pre>"; print_r($data); echo "</pre>";
+
+        return $this->render('level', $data);
+    }
+
+    public function gas($group_id = null)
+    {
+        $data['user']    = $this->user;
+        $data['group_id'] = $group_id;
+        $data['group'] = $this->shopping_model->get_group_info($group_id);
+
+        //echo "<pre>"; print_r($data); echo "</pre>";
+
+        return $this->render('gas', $data);
     }
 
     public function faturamentos($group_id)
@@ -199,7 +221,7 @@ class Shopping extends UNO_Controller
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
         $data['unidades'] = $this->shopping_model->get_units($group_id);
-        $data['client_config'] = $this->shopping_model->get_client_config($this->user->group);
+        $data['client_config'] = $this->shopping_model->get_client_config($group_id);
         $data['alerts_config'] = $this->shopping_model->get_alert_config($group_id, true);
         $data['token'] = $this->shopping_model->getToken($group_id);
 
@@ -320,6 +342,7 @@ class Shopping extends UNO_Controller
     public function GetAlerts()
     {
         $monitoramento = $this->input->getPost('monitoramento');
+        $group         = $this->input->getPost('group');
 
         $user_id = auth()->user()->id;
 
@@ -346,7 +369,7 @@ class Shopping extends UNO_Controller
             FROM esm_alertas".$m."_envios 
             JOIN esm_alertas".$m." ON esm_alertas".$m.".id = esm_alertas".$m."_envios.alerta_id 
             " . $join . " 
-            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group
             WHERE
                 esm_alertas".$m."_envios.user_id = $user_id AND 
                 esm_alertas".$m.".visibility = 'normal' AND 
@@ -416,13 +439,21 @@ class Shopping extends UNO_Controller
 
     public function get_users()
     {
-        //$this->setHistory("Requisição para buscar usuários shopping ".$this->input->post('group'), 'requisição');
+        $group = $this->input->getPost("group") ?? 0;
+        $unity = $this->input->getPost("unity") ?? 0;
 
-        if ($this->user->inGroup("admin", "shopping")) {
-            $groups = "(34, 35, 36)";
-        } else {
-            $groups = "(35, 36)";
+        $groupFilter = "";
+
+        if ($this->user->inGroup("shopping")) {
+            if ($this->user->inGroup("superadmin")) {
+                $groupFilter = '"shopping"';
+            } elseif ($this->user->inGroup("admin")) {
+                $groupFilter = '"group", "unity"';
+            } elseif ($this->user->inGroup("group")) {
+                $groupFilter = '"unity"';
+            }
         }
+
         $query = "
             SELECT
                 users.id AS id,
@@ -431,7 +462,13 @@ class Shopping extends UNO_Controller
             FROM
                 users
             JOIN auth_identities ON auth_identities.user_id = users.id
-            WHERE auth_identities.type = 'email_password'
+            JOIN auth_groups_users ON auth_groups_users.user_id = users.id
+            JOIN auth_user_relation ON auth_user_relation.user_id = users.id
+            WHERE
+                auth_identities.type = 'email_password' AND
+                auth_groups_users.group IN (" . $groupFilter . ") AND
+                auth_user_relation.group_id = " . $group . " OR !ISNULL(auth_user_relation.unity_id)
+            GROUP BY users.id
         ";
 
         $dt = $this->datatables->query($query);

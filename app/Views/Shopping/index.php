@@ -1,10 +1,22 @@
 
 <section role="main" class="content-body" data-entity="<?= $entity_id ?>">
 
-    <img src="<?php echo base_url('assets/img/logo-ancar.png'); ?>" alt="<?= "Ancar"; ?>" class="mb-2 mt-2" height="50"/>
+    <?php if (!empty($user->condo->image_url)) : ?>
+        <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= $user->condo->nome; ?>" class="mb-2 mt-2" height="50"/>
+    <?php endif; ?>
 
     <!-- start: page -->
     <div class="row pt-0">
+        <?php if (empty($groups)) : ?>
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true" aria-label="Close"></button>
+                <h4 class="font-weight-bold text-dark">Nenhum shopping cadastrado em sua conta</h4>
+                <p>Não encontramos nenhum shopping cadastrado em sua conta na nossa base de dados. Se você acredita que isso seja um erro, <b>entre em contato com nosso suporte clicando no botão abaixo.</b></p>
+                <p>
+                    <button class="btn btn-default mt-1 mb-1" type="button">Conversar com um de nossos atendentes</button>
+                </p>
+            </div>
+        <?php endif; ?>
         <?php for ($i = 0; $i < count($groups); $i++): ?>
             <section class="col-md-6 p-2">
                 <div class="card" data-group="<?= $groups[$i]->bloco_id; ?>">

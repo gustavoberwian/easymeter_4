@@ -270,6 +270,7 @@ class Auth extends BaseConfig
     public array $validFields = [
         'email',
         'username',
+         'phone',
     ];
 
     /**

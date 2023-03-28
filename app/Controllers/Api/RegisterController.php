@@ -53,7 +53,7 @@ class RegisterController extends BaseController
     /**
      * Attempts to register the user.
      */
-    public function registerAction(): RedirectResponse
+    public function registerAkmkction(): RedirectResponse
     {
         if (auth()->loggedIn()) {
             return redirect()->to(config('Auth')->registerRedirect());
@@ -90,6 +90,7 @@ class RegisterController extends BaseController
         }
 
         try {
+           
             $users->save($user);
         } catch (ValidationException $e) {
             return redirect()->back()->withInput()->with('errors', $users->errors());
@@ -180,6 +181,10 @@ class RegisterController extends BaseController
             'telefone' => [
                 'label' => 'Auth.telefone',
                 'rules' => 'required|regex_match[/^[0-9]{10}$/]',
+            ],
+            'type' => [
+                'label' => 'Auth.type.value',
+                'rules' => 'required',
             ],
         ];
     }

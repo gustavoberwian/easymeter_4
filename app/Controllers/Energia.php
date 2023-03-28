@@ -782,7 +782,6 @@ class Energia extends UNO_Controller
     {
         $field    = $this->input->getPost('field');
         $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
-        print_r($this->user->config);
         $divisor  = 1;
         $decimals = 0;
         $unidade  = "";

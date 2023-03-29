@@ -104,8 +104,8 @@ class Shopping_model extends Base_model
     {
         $query = $this->db->query(
             "SELECT 
-                    esm_condominios.id as entity_id, 
-                    esm_condominios.nome as entity_name, 
+                    esm_entidades.id as entity_id, 
+                    esm_entidades.nome as entity_name, 
                     esm_blocos.id as group_id, 
                     esm_blocos.nome as group_name,
                     esm_shoppings.m_agua,
@@ -114,7 +114,7 @@ class Shopping_model extends Base_model
                     esm_shoppings.m_nivel
                 FROM esm_shoppings
                 JOIN esm_blocos ON esm_blocos.id = esm_shoppings.bloco_id
-                JOIN esm_condominios ON esm_condominios.id = esm_blocos.condo_id
+                JOIN esm_entidades ON esm_entidades.id = esm_blocos.condo_id
                 WHERE esm_blocos.id = $group_id
         ");
 
@@ -536,8 +536,8 @@ class Shopping_model extends Base_model
             FROM
                 esm_shoppings
                 JOIN esm_blocos ON esm_blocos.id = esm_shoppings.bloco_id
-                JOIN esm_condominios ON esm_condominios.id = esm_blocos.condo_id
-                JOIN auth_user_relation ON auth_user_relation.entity_id = esm_condominios.id 
+                JOIN esm_entidades ON esm_entidades.id = esm_blocos.condo_id
+                JOIN auth_user_relation ON auth_user_relation.entity_id = esm_entidades.id 
             WHERE
                 auth_user_relation.user_id = $user_id";
 
@@ -577,7 +577,7 @@ class Shopping_model extends Base_model
             return $this->db->table('users')
                 ->select("users.*")
                 ->join("auth_user_relation", "auth_user_relation.user_id = users.id")
-                ->join("esm_condominios", "esm_condominios.id = auth_user_relation.entity_id")
+                ->join("esm_entidades", "esm_entidades.id = auth_user_relation.entity_id")
                 ->where("users.id", $user_id)
                 ->get();
         }
@@ -797,7 +797,7 @@ class Shopping_model extends Base_model
     {
         $query = "
             SELECT *
-            FROM esm_condominios
+            FROM esm_entidades
             WHERE id = $condo";
 
         $result = $this->db->query($query);

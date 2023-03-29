@@ -1,10 +1,10 @@
 <section role="main" class="content-body">
     <header class="page-header">
-        <h2>Condomínios</h2>
-        <div class="right-wrapper text-right">
-            <ol class="breadcrumbs">
+        <h2>Entidades</h2>
+        <div class="right-wrapper text-end">
+            <ol class="breadcrumbs pe-4">
                 <li><a href="<?php echo site_url('admin'); ?>"><i class="fas fa-home"></i></a></li>
-                <li><a href="<?php echo site_url('admin/condominios'); ?>"><span>Condomínios</span></a></li>
+                <li><a href="<?php echo site_url('admin/entities'); ?>"><span>Entidades</span></a></li>
                 <li><span>Incluir</span></li>
             </ol>
         </div>
@@ -13,32 +13,47 @@
     <div class="row">
         <div class="col">
             <section class="card">
-                <form class="form-horizontal form-bordered form-condo">
-                    <input id="id-condo" name="id-condo" type="hidden" value="<?php if (isset($condo->id)) echo $condo->id; ?>" readonly>
+                <form class="form-horizontal form-bordered form-entity">
                     <header class="card-header">
-                        <h2 class="card-title">Incluir Condomínio</h2>
+                        <h2 class="card-title">Incluir Entidade</h2>
                     </header>
                     <div class="card-body">
                         <div class="tab-form cadastro">
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Nome <span class="required">*</span></label>
+                                <label for="classificacao-entity" class="col-lg-3 control-label text-lg-right pt-2">Classificação da Entidade <span class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <input id="nome-condo" name="nome-condo" type="text" value="" class="form-control vnome" placeholder="Razão Social do Condomínio" required>
+                                    <div class="row">
+                                        <div class="select-wrap">
+                                            <select id="classificacao-entity" name="classificacao-entity" class="form-control" required>
+                                                <option selected disabled value="">Classificação da Entidade</option>
+                                                <option value="condominio">Condomínio</option>
+                                                <option value="shopping">Shopping</option>
+                                                <option value="industria">Indústria</option>
+                                            </select>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">CNPJ <span class="required">*</span></label>
+                                <label for="nome-entity" class="col-lg-3 control-label text-lg-right pt-2">Nome <span class="required">*</span></label>
+                                <div class="col-lg-6">
+                                    <input id="nome-entity" name="nome-entity" type="text" value="" class="form-control vnome" placeholder="Nome da entidade" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group row">
+                                <label for="cnpj-entity" class="col-lg-3 control-label text-lg-right pt-2">CNPJ</label>
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="cnpj-condo" name="cnpj-condo" value="" placeholder="___.___.___/____-__" class="form-control vcnpj" required>
+                                            <input id="cnpj-entity" name="cnpj-entity" value="" placeholder="___.___.___/____-__" class="form-control vcnpj">
                                         </div>
                                         <div class="col-md-6">
                                             <div class="select-wrap">
-                                                <select id="tipo-condo" name="tipo-condo" class="form-control" required>
-                                                    <option selected disabled value="">Tipo do Condomínio</option>
+                                                <select id="tipo-entity" name="tipo-entity" class="form-control">
+                                                    <option selected disabled value="">Tipo da Entidade</option>
                                                     <option value="vertical">Residencial Vertical</option>
                                                     <option value="horizontal">Residencial Horizontal</option>
                                                     <option value="comercial">Comercial</option>
@@ -51,55 +66,53 @@
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">CEP<span class="required">*</span></label>
+                                <label for="cep-entity" class="col-lg-3 control-label text-lg-right pt-2">CEP</label>
                                 <div class="col-lg-3">
                                     <div class="input-group">
-                                        <input id="cep-condo" name="cep-condo" type="text" value="" placeholder="_____-___" class="form-control vcep" required>
-                                        <span class="input-group-append">
-															<button class="btn btn-success btn-busca overlay-small" type="button" data-loading-overlay disabled>Completar</button>
-														</span>
+                                        <input id="cep-entity" name="cep-entity" type="text" value="" placeholder="_____-___" class="form-control vcep" aria-describedby="complete-cep-button">
+                                        <button class="btn btn-success btn-busca overlay-small" type="button" id="complete-cep-button" data-loading-overlay disabled>Completar</button>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Logradouro <span class="required">*</span></label>
+                                <label for="logradouro-entity" class="col-lg-3 control-label text-lg-right pt-2">Logradouro</label>
                                 <div class="col-lg-6">
-                                    <input id="logradouro-condo" name="logradouro-condo" type="text" value="" class="form-control" placeholder="Nome da rua/avenida" required>
+                                    <input id="logradouro-entity" name="logradouro-entity" type="text" value="" class="form-control" placeholder="Nome da rua/avenida">
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Número/Complemento <span class="required">*</span></label>
+                                <label class="col-lg-3 control-label text-lg-right pt-2">Número/Complemento</label>
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="numero-condo" name="numero-condo" value="" placeholder="Número" class="form-control" required>
+                                            <input id="numero-entity" name="numero-entity" value="" placeholder="Número" class="form-control">
                                         </div>
                                         <div class="col-md-6">
-                                            <input id="complemento-condo" name="complemento-condo" value="" placeholder="Complemento" class="form-control">
+                                            <input id="complemento-entity" name="complemento-entity" value="" placeholder="Complemento" class="form-control">
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Bairro <span class="required">*</span></label>
+                                <label for="bairro-entity" class="col-lg-3 control-label text-lg-right pt-2">Bairro</label>
                                 <div class="col-lg-6">
-                                    <input id="bairro-condo" name="bairro-condo" type="text" value="" class="form-control" placeholder="Nome do bairro" required>
+                                    <input id="bairro-entity" name="bairro-entity" type="text" value="" class="form-control" placeholder="Nome do bairro" required>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Cidade/Estado <span class="required">*</span></label>
+                                <label class="col-lg-3 control-label text-lg-right pt-2">Cidade/Estado</label>
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="cidade-condo" name="cidade-condo" value="" placeholder="Cidade" class="form-control" required>
+                                            <input id="cidade-entity" name="cidade-entity" value="" placeholder="Cidade" class="form-control" required>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="select-wrap">
-                                                <select id="estado-condo" name="estado-condo" class="form-control" required>
+                                                <select id="estado-entity" name="estado-entity" class="form-control" required>
                                                     <option selected disabled value="">Estado</option>
                                                     <option value="AC">Acre</option>
                                                     <option value="AL">Alagoas</option>
@@ -136,17 +149,17 @@
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Administradora</label>
+                                <label for="select-adm" class="col-lg-3 control-label text-lg-right pt-2">Administradora</label>
                                 <div class="col-lg-6">
-                                    <select id="select-adm" name="select-adm" class="form-control populate" data-url="<?php echo site_url('ajax/get_admnistadoras'); ?>">
+                                    <select id="select-adm" name="select-adm" class="form-control populate" data-url="<?php echo site_url('admin/get_admnistadoras'); ?>">
                                     </select>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Síndico/Gestor <span class="required">*</span></label>
+                                <label for="select-gestor" class="col-lg-3 control-label text-lg-right pt-2">Gestor <span class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <select id="select-sindico" name="select-sindico" class="form-control populate" data-url="<?php echo site_url('ajax/get_sindicos'); ?>" required>
+                                    <select id="select-gestor" name="select-gestor" class="form-control populate" data-url="<?php echo site_url('admin/get_gestor'); ?>" required>
                                     </select>
                                 </div>
                             </div>
@@ -156,10 +169,10 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="inicio-condo" name="inicio-condo" value="" placeholder="__/__/____" class="form-control vdate" required>
+                                            <input id="inicio-entity" name="inicio-entity" value="" placeholder="__/__/____" class="form-control vdate" required>
                                         </div>
                                         <div class="col-md-6">
-                                            <input id="fim-condo" name="fim-condo" value="" placeholder="__/__/____" class="form-control vdate" required>
+                                            <input id="fim-entity" name="fim-entity" value="" placeholder="__/__/____" class="form-control vdate" required>
                                         </div>
                                     </div>
                                 </div>
@@ -169,33 +182,32 @@
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Monitoramento<span class="required">*</span></label>
                                 <div class="col-lg-6 align-self-center">
                                     <div class="row">
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
                                             <div class="checkbox-custom checkbox-primary">
-                                                <input class="require-one" type="checkbox" id="agua-condo" name="agua-condo">
-                                                <label for="agua-condo">Água</label>
+                                                <input class="require-one" type="checkbox" id="agua-entity" name="agua-entity">
+                                                <label for="agua-entity">Água</label>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
+                                        <div class="col-md-3">
+                                            <div class="checkbox-custom checkbox-success">
+                                                <input class="require-one" type="checkbox" id="gas-entity" name="gas-entity">
+                                                <label for="gas-entity">Gás</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
                                             <div class="checkbox-custom checkbox-warning">
-                                                <input class="require-one" type="checkbox" id="gas-condo" name="gas-condo">
-                                                <label for="gas-condo">Gás</label>
+                                                <input class="require-one" type="checkbox" id="energia-entity" name="energia-entity">
+                                                <label for="energia-entity">Energia</label>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="checkbox-custom checkbox-danger">
-                                                <input class="require-one" type="checkbox" id="energia-condo" name="energia-condo">
-                                                <label for="energia-condo">Energia</label>
+                                        <div class="col-md-3">
+                                            <div class="checkbox-custom checkbox-info">
+                                                <input class="require-one" type="checkbox" id="nivel-entity" name="nivel-entity">
+                                                <label for="nivel-entity">Nível</label>
                                             </div>
                                         </div>
                                     </div>
 
-                                </div>
-                            </div>
-
-                            <div class="form-group row ramais" style="display:none;">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Ramais de Água<span class="required">*</span></label>
-                                <div class="col-lg-6">
-                                    <input id="ramais-condo" name="ramais-condo" data-role="tagsinput" data-tag-class="badge badge-info" class="form-control ramais-input no-validate" value="" required/>
                                 </div>
                             </div>
 
@@ -203,26 +215,25 @@
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Frações Ideais</label>
                                 <div class="col-lg-6 align-self-center">
                                     <div class="checkbox-custom checkbox-default">
-                                        <input type="checkbox" id="fracao-condo" name="fracao-condo">
-                                        <label for="fracao-condo">Cadastar as Frações Ideais das unidades para permitir rateio de valores da inadimplência?</label>
+                                        <input type="checkbox" id="fracao-entity" name="fracao-entity">
+                                        <label for="fracao-entity">Cadastrar as Frações Ideais das unidades para permitir rateio de valores da inadimplência?</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Observações</label>
+                                <label for="textareaAutosize" class="col-lg-3 control-label text-lg-right pt-2">Observações</label>
                                 <div class="col-lg-6">
                                     <textarea class="form-control" rows="3" id="textareaAutosize" data-plugin-textarea-autosize></textarea>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Status</label>
+                                <label for="switch" class="col-lg-3 control-label text-lg-right pt-2">Status</label>
                                 <div class="col-lg-6">
-                                    <div class="switch switch-sm switch-primary" title="Desativar Condomínio">
-                                        <span>Inativo</span>
-                                        <input type="checkbox" name="switch" id="switch" checked="checked" />
-                                        <span>Ativo</span>
+
+                                    <div class="switch switch-sm switch-primary" title="Desativar Entidade">
+                                        <input type="checkbox" name="switch" id="switch" checked="checked" data-plugin-ios-switch />
                                     </div>
                                 </div>
                             </div>
@@ -230,13 +241,9 @@
                         </div>
 
                     </div>
-                    <footer class="card-footer">
-                        <div class="row">
-                            <div class="col-lg-9 text-right">
-                                <button class="btn btn-primary btn-salvar">Salvar</button>
-                                <button type="reset" class="btn btn-reset">Limpar</button>
-                            </div>
-                        </div>
+                    <footer class="card-footer text-end">
+                        <button class="btn btn-primary btn-salvar">Salvar</button>
+                        <button type="reset" class="btn btn-reset">Limpar</button>
                     </footer>
                 </form>
             </section>
@@ -245,6 +252,6 @@
     <!-- end: page -->
 </section>
 <?php
-$this->load->view('modals/admin/sindico');
-$this->load->view('modals/admin/administradora');
+echo view('Admin/modals/gestor');
+echo view('Admin/modals/administradora');
 ?>

@@ -1,6 +1,6 @@
 /*jshint -W100*/
 // **
-// * Condominios
+// * Entities
 // **
 var unidade_validator;
 (function($) {
@@ -20,21 +20,34 @@ var unidade_validator;
 
 
     // ***********************************************************************************************
-    // * Listagem dos Condominios
+    // * Entities listagem
     // ***********************************************************************************************
+
+	let mostra = 0;
 
     // **
     // * Inicializa datatable
     // **
-	var $dtCondos = $('#dt-condos').DataTable({
+	let $dtEntities = $('#dt-entities').DataTable({
 		dom: '<"row"<"col-lg-6"l><"col-lg-6 text-right"f>><"table-responsive"t>pr',
 		processing: true,
-		columns: [ { data: "id" }, { data: "nome" }, { data: "tipo", className: "dt-body-center" }, { data: "monitoramento", orderable: false, className: "dt-body-center monitor"}, { data: "cidade" }, { data: "nome_adm" }, { data: "nome_sindico" },
-				  { data: "inicio" }, { data: "fim" }, {data: "status", visible: false}, { data: "action", orderable: false, className: "actions dt-body-center"} ],
+		pageLength: 10,
+		columns: [
+			{ data: "id", visible: false },
+			{ data: "nome", className: "table-one-line" },
+			{ data: "tipo", className: "dt-body-center" },
+			{ data: "classificacao", className: "dt-body-center" },
+			{ data: "monitoramento", orderable: false, className: "dt-body-center monitor"},
+			{ data: "cidade", className: "table-one-line" },
+			{ data: "nome_adm", className: "table-one-line" },
+			{ data: "nome_gestor", className: "table-one-line" },
+			{ data: "status", visible: false },
+			{ data: "action", orderable: false, className: "actions dt-body-center"}
+		],
         serverSide: true,
         pagingType: "numbers",
 		ajax: {
-			url: $('#dt-condos').data('url'),
+			url: $('#dt-entities').data('url'),
 			data: function ( d ) {
 				return $.extend( {}, d, {
 					inactives: $('.dropdown-menu-config .inativos i').hasClass('fa-check'),
@@ -50,39 +63,37 @@ var unidade_validator;
             }
 		}
 	});
-	
-	var mostra = 0;
 
     // **
-    // * Handler Menu Mostra Inativos
+    // * Handler menu mostra inativos
     // **
 	$(document).on('click',".dropdown-menu-config .inativos", function () {
         $(this).children().toggleClass('fa-check fa-none');
-		$dtCondos.ajax.reload();
+		$dtEntities.ajax.reload();
     });	
 
     // **
-    // * Handler Menu Monitoramento
+    // * Handler menu tipo monitoramento
     // **
 	$(document).on('click',".dropdown-menu-config .monitor", function () {
 		$('.monitor').children().addClass('fa-none').removeClass('fa-check');
         $(this).children().addClass('fa-check').removeClass('fa-none');
 		mostra = $(this).data('mode');
-		$dtCondos.ajax.reload();
+		$dtEntities.ajax.reload();
     });	
 
  	// **
-	// * Handler para ir para página de inclusão de comdominio
+	// * Handler redireciona para inclusão de entidade
 	// **
 	$(document).on('click', '.btn-incluir', function() {
 
-		window.location = "/admin/condominios/incluir";
+		window.location = "/admin/entities/incluir";
 	});
 	
 	// **
-	// * Handler Action Excluir Condominios
+	// * Handler Action Excluir Entidade
 	// **
-	$(document).on('click', '#dt-condos .action-delete', function () {
+	$(document).on('click', '#dt-entities .action-delete', function () {
 		var id = $(this).data('id');
 		// abre a modal
 		$.magnificPopup.open( {
@@ -117,14 +128,14 @@ var unidade_validator;
 		// pega o valor do id
 		var id = $('#modalExclui .id').val();
 		// faz a requisição
-		$.post("/admin/delete_condo", {id: id}, function(json) {
+		$.post("/admin/delete_entity", {id: id}, function(json) {
 			if (json.status == 'success') {
 				// fecha modal
 				$.magnificPopup.close();
 				// atualiza tabela
-				$dtCondos.ajax.reload( null, false );
+				$dtEntities.ajax.reload( null, false );
 				// mostra notificação
-				notifySuccess('Condomínio excluído com sucesso');
+				notifySuccess('Entidade excluída com sucesso');
 			} else {
 				// fecha modal
 				$.magnificPopup.close();
@@ -159,10 +170,10 @@ var unidade_validator;
         return $(el).prop("name");
     }).join(" ");
 
-	var valid = $(".form-condo").validate({
+	var valid = $(".form-entity").validate({
 		ignore: '.no-validate',
-		highlight: function( label ) { $(label).closest('.form-group').removeClass('has-success').addClass('has-error'); },
-        success: function( label ) { $(label).closest('.form-group').removeClass('has-error'); label.remove(); },
+		highlight: function( label ) { $(label).closest('.form-entity').removeClass('has-success').addClass('has-error'); },
+        success: function( label ) { $(label).closest('.form-entity').removeClass('has-error'); label.remove(); },
         groups: {
             checks: chk_names
         },        
@@ -179,25 +190,16 @@ var unidade_validator;
 	});
 
     // **
-    // * Inicializa validação do form sindico (na modal)
+    // * Inicializa validação do form gestor (na modal)
     // **
-	var valid_sindico = $(".form-sindico").validate({
-		rules: {
-			'telefone1-sindico': { require_from_group: [1, ".phone-group"] },
-			'telefone2-sindico': { require_from_group: [1, ".phone-group"] },
-			'celular1-sindico': { require_from_group: [1, ".phone-group"] },
-			'celular2-sindico': { require_from_group: [1, ".phone-group"] }
-		}
+	var valid_gestor = $(".form-gestor").validate({
+
 	});
 
     // **
     // * Inicializa validação do form administradora (na modal)
     // **
 	var valid_adm = $(".form-adm").validate({
-		rules: {
-			'telefone1-adm': { require_from_group: [1, ".phone-group-adm"] },
-			'telefone2-adm': { require_from_group: [1, ".phone-group-adm"] }
-		},
 		errorPlacement: function( error, element ) {
 			var placement = element.closest('.input-group');
 			if (!placement.get(0)) { placement = element; }
@@ -206,7 +208,7 @@ var unidade_validator;
 		}
 		
 	});
-/*	
+	/*
 	jQuery.validator.addMethod('greaterThan', function(value, element, param) {
 		return ( parseInt(value) > parseInt(jQuery(param).val()) );
 	}, 'Deve ser maior que o inicial' );
@@ -218,7 +220,7 @@ var unidade_validator;
     jQuery.validator.addMethod('require-one', function (value) {
         return ($('input[type=checkbox].require-one').filter(':checked').length > 0);
     }, 'Selecione pelo menos um tipo de monitoramento');
-*/	
+*/
     // **
     // * Adiciona validadores especificos
     // **
@@ -235,16 +237,16 @@ var unidade_validator;
     // **
 	var SPMaskBehavior = function (val) { return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009'; };
 	// form principal
-	$('#cnpj-condo').mask('00.000.000/0000-00');
-	$("#cep-condo").mask("99999-999", {
+	$('#cnpj-entity').mask('00.000.000/0000-00');
+	$("#cep-entity").mask("99999-999", {
 		onComplete: function() { $('.btn-busca').prop('disabled', false); },
 		onChange: function() { $('.btn-busca').prop('disabled', true); }
 	} );
-	$('#inicio-condo').mask('00/00/0000');
-	$('#fim-condo').mask('00/00/0000');
-	// form sindico	
-	$('#cpf-sindico').mask('000.000.000-00');
-	$('#nasc-sindico').mask('00/00/0000');
+	$('#inicio-entity').mask('00/00/0000');
+	$('#fim-entity').mask('00/00/0000');
+	// form gestor
+	$('#cpf-gestor').mask('000.000.000-00');
+	$('#nasc-gestor').mask('00/00/0000');
 	// form administradora
 	$('#cnpj-adm').mask('00.000.000/0000-00');
 	$("#cep-adm").mask("99999-999", {
@@ -258,18 +260,9 @@ var unidade_validator;
 		}
 	});
 	
-    // **
-    // * Inicializa Select2 Sindico
-    // **
-	function formatSindico (data) {
-		if (data.loading) return data.text;
-		
-		return $('<div class="row" style="width:95%"><div class="col-md-4">' + data.documento.replace(/(\d{3})(\d{3})(\d{3})(\d{0})/, '$1.$2.$3-$4') + '</div><div class="col-md-8">' + data.nome + '</div></div>');
-	}
-	
-	var $select_sindico = $('#select-sindico').select2( {
+	var $select_gestor = $('#select-gestor').select2( {
 		ajax: {
-			url: $('#select-sindico').data('url'),
+			url: $('#select-gestor').data('url'),
 			dataType: 'json',
 			delay: 250,
 			data: function (params) {
@@ -279,12 +272,14 @@ var unidade_validator;
 				};
 			}
 		},
-		theme: 'bootstrap', language: 'pt-BR', placeholder: "Selecione o Sindico ou Gestor",
-		width: '', escapeMarkup: function (markup) { return markup; }, templateResult: formatSindico,
+		theme: 'bootstrap', language: 'pt-BR', placeholder: "Selecione o Gestor",
+		width: '',
+		escapeMarkup: function (markup) { return markup; },
+		templateResult: function (data) { return data.nome || data.text; },
 		templateSelection: function (data) { return data.nome || data.text; }
 	})
 	.on('select2:open', () => {
-		$(".select2-results:not(:has(a))").append('<a href="#" class="select2-add-item add-sindico"><i class="fa fa-plus"></i> Incluir novo Síndico/Gestor</a>');
+		$(".select2-results:not(:has(a))").append('<a href="#" class="select2-add-item add-gestor"><i class="fa fa-plus"></i> Incluir novo Gestor</a>');
 		$(".select2-search--dropdown .select2-search__field").attr("placeholder", "Pesquise pelo Nome ou CPF");
 	});
 
@@ -315,11 +310,11 @@ var unidade_validator;
 	});
 	
     // **
-    // * Select2 Sindico valida a cada mudança
+    // * Select2 gestor valida a cada mudança
     // **
-	$(document).on("change", "#select-sindico", function () {
+	$(document).on("change", "#select-gestor", function () {
 		if (!$.isEmptyObject(valid.submitted)) {
-			valid.element( "#select-sindico" );
+			valid.element( "#select-gestor" );
 		}
     });
 
@@ -335,10 +330,10 @@ var unidade_validator;
     // **
     // * Handler para limpar o form principal
     // **
-	$(document).on("click", ".form-condo .btn-reset", function()
+	$(document).on("click", ".form-entity .btn-reset", function()
 	{
 		// limpa campos
-		$('.form-condo').trigger("reset");
+		$('.form-entity').trigger("reset");
 		// oculta ramais
 		$('.ramais-input').addClass('no-validate');
 		$(".ramais").hide(200);
@@ -351,20 +346,20 @@ var unidade_validator;
 	// **
     // * Handler para salvar novo condominio
     // **
-	$(document).on("click", ".form-condo .btn-salvar", function()
+	$(document).on("click", ".form-entity .btn-salvar", function()
 	{
 		// verifica se campos do modal são válidos
-		if ( $(".form-condo").valid() ) {
+		if ( $(".form-entity").valid() ) {
 			// mostra indicador
 			var $btn = $(this);
 			$btn.trigger('loading-overlay:show');
 			// desabilita botões
-			var $btn_d = $('.form-condo .btn:enabled').prop('disabled', true);
+			var $btn_d = $('.form-entity .btn:enabled').prop('disabled', true);
 			// envia os dados
-			$.post('/admin/add_condo', $('.form-condo').serialize(), function(json) {
+			$.post('/admin/add_entity', $('.form-entity').serialize(), function(json) {
 				if (json.status == 'success') {
-
-//TODO Pergunta se quer cadastrar os blocos 
+					//TODO Pergunta se quer cadastrar os blocos
+					notifySuccess(json.message)
 					
 				} else if(json.message.code == 1062) {
 					// cnpj jé existe...avisa
@@ -392,46 +387,46 @@ var unidade_validator;
     // **
 	$(document).on("click", ".form-condo .btn-back", function()
 	{
-		window.location = "/admin/condominios";
+		window.location = "/admin/entities";
 	});	
 	
  	// **
-	// * Handler Abrir Modal Sindico
+	// * Handler Abrir Modal gestor
 	// **
-	$(document).on('click', '.add-sindico', function() {
+	$(document).on('click', '.add-gestor', function() {
 		// fecha o select
-		$select_sindico.select2('close');
+		$select_gestor.select2('close');
 		// abre a modal
 		$.magnificPopup.open( {
-			items: {src: '#modalSindico'}, type: 'inline',
+			items: {src: '#modalGestor'}, type: 'inline',
 			callbacks: {
 				close: function() {
 					// limpa campos do modal
-					$('.form-sindico').trigger("reset");
-					valid_sindico.resetForm();
-					$('.form-sindico .notification').html('').hide();
+					$('.form-gestor').trigger("reset");
+					valid_gestor.resetForm();
+					$('.form-gestor .notification').html('').hide();
 				}
 			}
 		});
 	});
 
 	// **
-	// * Handler Salva Sindico
+	// * Handler Salva gestor
 	// **
-	$(document).on('click', '#modalSindico .modal-confirm', function () {
+	$(document).on('click', '#modalGestor .modal-confirm', function () {
 
 		// verifica se campos do modal são válidos
-		if ( $("#modalSindico .form-sindico").valid() ) {
+		if ( $("#modalGestor .form-gestor").valid() ) {
 			// mostra indicador
 			var $btn = $(this);
 			$btn.trigger('loading-overlay:show');
 			// desabilita botões
-			var $btn_d = $('.form-sindico .btn:enabled').prop('disabled', true);
+			var $btn_d = $('.form-gestor .btn:enabled').prop('disabled', true);
 			// envia os dados
-			$.post('/admin/add_sindico', $('.form-sindico').serialize(), function(json) {
+			$.post('/admin/add_gestor', $('.form-gestor').serialize(), function(json) {
 				if (json.status == 'success') {
 					// seleciona o novo item
-					var sel = $('#select-sindico');
+					var sel = $('#select-gestor');
 					var option = new Option(json.message.nome, json.message.id, true, true);
 					sel.append(option).trigger('change');
 					sel.trigger({ type: 'select2:select', params: { data: json.message } });					
@@ -442,15 +437,15 @@ var unidade_validator;
 					
 				} else if(json.message.code == 1062) {
 					// cpf jé existe...avisa
-					$('.form-sindico .notification').html('Já existe um Síndico/Gestor com o CPF informado!').show();
+					$('.form-gestor .notification').html('Já existe um Síndico/Gestor com o CPF informado!').show();
 				} else {
 					// notifica erro
-					$('.form-sindico .notification').html(json.message.message).show();
+					$('.form-gestor .notification').html(json.message.message).show();
 				}
 			}, 'json')
 			.fail(function(xhr, status, error) {
 				// falha no ajax: notifica
-				$('.form-sindico .notification').html('<strong>Ajax Error:</strong> ' + error).show();
+				$('.form-gestor .notification').html('<strong>Ajax Error:</strong> ' + error).show();
 			})
 			.always(function() {
 				// oculta indicador
@@ -535,21 +530,21 @@ var unidade_validator;
 		// mostra indicador
 		$btn.trigger('loading-overlay:show');
 		// requisita info
-		$.post( "/admin/busca_endereco", { cep: $('#cep-condo').val() }, function(json) {
+		$.post( "/admin/busca_endereco", { cep: $('#cep-entity').val() }, function(json) {
 			if (json.hasOwnProperty('erro')) {
 				notifyAlert('CEP não encontrado');
 			} else {
 				// completa campos e destaca
-				$('#logradouro-condo').val(json.logradouro).addClass('glow');
-				$('#bairro-condo').val(json.bairro).addClass('glow');
-				$('#cidade-condo').val(json.localidade).addClass('glow');
-				$("#estado-condo").val(json.uf).addClass('glow');
-				$('#numero-condo').focus();
+				$('#logradouro-entity').val(json.logradouro).addClass('glow');
+				$('#bairro-entity').val(json.bairro).addClass('glow');
+				$('#cidade-entity').val(json.localidade).addClass('glow');
+				$("#estado-entity").val(json.uf).addClass('glow');
+				$('#numero-entity').focus();
 				// limpa erros
-				valid.element( "#logradouro-condo" );
-				valid.element( "#bairro-condo" );
-				valid.element( "#cidade-condo" );
-				valid.element( "#estado-condo" );
+				valid.element( "#logradouro-entity" );
+				valid.element( "#bairro-entity" );
+				valid.element( "#cidade-entity" );
+				valid.element( "#estado-entity" );
 				// retira destaque
 				setTimeout( function() {
 					$('input, select').removeClass('glow');

@@ -152,3 +152,6 @@ button.nav-link.configs {
     background: none;
     padding: 0;
 }
+.form-group.row {
+    padding-bottom: 15px;
+}

@@ -8,14 +8,14 @@ class Admin_model extends Base_model
     {
         // realiza a consulta
         $query = $this->db->query("
-            SELECT esm_condominios_centrais.nome as DT_RowId, esm_condominios_centrais.nome, esm_condominios_centrais.modo, esm_condominios_centrais.board, 
-                esm_condominios_centrais.firmware, esm_condominios_centrais.simcard, esm_condominios.nome AS condo, esm_condominios.tabela, 
-                esm_condominios_centrais.parent, esm_condominios_centrais.auto_ok, esm_condominios_centrais.ultimo_envio,
-                esm_condominios_centrais.localizador, esm_condominios_centrais.tamanho, esm_central_data.fonte, esm_central_data.tensao, esm_central_data.fraude_hi, esm_central_data.fraude_low
-            FROM esm_condominios_centrais 
-            JOIN esm_condominios ON esm_condominios.id = esm_condominios_centrais.condo_id
-            LEFT JOIN esm_central_data ON esm_central_data.nome = esm_condominios_centrais.nome AND esm_central_data.timestamp = esm_condominios_centrais.ultimo_envio
-            ORDER BY esm_condominios.ordem, esm_condominios_centrais.condo_id, esm_condominios_centrais.nome
+            SELECT esm_entidades_centrais.nome as DT_RowId, esm_entidades_centrais.nome, esm_entidades_centrais.modo, esm_entidades_centrais.board, 
+                esm_entidades_centrais.firmware, esm_entidades_centrais.simcard, esm_entidades.nome AS condo, esm_entidades.tabela, 
+                esm_entidades_centrais.parent, esm_entidades_centrais.auto_ok, esm_entidades_centrais.ultimo_envio,
+                esm_entidades_centrais.localizador, esm_entidades_centrais.tamanho, esm_central_data.fonte, esm_central_data.tensao, esm_central_data.fraude_hi, esm_central_data.fraude_low
+            FROM esm_entidades_centrais 
+            JOIN esm_entidades ON esm_entidades.id = esm_entidades_centrais.condo_id
+            LEFT JOIN esm_central_data ON esm_central_data.nome = esm_entidades_centrais.nome AND esm_central_data.timestamp = esm_entidades_centrais.ultimo_envio
+            ORDER BY esm_entidades.ordem, esm_entidades_centrais.condo_id, esm_entidades_centrais.nome
         ");
 
         return $query->getResult();
@@ -24,12 +24,12 @@ class Admin_model extends Base_model
     public function get_condo($id)
     {
         // seleciona todos os campos
-        $query = $this->db->table('esm_condominios')
-            ->select('esm_condominios.*, esm_administradoras.nome AS nome_adm, esm_pessoas.nome as nome_sindico')
-            ->join('esm_administradoras', 'esm_condominios.admin_id = esm_administradoras.id', 'LEFT')
-            ->join('esm_pessoas', 'esm_condominios.sindico_id = esm_pessoas.id', 'LEFT')
-            ->where('esm_condominios.id', $id)
-            ->where('esm_condominios.visibility', 'normal')
+        $query = $this->db->table('esm_entidades')
+            ->select('esm_entidades.*, esm_administradoras.nome AS nome_adm, esm_pessoas.nome as nome_sindico')
+            ->join('esm_administradoras', 'esm_entidades.admin_id = esm_administradoras.id', 'LEFT')
+            ->join('esm_pessoas', 'esm_entidades.gestor_id = esm_pessoas.id', 'LEFT')
+            ->where('esm_entidades.id', $id)
+            ->where('esm_entidades.visibility', 'normal')
             ->get();
 
         // verifica se retornou algo
@@ -80,7 +80,7 @@ class Admin_model extends Base_model
 
     public function get_centrais($condo, $as_string = false)
     {
-        $query = $this->db->table('esm_condominios_centrais')
+        $query = $this->db->table('esm_entidades_centrais')
             ->where('condo_id', $condo)
             ->orderBy('id')
             ->get();
@@ -158,5 +158,103 @@ class Admin_model extends Base_model
             return false;
 
         return $query->getResult();
+    }
+
+    public function delete_entity($id)
+    {
+        $v = 'delbyuser';
+        if (auth()->user()->inGroup('superadmin')) $v = 'delbyadmin';
+
+        if (!$this->db->table('esm_entidades')->where('id', $id)->set(array('visibility' => $v))->update()) {
+            echo json_encode(array("status"  => "error", "message" => $this->db->error()));
+            return;
+        }
+        echo json_encode(array("status"  => "success", "message" => ""));
+    }
+
+    public function get_administradoras($q = 0)
+    {
+        $query = $this->db->table('esm_administradoras')->select('*');
+
+        // se termo de busca
+        if ($q) {
+            // configura fitros
+            $query->groupStart()
+                ->like('nome', $q)
+                ->orLike('cnpj', preg_replace('/[^0-9]/', '', $q))
+                ->groupEnd();
+        }
+
+        // se ativo
+        $query->where('status', 'ativo');
+
+        // se não removido
+        $query->where('visibility', 'normal');
+
+        // ordena por nome
+        $query->orderBy('nome');
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // retorna os resultados
+        return $result->getResult();
+    }
+
+    public function get_pessoas($q = 0)
+    {
+        $query = $this->db->table('esm_pessoas')->select('*');
+
+        // se termo de busca
+        if ($q) {
+            // configura filtros
+            $query->groupStart()
+                ->like('nome', $q)
+                ->orLike('documento', preg_replace('/[^0-9]/', '', $q))
+                ->orLike('email', $q)
+                ->groupEnd();
+        }
+
+        // se ativo
+        $query->where('status', 'ativo');
+
+        // se não removido
+        $query->where('visibility', 'normal');
+
+        // ordena por nome
+        $query->orderBy('nome');
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // retorna os resultados
+        return $result->getResult();
+    }
+
+    public function add_adm($dados)
+    {
+        if (!$this->db->table('esm_administradoras')->set($dados)->insert()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        return json_encode(array("status" => "success", "message" => "Administradora criada com sucesso.", "id" => $this->db->insertID()));
+    }
+
+    public function add_gestor($dados)
+    {
+        if (!$this->db->table('esm_pessoas')->set($dados)->insert()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        return json_encode(array("status" => "success", "message" => "Gestor criado com sucesso.", "id" => $this->db->insertID()));
+    }
+
+    public function add_entity($dados)
+    {
+        if (!$this->db->table('esm_entidades')->set($dados)->insert()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        return json_encode(array("status" => "success", "message" => "Entidade criada com sucesso.", "id" => $this->db->insertID()));
     }
 }

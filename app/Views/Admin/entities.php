@@ -13,32 +13,33 @@
     <section class="card">
         <header class="card-header">
             <div class="card-actions buttons">
-                <button class="btn btn-primary btn-incluir"><i class="fa fa-plus"></i> Incluir Condomínio</button>
-                <button class="btn btn-primary btn-ops" data-toggle="dropdown"><i class="fa fa-cog"></i></button>
-                <ul class="dropdown-menu dropdown-menu-config" role="menu">
-                    <li><a href="#" class="inativos"><i class="fas fa-none"></i> Mostrar Inativos</a></li>
+                <button class="btn btn-primary btn-incluir"><i class="fa fa-plus"></i> Incluir Entidade</button>
+                <button class="btn btn-primary btn-ops" data-bs-toggle="dropdown" id="dropdown-filtros"><i class="fa fa-cog"></i></button>
+                <ul class="dropdown-menu dropdown-menu-config" aria-labelledby="dropdown-filtros" role="menu">
+                    <li><a href="#" class="inativos"><i class="fas fa-none ps-1"></i> Mostrar Inativos</a></li>
                     <div class="dropdown-divider"></div>
-                    <li><a href="#" class="monitor agua_gas" data-mode="0"><i class="fas fa-check"></i> Água e Gás</a></li>
-                    <li><a href="#" class="monitor agua" data-mode="1"><i class="fas fa-none"></i> Água</a></li>
-                    <li><a href="#" class="monitor gas" data-mode="2"><i class="fas fa-none"></i> Gás</a></li>
+                    <li><a href="#" class="monitor all" data-mode="0"><i class="fas fa-check ps-1"></i> Todos</a></li>
+                    <li><a href="#" class="monitor agua" data-mode="1"><i class="fas fa-none ps-1"></i> Água</a></li>
+                    <li><a href="#" class="monitor gas" data-mode="2"><i class="fas fa-none ps-1"></i> Gás</a></li>
+                    <li><a href="#" class="monitor energia" data-mode="3"><i class="fas fa-none ps-1"></i> Energia</a></li>
+                    <li><a href="#" class="monitor nivel" data-mode="4"><i class="fas fa-none ps-1"></i> Nível</a></li>
                 </ul>
             </div>
             <h2 class="card-title">Listagem</h2>
         </header>
         <div class="card-body">
-            <table class="table table-bordered table-striped table-hover table-pointer" id="dt-condos" data-url="<?php echo site_url('admin/get_condos'); ?>">
+            <table class="table table-bordered table-striped table-hover table-click table-pointer" id="dt-entities" data-url="<?php echo site_url('admin/get_entities'); ?>">
                 <thead>
                 <tr role="row">
-                    <th width="5%">id</th>
+                    <th width="5%" class="d-none">id</th>
                     <th width="15%">Nome</th>
                     <th width="5%">Tipo</th>
+                    <th width="10%">Classificação</th>
                     <th width="5%" title="Monitoramento">Monitora</th>
-                    <th width="13%">Municipio</th>
+                    <th width="13%">Local</th>
                     <th width="13%">Administradora</th>
-                    <th width="19%">Síndico/Gestor</th>
-                    <th width="5%">Início</th>
-                    <th width="5%">Fim</th>
-                    <th width="5%">status</th>
+                    <th width="19%">Gestor</th>
+                    <th width="5%" class="d-none">status</th>
                     <th width="10%">Ações</th>
                 </tr>
                 </thead>

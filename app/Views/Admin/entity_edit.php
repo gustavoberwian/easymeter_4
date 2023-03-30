@@ -13,7 +13,7 @@
     <div class="row">
         <div class="col">
             <section class="card">
-                <form class="form-horizontal form-bordered form-condo">
+                <form class="form-horizontal form-bordered form-entity">
                     <input id="id-entity" name="id-entity" type="hidden" value="<?php if (isset($entity->id)) echo $entity->id; ?>" readonly>
                     <header class="card-header">
                         <h2 class="card-title"><?= $readonly === '' ? 'Editar' : 'Visualizar' ?> </h2>
@@ -54,7 +54,7 @@
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Nome <span class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <input id="nome-condo" name="nome-condo" type="text" value="<?php if (isset($entity->nome)) echo $entity->nome; ?>" class="form-control vnome" placeholder="Razão Social do Condomínio" <?= $readonly; ?> required>
+                                    <input id="nome-condo" name="nome-condo" type="text" value="<?php if (isset($entity->nome)) echo $entity->nome; ?>" class="form-control" placeholder="Razão Social do Condomínio" <?= $readonly; ?> required>
                                 </div>
                             </div>
 

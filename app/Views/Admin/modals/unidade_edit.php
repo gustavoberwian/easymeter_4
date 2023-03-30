@@ -56,7 +56,7 @@
 
                 <!--                <div class="entradas" style="display: <?= ($modo && count($entradas)) ? 'block' : 'none'; ?>;">-->
                 <div class="entradas">
-                    <?php foreach($entradas as $k => $e) { ?>
+                    <?php foreach($entradas as $k => $e) : ?>
                         <div class="form-group row">
                             <label class="col-lg-3 control-label text-lg-right pt-2 pl-0">Entrada <?= $e->entrada; ?> <span class="required">*</span></label>
                             <div class="col-lg-9">
@@ -86,7 +86,7 @@
                                 </div>
                             </div>
                         </div>
-                    <?php } ?>
+                    <?php endforeach; ?>
                 </div>
 
                 <?php if (false) { ?>

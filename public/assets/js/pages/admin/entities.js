@@ -385,7 +385,7 @@ var unidade_validator;
 	// **
     // * Handler Botão voltar em Edita condominio
     // **
-	$(document).on("click", ".form-condo .btn-back", function()
+	$(document).on("click", ".form-entity .btn-back", function()
 	{
 		window.location = "/admin/entities";
 	});	
@@ -724,7 +724,7 @@ var unidade_validator;
 			var $btn_d = $('.form-bloco .btn:enabled').prop('disabled', true);
 			// captura dados
 			var data = $('.form-bloco').serializeArray();
-			data.push({'name': 'id-condo', 'value': $('.form-condo #id-condo').val()});
+			data.push({'name': 'id-condo', 'value': $('.form-entity #id-entity').val()});
 			// referencia para area de notificações
 			var $msg = $('.form-bloco .notification').html('').hide();
 			// envia os dados
@@ -735,7 +735,7 @@ var unidade_validator;
                     // verifica se é inclusão
 					if(json.hasOwnProperty('data')){
 						// insere e seleciona o novo item na select
-						$('.form-condo #sel-bloco').append($('<option>', {
+						$('.form-entity #sel-bloco').append($('<option>', {
 							value: json.data.value,
 							text : json.data.text,
 							selected: true
@@ -749,7 +749,7 @@ var unidade_validator;
                         $('.tab-form.unidades').removeClass('inactive');
 					} else {
                         // atualiza option
-                        $(".form-condo #sel-bloco").find("option:selected").text(json.text);
+                        $(".form-entity #sel-bloco").find("option:selected").text(json.text);
                     }
 					// fecha a modal
 					$.magnificPopup.close();
@@ -796,7 +796,7 @@ var unidade_validator;
 		// para propagação
 		e.preventDefault();
 		//
-		var id = $('.form-condo #sel-bloco').val();
+		var id = $('.form-entity #sel-bloco').val();
 		// abre a modal
 		$.magnificPopup.open( {
 			items: {src: '#modalBlocoRemove'}, type: 'inline',
@@ -846,7 +846,7 @@ var unidade_validator;
 			ajax: {
 				settings: {
 					type: 'POST',
-					data: { cid: $("#id-bloco").val(), bid: 0}
+					data: { cid: $("#id-entity").val(), bid: 0 }
 				}
 			},
 			callbacks: {
@@ -1038,7 +1038,7 @@ var unidade_validator;
 			ajax: {
 				settings: {
 					type: 'POST',
-					data: { cid: $("#id-entity").val(), bid: $('.form-condo #sel-bloco').val() }
+					data: { cid: $("#id-entity").val(), bid: $('.form-entity #sel-bloco').val() }
 				}
             },
 			callbacks: {
@@ -1098,7 +1098,7 @@ var unidade_validator;
 
 			// captura dados
 			var data = $('.form-fechamento').serializeArray();
-//			data.push({'name': 'bid', 'value': $('.form-condo #sel-bloco').val()});
+//			data.push({'name': 'bid', 'value': $('.form-entity #sel-bloco').val()});
 
 			// referencia para area de notificações
 			var $msg = $('.form-fechamento .notification').html('');
@@ -1144,7 +1144,7 @@ var unidade_validator;
 
 			// captura dados
 			var data = $('.form-unidade-add').serializeArray();
-			data.push({'name': 'cid', 'value': $('.form-condo #id-condo').val()}, {'name': 'bid', 'value': $('.form-condo #sel-bloco').val()});
+			data.push({'name': 'cid', 'value': $('.form-entity #id-entity').val()}, {'name': 'bid', 'value': $('.form-entity #sel-bloco').val()});
 
 			// referencia para area de notificações
 			var $msg = $('.form-unidade-add .notification').html('').hide();
@@ -1188,7 +1188,7 @@ var unidade_validator;
 			ajax: {
 				settings: {
 					type: 'POST',
-					data: { cid: $("#id-entity").val(), bid: $('.form-condo #sel-bloco').val(), uid: $(this).data('id') }
+					data: { cid: $("#id-entity").val(), bid: $('.form-entity #sel-bloco').val(), uid: $(this).data('id') }
 				}
 			},
 			callbacks: {
@@ -1244,7 +1244,7 @@ var unidade_validator;
 			ajax: {
 				settings: {
 					type: 'POST',
-					data: { cid: $("#id-entity").val(), bid: $('.form-condo #sel-bloco').val(), uid: $(this).data('id'), md: 1 }
+					data: { cid: $("#id-entity").val(), bid: $('.form-entity #sel-bloco').val(), uid: $(this).data('id'), md: 1 }
 				}
 			},
 			callbacks: {
@@ -1314,8 +1314,8 @@ var unidade_validator;
 				// fecha modal
 				$.magnificPopup.close();
 				// remove option
-				$('.form-condo #sel-bloco option[value="'+id+'"]').remove();
-				$('.form-condo #sel-bloco').trigger('change');
+				$('.form-entity #sel-bloco option[value="'+id+'"]').remove();
+				$('.form-entity #sel-bloco').trigger('change');
 				// mostra notificação
 				notifySuccess(json.message);
 			} else {
@@ -1357,8 +1357,8 @@ var unidade_validator;
 			if (json.status == 'success') {
 				// fecha modal
 				$.magnificPopup.close();
-				// remove option
-
+				// recarrega tabela
+				dtUnidades.ajax.reload();
 				// mostra notificação
 				notifySuccess('Unidade excluído com sucesso');
 			} else if(json.message.code == 1451) {
@@ -1399,13 +1399,13 @@ var unidade_validator;
 		}
     });
     
-    /*$('.form-condo #centrais-condo').tagsinput({
+    /*$('.form-entity #centrais-condo').tagsinput({
         maxChars: 8,
         tagClass: 'badge badge-info',
         allowDuplicates: false
     });*/
 
-    $('.form-condo #centrais-condo').on('beforeItemAdd', function(event) {
+    $('.form-entity #centrais-condo').on('beforeItemAdd', function(event) {
         if (event.item !== event.item.toUpperCase()) {
             event.cancel = true;
             //$(this).tagsinput('add', event.item.toUpperCase());
@@ -1502,7 +1502,7 @@ var unidade_validator;
 			url: $('#dt-fechamentos').data('url'),
 			data: function ( d ) {
 				return $.extend( {}, d, {
-                    condo: $("#id-condo").val()
+                    condo: $("#id-entity").val()
 				} );
 			},
 			error: function () {
@@ -1539,7 +1539,7 @@ var unidade_validator;
             ajax: {
 				settings: {
 					type: 'POST',
-					data: { condo_id: $("#id-condo").val()}
+					data: { condo_id: $("#id-entity").val()}
                 }
             },            
 			modal:true,
@@ -1761,7 +1761,7 @@ var unidade_validator;
 			url: $('#dt-leituras').data('url'),
 			data: function ( d ) {
 				return $.extend( {}, d, {
-                    condo: $("#id-condo").val()
+                    condo: $("#id-entity").val()
 				} );
 			},
 			error: function () {

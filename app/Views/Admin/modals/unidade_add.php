@@ -56,13 +56,13 @@
                     <label class="col-lg-3 control-label text-lg-right">Entradas</label>
                     <div class="col-lg-9">
                         <div class="checkbox-custom checkbox-default">
-                            <input type="checkbox" class="entradas-unidade" id="entradas-unidade">
+                            <input type="checkbox" checked class="entradas-unidade" id="entradas-unidade">
                             <label for="entradas-unidade">Cadastar as entradas da unidade?</label>
                         </div>
                     </div>
                 </div>
 
-                <div class="entradas" style="display:none;">
+                <div class="entradas">
                     <?php foreach($entradas as $k => $e) { ?>
                         <div class="form-group row">
                             <label class="col-lg-3 control-label text-lg-right pt-2 pl-0">Entrada <?= $e->entrada; ?> <span class="required">*</span></label>

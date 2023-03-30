@@ -140,9 +140,6 @@ class Admin_model extends Base_model
             ORDER BY FIELD(esm_entradas.tipo, 'agua', 'gas', 'energia'), esm_entradas.ordem, id
         ");
 
-        if ($query->getNumRows() == 0)
-            return false;
-
         return $query->getResult();
     }
 
@@ -333,5 +330,67 @@ class Admin_model extends Base_model
 		");
 
         return $query->getRow();
+    }
+
+    public function delete_bloco($id)
+    {
+        if (!$this->db->table('esm_blocos')->where('id', $id)->delete()) {
+            return json_encode(array("status"  => "error", "message" => ($this->db->error()['code'] == 1451) ? 'Não é possível excluir o bloco pois ele já possui unidades cadastradas.' : $this->db->error()['message']));
+        }
+        return json_encode(array("status"  => "success", "message" => "Bloco excluído com sucesso"));
+    }
+
+    public function add_bloco($cid, $nome, $rid)
+    {
+        // insere bloco
+        if (!$this->db->table('esm_blocos')->set(array('condo_id' => $cid, 'nome' => $nome, 'ramal_id' => $rid))->insert()) {
+            return json_encode(array("status"  => "error", "message" => $this->db->error()));
+        }
+
+        // pega id da nova unidade
+        $bid = $this->db->insertID();
+
+        return json_encode(array("status"  => "success", "message" => "Bloco inserido com sucesso!", "data" => array("value"  => $bid, "text" => $nome)));
+    }
+
+    public function add_unidade($unidade, $dados)
+    {
+        // inicia transaction
+        $failure = array();
+        $this->db->transStart();
+
+        // insere unidade
+        if (!$this->db->table('esm_unidades')->set($unidade)->insert())
+            $failure[] = $this->db->error();
+
+        // pega id da nova unidade
+        $dados['unidade_id'] = $this->db->insertID();
+
+        if (!is_null($dados['nome']) or !is_null($dados['email'])) {
+            // insere medidor
+            if (!$this->db->table('esm_unidades_dados')->set($dados)->insert())
+                $failure[] = $this->db->error();
+        }
+
+        // finaliza transação
+        $this->db->transComplete();
+
+        // verifica status e retorna de acordo
+        if ($this->db->transStatus() === FALSE) {
+            if ($failure[0]['code'] == 1062)
+                return json_encode(array("status"  => "error", "message" => 'Já existe uma unidade cadastrada com este identificador!'));
+            else
+                return json_encode(array("status"  => "error", "message" => $failure[0]['message']));
+        } else {
+            return json_encode(array("status"  => "success", "message" => "Unidade inserida com sucesso!"));
+        }
+    }
+
+    public function delete_unidade($id)
+    {
+        if (!$this->db->table('esm_unidades')->where('id', $id)->delete()) {
+            return json_encode(array("status"  => "error", "message" => $this->db->error()));
+        }
+        return json_encode(array("status"  => "success", "message" => "Unidade excluída com sucesso"));
     }
 }

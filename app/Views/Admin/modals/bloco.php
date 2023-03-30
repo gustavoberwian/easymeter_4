@@ -26,9 +26,9 @@
 						<div class="select-wrap">
 							<select id="sel-ramal" name="sel-ramal" class="form-control" required>
                                 <?php $ramal = 0; if (isset($bloco->ramal_id)) $ramal = $bloco->ramal_id; ?>
-								<option disabled <?php if (count($ramais) > 1 ) echo 'selected '; ?> value="">Número do Ramal de Água</option>
+								<option disabled <?php if (count($ramais) > 0 ) echo 'selected '; ?> value="">Número do Ramal de Água</option>
                                 <?php foreach ($ramais as $r) : ?>
-									<option <?php if ($r->id == $ramal || count($ramais == 1)) echo 'selected '; ?> value="<?= $r->id; ?>"><?= $r->nome; ?></option>
+									<option <?php if ($r->id == $ramal || count($ramais) == 1) echo 'selected '; ?> value="<?= $r->id; ?>"><?= $r->nome; ?></option>
                                 <?php endforeach; ?>
 							</select>
 						</div>

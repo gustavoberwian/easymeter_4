@@ -242,9 +242,9 @@ class Admin extends UNO_Controller
             FROM esm_unidades
             JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
             LEFT JOIN (
-                    SELECT auth_user_relation.unity_id, users.id, users.username
-                    FROM users
-                    JOIN auth_user_relation ON auth_user_relation.user_id = users.id 
+                    SELECT auth_user_relation.unity_id, auth_users.id, auth_users.username
+                    FROM auth_users
+                    JOIN auth_user_relation ON auth_user_relation.user_id = auth_users.id 
             ) AS user ON user.unity_id = esm_unidades.id
             WHERE esm_unidades.bloco_id = $bloco
             ORDER BY esm_blocos.nome, esm_unidades.nome
@@ -257,24 +257,24 @@ class Admin extends UNO_Controller
             foreach ($entradas as $e) {
                 if ($e->tipo == 'agua') {
                     if (is_null($e->central))
-                        $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/>Não monitorado">&nbsp;</span>';
+                        $medidores .= '<span class="cur-pointer badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/>Não monitorado">&nbsp;</span>';
                     else {
                         $s = is_null($e->sensor_id) ? '' : '<b>Sensor:</b> ' . $e->sensor_id;
-                        $medidores .= '<span class="badge badge-' . ($e->posicao == 0 ? 'secondary' : $e->tipo) . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/><b>Central</b>: ' . $e->central . '<br/><b>Posição:</b> ' . $e->posicao . '<br/>' . $s . '">' . $e->nome . '</span>';
+                        $medidores .= '<span class="cur-pointer badge badge-' . ($e->posicao == 0 ? 'secondary' : $e->tipo) . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/><b>Central</b>: ' . $e->central . '<br/><b>Posição:</b> ' . $e->posicao . '<br/>' . $s . '">' . $e->nome . '</span>';
                     }
                 } else if ($e->tipo == 'gas') {
                     if (is_null($e->central))
-                        $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '">' . $e->nome . '</span>';
+                        $medidores .= '<span class="cur-pointer badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '">' . $e->nome . '</span>';
                     else {
                         $s = is_null($e->sensor_id) ? '' : '<b>Sensor:</b> ' . $e->sensor_id;
-                        $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/><b>Central</b>: ' . $e->central . '<br/><b>Posição:</b> ' . $e->posicao . '<br/>' . $s . '">' . $e->nome . '</span>';
+                        $medidores .= '<span class="cur-pointer badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/><b>Central</b>: ' . $e->central . '<br/><b>Posição:</b> ' . $e->posicao . '<br/>' . $s . '">' . $e->nome . '</span>';
                     }
                 } else if ($e->tipo == 'energia') {
                     if (is_null($e->central))
-                        $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '">' . $e->nome . '</span>';
+                        $medidores .= '<span class="cur-pointer badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '">' . $e->nome . '</span>';
                     else {
                         $s = is_null($e->sensor_id) ? '' : '<b>Sensor:</b> ' . $e->sensor_id;
-                        $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/><b>Central</b>: ' . $e->central . '<br/><b>Posição:</b> ' . $e->posicao . '<br/>' . $s . '">' . $e->nome . '</span>';
+                        $medidores .= '<span class="cur-pointer badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/><b>Central</b>: ' . $e->central . '<br/><b>Posição:</b> ' . $e->posicao . '<br/>' . $s . '">' . $e->nome . '</span>';
                     }
                 }
             }
@@ -500,10 +500,11 @@ class Admin extends UNO_Controller
 
         if ($bid > 0) {
             $data['modal_title'] = "Editar Bloco";
+            $data['bloco'] = $this->admin_model->get_bloco($bid);
         } else {
             $data['modal_title'] = "Incluir Bloco";
         }
-        $data['bloco'] = $this->admin_model->get_bloco($bid);
+
         $data['ramais'] = $this->admin_model->get_ramais($cid);
 
         echo view('Admin/modals/bloco', $data);
@@ -625,5 +626,35 @@ class Admin extends UNO_Controller
         $data['medidor'] = $this->admin_model->get_medidor($id);
 
         echo view('Admin/modals/medidor', $data);
+    }
+
+    public function delete_bloco()
+    {
+        $id = $this->input->getPost('id');
+
+        echo $this->admin_model->delete_bloco($id);
+    }
+
+    public function edit_bloco()
+    {
+        $id = $this->input->getPost('id');
+        $cid = $this->input->getPost('id-condo');
+        $nome = $this->input->getPost('id-bloco');
+        $rid = $this->input->getPost('sel-ramal');
+
+        if ($id) {
+            // atualiza bloco na tabela blocos
+            echo $this->admin_model->update_bloco($id, $nome, $rid);
+        } else {
+            // insere bloco
+            echo $this->admin_model->add_bloco($cid, $nome, $rid);
+        }
+    }
+
+    public function delete_unidade()
+    {
+        $id = $this->input->getPost('id');
+
+        echo $this->admin_model->delete_unidade($id);
     }
 }

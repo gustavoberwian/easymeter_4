@@ -59,7 +59,7 @@ class Auth extends BaseConfig
      * @var array<string, string>
      */
     public array $tables = [
-        'users'             => 'users',
+        'users'             => 'auth_users',
         'identities'        => 'auth_identities',
         'logins'            => 'auth_logins',
         'token_logins'      => 'auth_token_logins',

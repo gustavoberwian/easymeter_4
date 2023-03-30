@@ -41,8 +41,16 @@ table thead th {
     background: #007bff;
     color: #FFF;
 }
-.badge-gas {
+.badge-energia {
     background: #ed9c28;
+    color: #FFF;
+}
+.badge-gas {
+    background: #47a447;
+    color: #FFF;
+}
+.badge-nivel {
+    background: #5bc0de;
     color: #FFF;
 }
 .card-actions.buttons {

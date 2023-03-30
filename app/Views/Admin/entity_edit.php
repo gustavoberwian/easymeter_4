@@ -1,11 +1,11 @@
 <section role="main" class="content-body">
     <header class="page-header">
-        <h2>Condomínio <?php echo $condo->nome; ?></h2>
+        <h2>Entidade <?= $entity->nome; ?></h2>
         <div class="right-wrapper text-end">
             <ol class="breadcrumbs pe-4">
-                <li><a href="<?php echo site_url('admin'); ?>"><i class="fas fa-home"></i></a></li>
-                <li><a href="<?php echo site_url('admin/condominios'); ?>"><span>Condomínios</span></a></li>
-                <li><span><?php echo $condo->nome; ?></span></li>
+                <li><a href="<?= site_url('admin'); ?>"><i class="fas fa-home"></i></a></li>
+                <li><a href="<?= site_url('admin/entities'); ?>"><span>Entidades</span></a></li>
+                <li><span><?= $entity->nome; ?></span></li>
             </ol>
         </div>
     </header>
@@ -14,17 +14,17 @@
         <div class="col">
             <section class="card">
                 <form class="form-horizontal form-bordered form-condo">
-                    <input id="id-condo" name="id-condo" type="hidden" value="<?php if (isset($condo->id)) echo $condo->id; ?>" readonly>
+                    <input id="id-entity" name="id-entity" type="hidden" value="<?php if (isset($entity->id)) echo $entity->id; ?>" readonly>
                     <header class="card-header">
-                        <h2 class="card-title"><?php echo $title; ?></h2>
+                        <h2 class="card-title"><?= $readonly === '' ? 'Editar' : 'Visualizar' ?> </h2>
                         <div class="card-actions buttons">
                             <div class="btn-group">
                                 <button class="btn btn-primary btn-cadastro active">Dados</button>
                                 <button class="btn btn-primary btn-entradas">Entradas</button>
                                 <button class="btn btn-primary btn-unidades">Unidades</button>
                                 <button class="btn btn-primary btn-leituras">Leituras</button>
-                                <button class="btn btn-primary btn-configuracoes">Configurações</button>
                                 <button class="btn btn-primary btn-consumo">Fechamentos</button>
+                                <button class="btn btn-primary btn-configuracoes">Configurações</button>
                                 <?php if ($geral): ?>
                                     <button class="btn btn-primary btn-geral" data-central="<?php if (isset($central_geral)) echo $central_geral; ?>" data-unidade="<?php if (isset($unidade_geral)) echo $unidade_geral; ?>">Medidor Geral</button>
                                 <?php endif; ?>
@@ -33,10 +33,28 @@
                     </header>
                     <div class="card-body">
                         <div class="tab-form cadastro">
+
+                            <div class="form-group row">
+                                <label for="classificacao-entity" class="col-lg-3 control-label text-lg-right pt-2">Classificação da Entidade <span class="required">*</span></label>
+                                <div class="col-lg-6">
+                                    <div class="row">
+                                        <div class="select-wrap">
+                                            <select id="classificacao-entity" name="classificacao-entity" class="form-control" <?=$readonly ?> required>
+                                                <?php if (isset($entity->classificacao)) $entity_classificacao = $entity->classificacao;?>
+                                                <option disabled value="">Classificação da Entidade</option>
+                                                <option <?php if ($entity_classificacao == 'condominio') echo 'selected '; ?> value="condominio">Condomínio</option>
+                                                <option <?php if ($entity_classificacao == 'shopping') echo 'selected '; ?> value="shopping">Shopping</option>
+                                                <option <?php if ($entity_classificacao == 'industria') echo 'selected '; ?> value="industria">Indústria</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Nome <span class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <input id="nome-condo" name="nome-condo" type="text" value="<?php if (isset($condo->nome)) echo $condo->nome; ?>" class="form-control vnome" placeholder="Razão Social do Condomínio" <?php echo $readonly; ?> required>
+                                    <input id="nome-condo" name="nome-condo" type="text" value="<?php if (isset($entity->nome)) echo $entity->nome; ?>" class="form-control vnome" placeholder="Razão Social do Condomínio" <?= $readonly; ?> required>
                                 </div>
                             </div>
 
@@ -45,17 +63,17 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="cnpj-condo" name="cnpj-condo" value="<?php if (isset($condo->cnpj)) echo $condo->cnpj; ?>" placeholder="___.___.___/____-__" class="form-control vcnpj" <?php echo $readonly; ?> required>
+                                            <input id="cnpj-condo" name="cnpj-condo" value="<?php if (isset($entity->cnpj)) echo $entity->cnpj; ?>" placeholder="___.___.___/____-__" class="form-control vcnpj" <?= $readonly; ?> required>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="select-wrap">
                                                 <select id="tipo-condo" name="tipo-condo" class="form-control" required <?php if ($readonly != '') echo 'disabled="true"';?>>
-                                                    <?php if (isset($condo->tipo)) $condo_tipo = $condo->tipo;?>
+                                                    <?php if (isset($entity->tipo)) $entity_tipo = $entity->tipo;?>
                                                     <option disabled value="">Tipo do Condomínio</option>
-                                                    <option <?php if ($condo_tipo == 'vertical') echo 'selected '; ?> value="vertical">Residencial Vertical</option>
-                                                    <option <?php if ($condo_tipo == 'horizontal') echo 'selected '; ?> value="horizontal">Residencial Horizontal</option>
-                                                    <option <?php if ($condo_tipo == 'comercial') echo 'selected '; ?> value="comercial">Comercial</option>
-                                                    <option <?php if ($condo_tipo == 'misto') echo 'selected '; ?> value="misto">Misto</option>
+                                                    <option <?php if ($entity_tipo == 'vertical') echo 'selected '; ?> value="vertical">Residencial Vertical</option>
+                                                    <option <?php if ($entity_tipo == 'horizontal') echo 'selected '; ?> value="horizontal">Residencial Horizontal</option>
+                                                    <option <?php if ($entity_tipo == 'comercial') echo 'selected '; ?> value="comercial">Comercial</option>
+                                                    <option <?php if ($entity_tipo == 'misto') echo 'selected '; ?> value="misto">Misto</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -67,10 +85,8 @@
                                 <label class="col-lg-3 control-label text-lg-right pt-2">CEP<span class="required">*</span></label>
                                 <div class="col-lg-3">
                                     <div class="input-group">
-                                        <input id="cep-condo" name="cep-condo" type="text" value="<?php if (isset($condo->cep)) echo $condo->cep; ?>" placeholder="_____-___" class="form-control vcep" <?php echo $readonly; ?> required>
-                                        <span class="input-group-append">
-															<button class="btn btn-success btn-busca overlay-small" type="button" data-loading-overlay disabled>Completar</button>
-														</span>
+                                        <input id="cep-condo" name="cep-condo" type="text" value="<?php if (isset($entity->cep)) echo $entity->cep; ?>" placeholder="_____-___" class="form-control vcep" <?= $readonly; ?> required>
+                                        <button class="btn btn-success btn-busca overlay-small" type="button" data-loading-overlay disabled>Completar</button>
                                     </div>
                                 </div>
                             </div>
@@ -78,7 +94,7 @@
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Logradouro <span class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <input id="logradouro-condo" name="logradouro-condo" type="text" value="<?php if (isset($condo->logradouro)) echo $condo->logradouro; ?>" class="form-control" placeholder="Nome da rua/avenida" <?php echo $readonly; ?> required>
+                                    <input id="logradouro-condo" name="logradouro-condo" type="text" value="<?php if (isset($entity->logradouro)) echo $entity->logradouro; ?>" class="form-control" placeholder="Nome da rua/avenida" <?= $readonly; ?> required>
                                 </div>
                             </div>
 
@@ -87,10 +103,10 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="numero-condo" name="numero-condo" value="<?php if (isset($condo->numero)) echo $condo->numero; ?>" placeholder="Número" class="form-control" <?php echo $readonly; ?> required>
+                                            <input id="numero-condo" name="numero-condo" value="<?php if (isset($entity->numero)) echo $entity->numero; ?>" placeholder="Número" class="form-control" <?= $readonly; ?> required>
                                         </div>
                                         <div class="col-md-6">
-                                            <input id="complemento-condo" name="complemento-condo" value="<?php if (isset($condo->complemento)) echo $condo->complemento; ?>" placeholder="Complemento" class="form-control" <?php echo $readonly; ?> >
+                                            <input id="complemento-condo" name="complemento-condo" value="<?php if (isset($entity->complemento)) echo $entity->complemento; ?>" placeholder="Complemento" class="form-control" <?= $readonly; ?> >
                                         </div>
                                     </div>
                                 </div>
@@ -99,7 +115,7 @@
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Bairro <span class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <input id="bairro-condo" name="bairro-condo" type="text" value="<?php if (isset($condo->bairro)) echo $condo->bairro; ?>" class="form-control" placeholder="Nome do bairro" <?php echo $readonly; ?> required>
+                                    <input id="bairro-condo" name="bairro-condo" type="text" value="<?php if (isset($entity->bairro)) echo $entity->bairro; ?>" class="form-control" placeholder="Nome do bairro" <?= $readonly; ?> required>
                                 </div>
                             </div>
 
@@ -108,40 +124,40 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="cidade-condo" name="cidade-condo" value="<?php if (isset($condo->cidade)) echo $condo->cidade; ?>" placeholder="Cidade" class="form-control" <?php echo $readonly; ?> required>
+                                            <input id="cidade-condo" name="cidade-condo" value="<?php if (isset($entity->cidade)) echo $entity->cidade; ?>" placeholder="Cidade" class="form-control" <?= $readonly; ?> required>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="select-wrap">
                                                 <select id="estado-condo" name="estado-condo" class="form-control" required <?php if ($readonly != '') echo 'disabled="true"';?>>
-                                                    <?php $condo_uf = (is_null($condo->uf)) ? $condo->uf : ''?>
-                                                    <option <?php if (is_null($condo_uf)) echo 'selected '; ?> disabled value="">Estado</option>
-                                                    <option <?php if ($condo_uf == 'AC') echo 'selected '; ?> value="AC">Acre</option>
-                                                    <option <?php if ($condo_uf == 'AL') echo 'selected '; ?> value="AL">Alagoas</option>
-                                                    <option <?php if ($condo_uf == 'AP') echo 'selected '; ?> value="AP">Amapá</option>
-                                                    <option <?php if ($condo_uf == 'AM') echo 'selected '; ?> value="AM">Amazonas</option>
-                                                    <option <?php if ($condo_uf == 'BA') echo 'selected '; ?> value="BA">Bahia</option>
-                                                    <option <?php if ($condo_uf == 'CE') echo 'selected '; ?> value="CE">Ceará</option>
-                                                    <option <?php if ($condo_uf == 'DF') echo 'selected '; ?> value="DF">Distrito Federal</option>
-                                                    <option <?php if ($condo_uf == 'ES') echo 'selected '; ?> value="ES">Espírito Santo</option>
-                                                    <option <?php if ($condo_uf == 'GO') echo 'selected '; ?> value="GO">Goiás</option>
-                                                    <option <?php if ($condo_uf == 'MA') echo 'selected '; ?> value="MA">Maranhão</option>
-                                                    <option <?php if ($condo_uf == 'MT') echo 'selected '; ?> value="MT">Mato Grosso</option>
-                                                    <option <?php if ($condo_uf == 'MS') echo 'selected '; ?> value="MS">Mato Grosso do Sul</option>
-                                                    <option <?php if ($condo_uf == 'MG') echo 'selected '; ?> value="MG">Minas Gerais</option>
-                                                    <option <?php if ($condo_uf == 'PA') echo 'selected '; ?> value="PA">Pará</option>
-                                                    <option <?php if ($condo_uf == 'PB') echo 'selected '; ?> value="PB">Paraíba</option>
-                                                    <option <?php if ($condo_uf == 'PR') echo 'selected '; ?> value="PR">Paraná</option>
-                                                    <option <?php if ($condo_uf == 'PE') echo 'selected '; ?> value="PE">Pernambuco</option>
-                                                    <option <?php if ($condo_uf == 'PI') echo 'selected '; ?> value="PI">Piauí</option>
-                                                    <option <?php if ($condo_uf == 'RJ') echo 'selected '; ?> value="RJ">Rio de Janeiro</option>
-                                                    <option <?php if ($condo_uf == 'RN') echo 'selected '; ?> value="RN">Rio Grande do Norte</option>
-                                                    <option <?php if ($condo_uf == 'RS') echo 'selected '; ?> value="RS">Rio Grande do Sul</option>
-                                                    <option <?php if ($condo_uf == 'RO') echo 'selected '; ?> value="RO">Rondônia</option>
-                                                    <option <?php if ($condo_uf == 'RR') echo 'selected '; ?> value="RR">Roraima</option>
-                                                    <option <?php if ($condo_uf == 'SC') echo 'selected '; ?> value="SC">Santa Catarina</option>
-                                                    <option <?php if ($condo_uf == 'SP') echo 'selected '; ?> value="SP">São Paulo</option>
-                                                    <option <?php if ($condo_uf == 'SE') echo 'selected '; ?> value="SE">Sergipe</option>
-                                                    <option <?php if ($condo_uf == 'TO') echo 'selected '; ?> value="TO">Tocantins</option>
+                                                    <?php $entity_uf = (!is_null($entity->uf)) ? $entity->uf : ''?>
+                                                    <option <?php if (is_null($entity_uf)) echo 'selected '; ?> disabled value="">Estado</option>
+                                                    <option <?php if ($entity_uf == 'AC') echo 'selected '; ?> value="AC">Acre</option>
+                                                    <option <?php if ($entity_uf == 'AL') echo 'selected '; ?> value="AL">Alagoas</option>
+                                                    <option <?php if ($entity_uf == 'AP') echo 'selected '; ?> value="AP">Amapá</option>
+                                                    <option <?php if ($entity_uf == 'AM') echo 'selected '; ?> value="AM">Amazonas</option>
+                                                    <option <?php if ($entity_uf == 'BA') echo 'selected '; ?> value="BA">Bahia</option>
+                                                    <option <?php if ($entity_uf == 'CE') echo 'selected '; ?> value="CE">Ceará</option>
+                                                    <option <?php if ($entity_uf == 'DF') echo 'selected '; ?> value="DF">Distrito Federal</option>
+                                                    <option <?php if ($entity_uf == 'ES') echo 'selected '; ?> value="ES">Espírito Santo</option>
+                                                    <option <?php if ($entity_uf == 'GO') echo 'selected '; ?> value="GO">Goiás</option>
+                                                    <option <?php if ($entity_uf == 'MA') echo 'selected '; ?> value="MA">Maranhão</option>
+                                                    <option <?php if ($entity_uf == 'MT') echo 'selected '; ?> value="MT">Mato Grosso</option>
+                                                    <option <?php if ($entity_uf == 'MS') echo 'selected '; ?> value="MS">Mato Grosso do Sul</option>
+                                                    <option <?php if ($entity_uf == 'MG') echo 'selected '; ?> value="MG">Minas Gerais</option>
+                                                    <option <?php if ($entity_uf == 'PA') echo 'selected '; ?> value="PA">Pará</option>
+                                                    <option <?php if ($entity_uf == 'PB') echo 'selected '; ?> value="PB">Paraíba</option>
+                                                    <option <?php if ($entity_uf == 'PR') echo 'selected '; ?> value="PR">Paraná</option>
+                                                    <option <?php if ($entity_uf == 'PE') echo 'selected '; ?> value="PE">Pernambuco</option>
+                                                    <option <?php if ($entity_uf == 'PI') echo 'selected '; ?> value="PI">Piauí</option>
+                                                    <option <?php if ($entity_uf == 'RJ') echo 'selected '; ?> value="RJ">Rio de Janeiro</option>
+                                                    <option <?php if ($entity_uf == 'RN') echo 'selected '; ?> value="RN">Rio Grande do Norte</option>
+                                                    <option <?php if ($entity_uf == 'RS') echo 'selected '; ?> value="RS">Rio Grande do Sul</option>
+                                                    <option <?php if ($entity_uf == 'RO') echo 'selected '; ?> value="RO">Rondônia</option>
+                                                    <option <?php if ($entity_uf == 'RR') echo 'selected '; ?> value="RR">Roraima</option>
+                                                    <option <?php if ($entity_uf == 'SC') echo 'selected '; ?> value="SC">Santa Catarina</option>
+                                                    <option <?php if ($entity_uf == 'SP') echo 'selected '; ?> value="SP">São Paulo</option>
+                                                    <option <?php if ($entity_uf == 'SE') echo 'selected '; ?> value="SE">Sergipe</option>
+                                                    <option <?php if ($entity_uf == 'TO') echo 'selected '; ?> value="TO">Tocantins</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -152,17 +168,17 @@
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Administradora</label>
                                 <div class="col-lg-6">
-                                    <select id="select-adm" name="select-adm" class="form-control populate" data-url="<?php echo site_url('ajax/get_admnistadoras'); ?>" <?php if ($readonly != '') echo 'disabled="true"';?>>
-                                        <option><?php if (isset($condo->nome_adm)) echo $condo->nome_adm; ?></option>
+                                    <select id="select-adm" name="select-adm" class="form-control populate" data-url="<?= site_url('admin/get_admnistadoras'); ?>" <?php if ($readonly != '') echo 'disabled="true"';?>>
+                                        <option><?php if (isset($entity->nome_adm)) echo $entity->nome_adm; ?></option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Síndico/Gestor <span class="required">*</span></label>
+                                <label class="col-lg-3 control-label text-lg-right pt-2">Gestor <span class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <select id="select-sindico" name="select-sindico" class="form-control populate" data-url="<?php echo site_url('ajax/get_sindicos'); ?>" <?php if ($readonly != '') echo 'disabled="true"';?> required>
-                                        <option><?php if (isset($condo->nome_sindico)) echo $condo->nome_sindico; ?></option>
+                                    <select id="select-sindico" name="select-sindico" class="form-control populate" data-url="<?= site_url('admin/get_sindicos'); ?>" <?php if ($readonly != '') echo 'disabled="true"';?> required>
+                                        <option><?php if (isset($entity->nome_sindico)) echo $entity->nome_sindico; ?></option>
                                     </select>
                                 </div>
                             </div>
@@ -172,10 +188,10 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="inicio-condo" name="inicio-condo" value="<?php if (isset($condo->inicio)) echo $condo->inicio; ?>" placeholder="__/__/____" class="form-control vdate" <?php echo $readonly; ?> required>
+                                            <input id="inicio-condo" name="inicio-condo" value="<?php if (isset($entity->inicio)) echo $entity->inicio; ?>" placeholder="__/__/____" class="form-control vdate" <?= $readonly; ?> required>
                                         </div>
                                         <div class="col-md-6">
-                                            <input id="fim-condo" name="fim-condo" value="<?php if (isset($condo->fim)) echo $condo->fim; ?>" placeholder="__/__/____" class="form-control vdate" <?php echo $readonly; ?> required>
+                                            <input id="fim-condo" name="fim-condo" value="<?php if (isset($entity->fim)) echo $entity->fim; ?>" placeholder="__/__/____" class="form-control vdate" <?= $readonly; ?> required>
                                         </div>
                                     </div>
                                 </div>
@@ -187,54 +203,54 @@
                                     <div class="row">
                                         <div class="col-md-3">
                                             <div class="checkbox-custom checkbox-primary">
-                                                <input type="checkbox" id="agua-condo" name="agua-condo" <?php if($readonly != '') echo ' disabled'; ?> <?php if (isset($condo->m_agua) and $condo->m_agua == 1) echo 'checked'; ?>>
-                                                <label for="agua-condo">Água</label>
+                                                <input class="require-one" type="checkbox" id="agua-entity" name="agua-entity" <?php if($readonly != '') echo ' disabled'; ?> <?php if (isset($entity->m_agua) and $entity->m_agua == 1) echo 'checked'; ?>>
+                                                <label for="agua-entity">Água</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="checkbox-custom checkbox-success">
+                                                <input class="require-one" type="checkbox" id="gas-entity" name="gas-entity" <?php if($readonly != '') echo ' disabled'; ?> <?php if (isset($entity->m_gas) and $entity->m_gas > 0) echo 'checked'; ?>>
+                                                <label for="gas-entity">Gás</label>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="checkbox-custom checkbox-warning">
-                                                <input type="checkbox" id="gas-condo" name="gas-condo" <?php if($readonly != '') echo ' disabled'; ?> <?php if (isset($condo->m_gas) and $condo->m_gas == 1) echo 'checked'; ?>>
-                                                <label for="gas-condo">Gás</label>
+                                                <input class="require-one" type="checkbox" id="energia-entity" name="energia-entity" <?php if($readonly != '') echo ' disabled'; ?> <?php if (isset($entity->m_energia) and $entity->m_energia == 1) echo 'checked'; ?>>
+                                                <label for="energia-entity">Energia</label>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
-                                            <div class="checkbox-custom checkbox-warning">
-                                                <input type="checkbox" id="gas-condo-leitura" name="gas-condo-leitura" <?php if($readonly != '') echo ' disabled'; ?> <?php if (isset($condo->m_gas) and $condo->m_gas == 2) echo 'checked'; ?>>
-                                                <label for="gas-condo-leitura">Leitura do Gás</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-3">
-                                            <div class="checkbox-custom checkbox-danger">
-                                                <input type="checkbox" id="energia-condo" name="energia-condo" <?php if($readonly != '') echo ' disabled'; ?> <?php if (isset($condo->m_energia) and $condo->m_energia == 1) echo 'checked'; ?>>
-                                                <label for="energia-condo">Energia</label>
+                                            <div class="checkbox-custom checkbox-info">
+                                                <input class="require-one" type="checkbox" id="nivel-entity" name="nivel-entity" <?php if($readonly != '') echo ' disabled'; ?> <?php if (isset($entity->m_nivel) and $entity->m_nivel == 1) echo 'checked'; ?>>
+                                                <label for="nivel-entity">Nível</label>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="form-group row ramais" <?php if (isset($condo->m_agua) and $condo->m_agua == 0) echo 'style="display:none;"'; ?>>
+                            <div class="form-group row ramais" <?php if (isset($entity->m_agua) and $entity->m_agua == 0) echo 'style="display:none;"'; ?>>
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Ramais <span class="required">*</span></label>
-                                <div class="col-lg-6 <?php echo $readonly; ?>">
-                                    <input id="ramais-condo" name="ramais-condo" data-role="tagsinput" data-tag-class="badge badge-info" class="form-control ramais-input <?php if (isset($condo->m_gas) and $condo->m_agua == 0) echo 'no-validate'; ?>" value="<?php if (isset($ramais)) echo $ramais; ?>" <?php if ($readonly != '') echo 'disabled="true"';?> required/>
+                                <div class="col-lg-6 <?= $readonly; ?>">
+                                    <input id="ramais-condo" name="ramais-condo" data-role="tagsinput" data-tag-class="badge badge-info" class="form-control ramais-input <?php if (isset($entity->m_gas) and $entity->m_agua == 0) echo 'no-validate'; ?>" value="<?php if (isset($ramais)) echo $ramais; ?>" <?php if ($readonly != '') echo 'disabled="true"';?> required/>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Dados Proprietários</label>
-                                <div class="col-lg-6 align-self-center <?php echo $readonly; ?>">
+                                <div class="col-lg-6 align-self-center <?= $readonly; ?>">
                                     <div class="checkbox-custom checkbox-default">
-                                        <input type="checkbox" id="proprietarios-condo" name="proprietarios-condo" <?php if($readonly != '') echo ' disabled'; ?> <?php if (isset($condo->d_proprietarios) and $condo->d_proprietarios == 1) echo 'checked'; ?>>
-                                        <label for="fracao-condo">Cadastar nome e email dos proprietários?</label>
+                                        <input type="checkbox" id="proprietarios-condo" name="proprietarios-condo" <?php if($readonly != '') echo ' disabled'; ?> <?php if (isset($entity->d_proprietarios) and $entity->d_proprietarios == 1) echo 'checked'; ?>>
+                                        <label for="fracao-condo">Cadastrar nome e email dos proprietários?</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Frações Ideais</label>
-                                <div class="col-lg-6 align-self-center <?php echo $readonly; ?>">
+                                <div class="col-lg-6 align-self-center <?= $readonly; ?>">
                                     <div class="checkbox-custom checkbox-default">
-                                        <input type="checkbox" id="fracao-condo" name="fracao-condo" <?php if(count($blocos) == 0 or $readonly != '') echo ' disabled'; ?> <?php if (isset($condo->fracao_ideal) and $condo->fracao_ideal == 1) echo 'checked'; ?>>
+                                        <input type="checkbox" id="fracao-condo" name="fracao-condo" <?php if(count($groups) == 0 or $readonly != '') echo ' disabled'; ?> <?php if (isset($entity->fracao_ideal) and $entity->fracao_ideal == 1) echo 'checked'; ?>>
                                         <label for="fracao-condo">Cadastar as Frações Ideais das unidades para permitir rateio de valores da inadimplência?</label>
                                     </div>
                                 </div>
@@ -242,7 +258,7 @@
 
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Centrais Easymeter</label>
-                                <div class="col-lg-6 <?php echo $readonly; ?>">
+                                <div class="col-lg-6 <?= $readonly; ?>">
                                     <input id="centrais-condo" name="centrais-condo" class="form-control" value="<?php if (isset($centrais)) echo $centrais; ?>" <?php if ($readonly != '') echo 'disabled="true"';?>/>
                                 </div>
                             </div>
@@ -250,7 +266,7 @@
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Observações</label>
                                 <div class="col-lg-6">
-                                    <textarea class="form-control" rows="3" id="textareaAutosize" data-plugin-textarea-autosize <?php echo $readonly; ?>><?php echo service('uri')->getSegment(4); ?></textarea>
+                                    <textarea class="form-control" rows="3" id="textareaAutosize" data-plugin-textarea-autosize <?= $readonly; ?>><?= service('uri')->getSegment(4); ?></textarea>
                                 </div>
                             </div>
 
@@ -258,14 +274,14 @@
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Ativo</label>
                                 <div class="col-lg-6">
                                     <div class="switch switch-sm switch-primary">
-                                        <input type="checkbox" name="switch" data-plugin-ios-switch checked="checked" <?php if($readonly != '') echo ' disabled'; ?>/>
+                                        <input type="checkbox" name="switch" data-plugin-ios-switch checked="checked" <?= $readonly; ?>/>
                                     </div>
                                 </div>
                             </div>
 
                             <?php if($readonly == '') : ?>
                                 <div class="row">
-                                    <div class="col-lg-9 text-right">
+                                    <div class="col-lg-9 text-end">
                                         <button class="btn btn-primary btn-salvar mr-3">Salvar</button>
                                         <button type="reset" class="btn btn-back">Voltar</button>
                                     </div>
@@ -281,36 +297,38 @@
                         <!-- tab-form cadastro -->
 
                         <!-- tab-form unidades -->
-                        <div class="tab-form unidades d-none<?php if(count($blocos) == 0) echo ' inactive'; ?>">
+                        <div class="tab-form unidades d-none<?php if(count($groups) == 0) echo ' inactive'; ?>">
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Bloco</label>
                                 <div class="col-lg-6">
                                     <div class="input-group">
                                         <select id="sel-bloco" name="sel-bloco" class="form-control">
-                                            <?php foreach ($blocos as $bl) { ?>
-                                                <option value="<?php echo $bl->id; ?>"><?= ($bl->nome == '') ? 'Não possui' : $bl->nome; ?></option>
+                                            <?php foreach ($groups as $bl) { ?>
+                                                <option value="<?= $bl->id; ?>"><?= ($bl->nome == '') ? 'Não possui' : $bl->nome; ?></option>
                                             <?php } ?>
                                         </select>
                                         <?php if ($readonly == '') { ?>
-                                            <span class="input-group-append">
-                                                                <button class="btn btn-warning btn-bloco-edit" type="button" title="Editar" <?php if(count($blocos) == 0 or $readonly != '') echo 'disabled'; ?>><i class="fas fa-edit"></i></button>
-                                                                <button class="btn btn-success btn-bloco-add" type="button"  title="Adicionar"><i class="fas fa-plus"></i></button>                                                        
-                                                                <button class="btn btn-danger btn-bloco-delete" type="button"  title="Excluir" <?php if(count($blocos) == 0 or $readonly != '') echo 'disabled'; ?>><i class="fas fa-times"></i></button>
-                                                            </span>
+                                            <button class="btn btn-warning btn-bloco-edit" type="button" title="Editar" <?php if(count($groups) == 0 or $readonly != '') echo 'disabled'; ?>><i class="fas fa-edit"></i></button>
+                                            <button class="btn btn-success btn-bloco-add" type="button"  title="Adicionar"><i class="fas fa-plus"></i></button>
+                                            <button class="btn btn-danger btn-bloco-delete" type="button"  title="Excluir" <?php if(count($groups) == 0 or $readonly != '') echo 'disabled'; ?>><i class="fas fa-times"></i></button>
                                         <?php } ?>
                                     </div>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-lg-12">
-                                    <div class="alert alert-warning unidades">
-                                        <strong>Atenção</strong> Antes de incluir unidades você deve configurar os blocos do condomínio.
-                                    </div>
-                                    <div class="unidades-container">
-                                        <div class="mb-2 text-right">
-                                            <button class="btn btn-success btn-inclui-unidade mr-2" type="button" <?php if(count($blocos) == 0 or $readonly != '') echo 'disabled'; ?>><i class="fa fa-plus"></i> Incluir Unidade</button>
-                                            <button class="btn btn-primary btn-filter" type="button" <?php if(count($blocos) == 0 or $readonly != '') echo 'disabled'; ?>><i class="fa fa-filter"></i></button>
+                                    <?php if (count($groups) == 0 and is_null($readonly)) : ?>
+                                        <div class="alert alert-warning unidades">
+                                            <strong>Atenção</strong> Antes de incluir unidades você deve configurar os blocos do condomínio.
                                         </div>
+                                    <?php endif; ?>
+                                    <div class="unidades-container">
+                                        <?php if (count($groups) != 0 or is_null($readonly)) : ?>
+                                            <div class="mb-2 text-end">
+                                                <button class="btn btn-success btn-inclui-unidade mr-2" type="button" <?= (count($groups) == 0 or is_null($readonly)) ? 'disabled' : ''; ?>><i class="fa fa-plus"></i> Incluir Unidade</button>
+                                                <button class="btn btn-primary btn-filter" type="button" <?= (count($groups) == 0 or is_null($readonly)) ? 'disabled' : ''; ?>><i class="fa fa-filter"></i></button>
+                                            </div>
+                                        <?php endif; ?>
                                         <table class="table table-bordered table-striped" id="dt-unidades">
                                             <thead>
                                             <tr role="row">
@@ -319,8 +337,6 @@
                                                 <th width="4%">PIN</th>
                                                 <th width="4%">Tipo</th>
                                                 <th width="18%">Proprietário</th>
-                                                <th width="16%">Email</th>
-                                                <th width="12%">Telefone</th>
                                                 <th width="30%">Entradas</th>
                                                 <th width="5%">Ações</th>
                                             </tr>
@@ -351,11 +367,11 @@
                                         </thead>
                                         </tbody>
                                         <?php
-                                        $centrais = model('admin_model')->get_centrais($condo->id);
+                                        $centrais = model('admin_model')->get_centrais($entity->id);
                                         foreach($centrais as $c) {
                                             echo "<tr>";
                                             echo "<td width='20'><a href='".site_url('admin/centrais/'.$c->nome)."' target='_blank'>{$c->nome}</a></td>";
-                                            $x = model('admin_model')->get_central_leituras($c->nome, $condo->tabela);
+                                            $x = model('admin_model')->get_central_leituras($c->nome, $entity->tabela);
                                             for($i = 0; $i < count($leituras); $i++) {
                                                 $l = isset($x[$leituras[$i]]) ? $x[$leituras[$i]] : 0;
                                                 echo '<td style="background-color:'.numberToColor($l < 25 ? $l : 0, 0, 24, ['#CC0000', '#EEEE00', '#4CAF50']).'!important;" title="'.$leituras[$i].': '.$l.'"></td>';
@@ -378,7 +394,7 @@
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Config 1 <span class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <input id="conf1-condo" name="conf1-condo" type="text" value="" class="form-control" placeholder="Explicação" <?php echo $readonly; ?> required>
+                                    <input id="conf1-condo" name="conf1-condo" type="text" value="" class="form-control" placeholder="Explicação" <?= $readonly; ?> required>
                                 </div>
                             </div>
 
@@ -398,7 +414,7 @@
 
                             <?php if($readonly == '') : ?>
                                 <div class="row">
-                                    <div class="col-lg-9 text-right">
+                                    <div class="col-lg-9 text-end">
                                         <button class="btn btn-primary btn-salvar mr-3">Salvar</button>
                                         <button type="reset" class="btn btn-back">Voltar</button>
                                     </div>
@@ -412,27 +428,27 @@
                         <div class="tab-form consumo d-none">
 
                             <ul class="nav nav-pills nav-pills-primary">
-                                <?php if (isset($condo->m_agua) and $condo->m_agua) : ?>
+                                <?php if (isset($entity->m_agua) and $entity->m_agua) : ?>
                                     <li class="nav-item">
                                         <a class="nav-link active" href="#pill-agua" data-toggle="tab"><i class="fas fa-tint"></i> Água</a>
                                     </li>
                                 <?php endif; ?>
-                                <?php if (isset($condo->m_agua) and $condo->m_gas) : ?>
+                                <?php if (isset($entity->m_agua) and $entity->m_gas) : ?>
                                     <li class="nav-item">
-                                        <a class="nav-link <?= ($condo->m_agua) ? "" : "active"; ?>" href="#pill-gas" data-toggle="tab"><i class="fas fa-fire"></i> Gás</a>
+                                        <a class="nav-link <?= ($entity->m_agua) ? "" : "active"; ?>" href="#pill-gas" data-toggle="tab"><i class="fas fa-fire"></i> Gás</a>
                                     </li>
                                 <?php endif; ?>
                             </ul>
 
                             <div class="tab-content my-4" style="background-color: transparent;box-shadow: none;padding: 0; border: 0;">
-                                <?php if (isset($condo->m_agua) and $condo->m_agua) : ?>
+                                <?php if (isset($entity->m_agua) and $entity->m_agua) : ?>
                                     <div id="pill-agua" class="tab-pane active">
                                         <div class="row mb-3">
-                                            <div class="col text-right">
-                                                <button class="btn btn-success btn-tarifar text-right">Tarifar</button>
+                                            <div class="col text-end">
+                                                <button class="btn btn-success btn-tarifar text-end">Tarifar</button>
                                             </div>
                                         </div>
-                                        <table class="table table-bordered table-striped " id="dt-fechamentos" data-url="<?php echo site_url('ajax/get_fechamentos'); ?>">
+                                        <table class="table table-bordered table-striped " id="dt-fechamentos" data-url="<?= site_url('admin/get_fechamentos'); ?>">
                                             <thead>
                                             <tr role="row">
                                                 <th class="filter" width="10%">Ramal</th>
@@ -450,9 +466,9 @@
                                     </div>
                                 <?php endif; ?>
 
-                                <?php if (isset($condo->m_agua) and $condo->m_gas) : ?>
-                                    <div id="pill-gas" class="tab-pane <?= ($condo->m_agua) ? "" : "active"; ?>">
-                                        <table class="table table-bordered table-striped table-hover table-click" id="dt-leituras" data-url="<?php echo site_url('ajax/get_leituras'); ?>">
+                                <?php if (isset($entity->m_agua) and $entity->m_gas) : ?>
+                                    <div id="pill-gas" class="tab-pane <?= ($entity->m_agua) ? "" : "active"; ?>">
+                                        <table class="table table-bordered table-striped table-hover table-click" id="dt-leituras" data-url="<?= site_url('admin/get_leituras'); ?>">
                                             <thead>
                                             <tr role="row">
                                                 <th class="filter" width="17%">Competência</th>
@@ -477,7 +493,7 @@
                             </script>
 
                             <div class="tab-form geral d-none" data-loading-overlay data-loading-overlay-options='{ "css": { "backgroundColor": "#00000080" } }'>
-                                <div class="text-right">
+                                <div class="text-end">
                                     <div id="daterange" class="btn btn-primary">
                                         <i class="fa fa-calendar"></i>&nbsp;<span></span>
                                     </div>
@@ -517,7 +533,7 @@
         </div>
         <footer class="card-footer">
             <div class="row">
-                <div class="col-md-12 text-right">
+                <div class="col-md-12 text-end">
                     <button class="btn btn-danger modal-confirm overlay-small mr-3" style="min-width:69px;" data-timer="10" data-loading-overlay disabled>10</button>
                     <button class="btn btn-default modal-dismiss">Cancelar</button>
                 </div>
@@ -545,7 +561,7 @@
 </div>
 
 <?php
-echo view('Admin/modals/sindico');
+echo view('Admin/modals/gestor');
 echo view('Admin/modals/administradora');
 
 $data['modal_id'] = 'modalBlocoRemove';

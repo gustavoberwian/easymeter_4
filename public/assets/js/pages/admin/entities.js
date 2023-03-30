@@ -825,7 +825,7 @@ var unidade_validator;
 			ajax: {
 				settings: {
 					type: 'POST',
-					data: { cid: $("#id-condo").val(), bid: $("#sel-bloco option:selected").val()}
+					data: { cid: $("#id-entity").val(), bid: $("#sel-bloco option:selected").val()}
 				}
 			},
 			callbacks: {
@@ -846,7 +846,7 @@ var unidade_validator;
 			ajax: {
 				settings: {
 					type: 'POST',
-					data: { cid: $("#id-condo").val(), bid: 0}
+					data: { cid: $("#id-bloco").val(), bid: 0}
 				}
 			},
 			callbacks: {
@@ -1016,8 +1016,15 @@ var unidade_validator;
                 $('.table-responsive').removeClass('processing');
             }
 		},
-        columns: [ { data: "apto", class: "dt-body-center" }, { data: "andar", class: "dt-body-center" }, { data: "codigo", class: "dt-body-center" }, 
-            { data: "tipo", class: "dt-body-center" }, { data: "nome" }, { data: "email" }, { data: "telefone", class: "dt-body-center" }, { data: "medidores" }, { data: "action", class: "actions dt-body-center" } ],
+        columns: [
+			{ data: "apto", class: "dt-body-center" },
+			{ data: "andar", class: "dt-body-center" },
+			{ data: "codigo", class: "dt-body-center" },
+            { data: "tipo", class: "dt-body-center" },
+			{ data: "nome" },
+			{ data: "medidores" },
+			{ data: "action", class: "actions dt-body-center" }
+		],
 		fnPreDrawCallback: function() { $('.table-responsive').addClass('processing'); },
         fnDrawCallback: function(oSettings) { $('.table-responsive').removeClass('processing'); }        
     });
@@ -1031,7 +1038,7 @@ var unidade_validator;
 			ajax: {
 				settings: {
 					type: 'POST',
-					data: { cid: $("#id-condo").val(), bid: $('.form-condo #sel-bloco').val() }
+					data: { cid: $("#id-entity").val(), bid: $('.form-condo #sel-bloco').val() }
 				}
             },
 			callbacks: {
@@ -1181,7 +1188,7 @@ var unidade_validator;
 			ajax: {
 				settings: {
 					type: 'POST',
-					data: { cid: $("#id-condo").val(), bid: $('.form-condo #sel-bloco').val(), uid: $(this).data('id') }
+					data: { cid: $("#id-entity").val(), bid: $('.form-condo #sel-bloco').val(), uid: $(this).data('id') }
 				}
 			},
 			callbacks: {
@@ -1237,7 +1244,7 @@ var unidade_validator;
 			ajax: {
 				settings: {
 					type: 'POST',
-					data: { cid: $("#id-condo").val(), bid: $('.form-condo #sel-bloco').val(), uid: $(this).data('id'), md: 1 }
+					data: { cid: $("#id-entity").val(), bid: $('.form-condo #sel-bloco').val(), uid: $(this).data('id'), md: 1 }
 				}
 			},
 			callbacks: {
@@ -1724,12 +1731,12 @@ var unidade_validator;
     // * Handler Row click condominios
     // * Abre página do condominio
     // **
-    $('#dt-condos tbody').on('click', 'tr', function (event) {
+    $('#dt-entities tbody').on('click', 'tr', function (event) {
 		console.log('teste');
         // se o clique não foi em uma celula ou na última, retorna
         if (event.target.cellIndex == undefined || event.target.cellIndex == 9) return;
         // pega dados da linha
-        var data = $dtCondos.row( this ).data();
+        var data = $dtEntities.row( this ).data();
         // redireciona para o fechamento
         window.location = "/admin/entities/" + data.id;
     });

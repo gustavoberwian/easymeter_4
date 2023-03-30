@@ -37,15 +37,44 @@ class Admin extends UNO_Controller
         return $this->render("index");
     }
 
-    public function entities($param1 = null, $param2 = null)
+    public function entities($param1 = null, $param2 = null): string
     {
         if ( intval($param1) > 0 ) {
+
+            $data['geral'] = false;
+            $data['entity'] = $this->admin_model->get_entity($param1);
+            $data['groups'] = $this->admin_model->get_groups($data['entity']->id);
+
             if ($param2 == "editar") {
-                return $this->render('entity_edit');
+
+                $data['ramais'] = $this->admin_model->get_ramais($param1, true);
+                $data['centrais'] = $this->admin_model->get_centrais($param1, true);
+                $data['entradas'] = $this->admin_model->get_entradas($param1);
+                $data['readonly'] = '';
+
+                $labels = array();
+                for($i = 0; $i < 40; $i++) {
+                    $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
+                }
+                $data['leituras'] = $labels;
+
+                return $this->render('entity_edit', $data);
+
             } else {
-                return $this->render('entity_view');
+
+                $data['readonly'] = 'readonly disabled';
+
+                $labels = array();
+                for($i = 0; $i < 40; $i++) {
+                    $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
+                }
+                $data['leituras'] = $labels;
+
+                return $this->render('entity_edit', $data);
             }
+
         } elseif ($param1 === 'incluir') {
+
             return $this->render('entity_add');
         }
 
@@ -57,7 +86,7 @@ class Admin extends UNO_Controller
         if ( intval($param1) > 0 ) {
 
             $data['condo'] = $this->admin_model->get_condo($param1);
-            $data['blocos'] = $this->admin_model->get_blocos($data['condo']->id);
+            $data['blocos'] = $this->admin_model->get_groups($data['condo']->id);
 
             if ($param2 == "editar") {
 
@@ -201,25 +230,22 @@ class Admin extends UNO_Controller
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 
-                esm_unidades.id, 
-                esm_unidades.nome AS apto, 
-                esm_unidades.andar, 
-                esm_unidades.fracao, 
-                esm_unidades.codigo, 
-                esm_unidades.tipo,
-                esm_blocos.nome AS bloco, 
-                user.id AS prop_id, 
-                IFNULL(user.nome, 'Não cadastrado') AS nome, 
-                IFNULL(user.username, '-') AS email, 
-                IFNULL(user.telefone, '-') AS telefone
+                    esm_unidades.id, 
+                    esm_unidades.nome AS apto, 
+                    esm_unidades.andar, 
+                    esm_unidades.fracao, 
+                    esm_unidades.codigo, 
+                    esm_unidades.tipo,
+                    esm_blocos.nome AS bloco, 
+                    user.id AS prop_id, 
+                    IFNULL(user.username, 'Não cadastrado') AS nome
             FROM esm_unidades
             JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
             LEFT JOIN (
-                SELECT auth_users_unidades.unidade_id, auth_users.id, auth_users.nome, auth_users.username, auth_users.telefone
-                FROM auth_users
-                JOIN auth_users_groups ON auth_users_groups.user_id = auth_users.id
-                JOIN auth_users_unidades ON auth_users_unidades.user_id = auth_users.id
-                WHERE auth_users_groups.group_id = 3) AS user ON user.unidade_id = esm_unidades.id
+                    SELECT auth_user_relation.unity_id, users.id, users.username
+                    FROM users
+                    JOIN auth_user_relation ON auth_user_relation.user_id = users.id 
+            ) AS user ON user.unity_id = esm_unidades.id
             WHERE esm_unidades.bloco_id = $bloco
             ORDER BY esm_blocos.nome, esm_unidades.nome
         ");
@@ -243,6 +269,13 @@ class Admin extends UNO_Controller
                         $s = is_null($e->sensor_id) ? '' : '<b>Sensor:</b> ' . $e->sensor_id;
                         $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/><b>Central</b>: ' . $e->central . '<br/><b>Posição:</b> ' . $e->posicao . '<br/>' . $s . '">' . $e->nome . '</span>';
                     }
+                } else if ($e->tipo == 'energia') {
+                    if (is_null($e->central))
+                        $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '">' . $e->nome . '</span>';
+                    else {
+                        $s = is_null($e->sensor_id) ? '' : '<b>Sensor:</b> ' . $e->sensor_id;
+                        $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/><b>Central</b>: ' . $e->central . '<br/><b>Posição:</b> ' . $e->posicao . '<br/>' . $s . '">' . $e->nome . '</span>';
+                    }
                 }
             }
 
@@ -251,12 +284,15 @@ class Admin extends UNO_Controller
 
         // inclui campo status
         $dt->add('action', function ($data) {
-            return '<div class="dropdown"><a class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"><i class="fas fa-bars" title="Ações"></i></a>
+            return '
+                <div class="dropdown">
+                    <a class="" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars" title="Ações"></i></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <a class="dropdown-item" data-id="' . $data['id'] . '" href="' . site_url('admin/unidades/' . $data['id']) . '" target="_blank"><i class="fas fa-eye mr-2"></i> Consumo</a>
                         <a class="dropdown-item action-edit" data-id="' . $data['id'] . '" href="#"><i class="fas fa-pencil-alt mr-2"></i> Editar</a>
                         <a class="dropdown-item action-delete" data-id="' . $data['id'] . '" href="#"><i class="fas fa-trash mr-2"></i> Excluir</a>
-                    </div></div>';
+                    </div>
+                </div>';
         });
 
         // gera resultados
@@ -358,5 +394,236 @@ class Admin extends UNO_Controller
 
         // executa o curl e retorna os dados
         echo $this->viacep->busca_cep($cep);
+    }
+
+    public function get_fechamentos()
+    {
+        $condo_id = $this->input->getGet('condo');
+        $this->user = auth()->user();
+        if (is_null($condo_id)) $condo_id = $this->user->condo->id;
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT esm_fechamentos.id AS DT_RowId, esm_fechamentos.competencia,
+			DATE_FORMAT(FROM_UNIXTIME(esm_fechamentos.data_inicio),'%d/%m/%Y') AS data_inicio,
+			DATE_FORMAT(FROM_UNIXTIME(esm_fechamentos.data_fim),'%d/%m/%Y') AS data_fim, 
+            LPAD(esm_fechamentos.leitura_anterior, 6, '0') AS leitura_anterior, LPAD(esm_fechamentos.leitura_atual, 6, '0') AS leitura_atual, 
+            CONCAT(esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior, ' m<sup>3</sup>') AS consumo,
+            CONCAT('<span class=\"float-left\">R$</span> ', FORMAT(esm_fechamentos.v_concessionaria, 2, 'de_DE')) AS v_concessionaria, 
+            DATE_FORMAT(esm_fechamentos.cadastro,'%d/%m/%Y') AS cadastro, esm_ramais.nome AS ramal,
+            (SELECT IFNULL(GROUP_CONCAT(DATE_FORMAT(data, '%d/%m/%Y') SEPARATOR '<br/>'), 'Não Enviados') FROM esm_fechamentos_envios WHERE fechamento_id = esm_fechamentos.id) AS envios
+            FROM esm_fechamentos
+			LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
+            LEFT JOIN esm_entidades ON esm_ramais.condo_id = esm_entidades.id
+            WHERE esm_entidades.id = $condo_id AND esm_ramais.tipo = 'agua' ORDER BY esm_fechamentos.id DESC
+        ");
+
+        $dt->edit('envios', function ($data) {
+            if ($data['envios'] == 'Não Enviados')
+                return '<span class="badge badge-warning">Não Enviados</span>';
+            else
+                return '<span class="badge badge-success" title="' . $data['envios'] . '" data-toggle="tooltip" data-html="true">Enviados</span>';
+        });
+
+        $dt->edit('competencia', function ($data) {
+            return competencia_nice($data['competencia']);
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            $dis = "";
+            if ($this->user->inGroup('demo')) {
+                $dis = " disabled";
+            }
+
+            return '<a href="#" class="action-download-agua ' . $dis . '" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>
+				<a href="#" class="action-delete ' . $dis . '" data-id="' . $data['DT_RowId'] . '"><i class="fas fa-trash" title="Excluir"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function get_leituras()
+    {
+        $condo_id = $this->input->getGet('condo');
+        $this->user = auth()->user();
+        if (is_null($condo_id)) $condo_id = $this->user->condo->id;
+
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT 
+                UNIX_TIMESTAMP(STR_TO_DATE(CONCAT('01/', competencia), '%d/%m/%Y')) AS competencia,
+                esm_fechamentos.data_inicio,
+                esm_fechamentos.data_fim, 
+                esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior AS consumo,
+                esm_fechamentos.cadastro AS leitura,
+                esm_fechamentos.id AS DT_RowId
+            FROM esm_fechamentos
+            LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
+            LEFT JOIN esm_entidades ON esm_ramais.condo_id = esm_entidades.id
+            WHERE esm_entidades.id = $condo_id AND esm_ramais.nome LIKE \"G%\" ORDER BY esm_fechamentos.id DESC
+        ");
+
+        $dt->edit('competencia', function ($data) {
+            return competencia_nice(date("m/Y", $data['competencia']));
+        });
+
+        $dt->edit('data_inicio', function ($data) {
+            return date("d/m/Y", $data['data_inicio']);
+        });
+
+        $dt->edit('data_fim', function ($data) {
+            return date("d/m/Y", $data['data_fim']);
+        });
+
+        $dt->edit('leitura', function ($data) {
+            return date_format(date_create($data['leitura']), "d/m/Y");
+        });
+
+        $dt->edit('consumo', function ($data) {
+            return number_format($data['consumo'] / 1000, 3, ',', '.') . ' m<sup>3</sup>';
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            return '<a href="#" class="action-download-gas" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function md_bloco()
+    {
+        $bid = $this->input->getPost('bid');
+        $cid = $this->input->getPost('cid');
+
+        if ($bid > 0) {
+            $data['modal_title'] = "Editar Bloco";
+        } else {
+            $data['modal_title'] = "Incluir Bloco";
+        }
+        $data['bloco'] = $this->admin_model->get_bloco($bid);
+        $data['ramais'] = $this->admin_model->get_ramais($cid);
+
+        echo view('Admin/modals/bloco', $data);
+    }
+
+    public function md_unidade()
+    {
+        $cid = $this->input->getPost('cid');
+        $bloco = $this->input->getPost('bid');
+        $uid = $this->input->getPost('uid');
+        $modo = $this->input->getPost('md');
+
+        // dados de config do condominio pelo bloco para ter o nome do bloco
+        $data['entity'] = $this->admin_model->get_entity_config_by_bloco($bloco, ', esm_entidades.d_proprietarios, esm_entidades.tipo_unidades, esm_blocos.nome as b_nome');
+        // entradas do condominio
+        $data['entradas'] = $this->admin_model->get_entradas($cid);
+        // centrais do condominio
+        $data['centrais'] = $this->admin_model->get_centrais($cid);
+        // fraçoes já cadastradas no condominio
+        $data['fracoes'] = $this->admin_model->get_fracoes_condominio($cid);
+        // modo
+        $data['modo'] = $modo;
+        // edição ou inclusão?
+        if ($uid > 0) {
+            // dados da unidade e medidores
+            $data['unidade'] = $this->admin_model->get_unidade($uid);
+            $entradas = $this->admin_model->get_medidores_unidade($uid);
+            if (count($entradas) > 0) $data['entradas'] = $entradas;
+
+            if ($modo) {
+                $data['modal_title'] = 'Visualizar Unidade';
+                echo view('Admin/modals/view_unidade', $data);
+            } else {
+                $data['modal_title'] = 'Editar Unidade';
+                echo view('Admin/modals/unidade_edit', $data);
+            }
+            return;
+        }
+
+        // titulo da modal
+        $data['modal_title'] = 'Incluir Unidade - Bloco ' . $data['entity']->b_nome;
+        // renderiza modal
+        echo view('Admin/modals/unidade_add', $data);
+    }
+
+    public function get_portas()
+    {
+        $out = '';
+        $central = $this->input->getPost('id', true);
+        $porta = $this->input->getPost('porta', true);
+
+        $portas = $this->admin_model->get_portas($central);
+        if (!$portas) {
+            for ($i = 1; $i < 65; $i++) $out .= '<option value="' . $i . '">' . str_pad($i, 2, '0', STR_PAD_LEFT) . '</option>';
+            echo $out;
+            return;
+        }
+
+        $portas = array_column($portas, 'posicao');
+
+        //TODO: verificar numero de portas da central,
+        // pois qdo tiver sensores sem fio vão ser mais
+        for ($i = 1; $i < 65; $i++) {
+            $status = in_array($i, $portas) ? 'disabled' : '';
+            $sel = ($porta == $i) ? 'selected' : '';
+            $out .= '<option value="' . $i . '" ' . $status . ' ' . $sel . '>' . str_pad($i, 2, '0', STR_PAD_LEFT) . '</option>';
+        }
+
+        echo $out;
+    }
+
+    public function edit_unidade()
+    {
+        $id = $this->input->getPost('id') ?? "";
+        $cid = $this->input->getPost('cid') ?? "";
+        $bid = $this->input->getPost('bid') ?? "";
+
+        $nome = $this->input->getPost('nome-unidade') ?? "";
+        $andar = $this->input->getPost('andar-unidade') ?? "";
+        $propr = $this->input->getPost('proprietario-unidade') ?? "";
+        $email = $this->input->getPost('email-unidade') ?? "";
+        $telef = $this->input->getPost('telefone-unidade') ?? "";
+        $fracao = $this->input->getPost('fracao-unidade') ?? "";
+        $tipo = $this->input->getPost('tipo-unidade') ?? "";
+
+        // $agua = $this->input->post('tipo-unidade', true);
+        // $ramal_id = $this->input->post('tipo-unidade', true);
+
+        if ($id) {
+            //edita unidade
+            $agua_edit = $this->input->getPost('id-prumada-edit') ?? "";
+            $agua_delete = $this->input->getPost('id-prumada-delete') ?? "";
+
+            // atualiza bloco na tabela blocos
+            echo $this->admin_model->update_bloco($id, $nome, $agua, $agua_edit, $agua_delete, $ramal_id);
+        } else {
+            $unidade = array(
+                'bloco_id' => $bid,
+                'nome' => $nome,
+                'andar' => $andar,
+                'fracao' => is_null($fracao) ? 1 : $fracao,
+                'tipo' => $tipo
+            );
+            $dados = array(
+                'nome' => $propr,
+                'email' => $email,
+                'telefone' => preg_replace('/[^0-9]/', '', $telef)
+            );
+
+            // insere bloco
+            echo $this->admin_model->add_unidade($unidade, $dados);
+        }
+    }
+
+    public function md_medidor()
+    {
+        $id = $this->input->getPost('id');
+
+        $data['medidor'] = $this->admin_model->get_medidor($id);
+
+        echo view('Admin/modals/medidor', $data);
     }
 }

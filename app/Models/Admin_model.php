@@ -21,7 +21,7 @@ class Admin_model extends Base_model
         return $query->getResult();
     }
 
-    public function get_condo($id)
+    public function get_entity($id)
     {
         // seleciona todos os campos
         $query = $this->db->table('esm_entidades')
@@ -39,15 +39,12 @@ class Admin_model extends Base_model
         return $query->getRow();
     }
 
-    public function get_blocos($condo)
+    public function get_groups($condo)
     {
         $query = $this->db->table('esm_blocos')
             ->where('esm_blocos.condo_id', $condo)
             ->orderBy('nome', 'ASC')
             ->get();
-
-        if ($query->getNumRows() == 0)
-            return false;
 
         return $query->getResult();
     }
@@ -60,10 +57,6 @@ class Admin_model extends Base_model
             $query->where('tipo', $tipo);
 
         $query = $query->get();
-
-        // verifica se retornou algo
-        if ($query->getNumRows() == 0)
-            return false;
 
         if ($as_string) {
             $ramais = $query->getResult();
@@ -84,9 +77,6 @@ class Admin_model extends Base_model
             ->where('condo_id', $condo)
             ->orderBy('id')
             ->get();
-
-        if ($query->getNumRows() == 0)
-            return false;
 
         if ($as_string) {
             $centrais = $query->getResult();
@@ -109,10 +99,6 @@ class Admin_model extends Base_model
             WHERE condo_id = $condo_id
             ORDER BY FIELD(tipo, 'agua', 'gas', 'energia'), ordem, id
         ");
-
-        // verifica se retornou algo
-        if ($query->getNumRows() == 0)
-            return false;
 
         return $query->getResult();
     }
@@ -256,5 +242,96 @@ class Admin_model extends Base_model
         }
 
         return json_encode(array("status" => "success", "message" => "Entidade criada com sucesso.", "id" => $this->db->insertID()));
+    }
+
+    public function get_bloco($id)
+    {
+        $query = $this->db->table('esm_blocos')
+            ->select('esm_blocos.*, COUNT(esm_unidades.id) AS unidades')
+            ->join('esm_unidades', 'esm_unidades.bloco_id = esm_blocos.id', 'LEFT')
+            ->where('esm_blocos.id', $id)
+            ->get();
+
+        return $query->getRow();
+    }
+
+    public function get_entity_config_by_bloco($b, $extra = '')
+    {
+        $query = $this->db->table('esm_entidades')
+            ->select('esm_entidades.fracao_ideal, esm_entidades.m_agua, esm_entidades.m_gas, esm_entidades.m_energia' . $extra)
+            ->join('esm_blocos', 'esm_blocos.condo_id = esm_entidades.id')
+            ->where('esm_blocos.id', $b);
+
+        // realiza a consulta
+        $result = $query->get();
+
+        return $result->getRow();
+    }
+
+    public function get_fracoes_condominio($cid)
+    {
+        $query = $this->db->query("
+            SELECT DISTINCT fracao 
+            FROM esm_unidades
+            JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
+            JOIN esm_entidades ON esm_entidades.id = esm_blocos.condo_id
+            WHERE esm_entidades.id = $cid
+            ORDER BY fracao
+        ");
+
+        return $query->getResult();
+    }
+
+    public function get_unidade($id, $completo = false)
+    {
+        $query = $this->db->table('esm_unidades')
+            ->where('esm_unidades.id', $id);
+
+        if ($completo) {
+            $query->select('esm_unidades.nome AS apto, esm_unidades.andar, esm_unidades.leitura_anterior, esm_unidades.leitura_atual, esm_blocos.nome AS bloco, esm_entidades.*');
+        }
+
+        if ($completo) {
+            $query->join('esm_blocos', 'esm_blocos.id = esm_unidades.bloco_id', 'LEFT');
+            $query->join('esm_entidades', 'esm_entidades.id = esm_blocos.condo_id', 'LEFT');
+        }
+        // realiza a consulta
+        $result = $query->get();
+
+        return $result->getRow();
+    }
+
+    public function get_portas($central)
+    {
+        $query = $this->db->table('esm_medidores')
+            ->select('posicao')
+            ->where('central', $central)
+            ->orderBy('posicao');
+
+        $result = $query->get();
+
+        return $result->getResultArray();
+    }
+
+    public function update_bloco($bid, $nome, $rid)
+    {
+        // atualiza bloco
+        if (!$this->db->table('esm_blocos')->where('id', $bid)->set(array('nome' => $nome, 'ramal_id' => $rid))->update())
+            return json_encode(array("status"  => "error", "message" => $this->db->error()));
+        else
+            return json_encode(array("status"  => "success", "message" => "Bloco atualizado com sucesso!", "text" => $nome));
+    }
+
+    public function get_medidor($id)
+    {
+        // aplica filtro pelo id
+        $query = $this->db->query("
+            SELECT esm_medidores.*, esm_sensores_agua.calibracao, esm_sensores_agua.utilizacao, esm_sensores_agua.instalacao
+            FROM esm_medidores
+            LEFT JOIN esm_sensores_agua ON esm_sensores_agua.id = esm_medidores.sensor_id
+            WHERE esm_medidores.id = $id
+		");
+
+        return $query->getRow();
     }
 }

@@ -243,3 +243,13 @@ function numberToColor($value, $min, $max, $gradientColors = null)
 
     return $rgbColorAsHex;
 }
+
+function entrada_icon($tipo, $class = '', $cor = false)
+{
+    if ($tipo == 'agua')
+        return '<i class="fas fa-tint '.($cor ? $cor : 'text-primary').' '.$class.'" title="Água"></i>';
+    if ($tipo == 'gas')
+        return '<i class="fas fa-fire '.($cor ? $cor : 'text-warning').' '.$class.'" title="Gás"></i>';
+    if ($tipo == 'energia')
+        return '<i class="fas fa-bolt '.($cor ? $cor : 'text-danger').' '.$class.'" title="Energia"></i>';
+}

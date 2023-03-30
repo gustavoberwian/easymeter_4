@@ -53,6 +53,12 @@ $routes->get('/api/(:any)/(:num)', 'Api::$1/$2');
 $routes->post('/api', 'Api::index');
 $routes->post('/api/(:any)', 'Api::$1');
 $routes->post('/api/(:any)/(:num)', 'Api::$1/$2');
+$routes->get('/admin', 'Admin::index',['filter'=>'checkApiAuth']);
+$routes->get('/admin/(:any)', 'Admin::$1',['filter'=>'checkApiAuth']);
+$routes->get('/admin/(:any)/(:num)', 'Admin::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/admin', 'Admin::index',['filter'=>'checkApiAuth']);
+$routes->post('/admin/(:any)', 'Admin::$1',['filter'=>'checkApiAuth']);
+$routes->post('/admin/(:any)/(:num)', 'Admin::$1/$2',['filter'=>'checkApiAuth']);
 
 
 service('auth')->routes($routes);

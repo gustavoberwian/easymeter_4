@@ -16,7 +16,6 @@ html {
 
 body {
     color: #777;
-    font-family: "Poppins", Arial, sans-serif;
     line-height: 22px;
     margin: 0;
     font-size: 13px;
@@ -2123,7 +2122,7 @@ a:active {
 		}
 
 		.page-header .breadcrumbs li {
-			color: #C3C3C3;
+			color: #fff;
 			display: inline-block;
 			font-weight: 300;
 		}
@@ -2153,7 +2152,7 @@ a:active {
 
 		.page-header .breadcrumbs a,
 		.page-header .breadcrumbs span {
-			color: #C3C3C3;
+			color: #fff;
 			display: inline-block;
 			font-size: 13.6px;
 			font-size: 0.85rem;
@@ -20943,4 +20942,9 @@ a:active {
 			background-color: #04AA6D;
 		}
 	}
+}
+td .table-one-line, tr .table-one-line{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }

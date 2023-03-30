@@ -181,6 +181,7 @@ class Water extends UNO_Controller
     {
         $field    = $this->input->getPost('field');
         $shopping_id    = $this->input->getPost('shopping_id');
+        $this->user->config = $this->shopping_model->get_client_config($shopping_id);
         $divisor  = 1;
         $decimals = 0;
         $unidade  = "";
@@ -285,6 +286,7 @@ class Water extends UNO_Controller
 
     public function resume()
     {
+        $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 

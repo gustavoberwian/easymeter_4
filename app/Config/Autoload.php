@@ -62,7 +62,8 @@ class Autoload extends AutoloadConfig
      * @var array<string, string>
      */
     public $classmap = [
-        'Datatables' => APPPATH . '/Libraries/Datatables.php'
+        'Datatables' => APPPATH . '/Libraries/Datatables.php',
+        'Viacep' => APPPATH . '/Libraries/Viacep.php'
     ];
 
     /**

@@ -53,7 +53,7 @@ class RegisterController extends BaseController
     /**
      * Attempts to register the user.
      */
-    public function registerAkmkction(): RedirectResponse
+    public function registerAction(): RedirectResponse
     {
         if (auth()->loggedIn()) {
             return redirect()->to(config('Auth')->registerRedirect());
@@ -79,18 +79,16 @@ class RegisterController extends BaseController
         $allowedPostFields = array_merge(
             setting('Auth.validFields'),
             setting('Auth.personalFields'),
-            ['password']
-        );
+            ['password']);
+
         $user = $this->getUserEntity();
         $user->fill($this->request->getPost($allowedPostFields));
 
         // Workaround for email only registration/login
         if ($user->username === null) {
-            $user->username = null;
-        }
+            $user->username = null;}
 
         try {
-           
             $users->save($user);
         } catch (ValidationException $e) {
             return redirect()->back()->withInput()->with('errors', $users->errors());
@@ -105,20 +103,20 @@ class RegisterController extends BaseController
         Events::trigger('register', $user);
 
         /** @var Session $authenticator */
-        $authenticator = auth('session')->getAuthenticator();
+        // $authenticator = auth('session')->getAuthenticator();
 
-        $authenticator->startLogin($user);
+        // $authenticator->startLogin($user);
 
-        // If an action has been defined for register, start it up.
-        $hasAction = $authenticator->startUpAction('register', $user);
-        if ($hasAction) {
-            return redirect()->to('auth/a/show');
-        }
+        // // If an action has been defined for register, start it up.
+        // $hasAction = $authenticator->startUpAction('register', $user);
+        // if ($hasAction) {
+        //     return redirect()->to('auth/a/show');
+        // }
 
-        // Set the user active
-        $authenticator->activateUser($user);
+        // // Set the user active
+        // $authenticator->activateUser($user);
 
-        $authenticator->completeLogin($user);
+        // $authenticator->completeLogin($user);
 
         // Success!
         return redirect()->to(config('Auth')->registerRedirect())
@@ -178,12 +176,8 @@ class RegisterController extends BaseController
                 'label' => 'Auth.passwordConfirm',
                 'rules' => 'required|matches[password]',
             ],
-            'telefone' => [
-                'label' => 'Auth.telefone',
-                'rules' => 'required|regex_match[/^[0-9]{10}$/]',
-            ],
-            'type' => [
-                'label' => 'Auth.type.value',
+            'phone' => [
+                'label' => 'phone number',
                 'rules' => 'required',
             ],
         ];

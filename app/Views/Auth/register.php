@@ -160,7 +160,8 @@
                                 </li>
 
                                 <li class="next" id="n">
-                                    <button class="btn-link text-decoration-none" type="submit">Próxima <i class="fas fa-angle-right"></i></button>
+                                <a class="btn-link text-decoration-none cur-pointer" ><button type="submit" class="btn btn-xs  btn-link text-decoration-none cur-pointer" style="font-size : inherit !important; padding:0;">Finalizar</button></a>
+                                 
                                 </li>
                                 
                             </ul>
@@ -220,11 +221,15 @@ function showTab(n) {
           document.getElementById("back").style.display = "none";
           document.getElementById("next").style.display = "none";
           document.getElementById("n").style.display = "";
-         }  
+          const myForm = document.getElementById("regForm");
+          document.querySelector(".submit").addEventListener("click", function(){
+            myForm.submit()});
+    }  
  
   //... and run a function that will display the correct step indicator:
   fixStepIndicator(n)
 }
+
 
 function nextPrev(n) {
   // This function will figure out which tab to display

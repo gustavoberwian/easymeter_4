@@ -79,15 +79,14 @@ class RegisterController extends BaseController
         $allowedPostFields = array_merge(
             setting('Auth.validFields'),
             setting('Auth.personalFields'),
-            ['password']
-        );
+            ['password']);
+
         $user = $this->getUserEntity();
         $user->fill($this->request->getPost($allowedPostFields));
 
         // Workaround for email only registration/login
         if ($user->username === null) {
-            $user->username = null;
-        }
+            $user->username = null;}
 
         try {
             $users->save($user);
@@ -104,20 +103,20 @@ class RegisterController extends BaseController
         Events::trigger('register', $user);
 
         /** @var Session $authenticator */
-        $authenticator = auth('session')->getAuthenticator();
+        // $authenticator = auth('session')->getAuthenticator();
 
-        $authenticator->startLogin($user);
+        // $authenticator->startLogin($user);
 
-        // If an action has been defined for register, start it up.
-        $hasAction = $authenticator->startUpAction('register', $user);
-        if ($hasAction) {
-            return redirect()->to('auth/a/show');
-        }
+        // // If an action has been defined for register, start it up.
+        // $hasAction = $authenticator->startUpAction('register', $user);
+        // if ($hasAction) {
+        //     return redirect()->to('auth/a/show');
+        // }
 
-        // Set the user active
-        $authenticator->activateUser($user);
+        // // Set the user active
+        // $authenticator->activateUser($user);
 
-        $authenticator->completeLogin($user);
+        // $authenticator->completeLogin($user);
 
         // Success!
         return redirect()->to(config('Auth')->registerRedirect())
@@ -176,6 +175,10 @@ class RegisterController extends BaseController
             'password_confirm' => [
                 'label' => 'Auth.passwordConfirm',
                 'rules' => 'required|matches[password]',
+            ],
+            'phone' => [
+                'label' => 'phone number',
+                'rules' => 'required',
             ],
         ];
     }

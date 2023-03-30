@@ -42,6 +42,8 @@ $routes->post('/user-login','Api\AuthController::UserLogin');
 $routes->get('/get-users','Api\ApiController::getUsers',['filter'=>'checkApiAuth']);
 $routes->get('/logged-out','Api\AuthController::loggedOut');
 $routes->get('/login-view','Api\AuthController::loginView');
+$routes->post('register','Api\RegisterController::registerAction');
+$routes->get('register','Api\RegisterController::registerView');
 $routes->get('/verify-magic-link', 'Api\MagicLinkController::verify');
 $routes->post('/verify-magic-link', 'Api\MagicLinkController::updateP');
 $routes->get('/update_password', 'Api\UpdatePassword::index');
@@ -57,6 +59,7 @@ $routes->get('/admin/(:any)/(:num)', 'Admin::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/admin', 'Admin::index',['filter'=>'checkApiAuth']);
 $routes->post('/admin/(:any)', 'Admin::$1',['filter'=>'checkApiAuth']);
 $routes->post('/admin/(:any)/(:num)', 'Admin::$1/$2',['filter'=>'checkApiAuth']);
+
 
 service('auth')->routes($routes);
 

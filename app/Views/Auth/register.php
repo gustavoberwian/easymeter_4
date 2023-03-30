@@ -3,12 +3,6 @@
 <?= $this->section('title') ?><?= lang('Auth.register') ?> <?= $this->endSection() ?>
 
 <?= $this->section('main') ?>
-<?php
-    $isTrc = false;
-    $u = explode('.', $_SERVER['HTTP_HOST']);
-    if ($u[0] == "trc")
-        $isTrc = true;
-?>
 
 <!doctype html>
 <html class="fixed">
@@ -84,7 +78,25 @@
                     <section class="card" id="w3">
                         <div class="card-body">
                          
-                            <form id="regForm" class="form-horizontal" action="<?php echo site_url('register'); ?>" method="post" accept-charset="utf-8">
+                        <?php if (session('error') !== null) : ?>
+                    <div class="alert alert-danger" role="alert"><?= session('error') ?></div>
+                    <?php elseif (session('errors') !== null) : ?>
+                    <div class="alert alert-danger" role="alert">
+                        <?php if (is_array(session('errors'))) : ?>
+                            <?php foreach (session('errors') as $error) : ?>
+                                <?= $error ?>
+                                <br>
+                            <?php endforeach ?>
+                        <?php else : ?>
+                            <?= session('errors') ?>
+                        <?php endif ?>
+                       </div>
+                         <?php endif ?>
+
+
+
+
+                     <form action="<?= url_to('register'); ?>" method="post" id="regForm" class="form-horizontal"  accept-charset="utf-8">
                                 <input type="hidden" name="cid" value="">
                                 <input type="hidden" name="uid" value="">
 
@@ -92,29 +104,22 @@
                                      
                                         <div class="form-group mb-3">
 								            <label>E-mail</label>
-                                            <input name="identity" id="identity" type="email" class="form-control form-control-lg" required autofocus tabindex="1" value=""/>
+                                            <input type="email" class="form-control" name="email" inputmode="email" autocomplete="email" placeholder="<?= lang('Auth.email') ?>" value="<?= old('email') ?>" required />
                                         </div>
                                         <div class="form-group mb-0">
                                             <div class="row">
                                                 <div class="col-sm-6 mb-3">
                                                     <label>Senha</label>
-                                                    <input name="password" id="password" type="password" minlength="6" class="form-control form-control-lg" required tabindex="2" value=""/>
+                                                    <input type="password" class="form-control" name="password" inputmode="text" autocomplete="new-password" placeholder="<?= lang('Auth.password') ?>" required />
                                                 </div>
                                                 <div class="col-sm-6 mb-3">
                                                     <label>Confirmação</label>
-                                                    <input name="password_confirm" id="password_confirm" minlength="6" type="password" class="form-control form-control-lg" required tabindex="3" value="" equalTo="#password"/>
+                                                    <input type="password" class="form-control" name="password_confirm" inputmode="text" autocomplete="new-password" placeholder="<?= lang('Auth.passwordConfirm') ?>" required />
                                                 </div>
                                             </div>
                                         </div>
                                       
-<?php /* ?>                                        
-               							<span class="my-3 line-thru text-center text-uppercase">
-                                            <span>ou</span>
-                                        </span>
-                                        <div class="mb-3 text-center">
-                                            <a class="btn btn-facebook" href="<?=getFacebookLoginUrl('auth/fb_callback')?>"><i class="fab fa-facebook mr-2"></i> Entrar pelo Facebook</a>
-                                        </div>
-<?php */ ?>                                        
+                                   
                                     </div>
 
                                     <div id="w3-unidade" class="tab">
@@ -123,43 +128,22 @@
                                         </div>
                                         <div class="form-group mb-3">
 								            <label>Nome Completo</label>
-                                            <input name="nome" id="nome" type="text" class="form-control form-control-lg vnome" required tabindex="4" value=""/>
+                                            <input type="text" class="form-control" name="username" inputmode="text" autocomplete="username" placeholder="<?= lang('Auth.username') ?>" value="<?= old('username') ?>" required />
                                         </div>
                                         <div class="form-group mb-3">
                                             <label>Telefone</label>
-                                            <input name="telefone" id="telefone" type="text" class="form-control form-control-lg vtelefone" data-msg-required="Campo Obrigatório" placeholder="__ ____-____" maxlength="15" required autofocus tabindex="5" value=""/>
+                                            <input name="phone" id="phone" type="text"class="form-control"  inputmode="text" autocomplete="phone" placeholder="phone" required/>
 							            </div>
-                                        <div class="form-group mb-3">
-								            <label>PIN</label>
-                                            <input name="codigo" id="codigo" type="text" class="form-control form-control-lg" required tabindex="6" value=""/>
-							            </div>
-                                        <div class="form-group mb-0">
-                                            <div class="row">
-                                                <div class="col-sm-6 mb-3">
-                                                    <label>Bloco</label>
-                                                    <input name="bloco" id="bloco" type="text" class="form-control form-control-lg" tabindex="7" value=""/>
-                                                </div>
-                                                <div class="col-sm-6 mb-3">
-                                                    <label>Apartamento</label>
-                                                    <input name="apto" id="apto" type="text" class="form-control form-control-lg" required tabindex="8" value=""/>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
                                     
           
-        <!-- Circles which indicates the steps of the form: -->
-        <div hidden style="text-align:center;margin-top:40px;">
-            <span class="step"></span>
-            <span class="step"></span>
+                    <!-- Circles which indicates the steps of the form: -->
+                    <div hidden style="text-align:center;margin-top:40px;">
+                        <span class="step"></span>
+                        <span class="step"></span>
 
-        </div>
-                                
-           </form>
-                            
-             </div>
-               
-             <div class="card-footer">
+                    </div>
+                        <div class="card-footer"s>
                             <ul class="pager">
                                 <li class="back" id="back">
                          
@@ -176,11 +160,15 @@
                                 </li>
 
                                 <li class="next" id="n">
-                                    <a class="btn-link text-decoration-none"  onclick="" href="<?= url_to('login') ?>">Próxima <i class="fas fa-angle-right"></i></a>
+                                <a class="btn-link text-decoration-none cur-pointer" ><button type="submit" class="btn btn-xs  btn-link text-decoration-none cur-pointer" style="font-size : inherit !important; padding:0;">Finalizar</button></a>
+                                 
                                 </li>
                                 
                             </ul>
                         </div>
+                  </form>
+                            
+             </div>
          </section>
 		</div>
 				<p class="text-center text-muted mt-3 mb-3">© Copyright 2017-<?php echo date('Y'); ?>. Todos os direitos reservados.</p>
@@ -233,11 +221,15 @@ function showTab(n) {
           document.getElementById("back").style.display = "none";
           document.getElementById("next").style.display = "none";
           document.getElementById("n").style.display = "";
-         }  
+          const myForm = document.getElementById("regForm");
+          document.querySelector(".submit").addEventListener("click", function(){
+            myForm.submit()});
+    }  
  
   //... and run a function that will display the correct step indicator:
   fixStepIndicator(n)
 }
+
 
 function nextPrev(n) {
   // This function will figure out which tab to display
@@ -290,4 +282,7 @@ function fixStepIndicator(n) {
   //... and adds the "active" class on the current step:
   x[n].className += " active";
 }
+
+ 
+
 </script>

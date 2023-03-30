@@ -1,6 +1,12 @@
-<?php  if ( ! defined('BASEPATH') ) exit('No direct script access allowed');
+<?php
 
-class Api_model extends CI_Model {
+namespace App\Models;
+
+use CodeIgniter\Database\ConnectionInterface;
+use CodeIgniter\Model;
+use CodeIgniter\Validation\ValidationInterface;
+
+class Api_model extends Model {
 
     public function inclui_leituras($data, $header)
     {
@@ -12,7 +18,7 @@ class Api_model extends CI_Model {
 
     public function atualiza_ultimo_envio($central, $timestamp, $tamanho)
     {
-        $this->db->update('esm_condominios_centrais', array('ultimo_envio' => $timestamp, 'tamanho' => $tamanho), array('nome' => $central));
+        $this->db->update('esm_entidades_centrais', array('ultimo_envio' => $timestamp, 'tamanho' => $tamanho), array('nome' => $central));
     }
 
     public function atualiza_bateria($medidor, $battery, $timestamp)
@@ -102,10 +108,10 @@ class Api_model extends CI_Model {
     public function get_condo_central($id)
     {
         $query = $this->db->query("
-            SELECT esm_condominios.id, esm_condominios.tabela FROM esm_medidores
+            SELECT esm_entidades.id, esm_entidades.tabela FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
-            JOIN esm_condominios ON esm_condominios.id = esm_blocos.condo_id
+            JOIN esm_entidades ON esm_entidades.id = esm_blocos.condo_id
             WHERE esm_medidores.central = '$id' LIMIT 1
         ");
 
@@ -195,12 +201,12 @@ class Api_model extends CI_Model {
     public function get_central($central)
     {
         $query = $this->db->query("
-            SELECT esm_condominios_centrais.nome, esm_condominios_centrais.auto_ok, esm_condominios.tabela, 
+            SELECT esm_entidades_centrais.nome, esm_entidades_centrais.auto_ok, esm_entidades.tabela, 
             esm_central_retorno.codigo, esm_central_retorno.timestamp
-            FROM esm_condominios_centrais
-            JOIN esm_condominios ON esm_condominios.id = esm_condominios_centrais.condo_id
-            LEFT JOIN esm_central_retorno ON esm_central_retorno.central = esm_condominios_centrais.nome
-            WHERE esm_condominios_centrais.nome = '$central'
+            FROM esm_entidades_centrais
+            JOIN esm_entidades ON esm_entidades.id = esm_entidades_centrais.condo_id
+            LEFT JOIN esm_central_retorno ON esm_central_retorno.central = esm_entidades_centrais.nome
+            WHERE esm_entidades_centrais.nome = '$central'
         ");
 
         // verifica se retornou algo
@@ -214,9 +220,9 @@ class Api_model extends CI_Model {
     {
         $query = $this->db->query("
             SELECT 
-                esm_condominios.id AS cid, 
-                esm_condominios.nome AS condo, 
-                esm_condominios.tabela AS tabela, 
+                esm_entidades.id AS cid, 
+                esm_entidades.nome AS condo, 
+                esm_entidades.tabela AS tabela, 
                 esm_unidades.nome AS unidade, 
                 esm_blocos.nome AS bloco,
                 esm_medidores.id AS mid,  
@@ -226,7 +232,7 @@ class Api_model extends CI_Model {
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
-            JOIN esm_condominios ON esm_condominios.id = esm_blocos.condo_id
+            JOIN esm_entidades ON esm_entidades.id = esm_blocos.condo_id
             JOIN esm_fechamentos ON esm_fechamentos.condo_id = esm_blocos.condo_id
             JOIN esm_ramais ON esm_ramais.id = esm_fechamentos.ramal_id
             JOIN esm_fechamentos_entradas ON esm_fechamentos_entradas.fechamento_id = esm_fechamentos.id AND esm_fechamentos_entradas.medidor_id = esm_medidores.id
@@ -306,8 +312,8 @@ class Api_model extends CI_Model {
         $query = $this->db->query("
             SELECT esm_pessoas.user_id
             FROM esm_entradas
-            JOIN esm_condominios ON esm_condominios.id = esm_entradas.condo_id
-            JOIN esm_pessoas ON esm_pessoas.id = esm_condominios.sindico_id
+            JOIN esm_entidades ON esm_entidades.id = esm_entradas.condo_id
+            JOIN esm_pessoas ON esm_pessoas.id = esm_entidades.gestor_id
             WHERE esm_entradas.id = $eid
         ");
 
@@ -322,8 +328,8 @@ class Api_model extends CI_Model {
         $query = $this->db->query("
             SELECT esm_pessoas.user_id
             FROM esm_entradas
-            JOIN esm_condominios ON esm_condominios.id = esm_entradas.condo_id
-            JOIN esm_administradoras ON esm_administradoras.id = esm_condominios.admin_id
+            JOIN esm_entidades ON esm_entidades.id = esm_entradas.condo_id
+            JOIN esm_administradoras ON esm_administradoras.id = esm_entidades.admin_id
             JOIN esm_pessoas ON esm_pessoas.admin_id = esm_administradoras.id
             WHERE esm_entradas.id = $eid
         ");
@@ -572,7 +578,7 @@ class Api_model extends CI_Model {
                 }
 
                 // insere dados de clima
-                $this->db->insert('esm_condominios_clima', array(
+                $this->db->insert('esm_entidades_clima', array(
                     'condo_id' => 9,
                     'timestamp' => time() - (time() % 3600),
                     'condicao' => $temp->data->condition,
@@ -702,11 +708,11 @@ class Api_model extends CI_Model {
         $query = $this->db->query("
             SELECT esm_medidores.id, 
                    esm_medidores.fator, 
-                   esm_condominios.tabela, 
+                   esm_entidades.tabela, 
                    esm_medidores.tipo
             FROM esm_medidores 
-            INNER JOIN esm_condominios_centrais ON esm_condominios_centrais.nome = esm_medidores.central
-            INNER JOIN esm_condominios ON esm_condominios.id = esm_condominios_centrais.condo_id
+            INNER JOIN esm_entidades_centrais ON esm_entidades_centrais.nome = esm_medidores.central
+            INNER JOIN esm_entidades ON esm_entidades.id = esm_entidades_centrais.condo_id
             WHERE 
                 esm_medidores.sensor_id = CONV('$device', 16, 10) AND 
                 esm_medidores.posicao = $port AND
@@ -723,10 +729,10 @@ class Api_model extends CI_Model {
     public function get_medidor_ambev($id, $port, $type)
     {
         $query = $this->db->query("
-            SELECT esm_medidores.id, esm_medidores.fator, esm_condominios.tabela, esm_medidores.tipo
+            SELECT esm_medidores.id, esm_medidores.fator, esm_entidades.tabela, esm_medidores.tipo
             FROM esm_medidores 
-            INNER JOIN esm_condominios_centrais ON esm_condominios_centrais.nome = esm_medidores.central
-            INNER JOIN esm_condominios ON esm_condominios.id = esm_condominios_centrais.condo_id
+            INNER JOIN esm_entidades_centrais ON esm_entidades_centrais.nome = esm_medidores.central
+            INNER JOIN esm_entidades ON esm_entidades.id = esm_entidades_centrais.condo_id
             WHERE 
                 esm_medidores.sensor_id = CONV('$id', 16, 10) AND 
                 esm_medidores.posicao = $port AND
@@ -850,7 +856,7 @@ class Api_model extends CI_Model {
     public function get_central_cfg($central)
     {
         $query = $this->db->query("
-            SELECT * FROM esm_condominios_centrais WHERE nome = '$central'
+            SELECT * FROM esm_entidades_centrais WHERE nome = '$central'
         ");
 
         // verifica se retornou algo
@@ -862,7 +868,7 @@ class Api_model extends CI_Model {
 
     public function set_central_cfg($central, $cfg)
     {
-        $this->db->update('esm_condominios_centrais', array('config' => $cfg, 'device' => NULL), array('nome' => $central));
+        $this->db->update('esm_entidades_centrais', array('config' => $cfg, 'device' => NULL), array('nome' => $central));
     }
 
     public function get_central_device_cfg($central)
@@ -943,9 +949,9 @@ class Api_model extends CI_Model {
     public function get_data($count = 30)
     {
         $query = $this->db->query("
-            SELECT post_raw.id, post_raw.device, esm_condominios_centrais.localizador, post_raw.origin, LENGTH(post_raw.payload) AS size, post_raw.stamp
+            SELECT post_raw.id, post_raw.device, esm_entidades_centrais.localizador, post_raw.origin, LENGTH(post_raw.payload) AS size, post_raw.stamp
             FROM post_raw 
-            JOIN esm_condominios_centrais ON esm_condominios_centrais.nome = post_raw.device
+            JOIN esm_entidades_centrais ON esm_entidades_centrais.nome = post_raw.device
             ORDER BY stamp DESC 
             LIMIT $count
         ");
@@ -1128,7 +1134,7 @@ class Api_model extends CI_Model {
                         esm_calendar.dt
                 ) today
                 JOIN (
-                    SELECT IFNULL(ROUND(AVG(l.value), 3), 0) AS value
+                    SELECT AVG(l.value) AS value
                     FROM (
                         SELECT 
                             SUM(activePositiveConsumption) AS value
@@ -1236,9 +1242,9 @@ class Api_model extends CI_Model {
     public function envia_reports($device, $type, $start, $end)
     {
         $result = $this->db->query("
-            SELECT esm_relatorios_config.*, esm_condominios.tabela
+            SELECT esm_relatorios_config.*, esm_entidades.tabela
             FROM esm_relatorios_config
-            JOIN esm_condominios ON esm_condominios.id = esm_relatorios_config.condo_id
+            JOIN esm_entidades ON esm_entidades.id = esm_relatorios_config.condo_id
             WHERE esm_relatorios_config.central = '$device' AND esm_relatorios_config.tipo = $type AND esm_relatorios_config.ultimo != '$start'
         ");
 

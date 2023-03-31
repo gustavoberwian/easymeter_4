@@ -1,5 +1,5 @@
 
-<section role="main" class="content-body" data-entity="<?= $entity_id ?>">
+<section role="main" class="content-body" data-entity="<?= $entity_id ?>" data-class="<?= $url ?>">
 
     <?php if (!empty($user->condo->image_url)) : ?>
         <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= $user->condo->nome; ?>" class="mb-2 mt-2" height="50"/>

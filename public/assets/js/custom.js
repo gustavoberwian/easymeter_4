@@ -240,3 +240,6 @@ if ($.magnificPopup) {
         }
     });
 }
+
+$(".nav-pills").children().first().children().addClass('active left');
+$(".nav-pills").children().last().children().addClass('right')

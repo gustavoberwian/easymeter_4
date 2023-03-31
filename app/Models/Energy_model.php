@@ -1056,12 +1056,12 @@ class Energy_model extends Base_model
     {
         $result = $this->db->query("
             SELECT
-                esm_blocos.nome,
+                esm_agrupamentos.nome,
                 esm_fechamentos_energia.*
             FROM 
                 esm_fechamentos_energia
             JOIN 
-                esm_blocos ON esm_blocos.id = esm_fechamentos_energia.group_id
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id
             WHERE
                 esm_fechamentos_energia.id = $fid
         ");
@@ -1094,7 +1094,7 @@ class Energy_model extends Base_model
             FROM 
                 esm_fechamentos_energia
             JOIN 
-                esm_blocos ON esm_blocos.id = esm_fechamentos_energia.group_id AND esm_blocos.id = $gid
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id AND esm_agrupamentos.id = $gid
             ORDER BY cadastro DESC
         ");
 

@@ -5,28 +5,33 @@
         <h2><?= $group->group_name; ?></h2>
     </header>
 
-    <img src="<?php echo base_url('assets/img/logo-north.png'); ?>" alt="<?= "North"; ?>" class="mb-4" height="80"/>
-
-    <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#geral" type="button" aria-selected="true" role="tab">Geral</button>
-        </li>
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#usuarios" type="button" aria-selected="false" role="tab" tabindex="-1">Usuários</button>
-        </li>
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#unidades" type="button" aria-selected="false" role="tab" tabindex="-1">Unidades</button>
-        </li>
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#agrupamentos" type="button" aria-selected="false" tabindex="-1" role="tab">Agrupamentos</button>
-        </li>
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#alertas" type="button" aria-selected="false" tabindex="-1" role="tab">Alertas</button>
-        </li>
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#api" type="button" aria-selected="false" tabindex="-1" role="tab">API</button>
-        </li>
-    </ul>
+    <div class="row">
+        <div class="col-6">
+            <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
+                <li class="nav-item configs" role="presentation">
+                    <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#geral" type="button" aria-selected="true" role="tab">Geral</button>
+                </li>
+                <li class="nav-item configs" role="presentation">
+                    <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#usuarios" type="button" aria-selected="false" role="tab" tabindex="-1">Usuários</button>
+                </li>
+                <li class="nav-item configs" role="presentation">
+                    <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#unidades" type="button" aria-selected="false" role="tab" tabindex="-1">Unidades</button>
+                </li>
+                <li class="nav-item configs" role="presentation">
+                    <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#agrupamentos" type="button" aria-selected="false" tabindex="-1" role="tab">Agrupamentos</button>
+                </li>
+                <li class="nav-item configs" role="presentation">
+                    <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#alertas" type="button" aria-selected="false" tabindex="-1" role="tab">Alertas</button>
+                </li>
+                <li class="nav-item configs" role="presentation">
+                    <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#api" type="button" aria-selected="false" tabindex="-1" role="tab">API</button>
+                </li>
+            </ul>
+        </div>
+        <div class="col-6 text-end">
+            <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
+        </div>
+    </div>
 
     <div class="tab-content configs">
         <div class="tab-pane fade active show" id="geral" role="tabpanel">
@@ -393,14 +398,11 @@
 
     <!-- end: page -->
 
-    <div class="mt-3">
+    <div>
         <table class="text-dark w-100">
             <tbody><tr>
-                <td>
-                    <img src="<?php echo base_url('assets/img/logo-ancar.png'); ?>" alt="<?= "Ancar"; ?>" class="mb-4" height="35"/>
-                </td>
                 <td class="text-end">
-                    <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="<?= "Easymeter"; ?>" class="mb-4" height="35"/>
+                    <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="<?= "Easymeter"; ?>" class="mb-4" height="30"/>
                 </td>
             </tr>
             </tbody>

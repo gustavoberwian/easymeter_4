@@ -265,7 +265,7 @@
 							</figure>
 							<div class="profile-info">
 								<span class="name"><?= $user->nickname; ?></span>
-								<span class="role"><?= $user->group; ?></span>
+								<span class="role"><?= $url; ?></span>
 							</div>
 
 							<i class="fa custom-caret"></i>

@@ -236,18 +236,18 @@ class Admin extends UNO_Controller
                     esm_unidades.fracao, 
                     esm_unidades.codigo, 
                     esm_unidades.tipo,
-                    esm_blocos.nome AS bloco, 
+                    esm_agrupamentos.nome AS bloco, 
                     user.id AS prop_id, 
                     IFNULL(user.username, 'Não cadastrado') AS nome
             FROM esm_unidades
-            JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
             LEFT JOIN (
                     SELECT auth_user_relation.unity_id, auth_users.id, auth_users.username
                     FROM auth_users
                     JOIN auth_user_relation ON auth_user_relation.user_id = auth_users.id 
             ) AS user ON user.unity_id = esm_unidades.id
             WHERE esm_unidades.bloco_id = $bloco
-            ORDER BY esm_blocos.nome, esm_unidades.nome
+            ORDER BY esm_agrupamentos.nome, esm_unidades.nome
         ");
 
         // inclui campo medidores
@@ -518,7 +518,7 @@ class Admin extends UNO_Controller
         $modo = $this->input->getPost('md');
 
         // dados de config do condominio pelo bloco para ter o nome do bloco
-        $data['entity'] = $this->admin_model->get_entity_config_by_bloco($bloco, ', esm_entidades.d_proprietarios, esm_entidades.tipo_unidades, esm_blocos.nome as b_nome');
+        $data['entity'] = $this->admin_model->get_entity_config_by_bloco($bloco, ', esm_entidades.d_proprietarios, esm_entidades.tipo_unidades, esm_agrupamentos.nome as b_nome');
         // entradas do condominio
         $data['entradas'] = $this->admin_model->get_entradas($cid);
         // centrais do condominio

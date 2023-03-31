@@ -1,14 +1,12 @@
 <section role="main" class="content-body">
 
-    <header class="page-header" data-group="<?= $group_id; ?>" <?= $user->inGroup('shopping', 'unity') ? 'data-device="'.$unidade->device.'"' : '' ?>">
+    <header class="page-header" data-group="<?= $group_id; ?>" <?= $user->inGroup('shopping', 'unity') ? 'data-device="'.$unidade->device.'"' : '' ?>>
         <?php if ($user->inGroup('shopping', 'unity')): ?>
             <h2><?= $unidade->nome; ?></h2>
         <?php else: ?>
             <h2><?= $group->group_name; ?></h2>
         <?php endif; ?>
     </header>
-
-    <img src="<?php echo base_url('assets/img/logo-north.png'); ?>" alt="<?= "North"; ?>" class="mb-4" height="80"/>
 
     <?php if (empty($user->config)) : ?>
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
@@ -17,28 +15,35 @@
         </div>
     <?php endif; ?>
 
-    <ul class="nav nav-pills nav-pills-primary mb-3">
-        <?php if (!$user->inGroup("unity", "shopping")): ?>
-            <li class="nav-item configs" role="presentation">
-                <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#resume" type="button">Resumo</button>
-            </li>
-        <?php endif; ?>
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs <?= $user->inGroup("unity_shopping") ? 'left active' : '' ?>" data-bs-toggle="pill" data-bs-target="#charts" type="button">Medição</button>
-        </li>
-        <?php if (!$user->inGroup("unity_shopping") || $permission->acessar_engenharia): ?>
-            <li class="nav-item configs" role="presentation">
-                <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#engineering" type="button">Engenharia</button>
-            </li>
-        <?php endif; ?>
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#analysis" type="button">Análises</button>
-        </li>
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#data" type="button">Dados</button>
-        </li>
+    <div class="row">
+        <div class="col-6">
+            <ul class="nav nav-pills nav-pills-primary mb-3">
+                <?php if (!$user->inGroup("unity", "shopping")): ?>
+                    <li class="nav-item configs" role="presentation">
+                        <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#resume" type="button">Resumo</button>
+                    </li>
+                <?php endif; ?>
+                <li class="nav-item configs" role="presentation">
+                    <button class="nav-link configs <?= $user->inGroup("unity_shopping") ? 'left active' : '' ?>" data-bs-toggle="pill" data-bs-target="#charts" type="button">Medição</button>
+                </li>
+                <?php if (!$user->inGroup("unity_shopping") || $permission->acessar_engenharia): ?>
+                    <li class="nav-item configs" role="presentation">
+                        <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#engineering" type="button">Engenharia</button>
+                    </li>
+                <?php endif; ?>
+                <li class="nav-item configs" role="presentation">
+                    <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#analysis" type="button">Análises</button>
+                </li>
+                <li class="nav-item configs" role="presentation">
+                    <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#data" type="button">Dados</button>
+                </li>
 
-    </ul>
+            </ul>
+        </div>
+        <div class="col-6 text-end">
+            <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
+        </div>
+    </div>
 
     <div class="tab-content" style="background-color: transparent; box-shadow: none; padding: 0;">
 
@@ -64,15 +69,15 @@
                                 <optgroup label="Tipo">
                                     <option value="C"><?= $area_comum; ?></option>
                                     <option value="U">Unidades</option>
-                                <optgroup label="Medidores">
-                                <?php foreach ($unidades as $u) { ?>
-                                    <option value="<?= $u["medidor_id"] ?>"><?= $u["unidade_nome"]; ?></option>
-                                <?php } ?>
-                                <optgroup label="Agrupamentos">
-                                <?php foreach ($device_groups as $u) { ?>
-                                    <option value="<?= $u["id"] ?>"><?= $u["name"]; ?></option>
-                                <?php } ?>
-                                <!--<option value="href" data-url="<?/*= site_url("shopping/configuracoes/" . $group_id) */?>" class="text-primary">&#x2b; Criar Agrupamento</option>-->
+                                    <optgroup label="Medidores">
+                                        <?php foreach ($unidades as $u) { ?>
+                                            <option value="<?= $u["medidor_id"] ?>"><?= $u["unidade_nome"]; ?></option>
+                                        <?php } ?>
+                                        <optgroup label="Agrupamentos">
+                                            <?php foreach ($device_groups as $u) { ?>
+                                                <option value="<?= $u["id"] ?>"><?= $u["name"]; ?></option>
+                                            <?php } ?>
+                                            <!--<option value="href" data-url="<?/*= site_url("shopping/configuracoes/" . $group_id) */?>" class="text-primary">&#x2b; Criar Agrupamento</option>-->
                             </select>
                         </div>
                     </section>
@@ -625,14 +630,11 @@
         </div>
     </div>
 
-    <div class="mt-3">
+    <div>
         <table class="text-dark w-100">
             <tbody><tr>
-                <td>
-                    <img src="<?php echo base_url('assets/img/logo-ancar.png'); ?>" alt="<?= "Ancar"; ?>" class="mb-4" height="35"/>
-                </td>
                 <td class="text-end">
-                    <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="<?= "Easymeter"; ?>" class="mb-4" height="35"/>
+                    <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="<?= "Easymeter"; ?>" class="mb-4" height="30"/>
                 </td>
             </tr>
             </tbody>

@@ -110,8 +110,8 @@ class Api_model extends Model {
         $query = $this->db->query("
             SELECT esm_entidades.id, esm_entidades.tabela FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
-            JOIN esm_entidades ON esm_entidades.id = esm_blocos.condo_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
+            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.condo_id
             WHERE esm_medidores.central = '$id' LIMIT 1
         ");
 
@@ -224,16 +224,16 @@ class Api_model extends Model {
                 esm_entidades.nome AS condo, 
                 esm_entidades.tabela AS tabela, 
                 esm_unidades.nome AS unidade, 
-                esm_blocos.nome AS bloco,
+                esm_agrupamentos.nome AS bloco,
                 esm_medidores.id AS mid,  
                 esm_medidores.sensor_id AS sensor_id,  
                 esm_medidores.nome AS medidor, 
                 MAX(esm_fechamentos_entradas.leitura_atual) AS leitura
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
-            JOIN esm_entidades ON esm_entidades.id = esm_blocos.condo_id
-            JOIN esm_fechamentos ON esm_fechamentos.condo_id = esm_blocos.condo_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
+            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.condo_id
+            JOIN esm_fechamentos ON esm_fechamentos.condo_id = esm_agrupamentos.condo_id
             JOIN esm_ramais ON esm_ramais.id = esm_fechamentos.ramal_id
             JOIN esm_fechamentos_entradas ON esm_fechamentos_entradas.fechamento_id = esm_fechamentos.id AND esm_fechamentos_entradas.medidor_id = esm_medidores.id
             WHERE esm_medidores.$field = $id AND esm_ramais.tipo = 'gas'        
@@ -368,7 +368,7 @@ class Api_model extends Model {
         // busca medidores com consumo constante em 24 horas
         $query = $this->db->query("
             SELECT 
-                esm_blocos.nome AS bloco,
+                esm_agrupamentos.nome AS bloco,
                 esm_unidades.id AS unidade_id,
                 esm_unidades.nome AS unidade,
                 esm_entradas.id AS entrada_id,
@@ -379,7 +379,7 @@ class Api_model extends Model {
                 esm_alertas.finalizado
             FROM esm_medidores
             JOIN esm_unidades ON esm_medidores.unidade_id = esm_unidades.id
-            JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
             JOIN esm_entradas ON esm_entradas.id = esm_medidores.entrada_id
             LEFT JOIN esm_alertas ON esm_alertas.unidade_id = esm_unidades.id AND esm_alertas.medidor_id = esm_medidores.id AND ISNULL(esm_alertas.finalizado)
             WHERE esm_medidores.central = '$central' and esm_medidores.horas_consumo > esm_medidores.alerta_horas
@@ -466,14 +466,14 @@ class Api_model extends Model {
                 esm_entradas.id AS entrada_id,
                 esm_unidades.id AS unidade_id,
                 esm_entradas.nome AS entrada,
-                esm_blocos.nome AS bloco,
+                esm_agrupamentos.nome AS bloco,
                 esm_unidades.nome AS unidade,
                 sum(esm_leituras_baviera_agua.consumo) AS consumo,
                 $field
             FROM esm_leituras_{$tabela}_agua
             JOIN esm_medidores ON esm_medidores.id = esm_leituras_{$tabela}_agua.medidor_id 
             JOIN esm_unidades ON esm_medidores.unidade_id = esm_unidades.id
-            JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
             JOIN esm_entradas ON esm_entradas.id = esm_medidores.entrada_id
             WHERE 
                 timestamp > UNIX_TIMESTAMP() - $valor AND
@@ -2465,9 +2465,9 @@ class Api_model extends Model {
         $result = $this->db->query("
             SELECT esm_api_keys.*, e.id AS energia_id, a.id AS agua_id
             FROM esm_api_keys
-            JOIN esm_blocos ON esm_blocos.id = esm_api_keys.group_id
-            LEFT JOIN (SELECT id, condo_id FROM esm_entradas WHERE tipo = 'energia') e ON e.condo_id = esm_blocos.condo_id
-            LEFT JOIN (SELECT id, condo_id FROM esm_entradas WHERE tipo = 'agua') a ON a.condo_id = esm_blocos.condo_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_api_keys.group_id
+            LEFT JOIN (SELECT id, condo_id FROM esm_entradas WHERE tipo = 'energia') e ON e.condo_id = esm_agrupamentos.condo_id
+            LEFT JOIN (SELECT id, condo_id FROM esm_entradas WHERE tipo = 'agua') a ON a.condo_id = esm_agrupamentos.condo_id
             WHERE token = '$key'
         ");
 
@@ -2506,7 +2506,7 @@ class Api_model extends Model {
                 FROM
                     esm_fechamentos_agua
                 JOIN 
-                    esm_blocos ON esm_blocos.id = esm_fechamentos_agua.group_id AND esm_blocos.id = $gid
+                    esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_agua.group_id AND esm_agrupamentos.id = $gid
                 ORDER BY cadastro DESC
                 LIMIT 10 OFFSET $pag
             ");
@@ -2531,7 +2531,7 @@ class Api_model extends Model {
                 FROM
                     esm_fechamentos_energia
                 JOIN 
-                    esm_blocos ON esm_blocos.id = esm_fechamentos_energia.group_id AND esm_blocos.id = $gid
+                    esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id AND esm_agrupamentos.id = $gid
                 ORDER BY cadastro DESC
                 LIMIT 10 OFFSET $pag
             ");

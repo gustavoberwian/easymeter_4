@@ -50,11 +50,11 @@
 
         let data = dtShoppings.row(this).data();
         // redireciona para o fechamento
-        window.location = "/shopping/energy/" + data.id;
+        window.location = $(".content-body").data("class") + "/energy/" + data.id;
     });
 
     $(document).on('click', '.card', function () {
-        window.location = "/shopping/energy/" + $(this).data('group');
+        window.location = $(".content-body").data("class") + "/energy/" + $(this).data('group');
     });
 
 }.apply(this, [jQuery]));

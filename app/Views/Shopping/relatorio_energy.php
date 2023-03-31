@@ -9,7 +9,7 @@
                 <table class="text-dark w-100">
                     <tr>
                         <td style="width:130px;">
-                            <img src="<?php echo base_url('assets/img/logo-north.png'); ?>" height="80" alt="<?= $shopping->nome; ?>" style="margin-top: 17px;"/>
+                            <img src="<?php echo base_url('assets/img/' . $group->logo); ?>" height="80" alt="<?= $shopping->nome; ?>" style="margin-top: 17px;"/>
                         </td>
                         <td>
                             <h4 class="font-weight-bold mt-0"><?= $shopping->nome; ?></h4>
@@ -223,7 +223,7 @@
                     <table class="text-dark w-100">
                         <tr>
                             <td>
-                                <img src="<?php echo base_url('assets/img/logo-ancar.png'); ?>" alt="<?= "Ancar"; ?>"/>
+                                <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= "Ancar"; ?>"/>
                             </td>
                             <td class="text-end">
                                 <img src="<?php echo base_url('assets/img/logo.png'); ?>" height="30" alt="Easymeter"/>

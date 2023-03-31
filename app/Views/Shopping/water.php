@@ -1,6 +1,6 @@
 <section role="main" class="content-body" data-group="<?=$group_id ?>">
 
-    <header class="page-header" <?= $user->inGroup('shopping', 'unity') ? 'data-device="'.$unidade->device.'"' : '' ?>">
+    <header class="page-header" <?= $user->inGroup('shopping', 'unity') ? 'data-device="'.$unidade->device.'"' : '' ?>>
         <?php if ($user->inGroup('shopping', 'unity')): ?>
             <h2><?= $unidade->nome; ?> - Água</h2>
         <?php else: ?>
@@ -8,16 +8,30 @@
         <?php endif; ?>
     </header>
 
-    <img src="<?php echo base_url('assets/img/logo-north.png'); ?>" alt="<?= "North"; ?>" class="mb-4" height="80"/>
+    
 
-    <ul class="nav nav-pills nav-pills-primary mb-3">
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#resume" type="button">Resumo</button>
-        </li>
-        <li class="nav-item me-2" role="presentation">
-            <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#charts" type="button">Medição</button>
-        </li>
-    </ul>
+    <?php if (empty($user->config)) : ?>
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Atenção!</strong> Configurações gerais do shopping não fornecidas. <a href="/shopping/configuracoes/<?=$group_id ?>" class="alert-link">Clique aqui</a> e configure-os para visualizar os dados corretamente.
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true" aria-label="Close"></button>
+        </div>
+    <?php endif; ?>
+
+    <div class="row">
+        <div class="col-6">
+            <ul class="nav nav-pills nav-pills-primary mb-3">
+                <li class="nav-item configs" role="presentation">
+                    <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#resume" type="button">Resumo</button>
+                </li>
+                <li class="nav-item me-2" role="presentation">
+                    <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#charts" type="button">Medição</button>
+                </li>
+            </ul>
+        </div>
+        <div class="col-6 text-end">
+            <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
+        </div>
+    </div>
 
     <div class="tab-content" style="background-color: transparent; box-shadow: none; padding: 0;">
 
@@ -221,14 +235,11 @@
         </div>
     </div>
 
-    <div class="mt-3">
+    <div>
         <table class="text-dark w-100">
             <tbody><tr>
-                <td>
-                    <img src="<?php echo base_url('assets/img/logo-ancar.png'); ?>" alt="<?= "Ancar"; ?>" class="mb-4" height="35"/>
-                </td>
                 <td class="text-end">
-                    <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="<?= "Easymeter"; ?>" class="mb-4" height="35"/>
+                    <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="<?= "Easymeter"; ?>" class="mb-4" height="30"/>
                 </td>
             </tr>
             </tbody>

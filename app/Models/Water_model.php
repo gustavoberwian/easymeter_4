@@ -383,15 +383,15 @@ class Water_model extends Base_model
     {
         $result = $this->db->query("
             SELECT
-                esm_blocos.nome,
+                esm_agrupamentos.nome,
                 esm_unidades_config.luc as luc,
                 esm_fechamentos_agua.*
             FROM 
                 esm_fechamentos_agua
             JOIN 
-                esm_blocos ON esm_blocos.id = esm_fechamentos_agua.group_id
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_agua.group_id
             JOIN 
-                esm_unidades ON esm_blocos.id = esm_unidades.bloco_id
+                esm_unidades ON esm_agrupamentos.id = esm_unidades.bloco_id
             JOIN
                 esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
             WHERE

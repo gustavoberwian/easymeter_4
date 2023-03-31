@@ -28,6 +28,8 @@ class Shopping extends UNO_Controller
      */
     private Water_model $water_model;
 
+    public $url;
+
     public function __construct()
     {
         parent::__construct();
@@ -42,6 +44,9 @@ class Shopping extends UNO_Controller
 
         // load libraries
         $this->datatables = new Datatables(new Codeigniter4Adapter);
+
+        // set variables
+        $this->url = service('uri')->getSegment(1);
     }
 
     public function index()
@@ -49,6 +54,7 @@ class Shopping extends UNO_Controller
         $this->setHistory('Acesso à página inicial', 'acesso');
 
         $data['user'] = $this->user;
+        $data['url'] = $this->url;
 
         if ($this->user->inGroup('shopping', 'admin')) {
 
@@ -83,6 +89,7 @@ class Shopping extends UNO_Controller
     {
         $data['permission'] = $this->shopping_model->get_user_permission($this->user->id);
 
+        $data['url'] = $this->url;
         $data['user']    = $this->user;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
@@ -102,6 +109,7 @@ class Shopping extends UNO_Controller
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
 
+        $data['url'] = $this->url;
         $data['user']    = $this->user;
 
         $data['unidades'] = $this->shopping_model->get_units($group_id, "agua");
@@ -114,6 +122,7 @@ class Shopping extends UNO_Controller
 
     public function level($group_id = null)
     {
+        $data['url'] = $this->url;
         $data['user']    = $this->user;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
@@ -125,6 +134,7 @@ class Shopping extends UNO_Controller
 
     public function gas($group_id = null)
     {
+        $data['url'] = $this->url;
         $data['user']    = $this->user;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
@@ -136,6 +146,7 @@ class Shopping extends UNO_Controller
 
     public function faturamentos($group_id)
     {
+        $data['url'] = $this->url;
         $data['group_id']   = $group_id;
         $data['group']      = $this->shopping_model->get_group_info($group_id);
         $data['unidades']   = $this->shopping_model->get_unidades($group_id);
@@ -146,6 +157,7 @@ class Shopping extends UNO_Controller
 
     public function lancamento($type, $group_id, $id)
     {
+        $data['url'] = $this->url;
         if ($type == "energia") {
 
             $data['group_id']   = $group_id;
@@ -168,6 +180,7 @@ class Shopping extends UNO_Controller
 
     public function relatorio($type, $group_id, $fechamento_id, $relatorio_id)
     {
+        $data['url'] = $this->url;
         $data['group_id']   = $group_id;
         $data['shopping']   = $this->shopping_model->GetGroup($group_id);
 
@@ -199,6 +212,7 @@ class Shopping extends UNO_Controller
 
     public function alertas($group_id)
     {
+        $data['url'] = $this->url;
         $data['user']       = $this->user;
         $data['group_id']   = $group_id;
         $data['group']      = $this->shopping_model->get_group_info($group_id);
@@ -209,6 +223,7 @@ class Shopping extends UNO_Controller
 
     public function insights($group_id)
     {
+        $data['url'] = $this->url;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
 
@@ -217,6 +232,7 @@ class Shopping extends UNO_Controller
 
     public function configuracoes($group_id)
     {
+        $data['url'] = $this->url;
         $data['user'] = $this->user;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
@@ -235,6 +251,7 @@ class Shopping extends UNO_Controller
 
     public function users($group_id, $op = null, $user_id = null)
     {
+        $data['url'] = $this->url;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
 
@@ -281,7 +298,7 @@ class Shopping extends UNO_Controller
                 unc.faturamento as faturamento
             FROM esm_medidores me
             JOIN esm_unidades un ON un.id = me.unidade_id
-            JOIN esm_unidades_config unc ON unc.unidade_id = un.id
+            LEFT JOIN esm_unidades_config unc ON unc.unidade_id = un.id
             WHERE un.bloco_id = $group_id AND me.tipo = '$type'
             GROUP BY id" ;
 
@@ -456,19 +473,19 @@ class Shopping extends UNO_Controller
 
         $query = "
             SELECT
-                users.id AS id,
-                users.username AS name,
+                auth_users.id AS id,
+                auth_users.username AS name,
                 auth_identities.secret AS email
             FROM
-                users
-            JOIN auth_identities ON auth_identities.user_id = users.id
-            JOIN auth_groups_users ON auth_groups_users.user_id = users.id
-            JOIN auth_user_relation ON auth_user_relation.user_id = users.id
+                auth_users
+            JOIN auth_identities ON auth_identities.user_id = auth_users.id
+            JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id
+            JOIN auth_user_relation ON auth_user_relation.user_id = auth_users.id
             WHERE
                 auth_identities.type = 'email_password' AND
                 auth_groups_users.group IN (" . $groupFilter . ") AND
                 auth_user_relation.group_id = " . $group . " OR !ISNULL(auth_user_relation.unity_id)
-            GROUP BY users.id
+            GROUP BY auth_users.id
         ";
 
         $dt = $this->datatables->query($query);

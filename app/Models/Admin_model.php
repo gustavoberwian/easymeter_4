@@ -41,8 +41,8 @@ class Admin_model extends Base_model
 
     public function get_groups($condo)
     {
-        $query = $this->db->table('esm_blocos')
-            ->where('esm_blocos.condo_id', $condo)
+        $query = $this->db->table('esm_agrupamentos')
+            ->where('esm_agrupamentos.condo_id', $condo)
             ->orderBy('nome', 'ASC')
             ->get();
 
@@ -243,10 +243,10 @@ class Admin_model extends Base_model
 
     public function get_bloco($id)
     {
-        $query = $this->db->table('esm_blocos')
-            ->select('esm_blocos.*, COUNT(esm_unidades.id) AS unidades')
-            ->join('esm_unidades', 'esm_unidades.bloco_id = esm_blocos.id', 'LEFT')
-            ->where('esm_blocos.id', $id)
+        $query = $this->db->table('esm_agrupamentos')
+            ->select('esm_agrupamentos.*, COUNT(esm_unidades.id) AS unidades')
+            ->join('esm_unidades', 'esm_unidades.bloco_id = esm_agrupamentos.id', 'LEFT')
+            ->where('esm_agrupamentos.id', $id)
             ->get();
 
         return $query->getRow();
@@ -256,8 +256,8 @@ class Admin_model extends Base_model
     {
         $query = $this->db->table('esm_entidades')
             ->select('esm_entidades.fracao_ideal, esm_entidades.m_agua, esm_entidades.m_gas, esm_entidades.m_energia' . $extra)
-            ->join('esm_blocos', 'esm_blocos.condo_id = esm_entidades.id')
-            ->where('esm_blocos.id', $b);
+            ->join('esm_agrupamentos', 'esm_agrupamentos.condo_id = esm_entidades.id')
+            ->where('esm_agrupamentos.id', $b);
 
         // realiza a consulta
         $result = $query->get();
@@ -270,8 +270,8 @@ class Admin_model extends Base_model
         $query = $this->db->query("
             SELECT DISTINCT fracao 
             FROM esm_unidades
-            JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
-            JOIN esm_entidades ON esm_entidades.id = esm_blocos.condo_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
+            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.condo_id
             WHERE esm_entidades.id = $cid
             ORDER BY fracao
         ");
@@ -285,12 +285,12 @@ class Admin_model extends Base_model
             ->where('esm_unidades.id', $id);
 
         if ($completo) {
-            $query->select('esm_unidades.nome AS apto, esm_unidades.andar, esm_unidades.leitura_anterior, esm_unidades.leitura_atual, esm_blocos.nome AS bloco, esm_entidades.*');
+            $query->select('esm_unidades.nome AS apto, esm_unidades.andar, esm_unidades.leitura_anterior, esm_unidades.leitura_atual, esm_agrupamentos.nome AS bloco, esm_entidades.*');
         }
 
         if ($completo) {
-            $query->join('esm_blocos', 'esm_blocos.id = esm_unidades.bloco_id', 'LEFT');
-            $query->join('esm_entidades', 'esm_entidades.id = esm_blocos.condo_id', 'LEFT');
+            $query->join('esm_agrupamentos', 'esm_agrupamentos.id = esm_unidades.bloco_id', 'LEFT');
+            $query->join('esm_entidades', 'esm_entidades.id = esm_agrupamentos.condo_id', 'LEFT');
         }
         // realiza a consulta
         $result = $query->get();
@@ -313,7 +313,7 @@ class Admin_model extends Base_model
     public function update_bloco($bid, $nome, $rid)
     {
         // atualiza bloco
-        if (!$this->db->table('esm_blocos')->where('id', $bid)->set(array('nome' => $nome, 'ramal_id' => $rid))->update())
+        if (!$this->db->table('esm_agrupamentos')->where('id', $bid)->set(array('nome' => $nome, 'ramal_id' => $rid))->update())
             return json_encode(array("status"  => "error", "message" => $this->db->error()));
         else
             return json_encode(array("status"  => "success", "message" => "Bloco atualizado com sucesso!", "text" => $nome));
@@ -334,7 +334,7 @@ class Admin_model extends Base_model
 
     public function delete_bloco($id)
     {
-        if (!$this->db->table('esm_blocos')->where('id', $id)->delete()) {
+        if (!$this->db->table('esm_agrupamentos')->where('id', $id)->delete()) {
             return json_encode(array("status"  => "error", "message" => ($this->db->error()['code'] == 1451) ? 'Não é possível excluir o bloco pois ele já possui unidades cadastradas.' : $this->db->error()['message']));
         }
         return json_encode(array("status"  => "success", "message" => "Bloco excluído com sucesso"));
@@ -343,7 +343,7 @@ class Admin_model extends Base_model
     public function add_bloco($cid, $nome, $rid)
     {
         // insere bloco
-        if (!$this->db->table('esm_blocos')->set(array('condo_id' => $cid, 'nome' => $nome, 'ramal_id' => $rid))->insert()) {
+        if (!$this->db->table('esm_agrupamentos')->set(array('condo_id' => $cid, 'nome' => $nome, 'ramal_id' => $rid))->insert()) {
             return json_encode(array("status"  => "error", "message" => $this->db->error()));
         }
 

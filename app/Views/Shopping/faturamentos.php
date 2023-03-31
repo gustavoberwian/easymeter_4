@@ -4,16 +4,35 @@
         <h2><?= $group->group_name; ?></h2>
     </header>
 
-    <img src="<?php echo base_url('assets/img/logo-north.png'); ?>" alt="<?= "North"; ?>" class="mb-4" height="80"/>
-
-    <ul class="nav nav-pills nav-pills-primary mb-3">
-        <li class="nav-item configs" role="presentation">
-            <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#energy" type="button">Energia</button>
-        </li>
-        <li class="nav-item me-2" role="presentation">
-            <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#water" type="button">Água</button>
-        </li>
-    </ul>
+    <div class="row">
+        <div class="col-6">
+            <ul class="nav nav-pills nav-pills-primary mb-3">
+                <?php if (!is_null($group->m_energia)) : ?>
+                    <li class="nav-item configs" role="presentation">
+                        <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#energy" type="button">Energia</button>
+                    </li>
+                <?php endif; ?>
+                <?php if (!is_null($group->m_agua)) : ?>
+                    <li class="nav-item me-2" role="presentation">
+                        <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#water" type="button">Água</button>
+                    </li>
+                <?php endif; ?>
+                <?php if (!is_null($group->m_gas)) : ?>
+                    <li class="nav-item me-2" role="presentation">
+                        <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#gas" type="button">Gás</button>
+                    </li>
+                <?php endif; ?>
+                <?php if (!is_null($group->m_nivel)) : ?>
+                    <li class="nav-item me-2" role="presentation">
+                        <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#nivel" type="button">Nível</button>
+                    </li>
+                <?php endif; ?>
+            </ul>
+        </div>
+        <div class="col-6 text-end">
+            <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
+        </div>
+    </div>
 
     <div class="tab-content" style="background-color: transparent; box-shadow: none; padding: 0;">
 
@@ -114,14 +133,11 @@
         </div>
     </div>
 
-    <div class="mt-3">
+    <div>
         <table class="text-dark w-100">
             <tbody><tr>
-                <td>
-                    <img src="<?php echo base_url('assets/img/logo-ancar.png'); ?>" alt="<?= "Ancar"; ?>" class="mb-4" height="35"/>
-                </td>
                 <td class="text-end">
-                    <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="<?= "Easymeter"; ?>" class="mb-4" height="35"/>
+                    <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="<?= "Easymeter"; ?>" class="mb-4" height="30"/>
                 </td>
             </tr>
             </tbody>

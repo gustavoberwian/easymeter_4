@@ -781,7 +781,15 @@ class Energia extends UNO_Controller
     public function chart_engineering()
     {
         $field    = $this->input->getPost('field');
+
         $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
+        if (!$this->user->config) {
+            return json_encode(array(
+                "status" => "error",
+                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+            ));
+        }
+
         $divisor  = 1;
         $decimals = 0;
         $unidade  = "";
@@ -2412,6 +2420,97 @@ class Energia extends UNO_Controller
     {
         $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
 
+        // retorna erro caso agrupamento não configurado corretamente
+        if (!$this->user->config) {
+            return json_encode(array(
+                "status" => "error",
+                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+            ));
+        }
+
+        echo "
+            SELECT 
+                esm_medidores.nome AS device, 
+                esm_unidades_config.luc AS luc, 
+                esm_unidades.nome AS name, 
+                esm_unidades_config.type AS type,
+                esm_medidores.ultima_leitura AS value_read,
+                m.value AS value_month,
+                h.value AS value_month_open,
+                m.value - h.value AS value_month_closed,
+                p.value AS value_ponta,
+                m.value - p.value AS value_fora,
+                l.value AS value_last,
+                m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())) AS value_future,
+                c.value AS value_last_month
+            FROM esm_medidores
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+            LEFT JOIN (  
+                    SELECT 
+                        device,
+                        SUM(activePositiveConsumption) AS value
+                    FROM 
+                        esm_leituras_ancar_energia
+                    WHERE 
+                        timestamp > UNIX_TIMESTAMP() - 86400
+                    GROUP BY device
+                ) l ON l.device = esm_medidores.nome
+            LEFT JOIN (
+                    SELECT 
+                        d.device,
+                        SUM(activePositiveConsumption) AS value
+                    FROM esm_calendar
+                    LEFT JOIN esm_leituras_ancar_energia d ON 
+                        (d.timestamp) > (esm_calendar.ts_start) AND 
+                        (d.timestamp) <= (esm_calendar.ts_end + 600) 
+                    WHERE 
+                        esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
+                        esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
+                    GROUP BY d.device
+                ) m ON m.device = esm_medidores.nome
+            LEFT JOIN (
+                    SELECT 
+                        device,
+                        SUM(activePositiveConsumption) AS value
+                    FROM 
+                        esm_leituras_ancar_energia
+                    WHERE 
+                        MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
+                    GROUP BY device                
+                ) c ON c.device = esm_medidores.nome
+            LEFT JOIN (
+                    SELECT 
+                        device,
+                        SUM(activePositiveConsumption) AS value
+                    FROM 
+                        esm_leituras_ancar_energia
+                    WHERE 
+                        MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now())
+                        AND (MOD((timestamp), 86400) >= {$this->user->config->open} AND MOD((timestamp), 86400) <= {$this->user->config->close})
+                    GROUP BY device
+                ) h ON h.device = esm_medidores.nome
+            LEFT JOIN (
+                    SELECT 
+                        d.device,
+                        SUM(activePositiveConsumption) AS value
+                    FROM esm_calendar
+                    LEFT JOIN esm_leituras_ancar_energia d ON 
+                        (d.timestamp) > (esm_calendar.ts_start) AND 
+                        (d.timestamp) <= (esm_calendar.ts_end + 600) 
+                        AND ((MOD((d.timestamp), 86400) >= {$this->user->config->ponta_start} AND MOD((d.timestamp), 86400) <= {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)
+                    WHERE 
+                        esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
+                        esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
+                    GROUP BY d.device
+                ) p ON p.device = esm_medidores.nome
+            WHERE 
+                esm_unidades.bloco_id = " . $this->input->getPost("group") . " AND
+                esm_medidores.tipo = 'energia'
+            ORDER BY 
+            esm_unidades_config.type, esm_unidades.nome
+        ";
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 
@@ -2675,7 +2774,16 @@ class Energia extends UNO_Controller
     public function insights($iud)
     {
         $group = $this->input->getPost("group");
+
         $this->user->config = $this->shopping_model->get_client_config($group);
+
+        if (!$this->user->config) {
+            return json_encode(array(
+                "status" => "error",
+                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+            ));
+        }
+
         $station = "";
         $st = "";
         $total = false;
@@ -2780,7 +2888,7 @@ class Energia extends UNO_Controller
             FROM
                 esm_fechamentos_energia
             JOIN
-                esm_blocos ON esm_blocos.id = esm_fechamentos_energia.group_id AND esm_blocos.id = $group
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id AND esm_agrupamentos.id = $group
             ORDER BY cadastro DESC
 */
 
@@ -2804,7 +2912,7 @@ class Energia extends UNO_Controller
             FROM
                 esm_fechamentos_energia
             JOIN 
-                esm_blocos ON esm_blocos.id = esm_fechamentos_energia.group_id AND esm_blocos.id = $group
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id AND esm_agrupamentos.id = $group
             ORDER BY cadastro DESC
 
         ");

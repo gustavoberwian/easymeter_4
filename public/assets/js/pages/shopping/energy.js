@@ -32,6 +32,13 @@
                 group: $(".page-header").data("group")
             },
             url: "/energia/resume",
+            success: function (json) {
+                if (json.status === 'error') {
+                    notifyError(json.message);
+                    $("#dt-resume_processing").hide()
+                    $("#dt-resume").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
+                }
+            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -70,6 +77,13 @@
                 data    : dados,
                 dataType: 'json',
                 success : function (json) {
+
+                    if (json.status === 'error') {
+                        notifyError(json.message);
+                        el.addClass('h-100')
+                        el.append('<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><div>Nenhum registro encontrado</div></div>');
+                        return;
+                    }
 
                     json.yaxis.labels.formatter = function (value) {
                         return (value === null) ? "" : value.toLocaleString("pt-BR", {minimumFractionDigits: json.extra.decimals, maximumFractionDigits: json.extra.decimals}) + " " + json.extra.unit;

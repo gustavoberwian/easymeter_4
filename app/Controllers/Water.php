@@ -152,7 +152,7 @@ class Water extends UNO_Controller
             FROM
                 esm_fechamentos_agua
             JOIN 
-                esm_blocos ON esm_blocos.id = esm_fechamentos_agua.group_id AND esm_blocos.id = $gid
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_agua.group_id AND esm_agrupamentos.id = $gid
             ORDER BY cadastro DESC
         ");
 
@@ -181,7 +181,16 @@ class Water extends UNO_Controller
     {
         $field    = $this->input->getPost('field');
         $shopping_id    = $this->input->getPost('shopping_id');
+
         $this->user->config = $this->shopping_model->get_client_config($shopping_id);
+
+        if (!$this->user->config) {
+            return json_encode(array(
+                "status" => "error",
+                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+            ));
+        }
+
         $divisor  = 1;
         $decimals = 0;
         $unidade  = "";
@@ -287,6 +296,14 @@ class Water extends UNO_Controller
     public function resume()
     {
         $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
+
+        if (!$this->user->config) {
+            return json_encode(array(
+                "status" => "error",
+                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+            ));
+        }
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 

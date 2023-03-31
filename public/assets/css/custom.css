@@ -114,6 +114,9 @@ html .wizard-progress .wizard-steps li a, html.dark .wizard-progress .wizard-ste
 .nav-link.configs.right {
     border-radius: 0 0.375rem 0.375rem 0 !important;
 }
+button.nav-link.configs.active.left.right {
+    border-radius: 0.375rem !important;
+}
 .nav-link.configs {
     border-radius: 0;
 }

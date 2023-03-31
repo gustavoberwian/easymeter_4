@@ -4,8 +4,6 @@
         <h2><?= $group->group_name; ?> - Criar Usuário</h2>
     </header>
 
-    <img src="<?php echo base_url('assets/img/logo-north.png'); ?>" alt="<?= "North"; ?>" class="mb-4" height="80"/>
-
     <div class="row">
         <div class="col">
             <section class="card card-easymeter">
@@ -118,7 +116,7 @@
         <table class="text-dark w-100">
             <tbody><tr>
                 <td>
-                    <img src="<?php echo base_url('assets/img/logo-ancar.png'); ?>" alt="<?= "Ancar"; ?>" class="mb-4" height="35"/>
+                    <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= ""; ?>" class="mb-4" height="35"/>
                 </td>
                 <td class="text-end">
                     <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="<?= "Easymeter"; ?>" class="mb-4" height="35"/>

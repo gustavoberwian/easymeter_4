@@ -245,7 +245,7 @@
     );
 
     $(".btn-alert-config").on("click", function (event) {
-        window.location.href = "/shopping/configuracoes/" + $(".page-header").data("group") + "#alertas";
+        window.location.href = "/" + $(".page-header").data("url") + "/configuracoes/" + $(".page-header").data("group");
     });
 
 }.apply(this, [jQuery]));

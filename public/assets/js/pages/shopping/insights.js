@@ -24,13 +24,6 @@
             data: {
                 group: $(".page-header").data("group")
             },
-            success: function (json) {
-                if (json.status === 'error') {
-                    notifyError(json.message);
-                    $("#dt-ponta_processing").hide()
-                    $("#dt-ponta").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
-                }
-            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -66,13 +59,6 @@
             url: "/energia/insights/2",
             data: {
                 group: $(".page-header").data("group")
-            },
-            success: function (json) {
-                if (json.status === 'error') {
-                    notifyError(json.message);
-                    $("#dt-fora_processing").hide()
-                    $("#dt-fora").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
-                }
             },
             error: function () {
                 notifyError(
@@ -110,13 +96,6 @@
             data: {
                 group: $(".page-header").data("group")
             },
-            success: function (json) {
-                if (json.status === 'error') {
-                    notifyError(json.message);
-                    $("#dt-open_processing").hide()
-                    $("#dt-open").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
-                }
-            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -152,13 +131,6 @@
             url: "/energia/insights/4",
             data: {
                 group: $(".page-header").data("group")
-            },
-            success: function (json) {
-                if (json.status === 'error') {
-                    notifyError(json.message);
-                    $("#dt-close_processing").hide()
-                    $("#dt-close").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
-                }
             },
             error: function () {
                 notifyError(
@@ -196,13 +168,6 @@
             data: {
                 group: $(".page-header").data("group")
             },
-            success: function (json) {
-                if (json.status === 'error') {
-                    notifyError(json.message);
-                    $("#dt-carbon_processing").hide()
-                    $("#dt-carbon").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
-                }
-            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -237,13 +202,6 @@
             url: "/energia/insights/6",
             data: {
                 group: $(".page-header").data("group")
-            },
-            success: function (json) {
-                if (json.status === 'error') {
-                    notifyError(json.message);
-                    $("#dt-factor_processing").hide()
-                    $("#dt-factor").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
-                }
             },
             error: function () {
                 notifyError(

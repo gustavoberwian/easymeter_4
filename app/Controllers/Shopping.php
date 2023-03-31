@@ -183,6 +183,7 @@ class Shopping extends UNO_Controller
         $data['url'] = $this->url;
         $data['group_id']   = $group_id;
         $data['shopping']   = $this->shopping_model->GetGroup($group_id);
+        $data['group']      = $this->shopping_model->get_group_info($group_id);
 
         if ($type == "energia") {
 

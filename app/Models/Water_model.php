@@ -7,32 +7,34 @@ class Water_model extends Base_model
 
     public function GetConsumption($device, $group_id, $start, $end, $st = array(), $group = true, $interval = null)
     {
+        $entity = $this->get_entity_by_group($group_id);
+
         $dvc  = "";
         $dvc1 = "";
         if (is_numeric($device)) {
 
-            $dvc = "JOIN esm_medidores on esm_medidores.id = esm_leituras_ancar_agua.medidor_id AND esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+            $dvc = "JOIN esm_medidores on esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id AND esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
 
         } else if ($device == "C") {
 
-            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
                     LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id
                     LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1 AND esm_unidades.bloco_id = $group_id";
 
         } else if ($device == "U") {
 
-            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
                     LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id
                     LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2 AND esm_unidades.bloco_id = $group_id";
 
         } else if ($device == "T") {
 
-            $dvc = "JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+            $dvc = "JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
                     JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id";
 
         } else if ($device == "ALL") {
 
-            $dvc = "JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+            $dvc = "JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
                     JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id";
 
         }  else {
@@ -63,7 +65,7 @@ class Water_model extends Base_model
                     SUM(consumo) AS value
                 FROM esm_hours
                 $dvc1
-                JOIN esm_leituras_ancar_agua ON 
+                JOIN esm_leituras_".$entity->tabela."_agua ON 
                     HOUR(FROM_UNIXTIME(timestamp - 3600)) = esm_hours.num AND 
                     timestamp > $start AND 
                     timestamp <= $end + 600
@@ -86,7 +88,7 @@ class Water_model extends Base_model
                     SUM(consumo) AS value
                 FROM esm_hours
                 $dvc1
-                JOIN esm_leituras_ancar_agua ON 
+                JOIN esm_leituras_".$entity->tabela."_agua ON 
                     HOUR(FROM_UNIXTIME(timestamp - 3600)) = esm_hours.num AND 
                     timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     timestamp <= UNIX_TIMESTAMP('$end 23:59:59') + 600
@@ -110,7 +112,7 @@ class Water_model extends Base_model
                     SUM(consumo) AS value
                 FROM esm_calendar
                 $dvc1
-                JOIN esm_leituras_ancar_agua ON 
+                JOIN esm_leituras_".$entity->tabela."_agua ON 
                     timestamp > esm_calendar.ts_start AND 
                     timestamp <= (esm_calendar.ts_end + 600)
                     $station
@@ -130,8 +132,10 @@ class Water_model extends Base_model
         return false;
     }
 
-    public function GetResume($config, $type)
+    public function GetResume($group, $config, $type)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $result = $this->db->query("
             SELECT 
                 esm_medidores.nome AS device, 
@@ -146,17 +150,17 @@ class Water_model extends Base_model
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
-            JOIN (  
+            LEFT JOIN (  
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_ancar_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                FROM esm_leituras_".$entity->tabela."_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
                 WHERE timestamp > UNIX_TIMESTAMP() - 86400
                 GROUP BY medidor_id
             ) l ON l.device = esm_medidores.nome
-            JOIN (
+            LEFT JOIN (
                 SELECT esm_medidores.nome as device, SUM(consumo) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_agua d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_agua d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                 JOIN esm_medidores ON esm_medidores.id = d.medidor_id
@@ -165,17 +169,17 @@ class Water_model extends Base_model
                     esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
                 GROUP BY d.medidor_id
             ) m ON m.device = esm_medidores.nome
-            JOIN (
+            LEFT JOIN (
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_ancar_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                FROM esm_leituras_".$entity->tabela."_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
                 WHERE MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
                 GROUP BY medidor_id
             ) c ON c.device = esm_medidores.nome
-            JOIN (
+            LEFT JOIN (
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_ancar_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                FROM esm_leituras_".$entity->tabela."_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
                 WHERE 
                     MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now()) AND
                     HOUR(FROM_UNIXTIME(timestamp)) > HOUR(FROM_UNIXTIME({$config->open})) AND 
@@ -183,7 +187,8 @@ class Water_model extends Base_model
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                entrada_id = 73 AND esm_unidades_config.type = $type
+                esm_unidades.bloco_id = $group AND
+                esm_medidores.tipo = 'agua'
             ORDER BY 
                 esm_unidades_config.type, esm_unidades.nome
         ");
@@ -274,7 +279,7 @@ class Water_model extends Base_model
                     MIN(leitura) AS leitura_anterior,
                     MAX(leitura) AS leitura_atual,
                     MAX(leitura) - MIN(leitura) AS consumo
-                FROM esm_leituras_ancar_agua
+                FROM esm_leituras_".$entity->tabela."_agua
                 WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
                 GROUP BY medidor_id
             ) a ON a.medidor_id = esm_medidores.id
@@ -282,7 +287,7 @@ class Water_model extends Base_model
                 SELECT 
                     medidor_id,
                     SUM(consumo) AS consumo
-                FROM esm_leituras_ancar_agua
+                FROM esm_leituras_".$entity->tabela."_agua
                 WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
                     AND HOUR(FROM_UNIXTIME(timestamp)) > HOUR(FROM_UNIXTIME({$config->open})) AND HOUR(FROM_UNIXTIME(timestamp)) <= HOUR(FROM_UNIXTIME({$config->close}))
                 GROUP BY medidor_id
@@ -291,7 +296,7 @@ class Water_model extends Base_model
                 SELECT 
                     medidor_id,
                     SUM(consumo) AS consumo
-                FROM esm_leituras_ancar_agua
+                FROM esm_leituras_".$entity->tabela."_agua
                 WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
 					AND (HOUR(FROM_UNIXTIME(timestamp)) <= HOUR(FROM_UNIXTIME({$config->open})) OR HOUR(FROM_UNIXTIME(timestamp)) > HOUR(FROM_UNIXTIME({$config->close})))
                 GROUP BY medidor_id

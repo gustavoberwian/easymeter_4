@@ -1,6 +1,6 @@
 <section role="main" class="content-body">
     <!-- start: page -->
-    <section class="card" id="page-header">
+    <section class="card" id="page-header" data-url="<?= $url ?>">
 
         <div class="card-body">
         
@@ -8,15 +8,15 @@
 
                 <table class="text-dark w-100">
                     <tr>
-                        <td style="width:130px;">
-                            <img src="<?php echo base_url('assets/img/' . $group->logo); ?>" height="80" alt="<?= $shopping->nome; ?>" style="margin-top: 17px;"/>
-                        </td>
                         <td>
                             <h4 class="font-weight-bold mt-0"><?= $shopping->nome; ?></h4>
                             <?php echo $shopping->logradouro; ?>, <?php echo $shopping->numero; ?><br />
                             <?php echo $shopping->bairro; ?><br />
                             <?php echo $shopping->cidade; ?>/<?php echo $shopping->uf; ?><br />
                             CEP <?php echo $shopping->cep; ?>
+                        </td>
+                        <td class="text-end" style="vertical-align: text-top;">
+                            <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" height="60" alt="<?= $shopping->nome; ?>" style="margin-top: 17px;"/>
                         </td>
                     </tr>
                     <tr>
@@ -239,9 +239,6 @@
                 <div class="mt-3">
                     <table class="text-dark w-100">
                         <tr>
-                            <td>
-                                <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= "Ancar"; ?>"/>
-                            </td>
                             <td class="text-end">
                                 <img src="<?php echo base_url('assets/img/logo.png'); ?>" height="30" alt="Easymeter"/>
                             </td>

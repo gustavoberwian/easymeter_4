@@ -187,7 +187,7 @@ class Water extends UNO_Controller
         if (!$this->user->config) {
             return json_encode(array(
                 "status" => "error",
-                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+                "message" => "Dados não foram carregados corretamente. Configurações gerais não fornecidas."
             ));
         }
 
@@ -304,6 +304,8 @@ class Water extends UNO_Controller
             ));
         }
 
+        $entity = $this->shopping_model->get_entity_by_group($this->input->getPost('group'));
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 
@@ -321,17 +323,17 @@ class Water extends UNO_Controller
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
-            JOIN (  
+            LEFT JOIN (  
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_ancar_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                FROM esm_leituras_".$entity->tabela."_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
                 WHERE timestamp > UNIX_TIMESTAMP() - 86400
                 GROUP BY medidor_id
             ) l ON l.device = esm_medidores.nome
-            JOIN (
+            LEFT JOIN (
                 SELECT esm_medidores.nome as device, SUM(consumo) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_agua d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_agua d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                 JOIN esm_medidores ON esm_medidores.id = d.medidor_id
@@ -340,17 +342,17 @@ class Water extends UNO_Controller
                     esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
                 GROUP BY d.medidor_id
             ) m ON m.device = esm_medidores.nome
-            JOIN (
+            LEFT JOIN (
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_ancar_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                FROM esm_leituras_".$entity->tabela."_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
                 WHERE MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
                 GROUP BY medidor_id
             ) c ON c.device = esm_medidores.nome
-            JOIN (
+            LEFT JOIN (
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_ancar_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                FROM esm_leituras_".$entity->tabela."_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
                 WHERE 
                     MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND 
                     YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now()) AND 
@@ -359,7 +361,8 @@ class Water extends UNO_Controller
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                esm_unidades.bloco_id = ".$this->input->getPost("group")."
+                esm_unidades.bloco_id = ".$this->input->getPost("group")." AND
+                esm_medidores.tipo = 'agua'
             ORDER BY 
             esm_unidades_config.type, esm_unidades.nome
         ");
@@ -413,6 +416,15 @@ class Water extends UNO_Controller
         // busca fechamento
         $group  = $this->shopping_model->get_group_info($group_id);
 
+        $this->user->config = $this->shopping_model->get_client_config($group_id);
+
+        if (!$this->user->config) {
+            return json_encode(array(
+                "status" => "error",
+                "message" => "Dados não foram carregados corretamente. Configurações gerais não fornecidas."
+            ));
+        }
+
         //TODO verificar se usuário tem acesso a esse fechamento
 
         // verifica retorno
@@ -448,7 +460,7 @@ class Water extends UNO_Controller
 
             $spreadsheet->setActiveSheetIndex($i);
     
-            $resume = $this->water_model->GetResume($this->user->config, $i + 1);
+            $resume = $this->water_model->GetResume($group_id, $this->user->config, $i + 1);
 
             $spreadsheet->getActiveSheet()->getStyle('A1:H2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
@@ -691,7 +703,7 @@ class Water extends UNO_Controller
         // verifica retorno
         if(!$fechamentos) {
             // mostra erro
-            echo json_encode(array("status"  => "error", "message" => "Nenhum lançamento não encontrado"));
+            echo json_encode(array("status"  => "error", "message" => "Nenhum lançamento encontrado"));
             return;
         }
 

@@ -6,6 +6,8 @@ class Energy_model extends Base_model
 {
     public function GetOverallConsumption($type, $grp)
     {
+        $entity = $this->get_entity_by_group($grp);
+
         $result = $this->db->query("
             SELECT
                 esm_unidades.bloco_id,
@@ -13,14 +15,14 @@ class Energy_model extends Base_model
                 SUM( activePositiveConsumption ) / ( DATEDIFF( CURDATE(), DATE_FORMAT( CURDATE(), '%Y-%m-01' )) + 1 ) * DAY (LAST_DAY(CURDATE())) AS prevision,
                 SUM( activePositiveConsumption ) / ( DATEDIFF( CURDATE(), DATE_FORMAT( CURDATE(), '%Y-%m-01' )) + 1 ) AS average 
             FROM
-                esm_leituras_ancar_energia 
+                esm_leituras_".$entity->tabela."_energia 
             JOIN 
-                esm_medidores ON esm_medidores.id = esm_leituras_ancar_energia.device
+                esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_energia.device
             JOIN 
                 esm_unidades ON esm_unidades.id = esm_medidores.unidade_id 
             WHERE
                 TIMESTAMP > DATE_FORMAT( CURDATE(), '%Y-%m-01' ) 
-                AND esm_leituras_ancar_energia.device IN (
+                AND esm_leituras_".$entity->tabela."_energia.device IN (
                     SELECT
                         esm_medidores.nome 
                     FROM
@@ -43,52 +45,10 @@ class Energy_model extends Base_model
         return array ("consum"    => "-","prevision" => "-","average"   => "-");
     }
 
-    //TODO exclude: usada apenas pelo mapa de calor
-    public function get_values_factor($device, $interval, $start, $end)
-    {
-        $dvc = "";
-        if (is_numeric($device)) {
-            if ($device == 0) {
-
-            } else {
-                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
-            }
-
-        } else {
-            $dvc = " AND d.device = '$device'";
-        }
-
-        $group = $interval == "day" ? "timestamp" : "DAY(FROM_UNIXTIME(timestamp)), MONTH(FROM_UNIXTIME(timestamp)), YEAR(FROM_UNIXTIME(timestamp))";
-        $label = $interval == "day" ? "%H:%i" : "%d/%m";
-
-        $result = $this->db->query("
-            SELECT
-                SUM(reactiveA) AS reactive_a,
-                SUM(reactiveB) AS reactive_b,
-                SUM(reactiveC) AS reactive_c,
-                SUM(activeA) / SQRT(POW(SUM(activeA), 2) + POW(SUM(reactiveA), 2)) AS factor_a,
-                SUM(activeB) / SQRT(POW(SUM(activeB), 2) + POW(SUM(reactiveB), 2)) AS factor_b,
-                SUM(activeC) / SQRT(POW(SUM(activeC), 2) + POW(SUM(reactiveC), 2)) AS factor_c,
-                SUM(reactiveA + reactiveB + reactiveC) as reactive,
-                SUM(activeA + activeB + activeC) / SQRT(POW(SUM(activeA + activeB + activeC), 2) + POW(SUM(reactiveA + reactiveB + reactiveC), 2)) AS factor,
-                DATE_FORMAT(FROM_UNIXTIME(timestamp), '$label') AS label
-            FROM
-                esm_leituras_ancar_energia
-            WHERE
-                timestamp BETWEEN $start AND $end AND
-                $dvc
-            GROUP BY $group
-        ");
-
-        if ($result->getNumRows()) {
-            return $result->getResult();
-        }
-
-        return false;
-    }
-
     public function GetActivePositive($device, $group, $start, $end, $st = array(), $gp = false)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $query = "";
         $dvc = "";
         if (is_numeric($device)) {
@@ -134,7 +94,7 @@ class Energy_model extends Base_model
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
                     SUM(activePositiveConsumption) AS value
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -168,7 +128,7 @@ class Energy_model extends Base_model
                     esm_calendar.dw AS dw,
                     SUM(activePositiveConsumption) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                     $station
@@ -195,6 +155,8 @@ class Energy_model extends Base_model
 
     public function GetActivePositiveAverage($device, $group, $st = array(), $period = true)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -236,7 +198,7 @@ class Energy_model extends Base_model
                 SELECT 
                     IFNULL(SUM(activePositiveConsumption), 0) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end + 600) 
                     $station
@@ -257,20 +219,22 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetConsumptionDay($device)
+    public function GetConsumptionDay($device, $group)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $dvc = "";
         $join = "";
         if (is_numeric($device)) {
             if ($device != 0) {
-                $dvc = " AND esm_leituras_ancar_energia.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND esm_leituras_".$entity->tabela."_energia.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
             }
         } else if ($device == "C") {
             $dvc = "AND device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id WHERE type = 1)";
         } else if ($device == "U") {
             $dvc = "AND device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id WHERE type = 2)";
         } else {
-            $dvc = " AND esm_leituras_ancar_energia.device = '$device'";
+            $dvc = " AND esm_leituras_".$entity->tabela."_energia.device = '$device'";
         }
 
         $result = $this->db->query("
@@ -279,7 +243,7 @@ class Energy_model extends Base_model
                 IF(MINUTE(FROM_UNIXTIME(timestamp)) = 0, DATE_FORMAT(FROM_UNIXTIME(timestamp), \"%H:%i\"), \"\") AS label,
                 DATE_FORMAT(FROM_UNIXTIME(timestamp), \"%H:%i\") AS title
             FROM 
-                esm_leituras_ancar_energia
+                esm_leituras_".$entity->tabela."_energia
             $join
             WHERE 
                 timestamp > UNIX_TIMESTAMP() - 86400
@@ -300,6 +264,8 @@ class Energy_model extends Base_model
 
     public function GetActiveDemand($device, $group, $start, $end)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -329,7 +295,7 @@ class Energy_model extends Base_model
                     MAX(activeDemand) AS valueMax,
                     SUM(activePositiveConsumption) AS valueSum
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -348,7 +314,7 @@ class Energy_model extends Base_model
                     MAX(activeDemand) AS valueMax,
                     SUM(activePositiveConsumption) AS valueSum
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                     $dvc
@@ -369,6 +335,8 @@ class Energy_model extends Base_model
 
     public function GetMainReactive($device, $group, $start, $end)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -398,7 +366,7 @@ class Energy_model extends Base_model
                     SUM(reactivePositiveConsumption) AS valueInd,
                     SUM(ABS(reactiveNegativeConsumption)) AS valueCap
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -417,7 +385,7 @@ class Energy_model extends Base_model
                     SUM(reactivePositiveConsumption) AS valueInd,
                     SUM(ABS(reactiveNegativeConsumption)) AS valueCap
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                     $dvc
@@ -438,6 +406,8 @@ class Energy_model extends Base_model
 
     public function GetMainFactor($device, $group, $start, $end)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -467,7 +437,7 @@ class Energy_model extends Base_model
                     IF(SUM(reactivePositiveConsumption) > SUM(ABS(reactiveNegativeConsumption)), 'I', 'C') AS type,
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activePositiveConsumption) / SQRT(POW(SUM(activePositiveConsumption), 2) + POW(SUM(reactivePositiveConsumption) + SUM(ABS(reactiveNegativeConsumption)), 2)), 1)) AS value
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -486,7 +456,7 @@ class Energy_model extends Base_model
                     IF(SUM(reactivePositiveConsumption) > SUM(ABS(reactiveNegativeConsumption)), 'I', 'C') AS type,
                     IF(esm_calendar.dt > DATE_FORMAT(CURDATE() ,'%Y-%m-%d'), NULL, IFNULL(SUM(activePositiveConsumption) / SQRT(POW(SUM(activePositiveConsumption), 2) + POW(SUM(reactivePositiveConsumption) + SUM(ABS(reactiveNegativeConsumption)), 2)), 1)) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                     $dvc
@@ -507,6 +477,8 @@ class Energy_model extends Base_model
 
     public function GetFactorPhases($device, $group, $start, $end)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -540,7 +512,7 @@ class Energy_model extends Base_model
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeB) / SQRT(POW(SUM(activeB), 2) + POW(SUM(ABS(reactiveB)), 2)), 1)) AS value_b,
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeC) / SQRT(POW(SUM(activeC), 2) + POW(SUM(ABS(reactiveC)), 2)), 1)) AS value_c
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -563,7 +535,7 @@ class Energy_model extends Base_model
                     IFNULL(SUM(activeB) / SQRT(POW(SUM(activeB), 2) + POW(SUM(ABS(reactiveB)), 2)), 1) AS value_b,
                     IFNULL(SUM(activeC) / SQRT(POW(SUM(activeC), 2) + POW(SUM(ABS(reactiveC)), 2)), 1) AS value_c
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                     $dvc
@@ -584,6 +556,8 @@ class Energy_model extends Base_model
 
     public function GetMainLoad($device, $group, $start, $end)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -612,7 +586,7 @@ class Energy_model extends Base_model
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activePositiveConsumption + ABS(activePositiveConsumption)) / MAX(activePositiveConsumption + ABS(activePositiveConsumption)), 1)) AS value
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -630,7 +604,7 @@ class Energy_model extends Base_model
                     esm_calendar.dw AS dw,
                     IFNULL(AVG(activePositiveConsumption + ABS(activePositiveConsumption)) / MAX(activePositiveConsumption + ABS(activePositiveConsumption)), 1) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                     $dvc
@@ -651,6 +625,8 @@ class Energy_model extends Base_model
 
     public function GetValuesPhases($device, $group, $start, $end, $field)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $operation["active"] = ["active", "SUM("];
         $operation["current"] = ["current", "AVG("];
         $operation["voltage"] = ["voltage", "AVG("];
@@ -687,7 +663,7 @@ class Energy_model extends Base_model
                     {$operation[$field][1]}({$operation[$field][0]}B)) AS value_b,
                     {$operation[$field][1]}({$operation[$field][0]}C)) AS value_c
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -707,7 +683,7 @@ class Energy_model extends Base_model
                     {$operation[$field][1]}({$operation[$field][0]}B)) AS value_b,
                     {$operation[$field][1]}({$operation[$field][0]}C)) AS value_c
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                         d.timestamp >= esm_calendar.ts_start AND 
                         d.timestamp <= esm_calendar.ts_end 
                         $dvc
@@ -728,6 +704,8 @@ class Energy_model extends Base_model
 
     public function GetLoadPhases($device, $group, $start, $end, $field)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -758,7 +736,7 @@ class Energy_model extends Base_model
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activeB) / MAX(activeB), 1)) AS value_b,
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activeC) / MAX(activeC), 1)) AS value_c
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -778,7 +756,7 @@ class Energy_model extends Base_model
                     IFNULL(AVG(activeB) / MAX(activeB), 1) AS value_b,
                     IFNULL(AVG(activeC) / MAX(activeC), 1) AS value_c
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                         d.timestamp >= esm_calendar.ts_start AND 
                         d.timestamp <= esm_calendar.ts_end 
                         $dvc
@@ -891,7 +869,7 @@ class Energy_model extends Base_model
                     SELECT 
                         IFNULL(SUM(activePositiveConsumption), 0) AS value
                     FROM esm_calendar
-                    LEFT JOIN esm_leituras_ancar_energia d ON 
+                    LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                         d.timestamp > (esm_calendar.ts_start) AND 
                         d.timestamp <= (esm_calendar.ts_end + 600) 
                         AND d.device = '$device'
@@ -906,7 +884,7 @@ class Energy_model extends Base_model
                         SELECT 
                             SUM(activePositiveConsumption) AS value
                         FROM esm_calendar
-                        LEFT JOIN esm_leituras_ancar_energia d ON 
+                        LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                             d.timestamp > (esm_calendar.ts_start) AND 
                             d.timestamp <= (esm_calendar.ts_end + 600) 
                             AND d.device = '$device'
@@ -927,20 +905,20 @@ class Energy_model extends Base_model
                     SUM(activePositiveConsumption) AS value,
                     esm_unidades_config.alerta_consumo,
                     esm_unidades_config.unidade_id
-                FROM esm_leituras_ancar_energia
-                JOIN esm_medidores ON esm_medidores.nome = esm_leituras_ancar_energia.device
+                FROM esm_leituras_".$entity->tabela."_energia
+                JOIN esm_medidores ON esm_medidores.nome = esm_leituras_".$entity->tabela."_energia.device
                 JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id
                 WHERE 
                     timestamp > UNIX_TIMESTAMP(DATE_FORMAT(CURDATE() - INTERVAL 1 MONTH,'%Y-%m-01 00:00:00')) AND
                     timestamp <= UNIX_TIMESTAMP(DATE_FORMAT(LAST_DAY(CURDATE()- INTERVAL 1 MONTH),'%Y-%m-31 23:59:59')) + 1 AND 
-                    esm_leituras_ancar_energia.device = '$device'
+                    esm_leituras_".$entity->tabela."_energia.device = '$device'
             ");
 
             $current = $this->db->query("
                 SELECT 
                     SUM(activePositiveConsumption) / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01'))) * DAY(LAST_DAY(CURDATE() - INTERVAL 1 DAY )) AS value
                 FROM 
-                    esm_leituras_ancar_energia
+                    esm_leituras_".$entity->tabela."_energia
                 WHERE 
                     timestamp > UNIX_TIMESTAMP(DATE_FORMAT(CURDATE() ,'%Y-%m-01 00:00:00')) AND timestamp <= UNIX_TIMESTAMP(DATE_FORMAT(CURDATE() - INTERVAL 1 DAY ,'%Y-%m-%d 23:59:59'))
                     AND device = '$device'
@@ -952,22 +930,22 @@ class Energy_model extends Base_model
 
             $result = $this->db->query("
                 SELECT 
-                    esm_leituras_ancar_energia.device,
+                    esm_leituras_".$entity->tabela."_energia.device,
                     esm_unidades.nome,
                     FROM_UNIXTIME(timestamp),
-                    esm_leituras_ancar_energia.currentA,
-                    esm_leituras_ancar_energia.currentB,
-                    esm_leituras_ancar_energia.currentC,
+                    esm_leituras_".$entity->tabela."_energia.currentA,
+                    esm_leituras_".$entity->tabela."_energia.currentB,
+                    esm_leituras_".$entity->tabela."_energia.currentC,
                     esm_unidades_config.disjuntor
-                FROM esm_leituras_ancar_energia
-                JOIN esm_medidores ON esm_medidores.nome = esm_leituras_ancar_energia.device
+                FROM esm_leituras_".$entity->tabela."_energia
+                JOIN esm_medidores ON esm_medidores.nome = esm_leituras_".$entity->tabela."_energia.device
                 JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
                 JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id
-                JOIN esm_alertas_cfg ON esm_alertas_cfg.device = esm_leituras_ancar_energia.device
+                JOIN esm_alertas_cfg ON esm_alertas_cfg.device = esm_leituras_".$entity->tabela."_energia.device
                 WHERE 
-                    (esm_leituras_ancar_energia.currentA > esm_unidades_config.disjuntor OR
-                    esm_leituras_ancar_energia.currentB > esm_unidades_config.disjuntor OR
-                    esm_leituras_ancar_energia.currentC > esm_unidades_config.disjuntor) AND
+                    (esm_leituras_".$entity->tabela."_energia.currentA > esm_unidades_config.disjuntor OR
+                    esm_leituras_".$entity->tabela."_energia.currentB > esm_unidades_config.disjuntor OR
+                    esm_leituras_".$entity->tabela."_energia.currentC > esm_unidades_config.disjuntor) AND
                     timestamp > UNIX_TIMESTAMP() - 600
             ");
 
@@ -981,6 +959,8 @@ class Energy_model extends Base_model
 
     public function GetMonthByStation($st, $group)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $station = "";
         if (count($st)) {
             if ($st[0] == 'fora') {
@@ -998,7 +978,7 @@ class Energy_model extends Base_model
             SELECT 
                 SUM(activePositiveConsumption) AS value
             FROM esm_calendar
-            LEFT JOIN esm_leituras_ancar_energia d ON 
+            LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                 (d.timestamp) > (esm_calendar.ts_start) AND 
                 (d.timestamp) <= (esm_calendar.ts_end + 600) 
                 $station
@@ -1144,8 +1124,10 @@ class Energy_model extends Base_model
         return false;
     }
 
-    private function CalculateQuery($data, $inicio, $fim, $config, $type)
+    private function CalculateQuery($data, $inicio, $fim, $config, $type, $group)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $query = $this->db->query("
             SELECT
                 {$data['id']} AS fechamento_id,
@@ -1169,7 +1151,7 @@ class Energy_model extends Base_model
                     MAX(activePositive) AS leitura_atual,
                     MAX(activePositive) - MIN(activePositive) AS consumo,
                     MAX(activeDemand) AS demanda
-                FROM esm_leituras_ancar_energia
+                FROM esm_leituras_".$entity->tabela."_energia
                 WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
                 GROUP BY device
             ) a ON a.device = esm_medidores.nome
@@ -1179,7 +1161,7 @@ class Energy_model extends Base_model
                     SUM(activePositiveConsumption) AS consumo_p,
                     MAX(activeDemand) AS demanda_p
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                     AND ((MOD((d.timestamp), 86400) >= 73800 AND MOD((d.timestamp), 86400) <= 84600) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)
@@ -1194,7 +1176,7 @@ class Energy_model extends Base_model
                     SUM(activePositiveConsumption) AS consumo_f,
                     MAX(activeDemand) AS demanda_f
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                     AND (((MOD((d.timestamp), 86400) < 73800 OR MOD((d.timestamp), 86400) > 84600) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)
@@ -1209,7 +1191,7 @@ class Energy_model extends Base_model
         return $query;
     }
 
-    public function Calculate($data, $config)
+    public function Calculate($data, $config, $group)
     {
         $inicio = date_create_from_format('d/m/Y', $data["inicio"])->format('Y-m-d');
         $fim = date_create_from_format('d/m/Y', $data["fim"])->format('Y-m-d');
@@ -1230,7 +1212,7 @@ class Energy_model extends Base_model
         // retorna fechamento id
         $data['id'] = $this->db->insertID();
 
-        $query = $this->CalculateQuery($data, $inicio, $fim, $config, 1);
+        $query = $this->CalculateQuery($data, $inicio, $fim, $config, 1, $group);
 
         $comum = $query->getResult();
         $consumo_c = 0;
@@ -1247,7 +1229,7 @@ class Energy_model extends Base_model
             $demanda_c_p = ($c->demanda_p > $demanda_c_p) ? $c->demanda_p : $demanda_c_p;
         }
 
-        $query = $this->CalculateQuery($data, $inicio, $fim, $config, 2);
+        $query = $this->CalculateQuery($data, $inicio, $fim, $config, 2, $group);
 
         $unidades = $query->getResult();
         $consumo_u = 0;
@@ -1436,6 +1418,8 @@ class Energy_model extends Base_model
 
     public function GetResume($group, $config, $split)
     {
+        $entity = $this->get_entity_by_group($group);
+
         $type = "";
         if ($config->split_report) {
             $type = "AND esm_unidades_config.type = $split";
@@ -1462,7 +1446,7 @@ class Energy_model extends Base_model
                         device,
                         SUM(activePositiveConsumption) AS value
                     FROM 
-                        esm_leituras_ancar_energia
+                        esm_leituras_".$entity->tabela."_energia
                     WHERE 
                         timestamp > UNIX_TIMESTAMP() - 86400
                     GROUP BY device
@@ -1472,7 +1456,7 @@ class Energy_model extends Base_model
                         d.device,
                         SUM(activePositiveConsumption) AS value
                     FROM esm_calendar
-                    LEFT JOIN esm_leituras_ancar_energia d ON 
+                    LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                         (d.timestamp) > (esm_calendar.ts_start) AND 
                         (d.timestamp) <= (esm_calendar.ts_end + 600) 
                     WHERE 
@@ -1485,7 +1469,7 @@ class Energy_model extends Base_model
                         device,
                         SUM(activePositiveConsumption) AS value
                     FROM 
-                        esm_leituras_ancar_energia
+                        esm_leituras_".$entity->tabela."_energia
                     WHERE 
                         MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
                     GROUP BY device                
@@ -1495,7 +1479,7 @@ class Energy_model extends Base_model
                         device,
                         SUM(activePositiveConsumption) AS value
                     FROM 
-                        esm_leituras_ancar_energia
+                        esm_leituras_".$entity->tabela."_energia
                     WHERE 
                         MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now())
                         AND (MOD((timestamp), 86400) >= {$config->open} AND MOD((timestamp), 86400) <= {$config->close})
@@ -1506,7 +1490,7 @@ class Energy_model extends Base_model
                         d.device,
                         SUM(activePositiveConsumption) AS value
                     FROM esm_calendar
-                    LEFT JOIN esm_leituras_ancar_energia d ON 
+                    LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                         (d.timestamp) > (esm_calendar.ts_start) AND 
                         (d.timestamp) <= (esm_calendar.ts_end + 600) 
                         AND ((MOD((d.timestamp), 86400) >= {$config->ponta_start} AND MOD((d.timestamp), 86400) <= {$config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)
@@ -1562,7 +1546,7 @@ class Energy_model extends Base_model
                 FORMAT(reactiveC, 3, 'de_DE') AS reactiveC,
                 FORMAT(activePositiveConsumption, 3, 'de_DE') AS activePositiveConsumption
             FROM
-                esm_leituras_ancar_energia
+                esm_leituras_".$entity->tabela."_energia
             WHERE
                 timestamp >= UNIX_TIMESTAMP('$init 00:00:00') AND 
                 timestamp <= UNIX_TIMESTAMP('$end 23:59:59') AND 
@@ -1639,15 +1623,15 @@ class Energy_model extends Base_model
     {
         foreach ($data as $d) {
 
-            $this->db->trans_start();
+            $this->db->transStart();
 
             // insere alerta
-            $this->db->insert('esm_alertas_energia', $d);
+            $this->db->table('esm_alertas_energia')->set($d)->insert();
 
-            $id = $this->db->insert_id();
+            $id = $this->db->insertID();
 
             // envia para ancar
-            $this->db->insert('esm_alertas_energia_envios', array("user_id" => 538, "alerta_id" => $id));
+            $this->db->table('esm_alertas_energia_envios')->set(array("user_id" => 538, "alerta_id" => $id))->insert();
 
             // envia para shopping
             if ($cfg->notify_shopping) {
@@ -1656,7 +1640,7 @@ class Energy_model extends Base_model
 
                 if ($group) {
                     foreach ($group as $g) {
-                        $this->db->insert('esm_alertas_energia_envios', array("user_id" => $g->id, "alerta_id" => $id));
+                        $this->db->table('esm_alertas_energia_envios')->set(array("user_id" => $g->id, "alerta_id" => $id))->insert();
                     }
                 }
             }
@@ -1666,17 +1650,17 @@ class Energy_model extends Base_model
                 $users = $this->GetUserIdByDevice($d["device"]);
                 if ($users) {
                     foreach ($users as $u) {
-                        $this->db->insert('esm_alertas_energia_envios', array("user_id" => $u->id, "alerta_id" => $id));
+                        $this->db->table('esm_alertas_energia_envios')->set(array("user_id" => $u->id, "alerta_id" => $id))->insert();
                     }
                 }
             }
 
             // atualiza dados
             if ($cfg->type == 2) {
-                $this->db->update('esm_unidades_config', array('alerta_consumo' => $set["current"]), array('unidade_id' => $set["unidade_id"]));
+                $this->db->table('esm_unidades_config')->set(array('alerta_consumo' => $set["current"]))->set(array('unidade_id' => $set["unidade_id"]))->update();
             }
 
-            $this->db->trans_complete();
+            $this->db->transComplete();
         }
     }
 }

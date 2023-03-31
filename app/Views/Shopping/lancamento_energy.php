@@ -1,5 +1,5 @@
 <section role="main" class="content-body" data-type="energy">
-    <header class="page-header">
+    <header class="page-header" data-url="<?= $url ?>">
         <h2><?= $group->group_name; ?></h2>
     </header>
 

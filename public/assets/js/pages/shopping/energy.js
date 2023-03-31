@@ -32,13 +32,17 @@
                 group: $(".page-header").data("group")
             },
             url: "/energia/resume",
-            success: function (json) {
+            /*success: function (json) {
                 if (json.status === 'error') {
                     notifyError(json.message);
                     $("#dt-resume_processing").hide()
                     $("#dt-resume").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
                 }
-            },
+                if (json.data.length === 0) {
+                    $("#dt-resume_processing").hide()
+                    $("#dt-resume").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
+                }
+            },*/
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -313,6 +317,7 @@
                 d.type   = $(".type").val();
                 d.min    = $("#min").val();
                 d.max    = $("#max").val();
+                d.group  = $(".page-header").data("group");
             },
             url: "/energia/data",
             error: function () {
@@ -376,6 +381,7 @@
                 d.device = device;
                 d.init   = start.format("YYYY-MM-DD");
                 d.finish = end.format("YYYY-MM-DD");
+                d.group  = $(".page-header").data("group");
             },
             url: "/energia/data",
             error: function () {

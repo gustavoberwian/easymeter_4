@@ -562,12 +562,13 @@ class Energia extends UNO_Controller
     private function chartConsumption()
     {
         $device  = $this->input->getPost('device');
+        $group  = $this->input->getPost('group');
 
         $value = array();
         $labels  = array();
         $titles  = array();
 
-        $values  = $this->energy_model->GetConsumptionDay($device);
+        $values  = $this->energy_model->GetConsumptionDay($device, $group);
 
         if ($values) {
 
@@ -2009,159 +2010,6 @@ class Energia extends UNO_Controller
         return json_encode($options);
     }
 */
-    public function chart_heat_map_power()
-    {
-        $device   = $this->input->getPost('device');
-        $start    = $this->input->getPost('start');
-        $end      = $this->input->getPost('end');
-        $interval = $this->input->getPost('interval');
-        //$interval = 'day';
-
-        $semana  = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab');
-        $current = strtotime($start);
-        $value   = array();
-        $labels  = array();
-        $days    = array();
-        $day     = array();
-        for ($i = 0; $i < 24; $i++) {
-            $day[] = str_pad($i , 2 , '0' , STR_PAD_LEFT).":00";
-        }
-
-        //if ($interval != "day") {
-        while ($current <= strtotime($end . ' 23:59:59')) {
-            $days[]  = $semana[date('w', $current)];
-            $current = strtotime('+1 day', $current);
-        }
-        //}
-
-        $values = $this->energy_model->get_values_factor($device, $interval, strtotime($start . ' 00:00:00'), strtotime($end . ' 23:59:59'));
-
-        if ($values) {
-
-            foreach ($values as $l) {
-
-                if (is_null($l->factor))
-                    $value[] = 0;
-                else
-                    $value[] = ($l->reactive >= 0) ? 1 - $l->factor : -1 + $l->factor;
-
-                $labels[]  = $l->label;
-            }
-
-        } else {
-
-            $value[] = 0;
-            $labels[]  = "";
-        }
-
-        for ($i = 0; $i < count($days); $i++) {
-            for ($j = 0; $j < count($day); $j++) {
-                $data[$j] = rand(0,5);
-            }
-            $series[$i] = array(
-                "name" => $days[$i],
-                "data" => $data
-            );
-        }
-
-        $options = array(
-            "chart" => array(
-                "toolbar" => array(
-                    "show" => false
-                ),
-                "type" => "heatmap",
-                "width" => "100%",
-                "height" => 380,
-                "foreColor" => "#777",
-                "stacked" => false,
-                "events" => array(
-                    "click" => "function"
-                )
-            ),
-            "xaxis" => array(
-                "categories" => $day,
-                "axisBorder" => array(
-                    "show" => false
-                ),
-                "axisTicks" => array(
-                    "show" => false
-                ),
-                "tickAmount" => 24
-            ),
-            "series" => $series,
-            "plotOptions" => array(
-                "heatmap" => array(
-                    "shadeIntensity" => 0.5,
-                    "radius" => 0,
-                    "useFillColorAsStroke" => true,
-                    "colorScale" => array(
-                        "ranges" => [
-                            array(
-                                "from" => 0,
-                                "to" => 1,
-                                "name" => "Capacitiva Baixa",
-                                "color" => "#00A100"
-                            ),
-                            array(
-                                "from" => 1.1,
-                                "to" => 2,
-                                "name" => "Capacitiva Média",
-                                "color" => "#128FD9"
-                            ),
-                            array(
-                                "from" => 2.1,
-                                "to" => 3,
-                                "name" => "Bom",
-                                "color" => "#48c130"
-                            ),
-                            array(
-                                "from" => 3.1,
-                                "to" => 4,
-                                "name" => "Indutiva Média",
-                                "color" => "#FFB200"
-                            ),
-                            array(
-                                "from" => 4.1,
-                                "to" => 99,
-                                "name" => "Indutiva Baixa",
-                                "color" => "#FF0000"
-                            ),
-                        ]
-                    )
-                )
-            ),
-            "extra" => array(
-                "tooltip" => array(
-                    "title" => $days,
-                ),
-                "unit" => array("limit" => 0, "sup" => "", "sup_dec" => 1, "inf" => "", "inf_dec" => 1)
-            ),
-            "dataLabels" => array(
-                "enabled" => false,
-            ),
-            "tooltip" => array(
-                "enabled" => true,
-                "intersect" => false,
-                "shared" => true,
-                "y" => array(
-                    "formatter" => "function",
-                    "title" => array(
-                        "formatter" => "function"
-                    ),
-                ),
-                "x" => array(
-                    "formatter" => "function",
-                    "show" => true
-                )
-            ),
-            "stroke" => array(
-                "width" => 1
-            )
-        );
-
-        return json_encode($options);
-    }
-
     public function chart_consumption_station()
     {
         $options = array(
@@ -2203,6 +2051,8 @@ class Energia extends UNO_Controller
 
     public function data()
     {
+        $entity = $this->shopping_model->get_entity_by_group($this->input->getPost('group'));
+
         $device = $this->input->getPost('device');
         $init   = $this->input->getPost('init');
         $finish = $this->input->getPost('finish');
@@ -2244,7 +2094,7 @@ class Energia extends UNO_Controller
                 reactiveC,
                 activePositiveConsumption
             FROM
-                esm_leituras_ancar_energia
+                esm_leituras_".$entity->tabela."_energia
             WHERE
                 timestamp >= UNIX_TIMESTAMP('$init 00:00:00') AND 
                 timestamp <= UNIX_TIMESTAMP('$finish 23:59:59') AND 
@@ -2420,6 +2270,8 @@ class Energia extends UNO_Controller
     {
         $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
 
+        $entity = $this->shopping_model->get_entity_by_group($this->input->getPost('group'));
+
         // retorna erro caso agrupamento não configurado corretamente
         if (!$this->user->config) {
             return json_encode(array(
@@ -2427,89 +2279,6 @@ class Energia extends UNO_Controller
                 "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
             ));
         }
-
-        echo "
-            SELECT 
-                esm_medidores.nome AS device, 
-                esm_unidades_config.luc AS luc, 
-                esm_unidades.nome AS name, 
-                esm_unidades_config.type AS type,
-                esm_medidores.ultima_leitura AS value_read,
-                m.value AS value_month,
-                h.value AS value_month_open,
-                m.value - h.value AS value_month_closed,
-                p.value AS value_ponta,
-                m.value - p.value AS value_fora,
-                l.value AS value_last,
-                m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())) AS value_future,
-                c.value AS value_last_month
-            FROM esm_medidores
-            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
-            LEFT JOIN (  
-                    SELECT 
-                        device,
-                        SUM(activePositiveConsumption) AS value
-                    FROM 
-                        esm_leituras_ancar_energia
-                    WHERE 
-                        timestamp > UNIX_TIMESTAMP() - 86400
-                    GROUP BY device
-                ) l ON l.device = esm_medidores.nome
-            LEFT JOIN (
-                    SELECT 
-                        d.device,
-                        SUM(activePositiveConsumption) AS value
-                    FROM esm_calendar
-                    LEFT JOIN esm_leituras_ancar_energia d ON 
-                        (d.timestamp) > (esm_calendar.ts_start) AND 
-                        (d.timestamp) <= (esm_calendar.ts_end + 600) 
-                    WHERE 
-                        esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
-                        esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
-                    GROUP BY d.device
-                ) m ON m.device = esm_medidores.nome
-            LEFT JOIN (
-                    SELECT 
-                        device,
-                        SUM(activePositiveConsumption) AS value
-                    FROM 
-                        esm_leituras_ancar_energia
-                    WHERE 
-                        MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
-                    GROUP BY device                
-                ) c ON c.device = esm_medidores.nome
-            LEFT JOIN (
-                    SELECT 
-                        device,
-                        SUM(activePositiveConsumption) AS value
-                    FROM 
-                        esm_leituras_ancar_energia
-                    WHERE 
-                        MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now())
-                        AND (MOD((timestamp), 86400) >= {$this->user->config->open} AND MOD((timestamp), 86400) <= {$this->user->config->close})
-                    GROUP BY device
-                ) h ON h.device = esm_medidores.nome
-            LEFT JOIN (
-                    SELECT 
-                        d.device,
-                        SUM(activePositiveConsumption) AS value
-                    FROM esm_calendar
-                    LEFT JOIN esm_leituras_ancar_energia d ON 
-                        (d.timestamp) > (esm_calendar.ts_start) AND 
-                        (d.timestamp) <= (esm_calendar.ts_end + 600) 
-                        AND ((MOD((d.timestamp), 86400) >= {$this->user->config->ponta_start} AND MOD((d.timestamp), 86400) <= {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)
-                    WHERE 
-                        esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
-                        esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
-                    GROUP BY d.device
-                ) p ON p.device = esm_medidores.nome
-            WHERE 
-                esm_unidades.bloco_id = " . $this->input->getPost("group") . " AND
-                esm_medidores.tipo = 'energia'
-            ORDER BY 
-            esm_unidades_config.type, esm_unidades.nome
-        ";
 
         // realiza a query via dt
         $dt = $this->datatables->query("
@@ -2535,7 +2304,7 @@ class Energia extends UNO_Controller
                         device,
                         SUM(activePositiveConsumption) AS value
                     FROM 
-                        esm_leituras_ancar_energia
+                        esm_leituras_".$entity->tabela."_energia
                     WHERE 
                         timestamp > UNIX_TIMESTAMP() - 86400
                     GROUP BY device
@@ -2545,7 +2314,7 @@ class Energia extends UNO_Controller
                         d.device,
                         SUM(activePositiveConsumption) AS value
                     FROM esm_calendar
-                    LEFT JOIN esm_leituras_ancar_energia d ON 
+                    LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                         (d.timestamp) > (esm_calendar.ts_start) AND 
                         (d.timestamp) <= (esm_calendar.ts_end + 600) 
                     WHERE 
@@ -2558,7 +2327,7 @@ class Energia extends UNO_Controller
                         device,
                         SUM(activePositiveConsumption) AS value
                     FROM 
-                        esm_leituras_ancar_energia
+                        esm_leituras_".$entity->tabela."_energia
                     WHERE 
                         MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
                     GROUP BY device                
@@ -2568,7 +2337,7 @@ class Energia extends UNO_Controller
                         device,
                         SUM(activePositiveConsumption) AS value
                     FROM 
-                        esm_leituras_ancar_energia
+                        esm_leituras_".$entity->tabela."_energia
                     WHERE 
                         MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now())
                         AND (MOD((timestamp), 86400) >= {$this->user->config->open} AND MOD((timestamp), 86400) <= {$this->user->config->close})
@@ -2579,7 +2348,7 @@ class Energia extends UNO_Controller
                         d.device,
                         SUM(activePositiveConsumption) AS value
                     FROM esm_calendar
-                    LEFT JOIN esm_leituras_ancar_energia d ON 
+                    LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                         (d.timestamp) > (esm_calendar.ts_start) AND 
                         (d.timestamp) <= (esm_calendar.ts_end + 600) 
                         AND ((MOD((d.timestamp), 86400) >= {$this->user->config->ponta_start} AND MOD((d.timestamp), 86400) <= {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)
@@ -2724,6 +2493,8 @@ class Energia extends UNO_Controller
 
     private function GetFactorInsight($group)
     {
+        $entity = $this->shopping_model->get_entity_by_group($group);
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 
@@ -2738,7 +2509,7 @@ class Energia extends UNO_Controller
                     IF(SUM(reactivePositiveConsumption) > SUM(ABS(reactiveNegativeConsumption)), 'I', 'C') AS type,
                     IFNULL(SUM(activePositiveConsumption) / SQRT(POW(SUM(activePositiveConsumption), 2) + POW(SUM(reactivePositiveConsumption) + SUM(ABS(reactiveNegativeConsumption)), 2)), 1) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                 WHERE 
@@ -2774,6 +2545,8 @@ class Energia extends UNO_Controller
     public function insights($iud)
     {
         $group = $this->input->getPost("group");
+
+        $entity = $this->shopping_model->get_entity_by_group($group);
 
         $this->user->config = $this->shopping_model->get_client_config($group);
 
@@ -2826,7 +2599,7 @@ class Energia extends UNO_Controller
                         d.device,
                         SUM(activePositiveConsumption) AS value
                     FROM esm_calendar
-                    LEFT JOIN esm_leituras_ancar_energia d ON 
+                    LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                         (d.timestamp) > (esm_calendar.ts_start) AND 
                         (d.timestamp) <= (esm_calendar.ts_end + 600) 
                         $station
@@ -3033,7 +2806,7 @@ class Energia extends UNO_Controller
 			return;
 		}
 
-        echo $this->energy_model->Calculate($data, $this->user->config);
+        echo $this->energy_model->Calculate($data, $this->user->config, $data['group_id']);
     }
 
     public function download()
@@ -3161,7 +2934,7 @@ class Energia extends UNO_Controller
         // verifica retorno
         if(!$fechamentos) {
             // mostra erro
-            echo json_encode(array("status"  => "error", "message" => "Nenhum lançamento não encontrado"));
+            echo json_encode(array("status"  => "error", "message" => "Nenhum lançamento encontrado"));
             return;
         }
 
@@ -3249,6 +3022,15 @@ class Energia extends UNO_Controller
     public function download_resume()
     {
         $group_id = $this->input->getPost('id');
+
+        $this->user->config = $this->shopping_model->get_client_config($group_id);
+
+        if (!$this->user->config) {
+            return json_encode(array(
+                "status" => "error",
+                "message" => "Dados não foram carregados corretamente. Configurações gerais não fornecidas."
+            ));
+        }
 
         $group  = $this->shopping_model->get_group_info($group_id);
 

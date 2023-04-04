@@ -553,8 +553,8 @@ class Admin extends UNO_Controller
     public function get_portas()
     {
         $out = '';
-        $central = $this->input->getPost('id', true);
-        $porta = $this->input->getPost('porta', true);
+        $central = $this->input->getPost('id');
+        $porta = $this->input->getPost('porta');
 
         $portas = $this->admin_model->get_portas($central);
         if (!$portas) {

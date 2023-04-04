@@ -24,18 +24,18 @@ class Auth extends BaseConfig
      * ////////////////////////////////////////////////////////////////////
      */
     public array $views = [
-        'login'                       => '\App\Views\login',
-        'register'                    => '\CodeIgniter\Shield\Views\register',
+        'login'                       => '\App\Views\Auth\login',
+        'register'                    => '\App\Views\Auth\register',
         'layout'                      => '\CodeIgniter\Shield\Views\layout',
         'action_email_2fa'            => '\App\Views\email_2fa_show',
         'action_email_2fa_verify'     => '\App\Views\email_2fa_verify',
         'action_email_2fa_email'      => '\App\Views\Email\email_2fa_email',
         'action_email_activate_show'  => '\App\Views\email_activate_show',
         'action_email_activate_email' => '\App\Views\Email\email_activate_email',
-        'magic-link-login'            => '\App\Views\magic_link_form',
-        'magic-link-message'          => '\App\Views\magic_link_message',
+        'magic-link-login'            => '\App\Views\Auth\magic_link_form',
+        'magic-link-message'          => '\App\Views\Auth\magic_link_message',
         'magic-link-email'            => '\App\Views\Email\magic_link_email',
-        'update_password'             => '\App\Views\update_password',
+        'update_password'             => '\App\Views\Auth\update_password',
     ];
 
     /**
@@ -59,7 +59,7 @@ class Auth extends BaseConfig
      * @var array<string, string>
      */
     public array $tables = [
-        'users'             => 'users',
+        'users'             => 'auth_users',
         'identities'        => 'auth_identities',
         'logins'            => 'auth_logins',
         'token_logins'      => 'auth_token_logins',
@@ -87,6 +87,7 @@ class Auth extends BaseConfig
         'login'       => '/',
         'logout'      => 'login',
         'force_reset' => '/',
+        
     ];
 
     /**
@@ -144,7 +145,7 @@ class Auth extends BaseConfig
      * Determines the amount of time, in seconds, that an unused
      * access token can be used.
      */
-    public int $unusedTokenLifetime = YEAR;
+    public int $unusedTokenLifetime = MINUTE;
 
     /**
      * --------------------------------------------------------------------
@@ -268,7 +269,8 @@ class Auth extends BaseConfig
      */
     public array $validFields = [
         'email',
-        // 'username',
+        'username',
+         'phone',
     ];
 
     /**

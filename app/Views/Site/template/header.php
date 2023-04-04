@@ -26,20 +26,20 @@
     <meta http-equiv="Content-Language" content="pt-BR">
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="<?php echo base_url('favicon.png'); ?>" type="image/x-icon" />
+    <link rel="shortcut icon" href="<?= base_url('favicon.png'); ?>" type="image/x-icon" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <link href="<?php echo base_url('vendor/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css'); ?>" rel="stylesheet" type="text/css" media="all">
-    <link href="<?php echo base_url('vendor/themify-icons/themify-icons.css'); ?>" rel="stylesheet" type="text/css" media="all" />
-    <link href="<?php echo base_url('vendor/font-awesome/css/all.min.css'); ?>" rel="stylesheet" type="text/css" media="all" />
+    <link href="<?= base_url('vendor/pe-icon-7-stroke/dist/pe-icon-7-stroke.min.css'); ?>" rel="stylesheet" type="text/css" media="all">
+    <link href="<?= base_url('vendor/themify-icons/themify-icons.css'); ?>" rel="stylesheet" type="text/css" media="all" />
+    <link href="<?= base_url('vendor/font-awesome/css/all.min.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <link href="<?php echo base_url('vendor/flexslider/flexslider.css'); ?>" rel="stylesheet" type="text/css" media="all" />
-    <link href="<?php echo base_url('assets/css/pages/site/theme-fonts.css'); ?>" rel="stylesheet" type="text/css" media="all" />
-    <link href="<?php echo base_url('assets/css/pages/site/theme.css'); ?>" rel="stylesheet" type="text/css" media="all" />
-    <link href="<?php echo base_url('vendor/swiper/swiper-bundle.min.css'); ?>" rel="stylesheet" type="text/css" media="all" />
+    <link href="<?= base_url('vendor/flexslider/flexslider.css'); ?>" rel="stylesheet" type="text/css" media="all" />
+    <link href="<?= base_url('assets/css/pages/site/theme-fonts.css'); ?>" rel="stylesheet" type="text/css" media="all" />
+    <link href="<?= base_url('assets/css/pages/site/theme.css'); ?>" rel="stylesheet" type="text/css" media="all" />
+    <link href="<?= base_url('vendor/swiper/swiper-bundle.min.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="<?php echo base_url('assets/css/pages/site/global.css'); ?>">
+    <link rel="stylesheet" href="<?= base_url('assets/css/pages/site/global.css'); ?>">
 
 </head>
 
@@ -48,12 +48,26 @@
     <div class="nav-container">
         <nav>
             <div class="nav-utility color-primary border-0 d-flex flex-row-reverse justify-content-sm-center justify-content-md-center justify-content-lg-start justify-content-xl-start">
-                <div class="module right">
-                    <a class="link_nav" href="<?php echo base_url('/auth/login'); ?>">
-                        <i class="fas fa-user sub" style="top: 0"></i>
-                        <span class="sub bold">Entrar</span>
-                    </a>
-                </div>
+
+                <?php if (auth()->loggedIn()) : ?>
+                    <div class="module right">
+                        <a class="link_nav pr-3" href="<?= base_url($user->condo->classificacao); ?>">
+                            <i class="fas fa-sign-in-alt sub" style="top: 0"></i>
+                            <span class="sub bold">Painel</span>
+                        </a>
+                        <a class="link_nav" href="<?= base_url('/logged-out'); ?>">
+                            <i class="fas fa-sign-out-alt sub" style="top: 0"></i>
+                            <span class="sub bold">Sair</span>
+                        </a>
+                    </div>
+                <?php else : ?>
+                    <div class="module right">
+                        <a class="link_nav" href="<?= base_url('/login'); ?>">
+                            <i class="fas fa-user sub" style="top: 0"></i>
+                            <span class="sub bold">Entrar</span>
+                        </a>
+                    </div>
+                <?php endif; ?>
 
                 <div class="d-flex">
                     <i class="ti-email d-flex align-self-center">&nbsp;</i>
@@ -67,8 +81,8 @@
             </div>
             <div class="nav-bar mb-4">
                 <div class="module">
-                    <a href="<?php echo base_url('/site/home'); ?>">
-                        <img class="logo logo-dark p-1" alt="Easymeter" src="<?php echo base_url('assets/img/logo.png'); ?>">
+                    <a href="<?= base_url('/'); ?>">
+                        <img class="logo logo-dark p-1" alt="Easymeter" src="<?= base_url('assets/img/logo.png'); ?>">
                     </a>
                 </div>
                 <div class="module mobile-toggle right d-block d-lg-none">
@@ -102,12 +116,12 @@
                     <div class="module language left">
                         <ul class="menu bold square">
                             <li class="">
-                                <a href="<?php echo base_url('/'); ?>">Por que individualizar</a>
+                                <a href="<?= base_url('/'); ?>">Por que individualizar</a>
                                 <ul>
-                                    <li><a href="<?php echo base_url('/'); ?>#mitos" class="inner-link" target="_self">3 Mitos</a></li>
-                                    <li><a href="<?php echo base_url('/'); ?>#porque_medir" class="inner-link" target="_self">Porque Easymeter</a></li>
-                                    <li><a href="<?php echo base_url('/'); ?>#destaques" class="inner-link" target="_self">Fatos Importantes</a></li>
-                                    <li><a href="<?php echo base_url('/'); ?>#porque_easymeter" class="inner-link" target="_self">Porque nós</a></li>
+                                    <li><a href="<?= base_url('/'); ?>#mitos" class="inner-link" target="_self">3 Mitos</a></li>
+                                    <li><a href="<?= base_url('/'); ?>#porque_medir" class="inner-link" target="_self">Porque Easymeter</a></li>
+                                    <li><a href="<?= base_url('/'); ?>#destaques" class="inner-link" target="_self">Fatos Importantes</a></li>
+                                    <li><a href="<?= base_url('/'); ?>#porque_easymeter" class="inner-link" target="_self">Porque nós</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -115,12 +129,12 @@
                     <div class="module language left">
                         <ul class="menu">
                             <li class="">
-                                <a href="<?php echo base_url('site/solucoes'); ?>">Nossa Solução</a>
+                                <a href="<?= base_url('site/solucoes'); ?>">Nossa Solução</a>
                                 <ul>
-                                    <li><a href="<?php echo base_url('site/solucoes'); ?>#tecnologia">Tecnologia</a></li>
-                                    <li><a href="<?php echo base_url('site/solucoes'); ?>#caracteristicas">Características</a></li>
-                                    <li><a href="<?php echo base_url('site/solucoes'); ?>#modelos">Modelos</a></li>
-                                    <li><a href="<?php echo base_url('site/solucoes'); ?>#orcamento">Orçamento</a></li>
+                                    <li><a href="<?= base_url('site/solucoes'); ?>#tecnologia">Tecnologia</a></li>
+                                    <li><a href="<?= base_url('site/solucoes'); ?>#caracteristicas">Características</a></li>
+                                    <li><a href="<?= base_url('site/solucoes'); ?>#modelos">Modelos</a></li>
+                                    <li><a href="<?= base_url('site/solucoes'); ?>#orcamento">Orçamento</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -128,13 +142,13 @@
                     <div class="module language left">
                         <ul class="menu">
                             <li class="">
-                                <a href="<?php echo base_url('site/tecnologia'); ?>">Tecnologia</a>
+                                <a href="<?= base_url('site/tecnologia'); ?>">Tecnologia</a>
                                 <ul>
-                                    <li><a href="<?php echo base_url('site/tecnologia'); ?>#remoto">Sem Leitura</a></li>
-                                    <li><a href="<?php echo base_url('site/tecnologia'); ?>#cortar_colar">Instalação</a></li>
-                                    <li><a href="<?php echo base_url('site/tecnologia'); ?>#plataforma">Plataforma</a></li>
-                                    <li><a href="<?php echo base_url('site/tecnologia'); ?>#envolva">Envolvimento</a></li>
-                                    <li><a href="<?php echo base_url('site/tecnologia'); ?>#gamificacao">Futuro</a></li>
+                                    <li><a href="<?= base_url('site/tecnologia'); ?>#remoto">Sem Leitura</a></li>
+                                    <li><a href="<?= base_url('site/tecnologia'); ?>#cortar_colar">Instalação</a></li>
+                                    <li><a href="<?= base_url('site/tecnologia'); ?>#plataforma">Plataforma</a></li>
+                                    <li><a href="<?= base_url('site/tecnologia'); ?>#envolva">Envolvimento</a></li>
+                                    <li><a href="<?= base_url('site/tecnologia'); ?>#gamificacao">Futuro</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -142,13 +156,13 @@
                     <div class="module language left">
                         <ul class="menu">
                             <li class="">
-                                <a href="<?php echo base_url('site/sobre'); ?>">Sobre Nós</a>
+                                <a href="<?= base_url('site/sobre'); ?>">Sobre Nós</a>
                                 <ul>
-                                    <li><a href="<?php echo base_url('site/equipe'); ?>">Equipe</a></li>
-                                    <li><a href="<?php echo base_url('site/trabalhe'); ?>">Oportunidades</a></li>
-                                    <li><a href="<?php echo base_url('site/sobre'); ?>#parceiros">Parceiros</a></li>
-                                    <?php /*                                        <li><a href="<?php echo base_url('site/imprensa'); ?>">Na Imprensa</a></li> */ ?>
-                                    <li><a href="<?php echo base_url('site/sobre'); ?>#contato_header">Contato</a></li>
+                                    <li><a href="<?= base_url('site/equipe'); ?>">Equipe</a></li>
+                                    <li><a href="<?= base_url('site/trabalhe'); ?>">Oportunidades</a></li>
+                                    <li><a href="<?= base_url('site/sobre'); ?>#parceiros">Parceiros</a></li>
+                                    <?php /*                                        <li><a href="<?= base_url('site/imprensa'); ?>">Na Imprensa</a></li> */ ?>
+                                    <li><a href="<?= base_url('site/sobre'); ?>#contato_header">Contato</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -156,11 +170,11 @@
                     <div class="module language left">
                         <ul class="menu">
                             <li class="">
-                                <a href="<?php echo base_url('site/suporte'); ?>">Suporte</a>
+                                <a href="<?= base_url('site/suporte'); ?>">Suporte</a>
                                 <ul>
-                                    <li><a href="<?php echo base_url('site/faq'); ?>#perguntas">FAQs </a></li>
-                                    <li><a href="<?php echo base_url('site/downloads'); ?>#downloads">Downloads</a></li>
-                                    <li><a href="<?php echo base_url('site/chamados'); ?>#chamados">Chamados </a></li>
+                                    <li><a href="<?= base_url('site/faq'); ?>#perguntas">FAQs </a></li>
+                                    <li><a href="<?= base_url('site/downloads'); ?>#downloads">Downloads</a></li>
+                                    <li><a href="<?= base_url('site/chamados'); ?>#chamados">Chamados </a></li>
                                 </ul>
                             </li>
                         </ul>

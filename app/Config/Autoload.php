@@ -61,7 +61,10 @@ class Autoload extends AutoloadConfig
      *
      * @var array<string, string>
      */
-    public $classmap = [];
+    public $classmap = [
+        'Datatables' => APPPATH . '/Libraries/Datatables.php',
+        'Viacep' => APPPATH . '/Libraries/Viacep.php'
+    ];
 
     /**
      * -------------------------------------------------------------------
@@ -93,5 +96,5 @@ class Autoload extends AutoloadConfig
      * @var string[]
      * @phpstan-var list<string>
      */
-    public $helpers = [];
+    public $helpers = ['easymeter_helper'];
 }

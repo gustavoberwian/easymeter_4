@@ -1,7 +1,7 @@
 <footer id="footer">
     <div class="row footer-widgets d-flex justify-content-center ">
         <div class="col-md-4 d-flex col-sm-6 footer-card ">
-            <img src="/assets/img/site/easymeter_rodape_logo.svg" alt="logo" width="110px">
+            <img src="<?= base_url('/assets/img/site/easymeter_rodape_logo.svg') ?>" alt="logo" width="110px">
         </div>
         <div class="col-md-2 col-sm-6 footer-card ">
             <div class="widget">
@@ -26,16 +26,16 @@
             <div class="widget">
                 <ul>
                     <li class="footer-list ">
-                        <img src="/assets/img/site/easymeter_rodape_icone_fone.svg" alt="fone" width="30px">
+                        <img src="<?= base_url('/assets/img/site/easymeter_rodape_icone_fone.svg') ?>" alt="fone" width="30px">
                         <a href="tel:+5508005916181" class="number_footer">0800 591 6181</a>
                     </li>
                     <li class="footer-list ">
-                        <img src="/assets/img/site/easymeter_rodape_icone_email.svg" alt="hello" width="30px">
+                        <img src="<?= base_url('/assets/img/site/easymeter_rodape_icone_email.svg') ?>" alt="hello" width="30px">
                         <a href="mailto:contato@easymeter.com.br">contato@easymeter.com.br</a>
                     </li>
 
                     <li class="footer-list ">
-                        <img src="/assets/img/site/easymeter_rodape_icone_endereco.svg" class="point_icon" alt="hello" width="30px">
+                        <img src="<?= base_url('/assets/img/site/easymeter_rodape_icone_endereco.svg') ?>" class="point_icon" alt="hello" width="30px">
                         <address class="footer-address">
                             Rua Rumania, 172.<br>
                             Bairro Rincão.<br>
@@ -44,7 +44,7 @@
                             <hr>
                             <div class="footer-uno">
                                 <small>Uma solução</small>
-                                <img src="/assets/img/site/easymeter_rodape_logo_unorobotica.svg" alt="UNO_Robótica" width="70px">
+                                <img src="<?= base_url('/assets/img/site/easymeter_rodape_logo_unorobotica.svg') ?>" alt="UNO_Robótica" width="70px">
                             </div>
                         </address>
                     </li>

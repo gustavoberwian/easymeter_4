@@ -2831,6 +2831,9 @@ class Energia extends UNO_Controller
     {
         $fechamento_id = $this->input->getPost('id');
 
+        $group = $this->shopping_model->get_group_by_fechamento($fechamento_id);
+        $this->user->config = $this->shopping_model->get_client_config($group->group_id);
+
         // busca fechamento
         $fechamento = $this->energy_model->GetLancamento($fechamento_id);
 
@@ -2942,10 +2945,11 @@ class Energia extends UNO_Controller
     public function DownloadLancamentos()
     {
         $group_id = $this->input->getPost('id');
-
+        
         // busca fechamento
         $fechamentos = $this->energy_model->GetLancamentos($group_id);
         $group       = $this->shopping_model->get_group_info($group_id);
+        $this->user->config = $this->shopping_model->get_client_config($group_id);
 
         //TODO verificar se usuário tem acesso a esse fechamento
 

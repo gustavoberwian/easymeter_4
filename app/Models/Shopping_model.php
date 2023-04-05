@@ -804,4 +804,19 @@ class Shopping_model extends Base_model
 
         return $result->getRow();
     }
+
+    public function get_group_by_fechamento($id) 
+    {
+        $query = "
+        SELECT * 
+        FROM `esm_fechamentos_energia` 
+        WHERE id = $id";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getRow();
+    }
 }

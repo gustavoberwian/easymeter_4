@@ -79,14 +79,21 @@
         <?php endif; ?>
 
         <!-- Page Specific -->
-        <?php //if (file_exists('assets/js/pages/' . $class . '/' . $method . '.js')) echo '<script src="' . base_url('assets/js/pages/' . $class . '/' . $method . '.js?r=' . time()) . '"></script>'; ?>
-        <?php if (file_exists('assets/js/pages/' . $class . '/' . $method . '.js')) echo '<script src="' . base_url('assets/js/pages/' . $class . '/' . $method . '.js') . '"></script>'; ?>
+        <?php if (file_exists('assets/js/pages/' . strtolower($class) . '/' . strtolower($method) . '.js') || file_exists('public/assets/js/pages/' . strtolower($class) . '/' . strtolower($method) . '.js')) : ?>
+            <script src="<?= base_url('assets/js/pages/' . strtolower($class) . '/' . strtolower($method) . '.js'); ?>"></script>
+        <?php endif; ?>
 
         <script>
             $(document).ready(function() {
                 $(".preloader").fadeOut();
             });
         </script>
+
+        <?php if ($user->demo) : ?>
+            <script>
+                notifyAlert('Esta é uma versão de demonstração. Todos os dados contidos aqui são fictícios.');
+            </script>
+        <?php endif; ?>
 
         <script>
             var unsaved = false;

@@ -10,7 +10,7 @@
 
     <?php if (empty($user->config)) : ?>
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Atenção!</strong> Configurações gerais do shopping não fornecidas. <a href="/shopping/configuracoes/<?=$group_id ?>" class="alert-link">Clique aqui</a> e configure-os para visualizar os dados corretamente.
+            <strong>Atenção!</strong> Configurações gerais do shopping não fornecidas. <a href="/shopping/<?=$url ?>/<?=$group_id ?>" class="alert-link">Clique aqui</a> e configure-os para visualizar os dados corretamente.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true" aria-label="Close"></button>
         </div>
     <?php endif; ?>
@@ -54,7 +54,7 @@
                     <div class="card-body">
                         <h6 class="card-body-title mb-3 mt-0 text-primary">Leitura Atual</h6>
                         <div class="row">
-                            <div class="h5 mb-0 mt-1"><span class="main">-</span></div>
+                            <div class="h5 mb-0 mt-1"><?= ($user->demo) ? "<span>" . number_format(mt_rand(10000, 100000), 0, ',', '.') . "</span> <span style='font-size:12px;'>kWh</span>" : "<span class='main'>-</span>" ?></div>
                         </div>
                     </div>
                 </section>
@@ -101,15 +101,15 @@
                         <h6 class="card-body-title mb-3 mt-0 text-primary">Média Diária Nos últimos 30 dias</h6>
                         <div class="row">
                             <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><span class="day">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? '<span>' . number_format(mt_rand(1000, 10000), 0, ',', '.') . "</span> <span style='font-size:12px;'>kWh</span>" : "<span class='day'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Consumo</p>
                             </div>
                             <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><span class="day-f" style="color: #268ec3;">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? '<span style="color: #268ec3;">' . number_format(mt_rand(1000, 10000), 0, ',', '.') . "</span> <span style='font-size:12px;'>kWh</span>" : "<span class='day-f'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Fora Ponta</p>
                             </div>
                             <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><span class="day-p" style="color: #ff6178;">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? '<span style="color: #ff6178;">' . number_format(mt_rand(1000, 10000), 0, ',', '.') . "</span> <span style='font-size:12px;'>kWh</span>" : "<span class='day-p'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Ponta</p>
                             </div>
                         </div>
@@ -127,15 +127,15 @@
                         <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo Total</h6>
                         <div class="row">
                             <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><span class="period">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "<span class='period'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Período selecionado</p>
                             </div>
                             <div class="col-lg-4 pl-1">
-                                <div class="h5 mb-0 mt-1"><span class="month">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "<span class='month'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">No mês atual</p>
                             </div>
                             <div class="col-lg-4 pl-1">
-                                <div class="h5 mb-0 mt-1"><span class="prevision">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "<span class='prevision'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Previsão no mês</p>
                             </div>
                         </div>
@@ -149,15 +149,15 @@
                         <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo Fora da Ponta</h6>
                         <div class="row">
                             <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><span class="period-f">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "<span class='period-f'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Período selecionado</p>
                             </div>
                             <div class="col-lg-4 pl-1">
-                                <div class="h5 mb-0 mt-1"><span class="month-f">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "<span class='month-f'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">No mês atual</p>
                             </div>
                             <div class="col-lg-4 pl-1">
-                                <div class="h5 mb-0 mt-1"><span class="prevision-f">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "<span class='prevision-f'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Previsão no mês</p>
                             </div>
                         </div>
@@ -171,15 +171,15 @@
                         <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo Ponta</h6>
                         <div class="row">
                             <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><span class="period-p">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "-<span class='period-p'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Período selecionado</p>
                             </div>
                             <div class="col-lg-4 pl-1">
-                                <div class="h5 mb-0 mt-1"><span class="month-p">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "<span class='month-p'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">No mês atual</p>
                             </div>
                             <div class="col-lg-4 pl-1">
-                                <div class="h5 mb-0 mt-1"><span class="prevision-p">-</span></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "<span class='prevision-p'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Previsão no mês</p>
                             </div>
                         </div>
@@ -202,7 +202,7 @@
                         <h2 class="card-title">Resumo do Mês</h2>
                     </header>
                     <div class="card-body">
-                        <table class="table table-bordered table-striped table-hover table-click" id="dt-resume" style="min-height: 300px;">
+                        <table class="table table-bordered table-striped table-hover table-click" id="dt-resume" data-url="<?= ($user->demo) ? "/energia/resume_demo" : "/energia/resume" ?>" style="min-height: 300px;">
                             <thead>
                             <tr role="row">
                                 <th rowspan="2">Medidor</th>

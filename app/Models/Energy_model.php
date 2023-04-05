@@ -4,16 +4,24 @@ namespace App\Models;
 
 class Energy_model extends Base_model
 {
-    public function GetOverallConsumption($type, $grp)
+    public function GetOverallConsumption($type, $grp, $demo = false)
     {
         $entity = $this->get_entity_by_group($grp);
+
+        $value = "SUM( activePositiveConsumption ) AS value,
+                SUM( activePositiveConsumption ) / ( DATEDIFF( CURDATE(), DATE_FORMAT( CURDATE(), '%Y-%m-01' )) + 1 ) * DAY (LAST_DAY(CURDATE())) AS prevision,
+                SUM( activePositiveConsumption ) / ( DATEDIFF( CURDATE(), DATE_FORMAT( CURDATE(), '%Y-%m-01' )) + 1 ) AS average";
+
+        if ($demo) {
+            $value = "RAND() * 10000 AS value
+                    RAND() * 10000 AS prevision
+                    RAND() * 10000 AS average";
+        }
 
         $result = $this->db->query("
             SELECT
                 esm_unidades.bloco_id,
-                SUM( activePositiveConsumption ) AS value,
-                SUM( activePositiveConsumption ) / ( DATEDIFF( CURDATE(), DATE_FORMAT( CURDATE(), '%Y-%m-01' )) + 1 ) * DAY (LAST_DAY(CURDATE())) AS prevision,
-                SUM( activePositiveConsumption ) / ( DATEDIFF( CURDATE(), DATE_FORMAT( CURDATE(), '%Y-%m-01' )) + 1 ) AS average 
+                $value 
             FROM
                 esm_leituras_".$entity->tabela."_energia 
             JOIN 
@@ -45,7 +53,7 @@ class Energy_model extends Base_model
         return array ("consum"    => "-","prevision" => "-","average"   => "-");
     }
 
-    public function GetActivePositive($device, $group, $start, $end, $st = array(), $gp = false)
+    public function GetActivePositive($device, $group, $start, $end, $st = array(), $gp = false, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -70,6 +78,7 @@ class Energy_model extends Base_model
             $dvc = " AND d.device = '$device'";
         }
 
+        $value = "SUM(activePositiveConsumption) AS value";
 
         if ($start == $end) {
 
@@ -84,6 +93,9 @@ class Energy_model extends Base_model
                 }
             }
 
+            if ($demo)
+                $value = "RAND() * 10 as value";
+
             $group = "";
             if (!$gp)
                 $group = "GROUP BY esm_hours.num";
@@ -92,7 +104,7 @@ class Energy_model extends Base_model
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    SUM(activePositiveConsumption) AS value
+                    " . $value . "
                 FROM esm_hours
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
@@ -117,6 +129,9 @@ class Energy_model extends Base_model
                 }
             }
 
+            if ($demo)
+                $value = "RAND() * 100 as value";
+
             $group = "";
             if (!$gp)
                 $group = "GROUP BY esm_calendar.dt";
@@ -126,7 +141,7 @@ class Energy_model extends Base_model
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
                     esm_calendar.dw AS dw,
-                    SUM(activePositiveConsumption) AS value
+                    " . $value . "
                 FROM esm_calendar
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
@@ -153,7 +168,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetActivePositiveAverage($device, $group, $st = array(), $period = true)
+    public function GetActivePositiveAverage($device, $group, $st = array(), $period = true, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -192,11 +207,16 @@ class Energy_model extends Base_model
         else
             $where = "esm_calendar.dt = CURDATE() - INTERVAL 30 DAY";
 
+        $value = "IFNULL(SUM(activePositiveConsumption), 0) AS value";
+
+        if ($demo)
+            $value = "RAND() * 100";
+
         $result = $this->db->query("
             SELECT AVG(d.value) AS value
             FROM (
                 SELECT 
-                    IFNULL(SUM(activePositiveConsumption), 0) AS value
+                    $value
                 FROM esm_calendar
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
@@ -219,7 +239,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetConsumptionDay($device, $group)
+    public function GetConsumptionDay($device, $group, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -237,11 +257,16 @@ class Energy_model extends Base_model
             $dvc = " AND esm_leituras_".$entity->tabela."_energia.device = '$device'";
         }
 
+        $value = "SUM(activePositiveConsumption) AS value";
+
+        if ($demo)
+            $value = "RAND() * 10 AS value";
+
         $result = $this->db->query("
             SELECT 
-                SUM(activePositiveConsumption) AS value,
                 IF(MINUTE(FROM_UNIXTIME(timestamp)) = 0, DATE_FORMAT(FROM_UNIXTIME(timestamp), \"%H:%i\"), \"\") AS label,
-                DATE_FORMAT(FROM_UNIXTIME(timestamp), \"%H:%i\") AS title
+                DATE_FORMAT(FROM_UNIXTIME(timestamp), \"%H:%i\") AS title,
+                $value
             FROM 
                 esm_leituras_".$entity->tabela."_energia
             $join
@@ -262,7 +287,7 @@ class Energy_model extends Base_model
 
     }
 
-    public function GetActiveDemand($device, $group, $start, $end)
+    public function GetActiveDemand($device, $group, $start, $end, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -286,14 +311,19 @@ class Energy_model extends Base_model
             $dvc = " AND d.device = '$device'";
         }
 
+        $value = "MAX(activeDemand) AS valueMax,
+                    SUM(activePositiveConsumption) AS valueSum";
+
         if ($start == $end) {
+
+            if ($demo)
+                $value = "RAND() * 10 AS valueMax, RAND() * 100 AS valueSum";
 
             $result = $this->db->query("
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    MAX(activeDemand) AS valueMax,
-                    SUM(activePositiveConsumption) AS valueSum
+                    $value
                 FROM esm_hours
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
@@ -306,13 +336,15 @@ class Energy_model extends Base_model
 
         } else {
 
+            if ($demo)
+                $value = "RAND() * 100 AS valueMax, RAND() * 1000 AS valueSum";
+
             $result = $this->db->query("
                 SELECT 
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
                     esm_calendar.dw AS dw,
-                    MAX(activeDemand) AS valueMax,
-                    SUM(activePositiveConsumption) AS valueSum
+                    $value
                 FROM esm_calendar
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
@@ -333,7 +365,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetMainReactive($device, $group, $start, $end)
+    public function GetMainReactive($device, $group, $start, $end, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -357,14 +389,19 @@ class Energy_model extends Base_model
             $dvc = " AND d.device = '$device'";
         }
 
+        $value = "SUM(reactivePositiveConsumption) AS valueInd,
+                    SUM(ABS(reactiveNegativeConsumption)) AS valueCap";
+
         if ($start == $end) {
+
+            if ($demo)
+                $value = "RAND() * 10 AS valueInd, RAND() * 10 AS valueCap";
 
             $result = $this->db->query("
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    SUM(reactivePositiveConsumption) AS valueInd,
-                    SUM(ABS(reactiveNegativeConsumption)) AS valueCap
+                    $value
                 FROM esm_hours
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
@@ -377,13 +414,15 @@ class Energy_model extends Base_model
 
         } else {
 
+            if ($demo)
+                $value = "RAND() * 100 AS valueInd, RAND() * 100 AS valueCap";
+
             $result = $this->db->query("
                 SELECT 
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
                     esm_calendar.dw AS dw,
-                    SUM(reactivePositiveConsumption) AS valueInd,
-                    SUM(ABS(reactiveNegativeConsumption)) AS valueCap
+                    $value
                 FROM esm_calendar
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
@@ -404,7 +443,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetMainFactor($device, $group, $start, $end)
+    public function GetMainFactor($device, $group, $start, $end, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -428,14 +467,19 @@ class Energy_model extends Base_model
             $dvc = " AND d.device = '$device'";
         }
 
+        $value = "IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activePositiveConsumption) / SQRT(POW(SUM(activePositiveConsumption), 2) + POW(SUM(reactivePositiveConsumption) + SUM(ABS(reactiveNegativeConsumption)), 2)), 1)) AS value";
+
         if ($start == $end) {
+
+            if ($demo)
+                $value = "1 AS value";
 
             $result = $this->db->query("
                 SELECT 
                     CONCAT(esm_hours.num, ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
                     IF(SUM(reactivePositiveConsumption) > SUM(ABS(reactiveNegativeConsumption)), 'I', 'C') AS type,
-                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activePositiveConsumption) / SQRT(POW(SUM(activePositiveConsumption), 2) + POW(SUM(reactivePositiveConsumption) + SUM(ABS(reactiveNegativeConsumption)), 2)), 1)) AS value
+                    $value
                 FROM esm_hours
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
@@ -448,13 +492,16 @@ class Energy_model extends Base_model
 
         } else {
 
+            if ($demo)
+                $value = "1 AS value";
+
             $result = $this->db->query("
                 SELECT 
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
                     esm_calendar.dw AS dw,
                     IF(SUM(reactivePositiveConsumption) > SUM(ABS(reactiveNegativeConsumption)), 'I', 'C') AS type,
-                    IF(esm_calendar.dt > DATE_FORMAT(CURDATE() ,'%Y-%m-%d'), NULL, IFNULL(SUM(activePositiveConsumption) / SQRT(POW(SUM(activePositiveConsumption), 2) + POW(SUM(reactivePositiveConsumption) + SUM(ABS(reactiveNegativeConsumption)), 2)), 1)) AS value
+                    $value
                 FROM esm_calendar
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
@@ -475,7 +522,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetFactorPhases($device, $group, $start, $end)
+    public function GetFactorPhases($device, $group, $start, $end, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -499,7 +546,14 @@ class Energy_model extends Base_model
             $dvc = " AND d.device = '$device'";
         }
 
+        $value = "IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeA) / SQRT(POW(SUM(activeA), 2) + POW(SUM(ABS(reactiveA)), 2)), 1)) AS value_a,
+                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeB) / SQRT(POW(SUM(activeB), 2) + POW(SUM(ABS(reactiveB)), 2)), 1)) AS value_b,
+                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeC) / SQRT(POW(SUM(activeC), 2) + POW(SUM(ABS(reactiveC)), 2)), 1)) AS value_c";
+
         if ($start == $end) {
+
+            if ($demo)
+                $value = "1 AS value_a, 1 AS value_b, 1 AS value_c";
 
             $result = $this->db->query("
                 SELECT 
@@ -508,9 +562,7 @@ class Energy_model extends Base_model
                     IF(SUM(reactiveA) > 0, 'I', 'C') AS type_a,
                     IF(SUM(reactiveB) > 0, 'I', 'C') AS type_b,
                     IF(SUM(reactiveC) > 0, 'I', 'C') AS type_c,
-                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeA) / SQRT(POW(SUM(activeA), 2) + POW(SUM(ABS(reactiveA)), 2)), 1)) AS value_a,
-                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeB) / SQRT(POW(SUM(activeB), 2) + POW(SUM(ABS(reactiveB)), 2)), 1)) AS value_b,
-                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeC) / SQRT(POW(SUM(activeC), 2) + POW(SUM(ABS(reactiveC)), 2)), 1)) AS value_c
+                    $value
                 FROM esm_hours
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
@@ -522,6 +574,9 @@ class Energy_model extends Base_model
             ");
 
         } else {
+
+            if ($demo)
+                $value = "1 AS value_a, 1 AS value_b, 1 AS value_c";
 
             $result = $this->db->query("
                 SELECT 
@@ -531,9 +586,7 @@ class Energy_model extends Base_model
                     IF(SUM(reactiveA) > 0, 'I', 'C') AS type_a,
                     IF(SUM(reactiveB) > 0, 'I', 'C') AS type_b,
                     IF(SUM(reactiveC) > 0, 'I', 'C') AS type_c,
-                    IFNULL(SUM(activeA) / SQRT(POW(SUM(activeA), 2) + POW(SUM(ABS(reactiveA)), 2)), 1) AS value_a,
-                    IFNULL(SUM(activeB) / SQRT(POW(SUM(activeB), 2) + POW(SUM(ABS(reactiveB)), 2)), 1) AS value_b,
-                    IFNULL(SUM(activeC) / SQRT(POW(SUM(activeC), 2) + POW(SUM(ABS(reactiveC)), 2)), 1) AS value_c
+                    $value
                 FROM esm_calendar
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
@@ -554,7 +607,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetMainLoad($device, $group, $start, $end)
+    public function GetMainLoad($device, $group, $start, $end, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -578,13 +631,18 @@ class Energy_model extends Base_model
             $dvc = " AND d.device = '$device'";
         }
 
+        $value = "IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activePositiveConsumption + ABS(activePositiveConsumption)) / MAX(activePositiveConsumption + ABS(activePositiveConsumption)), 1)) AS value";
+
         if ($start == $end) {
+
+            if ($demo)
+                $value = "1 AS value";
 
             $result = $this->db->query("
                 SELECT 
                     CONCAT(esm_hours.num, ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activePositiveConsumption + ABS(activePositiveConsumption)) / MAX(activePositiveConsumption + ABS(activePositiveConsumption)), 1)) AS value
+                    $value
                 FROM esm_hours
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
@@ -596,6 +654,9 @@ class Energy_model extends Base_model
             ");
 
         } else {
+
+            if ($demo)
+                $value = "1 AS value";
 
             $result = $this->db->query("
                 SELECT 
@@ -623,7 +684,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetValuesPhases($device, $group, $start, $end, $field)
+    public function GetValuesPhases($device, $group, $start, $end, $field, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -653,15 +714,20 @@ class Energy_model extends Base_model
             $dvc = " AND d.device = '$device'";
         }
 
+        $value = "{$operation[$field][1]}({$operation[$field][0]}A)) AS value_a,
+                    {$operation[$field][1]}({$operation[$field][0]}B)) AS value_b,
+                    {$operation[$field][1]}({$operation[$field][0]}C)) AS value_c";
+
         if ($start == $end) {
+
+            if ($demo)
+                $value = "RAND() * 10 AS value_a, RAND() * 10 AS value_b, RAND() * 10 AS value_c";
 
             $result = $this->db->query("
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    {$operation[$field][1]}({$operation[$field][0]}A)) AS value_a,
-                    {$operation[$field][1]}({$operation[$field][0]}B)) AS value_b,
-                    {$operation[$field][1]}({$operation[$field][0]}C)) AS value_c
+                    $value
                 FROM esm_hours
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
@@ -674,14 +740,14 @@ class Energy_model extends Base_model
 
         } else {
 
+            $value = "RAND() * 100 AS value_a, RAND() * 100 AS value_b, RAND() * 100 AS value_c";
+
             $result = $this->db->query("
                 SELECT 
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
                     esm_calendar.dw AS dw,
-                    {$operation[$field][1]}({$operation[$field][0]}A)) AS value_a,
-                    {$operation[$field][1]}({$operation[$field][0]}B)) AS value_b,
-                    {$operation[$field][1]}({$operation[$field][0]}C)) AS value_c
+                    $value
                 FROM esm_calendar
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                         d.timestamp >= esm_calendar.ts_start AND 
@@ -702,7 +768,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetLoadPhases($device, $group, $start, $end, $field)
+    public function GetLoadPhases($device, $group, $start, $end, $field, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -728,13 +794,18 @@ class Energy_model extends Base_model
 
         if ($start == $end) {
 
+            $value = "IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activeA) / MAX(activeA), 1)) AS value_a,
+                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activeB) / MAX(activeB), 1)) AS value_b,
+                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activeC) / MAX(activeC), 1)) AS value_c";
+
+            if ($demo)
+                $value = "RAND() * 10 AS value_a, RAND() * 10 AS value_b, RAND() * 10 AS value_c";
+
             $result = $this->db->query("
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activeA) / MAX(activeA), 1)) AS value_a,
-                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activeB) / MAX(activeB), 1)) AS value_b,
-                    IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activeC) / MAX(activeC), 1)) AS value_c
+                    $value
                 FROM esm_hours
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
@@ -747,14 +818,19 @@ class Energy_model extends Base_model
 
         } else {
 
+            $value = "IFNULL(AVG(activeA) / MAX(activeA), 1) AS value_a,
+                    IFNULL(AVG(activeB) / MAX(activeB), 1) AS value_b,
+                    IFNULL(AVG(activeC) / MAX(activeC), 1) AS value_c";
+
+            if ($demo)
+                $value = "RAND() * 100 AS value_a, RAND() * 100 AS value_b, RAND() * 100 AS value_c";
+
             $result = $this->db->query("
                 SELECT 
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
                     esm_calendar.dw AS dw,
-                    IFNULL(AVG(activeA) / MAX(activeA), 1) AS value_a,
-                    IFNULL(AVG(activeB) / MAX(activeB), 1) AS value_b,
-                    IFNULL(AVG(activeC) / MAX(activeC), 1) AS value_c
+                    $value
                 FROM esm_calendar
                 LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
                         d.timestamp >= esm_calendar.ts_start AND 
@@ -1416,7 +1492,7 @@ class Energy_model extends Base_model
         }
     }
 
-    public function GetResume($group, $config, $split)
+    public function GetResume($group, $config, $split, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -1425,19 +1501,32 @@ class Energy_model extends Base_model
             $type = "AND esm_unidades_config.type = $split";
         }
 
-        $result = $this->db->query("
-            SELECT 
-                esm_medidores.nome AS device, 
-                esm_unidades_config.luc AS luc, 
-                esm_unidades.nome AS name, 
-                LPAD(ROUND(esm_medidores.ultima_leitura, 0), 6, '0') AS value_read,
+        $values = "LPAD(ROUND(esm_medidores.ultima_leitura, 0), 6, '0') AS value_read,
                 FORMAT(m.value, 3, 'de_DE') AS value_month,
                 FORMAT(h.value, 3, 'de_DE') AS value_month_open,
                 FORMAT(m.value - h.value, 3, 'de_DE') AS value_month_closed,
                 FORMAT(p.value, 3, 'de_DE') AS value_ponta,
                 FORMAT(m.value - p.value, 3, 'de_DE') AS value_fora,
                 FORMAT(l.value, 3, 'de_DE') AS value_last,
-                FORMAT(m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())), 3, 'de_DE') AS value_future
+                FORMAT(m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())), 3, 'de_DE') AS value_future";
+
+        if ($demo) {
+            $values = "RAND() * 10000 AS value_read,
+                RAND() * 10000 AS value_month,
+                RAND() * 10000 AS value_month_open,
+                RAND() * 10000 AS value_month_closed,
+                RAND() * 10000 AS value_ponta,
+                RAND() * 10000 AS value_fora,
+                RAND() * 10000 AS value_last,
+                RAND() * 10000 AS value_future";
+        }
+
+        $result = $this->db->query("
+            SELECT 
+                esm_medidores.nome AS device, 
+                esm_unidades_config.luc AS luc, 
+                esm_unidades.nome AS name, 
+                $values
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id $type
@@ -1662,5 +1751,21 @@ class Energy_model extends Base_model
 
             $this->db->transComplete();
         }
+    }
+
+    public function get_devices_by_group($group)
+    {
+        $result = $this->db->query("
+            SELECT esm_medidores.*
+            FROM esm_medidores
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            WHERE esm_unidades.bloco_id = $group AND esm_medidores.tipo = 'energia'
+        ");
+
+        if ($result->getNumRows()) {
+            return $result->getResult();
+        }
+
+        return false;
     }
 }

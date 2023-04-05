@@ -48,9 +48,11 @@
                     </header>
 
                     <div class="card-body">
-                        <div class="d-flex justify-content-end">
-                            <button class="ml-3 btn btn-success btn-incluir mb-3">Incluir</button>
-                        </div>
+                        <?php if (!$user->demo) : ?>
+                            <div class="d-flex justify-content-end">
+                                <button class="ml-3 btn btn-success btn-incluir mb-3">Incluir</button>
+                            </div>
+                        <?php endif; ?>
                         <div class="tab-form faturamento">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-faturamentos" data-url="/energia/GetFaturamentos" data-group="<?=$group_id ?>">
@@ -101,9 +103,11 @@
                     </header>
 
                     <div class="card-body">
-                        <div class="d-flex justify-content-end">
-                            <button class="ml-3 btn btn-success btn-water-incluir mb-3">Incluir</button>
-                        </div>
+                        <?php if (!$user->demo) : ?>
+                            <div class="d-flex justify-content-end">
+                                <button class="ml-3 btn btn-success btn-water-incluir mb-3">Incluir</button>
+                            </div>
+                        <?php endif; ?>
                         <div class="tab-form faturamento">
                             <div class="table-responsive">
                                 <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-water" data-url="/water/GetLancamentosAgua" data-group="<?=$group_id ?>">

@@ -21,6 +21,11 @@ class UNO_Controller extends BaseController {
 
             $this->user             = auth()->user();
 
+            $this->user->demo = false;
+            if ($this->user->inGroup('demo')) {
+                $this->user->demo = true;
+            }
+
             if  (auth()->user()->getGroups()) {
                 $this->user->group  = auth()->user()->getGroups()[0];
             }

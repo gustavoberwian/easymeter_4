@@ -201,16 +201,16 @@ class Water extends UNO_Controller
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
 
-        $period   = $this->water_model->GetConsumption($device, $shopping_id, $start, $end);
+        $period   = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
 
-        $period_o = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array("opened", $this->user->config->open, $this->user->config->close), false)[0]->value;
-        $period_c = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array("closed", $this->user->config->open, $this->user->config->close), false)[0]->value;
+        $period_o = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
+        $period_c = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
         $main     = $this->water_model->GetDeviceLastRead($device, $shopping_id);
-        $month_o  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false)[0]->value;
-        $month_c  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false)[0]->value;
+        $month_o  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
+        $month_c  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
 
-        $day_o  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false)[0]->value;
-        $day_c  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false)[0]->value;
+        $day_o  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
+        $day_c  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
 
         $values  = array();
         $labels  = array();
@@ -246,14 +246,14 @@ class Water extends UNO_Controller
 
         if ($compare != "") {
             $values_c  = array();
-            $comp = $this->water_model->GetConsumption($compare, $start, $end);
+            $comp = $this->water_model->GetConsumption($compare, $shopping_id, $start, $end, array(), false,null, $this->user->demo);
             if ($comp) {
                 foreach ($comp as $v) {
                     $values_c[] = $v->value;
                 }
      
                 $series[] = array(
-                    "name"  => $this->shopping_model->GetUnidadeByDevice($compare)->nome,
+                    "name"  => "Comparado",//$this->shopping_model->GetUnidadeByDevice($compare)->nome,
                     "data"  => $values_c,
                     "color" => "#87c1de",
                 );
@@ -460,7 +460,7 @@ class Water extends UNO_Controller
 
             $spreadsheet->setActiveSheetIndex($i);
     
-            $resume = $this->water_model->GetResume($group_id, $this->user->config, $i + 1);
+            $resume = $this->water_model->GetResume($group_id, $this->user->config, $i + 1, $this->user->demo);
 
             $spreadsheet->getActiveSheet()->getStyle('A1:H2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
@@ -775,5 +775,137 @@ class Water extends UNO_Controller
         );
 
         echo json_encode($response);
+    }
+
+    public function resume_demo()
+    {
+        $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
+
+        if (!$this->user->config) {
+            return json_encode(array(
+                "status" => "error",
+                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+            ));
+        }
+
+        $entity = $this->shopping_model->get_entity_by_group($this->input->getPost('group'));
+
+        $select = "esm_medidores.nome AS device, 
+                esm_unidades_config.luc AS luc, 
+                esm_unidades.nome AS name, 
+                esm_unidades_config.type AS type,
+                esm_medidores.ultima_leitura AS value_read,
+                m.value AS value_month,
+                h.value AS value_month_open,
+                m.value - h.value AS value_month_closed,
+                l.value AS value_last,
+                m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())) AS value_future,
+                c.value AS value_last_month";
+
+        if ($this->user->demo) {
+            $select = "esm_medidores.nome AS device, 
+                esm_unidades_config.luc AS luc, 
+                esm_unidades.nome AS name, 
+                esm_unidades_config.type AS type,
+                RAND() * 10000 AS value_read,
+                RAND() * 10000 AS value_month,
+                RAND() * 10000 AS value_month_open,
+                RAND() * 10000 AS value_month_closed,
+                RAND() * 10000 AS value_last,
+                RAND() * 10000 AS value_future,
+                RAND() * 10000 AS value_last_month";
+        }
+
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT 
+                $select
+            FROM esm_medidores
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+            LEFT JOIN (  
+                SELECT esm_medidores.nome AS device, SUM(consumo) AS value
+                FROM esm_leituras_".$entity->tabela."_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+                WHERE timestamp > UNIX_TIMESTAMP() - 86400
+                GROUP BY medidor_id
+            ) l ON l.device = esm_medidores.nome
+            LEFT JOIN (
+                SELECT esm_medidores.nome as device, SUM(consumo) AS value
+                FROM esm_calendar
+                LEFT JOIN esm_leituras_".$entity->tabela."_agua d ON 
+                    (d.timestamp) > (esm_calendar.ts_start) AND 
+                    (d.timestamp) <= (esm_calendar.ts_end + 600) 
+                JOIN esm_medidores ON esm_medidores.id = d.medidor_id
+                WHERE 
+                    esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
+                    esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
+                GROUP BY d.medidor_id
+            ) m ON m.device = esm_medidores.nome
+            LEFT JOIN (
+                SELECT esm_medidores.nome AS device, SUM(consumo) AS value
+                FROM esm_leituras_".$entity->tabela."_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+                WHERE MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
+                GROUP BY medidor_id
+            ) c ON c.device = esm_medidores.nome
+            LEFT JOIN (
+                SELECT esm_medidores.nome AS device, SUM(consumo) AS value
+                FROM esm_leituras_".$entity->tabela."_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+                WHERE 
+                    MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND 
+                    YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now()) AND 
+                    HOUR(FROM_UNIXTIME(timestamp)) > HOUR(FROM_UNIXTIME({$this->user->config->open})) AND 
+                    HOUR(FROM_UNIXTIME(timestamp)) <= HOUR(FROM_UNIXTIME({$this->user->config->close}))
+                GROUP BY medidor_id
+            ) h ON h.device = esm_medidores.nome
+            WHERE 
+                esm_unidades.bloco_id = ".$this->input->getPost("group")." AND
+                esm_medidores.tipo = 'agua'
+            ORDER BY 
+            esm_unidades_config.type, esm_unidades.nome
+        ");
+
+        $dt->edit('type', function ($data) {
+            if ($data["type"] == 1) {
+                return "<span class=\"badge badge-warning\">".$this->user->config->area_comum."</span>";
+            } else if ($data["type"] == 2) {
+                return "<span class=\"badge badge-info\">Unidades</span>";
+            }
+        });
+
+        $dt->edit('value_read', function ($data) {
+            return str_pad(round($data["value_read"]), 6 , '0' , STR_PAD_LEFT);
+        });
+
+        $dt->edit('value_last', function ($data) {
+            return number_format($data["value_last"], 0, ",", ".");
+        });
+
+        $dt->edit('value_month', function ($data) {
+            return number_format($data["value_month"], 0, ",", ".");
+        });
+
+        $dt->edit('value_month_open', function ($data) {
+            return number_format($data["value_month_open"], 0, ",", ".");
+        });
+
+        $dt->edit('value_month_closed', function ($data) {
+            return number_format($data["value_month_closed"], 0, ",", ".");
+        });
+
+        $dt->edit('value_future', function ($data) {
+            $icon = "";
+            if ($data["value_future"] > $data["value_last_month"])
+                $icon = "<i class=\"fa fa-level-up-alt text-danger ms-2\"></i>";
+            else if ($data["value_future"] > $data["value_last_month"])
+                $icon = "<i class=\"fa fa-level-down-alt text-success ms-2\"></i>";
+
+            return number_format($data["value_future"], 0, ",", ".").$icon;
+        });
+
+        // gera resultados
+        echo $dt->generate();
     }
 }

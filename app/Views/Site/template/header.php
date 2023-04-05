@@ -51,7 +51,7 @@
 
                 <?php if (auth()->loggedIn()) : ?>
                     <div class="module right">
-                        <a class="link_nav pr-3" href="<?= base_url($user->condo->classificacao); ?>">
+                        <a class="link_nav pr-3" href="<?= base_url($user->page); ?>">
                             <i class="fas fa-sign-in-alt sub" style="top: 0"></i>
                             <span class="sub bold">Painel</span>
                         </a>

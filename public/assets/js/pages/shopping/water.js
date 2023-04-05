@@ -204,7 +204,7 @@
         searching: true,
         ajax: {
             type: 'POST',
-            url: "/water/resume",
+            url: $("#dt-resume").data("url"),
             data: {
                 group: $('.content-body').data('group')
             },

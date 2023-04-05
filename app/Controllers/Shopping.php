@@ -341,7 +341,7 @@ class Shopping extends UNO_Controller
         });
 
         $dt->add('actions', function ($data) {
-            if ($this->user->inGroup("admin", "shopping")){
+            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo){
                 return '
                     <a href="#" class="hidden on-editing btn-save save-row text-success"><i class="fas fa-save"></i></a>
                                         <a href="#" class="hidden on-editing btn-save cancel-row text-danger"><i
@@ -492,7 +492,7 @@ class Shopping extends UNO_Controller
         $dt = $this->datatables->query($query);
 
         $dt->add('actions', function ($data) {
-            if ($this->user->inGroup("admin", "shopping")){
+            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo){
                 return '
                     <a data-bs-toggle="tooltip" data-bs-placement="top" title="Ver" href="' . site_url('/shopping/users/' . $this->input->getPost('group') . '/view/' . $data['id']) . '" class="action-visualiza text-success"><i class="fas fa-eye me-2"></i></a>
                     <a data-bs-toggle="tooltip" data-bs-placement="top" title="Editar" href="' . site_url('/shopping/users/' . $this->input->getPost('group') . '/edit/' . $data['id']) . '" class="action-access text-primary"><i class="fas fa-pen me-2"></i></a>
@@ -551,7 +551,7 @@ class Shopping extends UNO_Controller
         });
 
         $dt->add('actions', function ($data) {
-            if ($this->user->inGroup("admin", "shopping")){
+            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo){
                 return '
                     <a href="#" class="hidden on-editing btn-save save-row text-success"><i class="fas fa-save"></i></a>
                                         <a href="#" class="hidden on-editing btn-save cancel-row text-danger"><i
@@ -714,7 +714,7 @@ class Shopping extends UNO_Controller
         });
 
         $dt->edit('actions', function ($data) {
-            if ($this->user->inGroup("admin", "shopping")){
+            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo){
                 return '
                     <a href="#" class="hidden on-editing btn-save save-row text-success"><i class="fas fa-save"></i></a>
                                         <a href="#" class="hidden on-editing btn-save cancel-row text-danger"><i

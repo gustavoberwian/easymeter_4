@@ -31,7 +31,7 @@
             data: {
                 group: $(".page-header").data("group")
             },
-            url: "/energia/resume",
+            url: $("#dt-resume").data("url"),
             /*success: function (json) {
                 if (json.status === 'error') {
                     notifyError(json.message);

@@ -89,6 +89,12 @@
             });
         </script>
 
+        <?php if ($user->demo) : ?>
+            <script>
+                notifyAlert('Esta é uma versão de demonstração. Todos os dados contidos aqui são fictícios.');
+            </script>
+        <?php endif; ?>
+
         <script>
             var unsaved = false;
             <?php if (in_array($method, array('configuracoes'))) : ?>

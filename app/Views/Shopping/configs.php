@@ -76,10 +76,12 @@
                                 </div>
 
                             </div>
+                            <?php if (!$user->demo) : ?>
                             <div class="card-footer text-end">
                                 <button type="button" class="btn btn-primary btn-save btn-save-geral">Salvar</button>
                                 <button type="reset" class="btn btn-default btn-reset">Descartar</button>
                             </div>
+                            <?php endif; ?>
                         </form>
                     </section>
                 </div>
@@ -92,7 +94,7 @@
                     <section class="card card-users card-easymeter h-100">
                         <header class="card-header">
                             <div class="card-actions buttons">
-                                <?php if (!$user->inGroup('unity', 'shopping')): ?>
+                                <?php if (!$user->inGroup('unity', 'shopping') && !$user->demo): ?>
                                     <button class="btn btn-primary btn-new-user">Criar Usuário</button>
                                 <?php endif; ?>
                             </div>
@@ -209,7 +211,9 @@
                     <section class="card card-agrupamentos card-easymeter h-100">
                         <header class="card-header">
                             <div class="card-actions buttons">
-                                <button class="btn btn-primary btn-new-agrupamento-energia">Criar Agrupamento</button>
+                                <?php if (!$user->demo): ?>
+                                    <button class="btn btn-primary btn-new-agrupamento-energia">Criar Agrupamento</button>
+                                <?php endif; ?>
                             </div>
                             <h2 class="card-title">Agrupamentos</h2>
                         </header>
@@ -382,7 +386,7 @@
                                         <div class="row">
                                             <div class="col-md-8 input-group">
                                                 <input onClick="this.select();"  id="token" value="<?= $token ?>" name="token" type="text" class="form-control" placeholder="" aria-describedby="button-addon2">
-                                                <button class="btn btn-primary btn-generate-token <?= $token ? 'renew' : '' ?>" type="button-addon2"><?= $token ? 'Renovar Chave' : 'Gerar Chave' ?></button>
+                                                <button class="btn btn-primary btn-generate-token <?= $user->demo ? 'disabled' : '' ?> <?= $token ? 'renew' : '' ?>" type="button-addon2"><?= $token ? 'Renovar Chave' : 'Gerar Chave' ?></button>
                                             </div>
                                             <a href="/api/doc" class="text-right" target="_blank">Documentação <i class="fas fa-arrow-up-right-from-square"></i></a>
                                         </div>

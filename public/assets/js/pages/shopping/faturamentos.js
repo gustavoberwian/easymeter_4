@@ -147,7 +147,7 @@
 			$.post('/energia/faturamento', data, function(json) {
 				if (json.status == 'success') {
                     // vai para a pagina do fechamento
-                    window.location = "/shopping/lancamento/energia/" + $("#dt-faturamentos").data("group") + "/" + json.id;
+                    window.location = "/" + $(".page-header").data("url") + "/lancamento/energia/" + $("#dt-faturamentos").data("group") + "/" + json.id;
                     
                     // fecha a modal
                     $.magnificPopup.close();
@@ -189,7 +189,7 @@
 			$.post('/water/lancamento', data, function(json) {
 				if (json.status == 'success') {
                     // vai para a pagina do fechamento
-                    window.location = "/shopping/lancamento/agua/" + $("#dt-faturamentos").data("group") + "/" + json.id;
+                    window.location = "/" + $(".page-header").data("url") + "/lancamento/agua/" + $("#dt-faturamentos").data("group") + "/" + json.id;
                     
                     // fecha a modal
                     $.magnificPopup.close();
@@ -475,7 +475,7 @@
     });
 
     $(document).on("click", ".btn-cfg", function (event) {
-        window.location = "/shopping/configuracoes/" + $("#dt-faturamentos").data("group") + "#unidades";
+        window.location = "/" + $(".page-header").data("url") + "/configuracoes/" + $("#dt-faturamentos").data("group") + "#unidades";
     });
 
     $("#dt-faturamentos tbody").on("click", "tr", function (event) {
@@ -484,7 +484,7 @@
 
         let data = dtFaturamentos.row(this).data();
         // redireciona para o fechamento
-        window.location = "/shopping/lancamento/energia/" + $("#dt-faturamentos").data("group") + "/" + data.id;
+        window.location = "/" + $(".page-header").data("url") + "/lancamento/energia/" + $("#dt-faturamentos").data("group") + "/" + data.id;
     });
 
     $("#dt-water tbody").on("click", "tr", function (event) {
@@ -493,7 +493,7 @@
 
         let data = dtWater.row(this).data();
         // redireciona para o fechamento
-        window.location = "/shopping/lancamento/agua/" + $("#dt-water").data("group") + "/" + data.id;
+        window.location = "/" + $(".page-header").data("url") + "/lancamento/agua/" + $("#dt-water").data("group") + "/" + data.id;
     });
 
     $.validator.addClassRules("vdate", { dateBR : true });
@@ -506,6 +506,7 @@
     $('#tar-water-competencia').mask('00/0000');
     $('#tar-water-data-ini').mask('00/00/0000');
     $('#tar-water-data-fim').mask('00/00/0000');
+    
     // configura validação
     $(".form-fechamento").validate();
     $(".form-water-fechamento").validate();

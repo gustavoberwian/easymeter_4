@@ -2,21 +2,63 @@
 
     'use strict';
 
+    let dtResume = $("#dt-resume").DataTable({
+        dom: '<"table-responsive"t>r<"row"<"col-md-6"><"col-md-6"p>>',
+        processing : true,
+        paging     : true,
+        columns    : [
+            {data: "device", className: "dt-body-center"},
+            {data: "luc", className: "dt-body-center"},
+            {data: "name", className: "dt-body-left"},
+            {data: "type", className: "dt-body-center"},
+            {data: "value_read", className: "dt-body-center"},
+            {data: "value_month", className: "dt-body-center"},
+            {data: "value_month_open", className: "dt-body-center"},
+            {data: "value_month_closed", className: "dt-body-center"},
+            {data: "value_ponta", className: "dt-body-center"},
+            {data: "value_fora", className: "dt-body-center"},
+            {data: "value_last", className: "dt-body-center"},
+            {data: "value_future", className: "dt-body-center"},
+        ],
+        serverSide : true,
+        sorting    : [],
+        order      : [[ 2, "asc" ], [ 1, "asc" ]],
+        pagingType : "numbers",
+        pageLength : 36,
+        searching  : true,
+        ajax       : {
+            type: 'POST',
+            data: {
+                group: $(".page-header").data("group")
+            },
+            url: $("#dt-resume").data("url"),
+            /*success: function (json) {
+                if (json.status === 'error') {
+                    notifyError(json.message);
+                    $("#dt-resume_processing").hide()
+                    $("#dt-resume").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
+                }
+                if (json.data.length === 0) {
+                    $("#dt-resume_processing").hide()
+                    $("#dt-resume").children('tbody').append('<tr class="odd"><td valign="top" colspan="13" class="dataTables_empty">Nenhum registro encontrado</td></tr>');
+                }
+            },*/
+            error: function () {
+                notifyError(
+                    "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
+                );
+                $("#dt-resume").dataTable().fnProcessingIndicator(false);
+                $("#dt-resume_wrapper .table-responsive").removeClass("processing");
+            },
+        },
+    });
+
     var start = moment().subtract(6, 'days');
     var end = moment();
     var chart = {};
     var start_last;
     var end_last;
     var device = 0;
-
-    var notifyError = function (msg, title = "Ocorreu um erro", visibility = true) {
-        new PNotify({
-            title: title,
-            text: msg,
-            type: "error",
-            buttons: { sticker: false },
-        });
-    };
 
     function apexchart(start = moment().subtract(6, 'days'), end = moment()) {
 
@@ -29,7 +71,8 @@
                 device  : device,
                 start   : start.format("YYYY-MM-DD"),
                 end     : end.format("YYYY-MM-DD"),
-                field   : el.data("field")
+                field   : el.data("field"),
+                group   : $(".page-header").data("group"),
             };
 
             $.ajax({
@@ -38,6 +81,13 @@
                 data    : dados,
                 dataType: 'json',
                 success : function (json) {
+
+                    if (json.status === 'error') {
+                        notifyError(json.message);
+                        el.addClass('h-100')
+                        el.append('<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><div>Nenhum registro encontrado</div></div>');
+                        return;
+                    }
 
                     json.yaxis.labels.formatter = function (value) {
                         return (value === null) ? "" : value.toLocaleString("pt-BR", {minimumFractionDigits: json.extra.decimals, maximumFractionDigits: json.extra.decimals}) + " " + json.extra.unit;
@@ -203,16 +253,17 @@
         }
 
         if (this.value == "C" || this.value == "U") {
-            $('button[data-bs-target="#data"]').addClass("d-none");
-            $('button[data-bs-target="#analysis"]').addClass("d-none");
+            $('button[data-bs-target="#data"]').addClass("disabled");
+            $('button[data-bs-target="#analysis"]').addClass("disabled");
             if ($('button[data-bs-toggle="pill"].active').html() == "Análises" || $('button[data-bs-toggle="pill"].active').html() == "Dados") {
                 setTimeout(function() {
-                    $('.nav-pills button[data-bs-target="#charts"]').tab('show');
+                    $('button[data-bs-target="#data"]').removeClass("disabled");
+                    $('button[data-bs-target="#analysis"]').removeClass("disabled");
                 }, 100);
             }
         } else {
-            $('button[data-bs-target="#data"]').removeClass("d-none");
-            $('button[data-bs-target="#analysis"]').removeClass("d-none");
+            $('button[data-bs-target="#data"]').removeClass("disabled");
+            $('button[data-bs-target="#analysis"]').removeClass("disabled");
         }
 
         apexchart(start_last, end_last);
@@ -266,6 +317,7 @@
                 d.type   = $(".type").val();
                 d.min    = $("#min").val();
                 d.max    = $("#max").val();
+                d.group  = $(".page-header").data("group");
             },
             url: "/energia/data",
             error: function () {
@@ -329,48 +381,13 @@
                 d.device = device;
                 d.init   = start.format("YYYY-MM-DD");
                 d.finish = end.format("YYYY-MM-DD");
+                d.group  = $(".page-header").data("group");
             },
             url: "/energia/data",
             error: function () {
                 notifyError("Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes.");
                 $("#dt-data").dataTable().fnProcessingIndicator(false);
                 $("#dt-data_wrapper .table-responsive").removeClass("processing");
-            },
-        },
-    });
-
-    let dtResume = $("#dt-resume").DataTable({
-        dom: '<"table-responsive"t>r<"row"<"col-md-6"><"col-md-6"p>>',
-        processing: true,
-        paging: true,
-        columns: [
-            {data: "device", className: "dt-body-center"},
-            {data: "name", className: "dt-body-left"},
-            {data: "type", className: "dt-body-center"},
-            {data: "value_read", className: "dt-body-center"},
-            {data: "value_month", className: "dt-body-center"},
-            {data: "value_month_open", className: "dt-body-center"},
-            {data: "value_month_closed", className: "dt-body-center"},
-            {data: "value_ponta", className: "dt-body-center"},
-            {data: "value_fora", className: "dt-body-center"},
-            {data: "value_last", className: "dt-body-center"},
-            {data: "value_future", className: "dt-body-center"},
-        ],
-        serverSide: true,
-        sorting: [],
-        order: [[ 2, "asc" ], [ 1, "asc" ]],
-        pagingType: "numbers",
-        pageLength: 36,
-        searching: true,
-        ajax: {
-            type: 'POST',
-            url: "/energia/resume",
-            error: function () {
-                notifyError(
-                    "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
-                );
-                $("#dt-resume").dataTable().fnProcessingIndicator(false);
-                $("#dt-resume_wrapper .table-responsive").removeClass("processing");
             },
         },
     });
@@ -439,7 +456,9 @@
         let data = dtResume.row(this).data();
         $("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
         $('#sel-device').trigger('change');
-        $('.nav-pills button[data-bs-target="#charts"]').tab('show');
+        $('button[data-bs-target="#charts"]').trigger('click');
+        $('button[data-bs-target="#data"]').removeClass("disabled");
+        $('button[data-bs-target="#analysis"]').removeClass("disabled");
     });
 
     $(document).on("click", ".btn-download-abnormal", function () {

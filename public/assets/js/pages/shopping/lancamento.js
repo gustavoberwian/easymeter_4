@@ -48,6 +48,7 @@
             processing: true,
             columns: [
                 {data: "nome", className: "dt-body-left"},
+                {data: "luc", className: "dt-body-left"},
                 {data: "leitura_anterior", className: "dt-body-center"},
                 {data: "leitura_atual", className: "dt-body-center"},
                 {data: "consumo", className: "dt-body-center"},
@@ -85,6 +86,7 @@
             processing: true,
             columns: [
                 {data: "nome", className: "dt-body-left"},
+                {data: "luc", className: "dt-body-left"},
                 {data: "leitura_anterior", className: "dt-body-center"},
                 {data: "leitura_atual", className: "dt-body-center"},
                 {data: "consumo", className: "dt-body-center"},
@@ -120,7 +122,7 @@
 
             let data = dtUnidades.row(this).data();
             // redireciona para o fechamento
-            window.location = "/shopping/relatorio/energia/" + $(".btn-download").data("group")  + "/" + $(".btn-download").data("id") + "/" + data.DT_RowId;
+            window.location = "/" + $(".page-header").data("url") + "/relatorio/energia/" + $(".btn-download").data("group")  + "/" + $(".btn-download").data("id") + "/" + data.DT_RowId;
         });
 
         $("#dt-fechamento_comum tbody").on("click", "tr", function (event) {
@@ -129,7 +131,7 @@
 
             let data = dtComum.row(this).data();
             // redireciona para o fechamento
-            window.location = "/shopping/relatorio/energia/" + $(".btn-download").data("group")  + "/" + $(".btn-download").data("id") + "/" + data.DT_RowId;
+            window.location = "/" + $(".page-header").data("url") + "/relatorio/energia/" + $(".btn-download").data("group")  + "/" + $(".btn-download").data("id") + "/" + data.DT_RowId;
         });
 
     } else if ($(".content-body").data("type") == "water") {
@@ -175,6 +177,7 @@
             processing: true,
             columns: [
                 {data: "nome", className: "dt-body-left"},
+                {data: "luc", className: "dt-body-center"},
                 {data: "leitura_anterior", className: "dt-body-center"},
                 {data: "leitura_atual", className: "dt-body-center"},
                 {data: "consumo", className: "dt-body-center"},
@@ -241,7 +244,7 @@
 
             let data = dtUnidades.row(this).data();
             // redireciona para o fechamento
-            window.location = "/shopping/relatorio/agua/" + $(".btn-download").data("group")  + "/" + $(".btn-download").data("id") + "/" + data.DT_RowId;
+            window.location = "/" + $(".page-header").data("url") + "/relatorio/agua/" + $(".btn-download").data("group")  + "/" + $(".btn-download").data("id") + "/" + data.DT_RowId;
         });
 
         $("#dt-comum tbody").on("click", "tr", function (event) {
@@ -250,7 +253,7 @@
 
             let data = dtComum.row(this).data();
             // redireciona para o fechamento
-            window.location = "/shopping/relatorio/agua/" + $(".btn-download").data("group")  + "/" + $(".btn-download").data("id") + "/" + data.DT_RowId;
+            window.location = "/" + $(".page-header").data("url") + "/relatorio/agua/" + $(".btn-download").data("group")  + "/" + $(".btn-download").data("id") + "/" + data.DT_RowId;
         });
 /*
         $('a[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {

@@ -2105,6 +2105,14 @@ class Energia extends UNO_Controller
                 RAND() * 50 AS activePositiveConsumption";
         }
 
+        $tabela = "esm_leituras_".$entity->tabela."_energia";
+        $where_demo = " AND device = '$device' $abnormal";
+
+        if ($this->user->demo) {
+            $tabela = "esm_leituras_" . $entity->tabela . "_energia_demo";
+            $where_demo = " AND device = '03D2559E'";
+        }
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT
@@ -2112,12 +2120,11 @@ class Energia extends UNO_Controller
                 $field
                 $values
             FROM
-                esm_leituras_".$entity->tabela."_energia
+                $tabela
             WHERE
                 timestamp >= UNIX_TIMESTAMP('$init 00:00:00') AND 
-                timestamp <= UNIX_TIMESTAMP('$finish 23:59:59') AND 
-                device = '$device'
-                $abnormal
+                timestamp <= UNIX_TIMESTAMP('$finish 23:59:59')
+                $where_demo
         ");
 
         $dt->edit('date', function ($data) {

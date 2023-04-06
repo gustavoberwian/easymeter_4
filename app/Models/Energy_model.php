@@ -243,24 +243,31 @@ class Energy_model extends Base_model
     {
         $entity = $this->get_entity_by_group($group);
 
+        $value = "SUM(activePositiveConsumption) AS value";
+        $timestamp = "timestamp > UNIX_TIMESTAMP() - 86400";
+        $tabela = "esm_leituras_".$entity->tabela."_energia";
+
         $dvc = "";
         $join = "";
+
+        if ($demo) {
+            $value = "RAND() * 10 AS value";
+            $timestamp = " 1 ";
+            $tabela = "esm_leituras_".$entity->tabela."_energia_demo";
+            $device = "03D2559E";
+        }
+
         if (is_numeric($device)) {
             if ($device != 0) {
-                $dvc = " AND esm_leituras_".$entity->tabela."_energia.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND $tabela.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
             }
         } else if ($device == "C") {
             $dvc = "AND device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id WHERE type = 1)";
         } else if ($device == "U") {
             $dvc = "AND device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id WHERE type = 2)";
         } else {
-            $dvc = " AND esm_leituras_".$entity->tabela."_energia.device = '$device'";
+            $dvc = " AND $tabela.device = '$device'";
         }
-
-        $value = "SUM(activePositiveConsumption) AS value";
-
-        if ($demo)
-            $value = "RAND() * 10 AS value";
 
         $result = $this->db->query("
             SELECT 
@@ -268,10 +275,10 @@ class Energy_model extends Base_model
                 DATE_FORMAT(FROM_UNIXTIME(timestamp), \"%H:%i\") AS title,
                 $value
             FROM 
-                esm_leituras_".$entity->tabela."_energia
-            $join
+                $tabela
+                $join
             WHERE 
-                timestamp > UNIX_TIMESTAMP() - 86400
+                $timestamp
                 $dvc
             GROUP BY 
                 title

@@ -39,6 +39,30 @@ class Shopping_model extends Base_model
         return $result->getResult();
     }
 
+    public function get_unidade($id)
+    {
+        $query = "
+            SELECT
+                esm_unidades.id as id,
+                esm_unidades.nome,
+                esm_medidores.id as medidor_id,
+                esm_medidores.nome as device
+            FROM
+                esm_unidades
+            JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades.id
+            WHERE
+                esm_unidades.id = $id
+        ";
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0) {
+
+            return false;
+        }
+
+        return $result->getRow();
+    }
+
     public function get_user_relation($user)
     {
         $query = $this->db->query("
@@ -368,23 +392,16 @@ class Shopping_model extends Base_model
 
     public function GetUserAlert($id, $monitoramento = null, $readed = false)
     {
-        $m = "";
-        if (!is_null($monitoramento)) {
-            if ($monitoramento === 'energia')
-                $m = "_" . $monitoramento;
-            elseif ($monitoramento === 'agua')
-                $m = $monitoramento;
-        }
         $query = $this->db->query("
             SELECT 
-                esm_alertas" . $m . ".tipo, 
-                esm_alertas" . $m . ".titulo, 
-                esm_alertas" . $m . ".texto, 
-                COALESCE(esm_alertas" . $m . ".enviada, 0) AS enviada,
-                COALESCE(esm_alertas" . $m . "_envios.lida, '') AS lida
-            FROM esm_alertas" . $m . "_envios
-            JOIN esm_alertas" . $m . " ON esm_alertas" . $m . ".id = esm_alertas" . $m . "_envios.alerta_id
-            WHERE esm_alertas" . $m . "_envios.id = $id
+                esm_alertas_" . $monitoramento . ".tipo, 
+                esm_alertas_" . $monitoramento . ".titulo, 
+                esm_alertas_" . $monitoramento . ".texto, 
+                COALESCE(esm_alertas_" . $monitoramento . ".enviada, 0) AS enviada,
+                COALESCE(esm_alertas_" . $monitoramento . "_envios.lida, '') AS lida
+            FROM esm_alertas_" . $monitoramento . "_envios
+            JOIN esm_alertas_" . $monitoramento . " ON esm_alertas_" . $monitoramento . ".id = esm_alertas_" . $monitoramento . "_envios.alerta_id
+            WHERE esm_alertas_" . $monitoramento . "_envios.id = $id
         ");
 
         // verifica se retornou algo
@@ -395,7 +412,7 @@ class Shopping_model extends Base_model
 
         if ($readed) {
             // atualiza esm_alertas
-            $this->db->table('esm_alertas' . $m . '_envios')
+            $this->db->table('esm_alertas_' . $monitoramento . '_envios')
                 ->where('id', $id)
                 ->where('lida', NULL)
                 ->set(array('lida' => date("Y-m-d H:i:s")))
@@ -407,35 +424,19 @@ class Shopping_model extends Base_model
 
     public function DeleteAlert($id, $monitoramento = null)
     {
-        $m = "";
-        if (!is_null($monitoramento)) {
-            if ($monitoramento === 'energia')
-                $m = "_" . $monitoramento;
-            elseif ($monitoramento === 'agua')
-                $m = $monitoramento;
+        if (!$this->db->table('esm_alertas_' . $monitoramento . '_envios')->where(array('id' => $id))->set(array('visibility' => 'delbyuser'))->update()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
 
-        if (!$this->db->table('esm_alertas' . $m . '_envios')->where(array('id' => $id))->set(array('visibility' => 'delbyuser'))->update()) {
-            echo json_encode(array("status" => "error", "message" => $this->db->error()));
-            return;
-        }
-
-        echo json_encode(array("status" => "success", "message" => "Alerta excluído com sucesso.", "id" => $id));
+        return json_encode(array("status" => "success", "message" => "Alerta excluído com sucesso.", "id" => $id));
     }
+
     public function ReadAllAlert($user_id, $monitoramento = null)
     {
-        $m = "";
-        if (!is_null($monitoramento)) {
-            if ($monitoramento === 'energia')
-                $m = "_" . $monitoramento;
-            elseif ($monitoramento === 'agua')
-                $m = $monitoramento;
-        }
-
         // atualiza data
         $this->db->transStart();
 
-        $this->db->table('esm_alertas' . $m . '_envios')
+        $this->db->table('esm_alertas_' . $monitoramento . '_envios')
             ->where('user_id', $user_id)
             ->where('lida', NULL)
             ->set(array('lida' => date("Y-m-d H:i:s")))
@@ -444,11 +445,10 @@ class Shopping_model extends Base_model
         $this->db->transComplete();
 
         if ($this->db->transStatus() === false) {
-            echo json_encode(array("status" => "error", "message" => $this->db->error()));
-            return;
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
-        
-        echo json_encode(array("status" => "success", "message" => "Alertas marcados com sucesso."));
+
+        return json_encode(array("status" => "success", "message" => "Alertas marcados com sucesso."));
     }
 
     public function get_devices_agrupamento($id)
@@ -805,6 +805,71 @@ class Shopping_model extends Base_model
         return $result->getRow();
     }
 
+    public function get_condo_by_group($group)
+    {
+        $query = "
+            SELECT *
+            FROM esm_entidades
+            JOIN esm_agrupamentos ON esm_agrupamentos.condo_id = esm_entidades.id
+            WHERE esm_agrupamentos.id = $group";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getRow();
+    }
+
+    public function get_condo_by_unity($unity)
+    {
+        $query = "
+            SELECT *
+            FROM esm_entidades
+            JOIN esm_agrupamentos ON esm_agrupamentos.condo_id = esm_entidades.id
+            JOIN esm_unidades ON esm_unidades.bloco_id = esm_agrupamentos.id
+            WHERE esm_unidades.id = $unity";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getRow();
+    }
+
+    public function get_unity_by_user($user)
+    {
+        $query = "
+            SELECT esm_unidades.*
+            FROM esm_unidades
+            JOIN auth_user_relation ON auth_user_relation.unity_id = esm_unidades.id
+            WHERE auth_user_relation.user_id = $user";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getRow();
+    }
+
+    public function get_group_by_unity($unity)
+    {
+        $query = "
+            SELECT esm_shoppings.*
+            FROM esm_shoppings
+            JOIN esm_unidades ON esm_unidades.bloco_id = esm_shoppings.bloco_id
+            WHERE esm_unidades.id = $unity";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getRow();
+    }
+
     public function get_group_by_fechamento($id) 
     {
         $query = "
@@ -818,5 +883,23 @@ class Shopping_model extends Base_model
             return false;
 
         return $result->getRow();
+    }
+
+    public function get_group_by_user($user)
+    {
+        $query = "
+            SELECT 
+                esm_shoppings.* 
+            FROM 
+                esm_shoppings
+            JOIN auth_user_relation ON auth_user_relation.group_id = esm_shoppings.bloco_id
+            WHERE 
+                auth_user_relation.user_id = $user
+        ";
+
+        if ($this->db->query($query)->getNumRows() <= 0)
+            return array();
+
+        return $this->db->query($query)->getRow();
     }
 }

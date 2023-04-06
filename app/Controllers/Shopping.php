@@ -71,19 +71,126 @@ class Shopping extends UNO_Controller
 
         } else if ($this->user->inGroup('group', 'shopping')) {
 
-            $group_id = $this->shopping_model->get_group_by_user($this->user->id);
+            $group = $this->shopping_model->get_group_by_user($this->user->id);
 
-            redirect('shopping/energy/' . $group_id, 'refresh');
+            return redirect()->to('/shopping/energy/' . $group->bloco_id);
 
         } else if ($this->user->inGroup('unity', 'shopping')) {
 
-            $unidade_id = $this->shopping_model->get_unidade_id_by_user($this->user->id);
-            $group_id = $this->shopping_model->get_group_id_by_unity($unidade_id);
+            $unidade = $this->shopping_model->get_unity_by_user($this->user->id);
+            $group = $this->shopping_model->get_group_by_unity($unidade->id);
 
-            redirect('shopping/unidade/' . $group_id . '/' . $unidade_id, 'refresh');
+            return redirect()->to('shopping/unidade/' . $group->bloco_id . '/' . $unidade->id);
 
         }
     }
+
+    // TODO: Finalizar página  profile
+    /*public function profile()
+    {
+        $data['set'] = false;
+
+        $this->load->helper('form');
+        $this->load->library('form_validation');
+        $this->form_validation->set_error_delimiters('<label id="fullname-error" class="error" for="fullname">', '</label>');
+
+        if ($this->input->method() == 'post') {
+            $image = $this->input->post('crop-image');
+
+            if ($image) {
+                // valida se é imagem...
+
+                // salva avatar
+                list($type, $image) = explode(';', $image);
+                list(, $image) = explode(',', $image);
+                $image = base64_decode($image);
+                $filename = time() . $this->user->id . '.png';
+                if (file_put_contents('uploads/avatars/' . $filename, $image)) {
+                    // atualiza avatar em auth_users
+                    $data['avatar'] = $filename;
+                    if ($this->ion_auth->update($this->user->id, $data)) {
+                        // apaga avatar anterior
+                        if (file_exists('uploads/avatars/' . $this->user->avatar)) {
+                            unlink('uploads/avatars/' . $this->user->avatar);
+                        }
+                        $data['error'] = false;
+                        // mensagem
+                        $this->user->avatar = $filename;
+                    } else {
+                        //erro e mensagem
+                    }
+                } else {
+                    //erro e mensagem
+                }
+            } else {
+
+                $this->load->library('form_validation');
+                $this->form_validation->set_rules('password', 'Senha', 'required|min_length[6]');
+                $this->form_validation->set_rules('confirm', 'Confirmação da Senha', 'required|matches[password]');
+
+                if ($this->form_validation->run() == TRUE) {
+                    // coleta os dados do post
+                    $password = $this->input->post('password');
+                    $user     = $this->input->post('user');
+
+                    // atualiza dados
+                    if (!$this->shopping_model->update_user($user, $password)) {
+                        $data['error'] = true;
+                    } else {
+                        $data['error'] = false;
+                        //mensagem
+                    }
+                }
+            }
+        }
+        echo $this->render('profile', $data);
+    }*/
+
+    // TODO: Finalizar página da unidade
+    /*public function unidade($group_id, $unidade_id, $alerta = null)
+    {
+        $data['group_id'] = $group_id;
+        $data['group'] = $this->shopping_model->get_group_info($group_id);
+
+        $data['user']    = $this->user;
+        $data['url']    = $this->url;
+
+        $data['unidade'] = $this->shopping_model->get_unidade($unidade_id);
+        $data['device_groups'] = $this->shopping_model->get_device_groups($group_id, 'energia');
+
+        $data['alerta'] = false;
+        $data['faturamento'] = false;
+        $data['unidade_id'] = $unidade_id;
+        $data['area_comum'] = "Área Comum";//$this->user->config->area_comum;
+
+        $data['permission'] = $this->get_user_permission($this->user->id);
+
+        if (!is_null($alerta)) {
+            if ($alerta === 'faturamentos') {
+                $data['faturamento'] = true;
+                $data['group_id']   = $group_id;
+                $data['group']      = $this->shopping_model->get_group_info($group_id);
+                $data['unidades']   = $this->shopping_model->get_unidades($group_id);
+                $data['area_comum'] = "Área Comum";//$this->user->config->area_comum;
+
+                $this->setHistory("Acesso aos faturamentos da unidade $unidade_id do shopping $group_id", 'acesso');
+
+                $this->render('faturamentos_unidade', $data);
+                return;
+            }
+
+            $data['alerta'] = true;
+
+            $this->setHistory("Acesso aos alertas da unidade $unidade_id do shopping $group_id", 'acesso');
+
+            $this->render('alertas_unidade', $data);
+            return;
+        }
+
+        $this->setHistory("Acesso ao consumo da unidade $unidade_id do shopping $group_id", 'acesso');
+
+        echo $this->render('energy', $data);
+    }*/
 
     public function energy($group_id = null)
     {
@@ -359,48 +466,44 @@ class Shopping extends UNO_Controller
 
     public function GetAlerts()
     {
-        $monitoramento = $this->input->getPost('monitoramento');
+        $m = $this->input->getPost('monitoramento');
         $group         = $this->input->getPost('group');
 
         $user_id = auth()->user()->id;
 
-        $m = "";
-        $dvc = 'esm_alertas'.$m.'.medidor_id';
-        $join = 'JOIN esm_medidores ON esm_medidores.id = ' . $dvc;
-        if ($monitoramento === 'energia') {
-            $m = '_' . $monitoramento;
-            $dvc = 'esm_alertas'.$m.'.device';
-            $join = 'JOIN esm_medidores ON esm_medidores.nome = ' . $dvc;
-        }
+        $dvc = 'esm_alertas_'.$m.'.device';
+        $join = 'JOIN esm_medidores ON esm_medidores.nome = ' . $dvc;
 
         $dt = $this->datatables->query("
             SELECT 
                 1 AS type, 
-                esm_alertas".$m.".tipo, 
+                esm_alertas_".$m.".tipo, 
                 $dvc,
                 esm_unidades.nome, 
-                esm_alertas".$m.".titulo, 
-                esm_alertas".$m.".enviada, 
+                esm_alertas_".$m.".titulo, 
+                esm_alertas_".$m.".enviada, 
                 0 as actions, 
-                IF(ISNULL(esm_alertas".$m."_envios.lida), 'unread', '') as DT_RowClass,
-                esm_alertas".$m."_envios.id AS DT_RowId
-            FROM esm_alertas".$m."_envios 
-            JOIN esm_alertas".$m." ON esm_alertas".$m.".id = esm_alertas".$m."_envios.alerta_id 
+                IF(ISNULL(esm_alertas_".$m."_envios.lida), 'unread', '') as DT_RowClass,
+                esm_alertas_".$m."_envios.id AS DT_RowId
+            FROM esm_alertas_".$m."_envios 
+            JOIN esm_alertas_".$m." ON esm_alertas_".$m.".id = esm_alertas_".$m."_envios.alerta_id 
             " . $join . " 
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group
             WHERE
-                esm_alertas".$m."_envios.user_id = $user_id AND 
-                esm_alertas".$m.".visibility = 'normal' AND 
-                esm_alertas".$m."_envios.visibility = 'normal' AND
-                esm_alertas".$m.".enviada IS NOT NULL
-            ORDER BY esm_alertas".$m.".enviada DESC
+                esm_alertas_".$m."_envios.user_id = $user_id AND 
+                esm_alertas_".$m.".visibility = 'normal' AND 
+                esm_alertas_".$m."_envios.visibility = 'normal' AND
+                esm_alertas_".$m.".enviada IS NOT NULL
+            ORDER BY esm_alertas_".$m.".enviada DESC
         ");
 
         $dt->edit('type', function ($data) {
             if ($this->input->getPost('monitoramento') === 'energia')
                 return "<i class=\"fas fa-bolt text-warning\"></i>";
             elseif ($this->input->getPost('monitoramento') === 'agua')
-                return "<i class=\"fas fa-tint text-warning\"></i>";
+                return "<i class=\"fas fa-tint text-primary\"></i>";
+            elseif ($this->input->getPost('monitoramento') === 'gas')
+                return "<i class=\"fas fa-fire text-success\"></i>";
         });
 
         $dt->edit('tipo', function ($data) {
@@ -935,5 +1038,10 @@ class Shopping extends UNO_Controller
         $dados = $this->shopping_model->get_lojas_by_shopping($group_id);
 
         echo json_encode($dados);
+    }
+
+    public function get_user_permission($uid)
+    {
+        return $this->shopping_model->get_user_permission($uid);
     }
 }

@@ -474,9 +474,9 @@ class Energy_model extends Base_model
             $dvc = " AND d.device = '$device'";
         }
 
-        $value = "IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activePositiveConsumption) / SQRT(POW(SUM(activePositiveConsumption), 2) + POW(SUM(reactivePositiveConsumption) + SUM(ABS(reactiveNegativeConsumption)), 2)), 1)) AS value";
-
         if ($start == $end) {
+
+            $value = "IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activePositiveConsumption) / SQRT(POW(SUM(activePositiveConsumption), 2) + POW(SUM(reactivePositiveConsumption) + SUM(ABS(reactiveNegativeConsumption)), 2)), 1)) AS value";
 
             if ($demo)
                 $value = "1 AS value";
@@ -498,6 +498,8 @@ class Energy_model extends Base_model
             ");
 
         } else {
+
+            $value = "IF(esm_calendar.dt > DATE_FORMAT(CURDATE() ,'%Y-%m-%d'), NULL, IFNULL(SUM(activePositiveConsumption) / SQRT(POW(SUM(activePositiveConsumption), 2) + POW(SUM(reactivePositiveConsumption) + SUM(ABS(reactiveNegativeConsumption)), 2)), 1)) AS value";
 
             if ($demo)
                 $value = "1 AS value";
@@ -553,11 +555,11 @@ class Energy_model extends Base_model
             $dvc = " AND d.device = '$device'";
         }
 
-        $value = "IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeA) / SQRT(POW(SUM(activeA), 2) + POW(SUM(ABS(reactiveA)), 2)), 1)) AS value_a,
+        if ($start == $end) {
+
+            $value = "IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeA) / SQRT(POW(SUM(activeA), 2) + POW(SUM(ABS(reactiveA)), 2)), 1)) AS value_a,
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeB) / SQRT(POW(SUM(activeB), 2) + POW(SUM(ABS(reactiveB)), 2)), 1)) AS value_b,
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeC) / SQRT(POW(SUM(activeC), 2) + POW(SUM(ABS(reactiveC)), 2)), 1)) AS value_c";
-
-        if ($start == $end) {
 
             if ($demo)
                 $value = "1 AS value_a, 1 AS value_b, 1 AS value_c";
@@ -581,6 +583,10 @@ class Energy_model extends Base_model
             ");
 
         } else {
+
+            $value = "IFNULL(SUM(activeA) / SQRT(POW(SUM(activeA), 2) + POW(SUM(ABS(reactiveA)), 2)), 1) AS value_a,
+                    IFNULL(SUM(activeB) / SQRT(POW(SUM(activeB), 2) + POW(SUM(ABS(reactiveB)), 2)), 1) AS value_b,
+                    IFNULL(SUM(activeC) / SQRT(POW(SUM(activeC), 2) + POW(SUM(ABS(reactiveC)), 2)), 1) AS value_c";
 
             if ($demo)
                 $value = "1 AS value_a, 1 AS value_b, 1 AS value_c";
@@ -1058,7 +1064,7 @@ class Energy_model extends Base_model
         }
 
         $value = "SUM(activePositiveConsumption) AS value";
-        $tabela = "esm_leituras_ford_energia";
+        $tabela = "esm_leituras_" . $entity->tabela . "_energia";
 
         if ($demo) {
             $value = "RAND() * 100000 AS value";

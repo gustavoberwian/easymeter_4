@@ -1040,7 +1040,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetMonthByStation($st, $group)
+    public function GetMonthByStation($st, $group, $demo = false)
     {
         $entity = $this->get_entity_by_group($group);
 
@@ -1057,11 +1057,20 @@ class Energy_model extends Base_model
             }
         }
 
-        $result = $this->db->query("
-            SELECT 
-                SUM(activePositiveConsumption) AS value
+        $value = "SUM(activePositiveConsumption) AS value";
+        $tabela = "esm_leituras_ford_energia";
+
+        if ($demo) {
+            $value = "RAND() * 100000 AS value";
+            $tabela = "esm_leituras_ford_energia_demo";
+            $group = 113;
+        }
+
+        $q = "
+            SELECT
+                $value
             FROM esm_calendar
-            LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
+            LEFT JOIN $tabela d ON 
                 (d.timestamp) > (esm_calendar.ts_start) AND 
                 (d.timestamp) <= (esm_calendar.ts_end + 600) 
                 $station
@@ -1070,7 +1079,9 @@ class Energy_model extends Base_model
             WHERE 
                 esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
                 esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
-        ");
+        ";
+
+        $result = $this->db->query($q);
 
         if ($result->getNumRows()) {
             return $result->getRow()->value;

@@ -368,23 +368,16 @@ class Shopping_model extends Base_model
 
     public function GetUserAlert($id, $monitoramento = null, $readed = false)
     {
-        $m = "";
-        if (!is_null($monitoramento)) {
-            if ($monitoramento === 'energia')
-                $m = "_" . $monitoramento;
-            elseif ($monitoramento === 'agua')
-                $m = $monitoramento;
-        }
         $query = $this->db->query("
             SELECT 
-                esm_alertas" . $m . ".tipo, 
-                esm_alertas" . $m . ".titulo, 
-                esm_alertas" . $m . ".texto, 
-                COALESCE(esm_alertas" . $m . ".enviada, 0) AS enviada,
-                COALESCE(esm_alertas" . $m . "_envios.lida, '') AS lida
-            FROM esm_alertas" . $m . "_envios
-            JOIN esm_alertas" . $m . " ON esm_alertas" . $m . ".id = esm_alertas" . $m . "_envios.alerta_id
-            WHERE esm_alertas" . $m . "_envios.id = $id
+                esm_alertas_" . $monitoramento . ".tipo, 
+                esm_alertas_" . $monitoramento . ".titulo, 
+                esm_alertas_" . $monitoramento . ".texto, 
+                COALESCE(esm_alertas_" . $monitoramento . ".enviada, 0) AS enviada,
+                COALESCE(esm_alertas_" . $monitoramento . "_envios.lida, '') AS lida
+            FROM esm_alertas_" . $monitoramento . "_envios
+            JOIN esm_alertas_" . $monitoramento . " ON esm_alertas_" . $monitoramento . ".id = esm_alertas_" . $monitoramento . "_envios.alerta_id
+            WHERE esm_alertas_" . $monitoramento . "_envios.id = $id
         ");
 
         // verifica se retornou algo
@@ -395,7 +388,7 @@ class Shopping_model extends Base_model
 
         if ($readed) {
             // atualiza esm_alertas
-            $this->db->table('esm_alertas' . $m . '_envios')
+            $this->db->table('esm_alertas_' . $monitoramento . '_envios')
                 ->where('id', $id)
                 ->where('lida', NULL)
                 ->set(array('lida' => date("Y-m-d H:i:s")))
@@ -407,35 +400,20 @@ class Shopping_model extends Base_model
 
     public function DeleteAlert($id, $monitoramento = null)
     {
-        $m = "";
-        if (!is_null($monitoramento)) {
-            if ($monitoramento === 'energia')
-                $m = "_" . $monitoramento;
-            elseif ($monitoramento === 'agua')
-                $m = $monitoramento;
-        }
-
-        if (!$this->db->table('esm_alertas' . $m . '_envios')->where(array('id' => $id))->set(array('visibility' => 'delbyuser'))->update()) {
+        if (!$this->db->table('esm_alertas_' . $monitoramento . '_envios')->where(array('id' => $id))->set(array('visibility' => 'delbyuser'))->update()) {
             echo json_encode(array("status" => "error", "message" => $this->db->error()));
             return;
         }
 
         echo json_encode(array("status" => "success", "message" => "Alerta excluído com sucesso.", "id" => $id));
     }
+
     public function ReadAllAlert($user_id, $monitoramento = null)
     {
-        $m = "";
-        if (!is_null($monitoramento)) {
-            if ($monitoramento === 'energia')
-                $m = "_" . $monitoramento;
-            elseif ($monitoramento === 'agua')
-                $m = $monitoramento;
-        }
-
         // atualiza data
         $this->db->transStart();
 
-        $this->db->table('esm_alertas' . $m . '_envios')
+        $this->db->table('esm_alertas_' . $monitoramento . '_envios')
             ->where('user_id', $user_id)
             ->where('lida', NULL)
             ->set(array('lida' => date("Y-m-d H:i:s")))

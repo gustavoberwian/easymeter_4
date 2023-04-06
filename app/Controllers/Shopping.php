@@ -359,48 +359,44 @@ class Shopping extends UNO_Controller
 
     public function GetAlerts()
     {
-        $monitoramento = $this->input->getPost('monitoramento');
+        $m = $this->input->getPost('monitoramento');
         $group         = $this->input->getPost('group');
 
         $user_id = auth()->user()->id;
 
-        $m = "";
-        $dvc = 'esm_alertas'.$m.'.medidor_id';
-        $join = 'JOIN esm_medidores ON esm_medidores.id = ' . $dvc;
-        if ($monitoramento === 'energia') {
-            $m = '_' . $monitoramento;
-            $dvc = 'esm_alertas'.$m.'.device';
-            $join = 'JOIN esm_medidores ON esm_medidores.nome = ' . $dvc;
-        }
+        $dvc = 'esm_alertas_'.$m.'.device';
+        $join = 'JOIN esm_medidores ON esm_medidores.nome = ' . $dvc;
 
         $dt = $this->datatables->query("
             SELECT 
                 1 AS type, 
-                esm_alertas".$m.".tipo, 
+                esm_alertas_".$m.".tipo, 
                 $dvc,
                 esm_unidades.nome, 
-                esm_alertas".$m.".titulo, 
-                esm_alertas".$m.".enviada, 
+                esm_alertas_".$m.".titulo, 
+                esm_alertas_".$m.".enviada, 
                 0 as actions, 
-                IF(ISNULL(esm_alertas".$m."_envios.lida), 'unread', '') as DT_RowClass,
-                esm_alertas".$m."_envios.id AS DT_RowId
-            FROM esm_alertas".$m."_envios 
-            JOIN esm_alertas".$m." ON esm_alertas".$m.".id = esm_alertas".$m."_envios.alerta_id 
+                IF(ISNULL(esm_alertas_".$m."_envios.lida), 'unread', '') as DT_RowClass,
+                esm_alertas_".$m."_envios.id AS DT_RowId
+            FROM esm_alertas_".$m."_envios 
+            JOIN esm_alertas_".$m." ON esm_alertas_".$m.".id = esm_alertas_".$m."_envios.alerta_id 
             " . $join . " 
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group
             WHERE
-                esm_alertas".$m."_envios.user_id = $user_id AND 
-                esm_alertas".$m.".visibility = 'normal' AND 
-                esm_alertas".$m."_envios.visibility = 'normal' AND
-                esm_alertas".$m.".enviada IS NOT NULL
-            ORDER BY esm_alertas".$m.".enviada DESC
+                esm_alertas_".$m."_envios.user_id = $user_id AND 
+                esm_alertas_".$m.".visibility = 'normal' AND 
+                esm_alertas_".$m."_envios.visibility = 'normal' AND
+                esm_alertas_".$m.".enviada IS NOT NULL
+            ORDER BY esm_alertas_".$m.".enviada DESC
         ");
 
         $dt->edit('type', function ($data) {
             if ($this->input->getPost('monitoramento') === 'energia')
                 return "<i class=\"fas fa-bolt text-warning\"></i>";
             elseif ($this->input->getPost('monitoramento') === 'agua')
-                return "<i class=\"fas fa-tint text-warning\"></i>";
+                return "<i class=\"fas fa-tint text-primary\"></i>";
+            elseif ($this->input->getPost('monitoramento') === 'gas')
+                return "<i class=\"fas fa-fire text-success\"></i>";
         });
 
         $dt->edit('tipo', function ($data) {

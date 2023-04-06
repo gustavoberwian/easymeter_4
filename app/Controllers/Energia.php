@@ -2105,6 +2105,14 @@ class Energia extends UNO_Controller
                 RAND() * 50 AS activePositiveConsumption";
         }
 
+        $tabela = "esm_leituras_".$entity->tabela."_energia";
+        $where_demo = " AND device = '$device' $abnormal";
+
+        if ($this->user->demo) {
+            $tabela = "esm_leituras_" . $entity->tabela . "_energia_demo";
+            $where_demo = " AND device = '03D2559E'";
+        }
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT
@@ -2112,12 +2120,11 @@ class Energia extends UNO_Controller
                 $field
                 $values
             FROM
-                esm_leituras_".$entity->tabela."_energia
+                $tabela
             WHERE
                 timestamp >= UNIX_TIMESTAMP('$init 00:00:00') AND 
-                timestamp <= UNIX_TIMESTAMP('$finish 23:59:59') AND 
-                device = '$device'
-                $abnormal
+                timestamp <= UNIX_TIMESTAMP('$finish 23:59:59')
+                $where_demo
         ");
 
         $dt->edit('date', function ($data) {
@@ -2513,12 +2520,20 @@ class Energia extends UNO_Controller
     {
         $entity = $this->shopping_model->get_entity_by_group($group);
 
+        $value = "p.value AS value";
+        $tabela = "esm_leituras_".$entity->tabela."_energia";
+        if ($this->user->demo) {
+            $value = "RAND() * 1 AS value";
+            $tabela = "esm_leituras_".$entity->tabela."_energia_demo";
+            $group = 113;
+        }
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 
                 esm_unidades.nome AS name, 
-                p.value AS value,
-                p.type AS type
+                p.type AS type,
+                $value
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             JOIN (
@@ -2527,7 +2542,7 @@ class Energia extends UNO_Controller
                     IF(SUM(reactivePositiveConsumption) > SUM(ABS(reactiveNegativeConsumption)), 'I', 'C') AS type,
                     IFNULL(SUM(activePositiveConsumption) / SQRT(POW(SUM(activePositiveConsumption), 2) + POW(SUM(reactivePositiveConsumption) + SUM(ABS(reactiveNegativeConsumption)), 2)), 1) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
+                LEFT JOIN $tabela d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                 WHERE 
@@ -2538,7 +2553,7 @@ class Energia extends UNO_Controller
             WHERE 
                esm_unidades.bloco_id = $group
             ORDER BY 
-                p.value
+                value
             LIMIT 10
         ");
 
@@ -2582,34 +2597,42 @@ class Energia extends UNO_Controller
         if ($iud == 1) {
             $station = "AND ((MOD((d.timestamp), 86400) >= {$this->user->config->ponta_start} AND MOD((d.timestamp), 86400) <= {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)";
             $st = "ponta";
-            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group);
+            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group, $this->user->demo);
         } else if ($iud == 2) {
             $station = "AND (((MOD((d.timestamp), 86400) < {$this->user->config->ponta_start} OR MOD((d.timestamp), 86400) > {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)";
             $st = "fora";
-            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group);
+            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group, $this->user->demo);
         } else if ($iud == 3) {
             $station = "AND (MOD((d.timestamp), 86400) >= {$this->user->config->open} AND MOD((d.timestamp), 86400) <= {$this->user->config->close})";
             $st = "open";
-            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->open, $this->user->config->close), $group);
+            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->open, $this->user->config->close), $group, $this->user->demo);
         } else if ($iud == 4) {
             $station = "AND (MOD((d.timestamp), 86400) < {$this->user->config->open} OR MOD((d.timestamp), 86400) > {$this->user->config->close})";
             $st = "close";
-            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->open, $this->user->config->close), $group);
+            $total = $this->energy_model->GetMonthByStation(array($st, $this->user->config->open, $this->user->config->close), $group, $this->user->demo);
         } else if ($iud == 5) {
             $station = "";
             $factor = 0.090;
-            $total = $this->energy_model->GetMonthByStation(array(), $group) * $factor;
+            $total = $this->energy_model->GetMonthByStation(array(), $group, $this->user->demo) * $factor;
         } else if ($iud == 6) {
 
             echo $this->GetFactorInsight($group);
             return;
         }
 
+        $value = "p.value AS value";
+        $tabela = "esm_leituras_".$entity->tabela."_energia";
+        if ($this->user->demo) {
+            $value = "RAND() * 1000 AS value";
+            $tabela = "esm_leituras_".$entity->tabela."_energia_demo";
+            $group = 113;
+        }
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 
                 esm_unidades.nome AS name, 
-                p.value AS value
+                $value
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             JOIN (
@@ -2617,7 +2640,7 @@ class Energia extends UNO_Controller
                         d.device,
                         SUM(activePositiveConsumption) AS value
                     FROM esm_calendar
-                    LEFT JOIN esm_leituras_".$entity->tabela."_energia d ON 
+                    LEFT JOIN $tabela d ON 
                         (d.timestamp) > (esm_calendar.ts_start) AND 
                         (d.timestamp) <= (esm_calendar.ts_end + 600) 
                         $station
@@ -2628,7 +2651,7 @@ class Energia extends UNO_Controller
                 ) p ON p.device = esm_medidores.nome
             WHERE 
                 esm_unidades.bloco_id = $group
-            ORDER BY p.value DESC
+            ORDER BY value DESC
             LIMIT 10
         ");
 

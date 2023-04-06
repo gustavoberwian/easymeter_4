@@ -24,9 +24,9 @@
                     </li>
                 <?php endif; ?>
                 <li class="nav-item configs" role="presentation">
-                    <button class="nav-link configs <?= $user->inGroup("unity_shopping") ? 'left active' : '' ?>" data-bs-toggle="pill" data-bs-target="#charts" type="button">Medição</button>
+                    <button class="nav-link configs <?= $user->inGroup("unity") ? 'left active' : '' ?>" data-bs-toggle="pill" data-bs-target="#charts" type="button">Medição</button>
                 </li>
-                <?php if (!$user->inGroup("unity_shopping") || $permission->acessar_engenharia): ?>
+                <?php if (!$user->inGroup("unity") || $permission->acessar_engenharia): ?>
                     <li class="nav-item configs" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#engineering" type="button">Engenharia</button>
                     </li>
@@ -47,9 +47,9 @@
 
     <div class="tab-content" style="background-color: transparent; box-shadow: none; padding: 0;">
 
-        <div class="row pt-0 selector" <?= !$user->inGroup("unity_shopping") ? 'style="display: none;"' : '' ?>>
+        <div class="row pt-0 selector" <?= !$user->inGroup("unity") ? 'style="display: none;"' : '' ?>>
 
-            <div class="<?= $user->inGroup("unity_shopping") ? 'col-md-4' : 'col-md-2' ?> mb-4">
+            <div class="<?= $user->inGroup("unity") ? 'col-md-4' : 'col-md-2' ?> mb-4">
                 <section class="card card-comparativo h-100">
                     <div class="card-body">
                         <h6 class="card-body-title mb-3 mt-0 text-primary">Leitura Atual</h6>
@@ -60,7 +60,7 @@
                 </section>
             </div>
 
-            <?php if (!$user->inGroup("unity_shopping")): ?>
+            <?php if (!$user->inGroup("unity")): ?>
                 <div class="col-md-2 mb-4">
                     <section class="card card-comparativo h-100 h-100">
                         <div class="card-body" style="background-color: #03aeef;">
@@ -119,7 +119,7 @@
 
         </div>
 
-        <div class="row pt-0 consumption" <?= !$user->inGroup("unity_shopping") ? 'style="display: none;"' : '' ?>>
+        <div class="row pt-0 consumption" <?= !$user->inGroup("unity") ? 'style="display: none;"' : '' ?>>
 
             <div class="col-md-4 mb-4">
                 <section class="card card-comparativo h-100">
@@ -189,7 +189,7 @@
 
         </div>
 
-        <?php if (!$user->inGroup("unity_shopping")): ?>
+        <?php if (!$user->inGroup("unity")): ?>
             <div class="tab-pane fade show active" id="resume">
 
                 <section class="card card-easymeter mb-4">
@@ -229,7 +229,7 @@
             </div>
         <?php endif; ?>
 
-        <div class="tab-pane fade <?= $user->inGroup("unity_shopping") ? 'show active' : '' ?>" id="charts">
+        <div class="tab-pane fade <?= $user->inGroup("unity") ? 'show active' : '' ?>" id="charts">
 
             <div class="row pt-0">
 
@@ -451,7 +451,7 @@
 
         </div>
 
-        <?php if (!$user->inGroup("unity_shopping") || $permission->acessar_engenharia): ?>
+        <?php if (!$user->inGroup("unity") || $permission->acessar_engenharia): ?>
             <div class="tab-pane fade" id="engineering">
 
                 <section class="card card-easymeter mb-4">

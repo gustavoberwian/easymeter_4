@@ -6,7 +6,7 @@
     </header>
 
     <div class="row">
-        <div class="col-6">
+        <div class="col-9">
             <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
                 <li class="nav-item configs" role="presentation">
                     <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#geral" type="button" aria-selected="true" role="tab">Geral</button>
@@ -28,7 +28,7 @@
                 </li>
             </ul>
         </div>
-        <div class="col-6 text-end">
+        <div class="col-3 text-end">
             <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
         </div>
     </div>

@@ -6,6 +6,7 @@ Theme Version: 	4.1.0
 html,
 body {
     background: #ecedf0;
+	font-family: poppins,Arial,sans-serif;
     width: 100%;
 }
 

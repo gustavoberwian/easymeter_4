@@ -14,19 +14,15 @@
                     <?php if ($user->inGroup('admin', 'shopping')): ?>
                         <li class="<?php if (in_array($method, array('index'))) echo 'nav-active'; ?>">
                             <a class="nav-link" href="<?= site_url($url); ?>">
-                                <i class="fas fa-building" aria-hidden="true"></i>
-                                <?php if ($url !== "shopping") : ?>
-                                    <span>Estabelecimentos</span>
-                                <?php else : ?>
-                                    <span>Shoppings</span>
-                                <?php endif; ?>
+                                <i class="fas fa-home" aria-hidden="true"></i>
+                                <span>Início</span>
                             </a>
                         </li>
                     <?php endif; ?>
 
                     <?php if (!in_array($method, array('index', 'profile'))): ?>
 
-                        <?php if ($user->inGroup('unity_shopping')): ?>
+                        <?php if ($user->inGroup('unity', 'shopping')): ?>
                             <li class="<?php if (in_array($method, array('unidade')) && !$alerta && !$faturamento) echo 'nav-active'; ?>">
                                 <a class="nav-link" href="<?= site_url($url . '/unidade/' . $group_id . '/' . $unidade_id); ?>">
                                     <i class="fas fa-home" aria-hidden="true"></i>
@@ -103,7 +99,7 @@
                                 </a>
                             </li>
 
-                            <?php if (!$user->inGroup('unity_shopping')): ?>
+                            <?php if (!$user->inGroup('unity', 'shopping')): ?>
                                 <li class="<?php if (in_array($method, array('configuracoes', 'users'))) echo 'nav-active'; ?>">
                                     <a class="nav-link" href="<?= site_url($url . '/configuracoes/' . $group_id); ?>">
                                         <i class="fas fa-cogs"></i>

@@ -147,7 +147,8 @@ class Shopping extends UNO_Controller
     }*/
 
     // TODO: Finalizar página da unidade
-    /*public function unidade($group_id, $unidade_id, $alerta = null)
+
+    public function unidade($group_id, $unidade_id, $alerta = null)
     {
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
@@ -175,7 +176,7 @@ class Shopping extends UNO_Controller
 
                 $this->setHistory("Acesso aos faturamentos da unidade $unidade_id do shopping $group_id", 'acesso');
 
-                $this->render('faturamentos_unidade', $data);
+               echo $this->render('faturamentos_unidade', $data);
                 return;
             }
 
@@ -183,14 +184,14 @@ class Shopping extends UNO_Controller
 
             $this->setHistory("Acesso aos alertas da unidade $unidade_id do shopping $group_id", 'acesso');
 
-            $this->render('alertas_unidade', $data);
+            echo $this->render('alertas_unidade', $data);
             return;
         }
 
         $this->setHistory("Acesso ao consumo da unidade $unidade_id do shopping $group_id", 'acesso');
 
-        echo $this->render('energy', $data);
-    }*/
+        echo $this->render('unidade', $data);
+    }
 
     public function energy($group_id = null)
     {

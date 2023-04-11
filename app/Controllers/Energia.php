@@ -852,7 +852,8 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
-        $group      = $this->input->getPost('group');
+        $group    = $this->input->getPost('group');
+        $field    = $this->input->getPost('field');
 
         $value_a = array();
         $value_b = array();
@@ -2685,27 +2686,7 @@ class Energia extends UNO_Controller
     public function GetFaturamentos()
     {
         $group = $this->input->getPost('gid');
-
-/*
-            SELECT
-                esm_fechamentos_energia.id,
-                competencia,
-                FROM_UNIXTIME(inicio, '%d/%m/%Y') AS inicio,
-                FROM_UNIXTIME(fim, '%d/%m/%Y') AS fim,
-                FORMAT(consumo, 3, 'de_DE') AS consumo,
-                FORMAT(consumo_p, 3, 'de_DE') AS consumo_p,
-                FORMAT(consumo_f, 3, 'de_DE') AS consumo_f,
-                FORMAT(demanda_p, 3, 'de_DE') AS demanda_p,
-                FORMAT(demanda_f, 3, 'de_DE') AS demanda_f,
-                FORMAT(fracao_consumo, 3, 'de_DE') AS fracao_consumo,
-                DATE_FORMAT(cadastro, '%d/%m/%Y') AS emissao
-            FROM
-                esm_fechamentos_energia
-            JOIN
-                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id AND esm_agrupamentos.id = $group
-            ORDER BY cadastro DESC
-*/
-
+       
         $dt = $this->datatables->query("
             SELECT
                 esm_fechamentos_energia.id,

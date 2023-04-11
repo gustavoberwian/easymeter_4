@@ -13,7 +13,7 @@
             {data: "consumo_p", class: "dt-body-center"},
             {data: "consumo_f", class: "dt-body-center"},
             {data: "demanda", class: "dt-body-center"},
-//            {data: "demanda_f", class: "dt-body-center"},
+            {data: "demanda_f", class: "dt-body-center"},
             {data: "consumo_u", class: "dt-body-center"},
             {data: "consumo_u_p", class: "dt-body-center"},
             {data: "consumo_u_f", class: "dt-body-center"},

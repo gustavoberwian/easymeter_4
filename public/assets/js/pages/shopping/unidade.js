@@ -2,6 +2,387 @@
 
     'use strict';
 
+    //Fazer download em excel energia
+
+    $(document).on("click", ".action-download", function () {
+
+        var $btn = $(this);
+		$btn.html('<i class="fas fa-spinner fa-spin"></i>');
+
+        // faz a requisição
+		$.post("/energia/download", { id: $(this).data('id') }, function(json) {
+
+            if (json.status == "error") {
+                    
+                notifyError(json.message);
+
+            } else {
+
+                var $a = $("<a>");
+                $a.attr("href", json.file);
+                $("body").append($a);
+                $a.attr("download", json.name + '.xlsx');
+                $a[0].click();
+                $a.remove();
+            }
+		}, 'json')
+		.fail(function(xhr, status, error) {
+			// mostra erro
+            notifyError(error, 'Ajax Error');
+        })
+		.always(function() {
+			// oculta indicador e habilita botão
+			$btn.html('<i class="fas fa-file-download"></i>');
+        });
+    });
+
+    //Fazer download excel agua
+
+    $(document).on("click", ".action-water-download", function () {
+
+        var $btn = $(this);
+		$btn.html('<i class="fas fa-spinner fa-spin"></i>');
+
+        // faz a requisição
+		$.post("/water/download", { id: $(this).data('id') }, function(json) {
+
+            if (json.status == "error") {
+                    
+                notifyError(json.message);
+
+            } else {
+
+                var $a = $("<a>");
+                $a.attr("href", json.file);
+                $("body").append($a);
+                $a.attr("download", json.name + '.xlsx');
+                $a[0].click();
+                $a.remove();
+            }
+		}, 'json')
+		.fail(function(xhr, status, error) {
+			// mostra erro
+            notifyError(error, 'Ajax Error');
+        })
+		.always(function() {
+			// oculta indicador e habilita botão
+			$btn.html('<i class="fas fa-file-download"></i>');
+        });
+    });
+
+    //Fazer download lancamentos energia
+
+    $(document).on("click", ".btn-download", function () {
+        
+        var $btn = $(this);
+        $btn.trigger("loading-overlay:show").prop("disabled", true);
+
+        // faz a requisição
+        $.post("/energia/DownloadLancamentos", {id: $(this).data("group")}, function (json) {
+
+                if (json.status == "error") {
+                    
+                    notifyError(json.message);
+
+                } else {
+                    var $a = $("<a>");
+                    $a.attr("href", json.file);
+                    $("body").append($a);
+                    $a.attr("download", json.name + ".xlsx");
+                    $a[0].click();
+                    $a.remove();
+                }
+            },
+            "json"
+        )
+            .fail(function (xhr, status, error) {
+                // mostra erro
+                notifyError(error, "Ajax Error");
+            })
+            .always(function () {
+                // oculta indicador e habilita botão
+                $btn.trigger("loading-overlay:hide").prop("disabled", false);
+            });
+    });
+
+    //Fazer download lancamentos agua
+
+    $(document).on("click", ".btn-water-download", function () {
+        
+        var $btn = $(this);
+        $btn.trigger("loading-overlay:show").prop("disabled", true);
+
+        // faz a requisição
+        $.post("/water/DownloadLancamentos", {id: $(this).data("group")}, function (json) {
+
+                if (json.status == "error") {
+                    
+                    notifyError(json.message);
+
+                } else {
+                    var $a = $("<a>");
+                    $a.attr("href", json.file);
+                    $("body").append($a);
+                    $a.attr("download", json.name + ".xlsx");
+                    $a[0].click();
+                    $a.remove();
+                }
+            },
+            "json"
+        )
+            .fail(function (xhr, status, error) {
+                // mostra erro
+                notifyError(error, "Ajax Error");
+            })
+            .always(function () {
+                // oculta indicador e habilita botão
+                $btn.trigger("loading-overlay:hide").prop("disabled", false);
+            });
+    });
+
+    function CallAlerts() {
+        return {
+            initialize: function (table, columns, url){
+                this
+                    .options(table, columns, url)
+                    .setVars()
+                    .build()
+                    .events();
+            },
+
+            options: function (table, columns, url) {
+                this.$options = {
+                    table: table,
+                    columns: columns,
+                    url: url
+                }
+
+                return this;
+            },
+
+            setVars: function () {
+                this.table = this.$options.table;
+                this.columns = this.$options.columns;
+                this.url = this.$options.url;
+                this.$table = $(this.$options.table);
+                this.$columns = $(this.$options.columns);
+
+                return this;
+            },
+
+            build: function () {
+                let _self = this;
+
+                this.datatable = this.$table.DataTable({
+                    dom: '<"table-responsive"t>r<"row"<"col-md-12"p>>',
+                    processing: true,
+                    columns: _self.$columns,
+                    serverSide: true,
+                    sorting: [],
+                    pagingType: "numbers",
+                    pageLength: 20,
+                    ajax: {
+                        type: "POST",
+                        url: _self.$table.data("url"),
+                        data: {
+                            fid: $(".btn-download").data("id"),
+                            monitoramento: _self.$table.data("tipo"),
+                            group: $(".page-header").data("group")
+                        },
+                        error: function () {
+                            notifyError(
+                                "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
+                            );
+                            _self.$table.dataTable().fnProcessingIndicator(false);
+                            $(_self.table + " .table-responsive").removeClass("processing");
+                        },
+                    },
+                    fnDrawCallback: function() {
+                        $(_self.table + "_wrapper .table-responsive").removeClass("processing");
+                        if ($(_self.table + ' tbody tr').hasClass('unread') && !$('.dataTables_paginate').children().hasClass('select-all'))
+                            $(_self.table + '_paginate').prepend('<div class="select-all"><a class="mark-all' + _self.$table.data("tipo") + ' cur-pointer">Marcar todos como lidos</a></div>')
+                    }
+                });
+
+                window.dt = this.datatable;
+
+                return this;
+            },
+
+            events: function () {
+                let _self = this;
+
+                // duplica thead
+                $(_self.table + ' thead tr').clone(true).appendTo( _self.table + ' thead' ).addClass('filter');
+
+                // adiciona campos de filtro
+                $(_self.table + ' thead tr:eq(1) th.filter').each( function (i) {
+
+                    $(this).html( '<input type="text" class="form-control input-block" value="">' );
+
+                    $( 'input', this ).on( 'keyup change', function () {
+                        if ( _self.datatable.column(i).search() !== this.value ) {
+                            _self.datatable
+                                .column(i+1)
+                                .search( this.value )
+                                .draw();
+                        }
+                    } );
+                } );
+
+                // limpa campos que não são filtros
+                $(_self.table + ' thead tr:eq(1) th:not(.filter)').each( function () {
+                    $(this).text('')
+                });
+
+                // inclui botão limpar filtros
+                $(_self.table + ' thead tr:eq(1) th:eq(6)').html('<a href="" class="clear-filter" title="Limpa filtros"><i class="fas fa-times"></i></a>').addClass('actions text-center');
+
+                // handler botão limpar filtros
+                $('.clear-filter').on('click', function () {
+                    $(_self.table + ' thead tr:eq(1) th.filter input').each( function () {
+                        this.value = '';
+                    });
+                    _self.datatable.columns().search('').draw();
+                });
+
+                $(_self.table + ' tbody').on('click', 'tr', function (event) {
+
+                    if (event.target.cellIndex === undefined || event.target.cellIndex === 6) return;
+
+                    let data = _self.datatable.row( this ).data();
+                    let $row = $(this);
+
+                    $.magnificPopup.open( {
+                        items: {src: '/shopping/ShowAlert'},
+                        type: 'ajax',
+                        modal:true,
+                        ajax: {
+                            settings: {
+                                type: 'POST',
+                                data: { id: data.DT_RowId, monitoramento: _self.$table.data("tipo") }
+                            }
+                        },
+                        callbacks: {
+                            close: function() {
+                                // mostra action
+                                $('.action-delete').filter('[data-id="'+data.DT_RowId+'"]').removeClass('d-none')
+                                // atualiza badge se necessário
+                                if ($row.hasClass('unread')) {
+                                    let $badge = $('.badge-alerta');
+                                    let $count = $badge.attr('data-count') - 1;
+                                    $badge.attr('data-count', $count).html($count);
+                                }
+                                // remove destaque da linha
+                                $row.removeClass('unread');
+                            }
+                        }
+                    });
+                });
+
+                // **
+                // * Handler Fechar Modal
+                // **
+                $(document).on('click', '.modal-dismiss', function (e) {
+                    // para propagação
+                    e.preventDefault();
+                    // fecha a modal
+                    $.magnificPopup.close();
+                });
+
+                // **
+                // * Handler Action Excluir Alerta
+                // **
+                $(document).on('click', _self.table + ' .action-delete', function () {
+
+                    let $btn = $(this);
+                    $btn.html('<i class="fas fa-spinner fa-spin"></i>');
+
+                    // faz a requisição
+                    $.post(
+                        "/shopping/DeleteAlert",
+                        {
+                            id: $(this).data('id'),
+                            monitoramento: _self.$table.data('tipo'),
+                        },
+                        function(json) {
+                            if (json.status == 'success') {
+                                // remove linha
+                                _self.datatable.draw();
+                                // mostra notificação
+                                notifySuccess(json.message);
+                            } else {
+                                $btn.html('<i class="fas fa-trash"></i>');
+                                // mostra erro
+                                notifyError(json.message);
+                            }
+                        }, 'json').fail(function(xhr, status, error) {
+                            $btn.html('<i class="fas fa-trash"></i>');
+                            notifyError(error, 'Ajax Error');
+                        }
+                    );
+                });
+
+                $(document).on("click", 'a.mark-all' + _self.$table.data("tipo"), function() {
+
+                    // faz a requisição
+                    $.ajax({
+                        method : 'POST',
+                        url : "/shopping/ReadAllAlert",
+                        data : { monitoramento : _self.$table.data("tipo") },
+                        dataType : 'json',
+                        success : function(json) {
+                            if (json.status == 'success') {
+                                _self.datatable.draw();
+                                // mostra notificação
+                                notifySuccess(json.message);
+                            } else {
+                                // mostra erro
+                                notifyError(json.message);
+                            }
+                        },
+                        error : function(xhr, status, error) {
+                            // mostra erro
+                            notifyError(error, 'Ajax Error');
+                        }
+                    });
+                })
+
+                _self.$table
+                    .on('click', '', function (e) {
+
+                    })
+            }
+        }
+    }
+
+    let energyAlertsTable = new CallAlerts();
+    energyAlertsTable.initialize("#dt-alerts-energia",
+        [
+            {data: "type", className: "dt-body-center", orderable: false},
+            {data: "tipo", className: "dt-body-center", orderable: false},
+            {data: "device", className: "dt-body-center filter"},
+            {data: "nome", className: "filter" },
+            {data: "titulo"},
+            {data: "enviada", className: "dt-body-center"},
+            {data: "actions", className: "dt-body-center", orderable: false},
+        ],
+    );
+
+    let waterAlertsTable = new CallAlerts();
+    waterAlertsTable.initialize("#dt-alerts-water",
+        [
+            {data: "type", className: "dt-body-center", orderable: false},
+            {data: "tipo", className: "dt-body-center", orderable: false},
+            {data: "device", className: "dt-body-center filter"},
+            {data: "nome", className: "filter" },
+            {data: "titulo"},
+            {data: "enviada", className: "dt-body-center"},
+            {data: "actions", className: "dt-body-center", orderable: false},
+        ],
+    );
+
+
     var start = moment().subtract(6, 'days');
     var end = moment();
     var chart = {};
@@ -20,7 +401,8 @@
                 device  : device,
                 start   : start.format("YYYY-MM-DD"),
                 end     : end.format("YYYY-MM-DD"),
-                field   : el.data("field")
+                field   : el.data("field"),
+                group   : $('.page-header').data("group")
             };
 
             $.ajax({
@@ -235,6 +617,7 @@
                 d.type   = $(".type").val();
                 d.min    = $("#min").val();
                 d.max    = $("#max").val();
+                d.group  = $(".page-header").data("group");
             },
             url: "/energia/data",
             error: function () {
@@ -288,6 +671,7 @@
                     d.device = device;
                     d.init = start.format("YYYY-MM-DD");
                     d.finish = end.format("YYYY-MM-DD");
+                    d.group  = $(".page-header").data("group");
                 },
                 url: "/energia/data",
                 error: function () {
@@ -489,6 +873,140 @@
                 });
         });
 
+        // **
+	// * Handler Action Abrir modal confirmação para excluir fechamento
+	// **
+	$(document).on('click', '.action-delete', function () {
+
+        var dis_timer, id = $(this).data('id');
+        
+		// abre a modal
+		$.magnificPopup.open( {
+			items: {src: '#modalExclui'}, type: 'inline',
+			callbacks: {
+				beforeOpen: function() {
+                    $('#modalExclui .id').val( id );
+                    $('#modalExclui .type').val('energia');
+                },
+                open: function() {
+                    // desabilita botão
+                    var btn = $('#modalExclui .modal-confirm');
+                    btn.prop("disabled", true);
+                    // inicializa timer
+                    var sec = btn.data('timer');
+                    // declaração do timer regressimo
+                    function countDown() {
+                        // mostra valor
+                        btn.html(sec);
+                        if (sec <= 0) {
+                            // terminou. Habilita botão e atualiza texto
+                            btn.prop("disabled", false);
+                            btn.html('Excluir');
+                            return;
+                        }
+                        // continua contando
+                        sec -= 1;
+                        dis_timer = setTimeout(countDown, 1000);
+                    }
+                    countDown();
+                },
+                close: function() {
+                    clearTimeout(dis_timer);
+                }
+			}
+		});
+	});
+
+    // **
+	// * Handler Action Abrir modal confirmação para excluir fechamento
+	// **
+	$(document).on('click', '.action-water-delete', function () {
+
+        var dis_timer, id = $(this).data('id');
+        
+		// abre a modal
+		$.magnificPopup.open( {
+			items: {src: '#modalExclui'}, type: 'inline',
+			callbacks: {
+				beforeOpen: function() {
+                    $('#modalExclui .id').val( id );
+                    $('#modalExclui .type').val('water');
+                },
+                open: function() {
+                    // desabilita botão
+                    var btn = $('#modalExclui .modal-confirm');
+                    btn.prop("disabled", true);
+                    // inicializa timer
+                    var sec = btn.data('timer');
+                    // declaração do timer regressimo
+                    function countDown() {
+                        // mostra valor
+                        btn.html(sec);
+                        if (sec <= 0) {
+                            // terminou. Habilita botão e atualiza texto
+                            btn.prop("disabled", false);
+                            btn.html('Excluir');
+                            return;
+                        }
+                        // continua contando
+                        sec -= 1;
+                        dis_timer = setTimeout(countDown, 1000);
+                    }
+                    countDown();
+                },
+                close: function() {
+                    clearTimeout(dis_timer);
+                }
+			}
+		});
+	});
+
+    // **
+	// * Handler Button excluir fechamento
+	// **
+	$(document).on('click', '#modalExclui .modal-confirm', function (e) {
+		// mostra indicador
+		var $btn = $(this);
+		$btn.trigger('loading-overlay:show');
+		// desabilita botões
+		var $btn_d = $('.btn:enabled').prop('disabled', true);
+		// pega o valor do id
+		var id = $('#modalExclui .id').val();
+        var type = $('#modalExclui .type').val();
+		// faz a requisição
+		$.post("/"+type+"/DeleteLancamento", {id: id}, function(json) {
+			if (json.status == 'success') {
+				// fecha modal
+				$.magnificPopup.close();
+				// atualiza tabela
+				dtFaturamentos.ajax.reload( null, false );
+                dtWater.ajax.reload( null, false );
+				// mostra notificação
+				notifySuccess(json.message);
+			} else {
+				// fecha modal
+				$.magnificPopup.close();
+				// mostra erro
+				notifyError(json.message);
+			}
+		}, 'json')
+		.fail(function(xhr, status, error) {
+			// fecha modal
+			$.magnificPopup.close();
+			// mostra erro
+			notifyError(error, 'Ajax Error');
+  		})
+		.always(function() {
+			// oculta indicador e habilita botão
+			$btn.trigger('loading-overlay:hide');
+			// habilita botões
+			$btn_d.prop('disabled', false);
+			// limpa id
+			$('#modalExclui .id').val('');
+            $('#modalExclui .type').val('');
+		});
+    });
+
         $(document).on("click", 'a.mark-all', function() {
 
             // faz a requisição
@@ -515,6 +1033,8 @@
                 });
         });
 
+
+
     }.apply(this, [jQuery]));
 
     let dtFaturamentos = $("#dt-faturamentos").DataTable({
@@ -527,9 +1047,11 @@
             {data: "consumo", class: "dt-body-center"},
             {data: "consumo_p", class: "dt-body-center"},
             {data: "consumo_f", class: "dt-body-center"},
-            {data: "demanda_p", class: "dt-body-center"},
-            {data: "demanda_f", class: "dt-body-center"},
-            {data: "fracao_consumo", class: "dt-body-center"},
+            {data: "demanda", class: "dt-body-center"},
+            {data: "consumo_u", class: "dt-body-center"},
+            {data: "consumo_u_p", class: "dt-body-center"},
+            {data: "consumo_u_f", class: "dt-body-center"},
+            {data: "demanda_u", class: "dt-body-center"},
             {data: "emissao", class: "dt-body-center"},
             {data: "action", class: "dt-body-center"},
         ],
@@ -551,6 +1073,41 @@
                 );
                 $("#dt-faturamentos").dataTable().fnProcessingIndicator(false);
                 $("#dt-faturamentos_wrapper .table-responsive").removeClass("processing");
+            },
+        },
+    });
+
+    let dtWater = $("#dt-water").DataTable({
+        dom: '<"table-responsive"t>pr',
+        processing: true,
+        columns: [
+            {data: "competencia", class: "dt-body-center"},
+            {data: "inicio", class: "dt-body-center" },
+            {data: "fim", class: "dt-body-center"},
+            {data: "consumo", class: "dt-body-center"},
+            {data: "consumo_o", class: "dt-body-center"},
+            {data: "consumo_c", class: "dt-body-center"},
+            {data: "emissao", class: "dt-body-center"},
+            {data: "action", class: "dt-body-center"},
+        ],
+        serverSide: true,
+        ordering: false,
+        sorting: [],
+        pageLength: 10,
+        pagingType: "numbers",
+        searching: false,
+        ajax: {
+            type: 'POST',
+            url: $("#dt-water").data("url"),
+            data: function (d) {
+                d.gid = $("#dt-water").data("group");
+            },
+            error: function () {
+                notifyError(
+                    "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
+                );
+                $("#dt-water").dataTable().fnProcessingIndicator(false);
+                $("#dt-water_wrapper .table-responsive").removeClass("processing");
             },
         },
     });

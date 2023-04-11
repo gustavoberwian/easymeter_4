@@ -51,18 +51,19 @@
             <div class="col-md-2 mb-4">
                 <section class="card card-comparativo h-100 h-100">
                     <div class="card-body" style="background-color: #03aeef;">
-                        <h6 class="card-body-title mb-3 mt-0 text-light">Medidor <i class="float-end fas fa-microchip"></i></h6>
+                        <h6 class="card-body-title mb-3 mt-0 text-light"><label for="sel-device">Medidor</label> <i class="float-end fas fa-microchip"></i></h6>
                         <select class="form-control" name="sel-device" id="sel-device">
                             <option value="T">Todos</option>
-                            <?php foreach ($unidades as $u) { ?>
-                                <option value="<?= $u["medidor_id"] ?>"><?= $u["unidade_nome"]; ?></option>
-                            <?php } ?>
-                            <?php if ($device_groups) { ?>
-                                <optgroup label="Agrupamentos">
-                                <?php foreach ($device_groups as $u) { ?>
+                            <optgroup label="Medidores">
+                                <?php foreach ($unidades as $u) : ?>
+                                    <option value="<?= $u["medidor_id"] ?>"><?= $u["unidade_nome"]; ?></option>
+                                <?php endforeach; ?>
+                            </optgroup>
+                            <optgroup label="Agrupamentos">
+                                <?php foreach ($device_groups as $u) : ?>
                                     <option value="<?= $u["id"] ?>"><?= $u["name"]; ?></option>
-                                <?php } ?>
-                            <?php } ?>
+                                <?php endforeach; ?>
+                            </optgroup>
                         </select>
                     </div>
                 </section>

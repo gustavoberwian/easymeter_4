@@ -155,7 +155,7 @@ class Shopping_model extends Base_model
     {
         $t = "";
         if (!is_null($tipo)) {
-            $t = " AND esm_entradas.tipo = '$tipo' ";
+            $t = " AND esm_medidores.tipo = '$tipo' ";
         }
         $result = $this->db->query("
             SELECT

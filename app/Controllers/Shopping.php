@@ -246,6 +246,11 @@ class Shopping extends UNO_Controller
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
 
+        $data['unidades'] = $this->shopping_model->get_units($group_id, "gas");
+        $data['device_groups'] = $this->shopping_model->get_device_groups($group_id, "gas");
+
+        $data['area_comum'] = "Área Comum";
+
         //echo "<pre>"; print_r($data); echo "</pre>";
 
         return $this->render('gas', $data);

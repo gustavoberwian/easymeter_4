@@ -213,6 +213,7 @@
                             <div class="card-actions buttons">
                                 <?php if (!$user->demo): ?>
                                     <button class="btn btn-primary btn-new-agrupamento-energia">Criar Agrupamento</button>
+                                    <button class="btn btn-primary btn-new-agrupamento-agua d-none">Criar Agrupamento</button>
                                 <?php endif; ?>
                             </div>
                             <h2 class="card-title">Agrupamentos</h2>
@@ -220,10 +221,10 @@
                         <div class="card-body bordered">
                             <ul class="nav nav-pills nav-pills-primary mb-3 position-absolute" role="tablist" style="z-index: 999;">
                                 <li class="nav-item me-2" role="presentation">
-                                    <button class="nav-link color-energy active" data-bs-toggle="pill" data-bs-target="#energia2" type="button" aria-selected="true" role="tab">Energia</button>
+                                    <button class="nav-link color-energy agrupamento-pill active" data-bs-toggle="pill" data-bs-target="#energia2" type="button" aria-selected="true" role="tab">Energia</button>
                                 </li>
                                 <li class="nav-item me-2" role="presentation">
-                                    <button class="nav-link color-water" data-bs-toggle="pill" data-bs-target="#agua2" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
+                                    <button class="nav-link color-water agrupamento-pill" data-bs-toggle="pill" data-bs-target="#agua2" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
                                 </li>
                             </ul>
 

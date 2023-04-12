@@ -184,7 +184,7 @@
             // ==========================================================================================
 
             rowAdd: function () {
-                $(this.$add).attr({ 'disabled': 'disabled' });
+                //$(this.$add).attr({ 'disabled': 'disabled' });
                 var _self = this;
 
                 var actions,
@@ -217,6 +217,7 @@
 
                 // Gambiarra para desfazer gambiarra !!!NAO APAGAR!!!
                 $("#dt-agrupamentos-energia").parent().css('min-height', 'unset');
+                $("#dt-agrupamentos-agua").parent().css('min-height', 'unset');
 
                 data = this.datatable.row($row.get(0)).data();
                 this.datatable.row($row.get(0)).data(data);
@@ -331,6 +332,7 @@
                                     // CSS para uma tabela específica (gambiarra) !!!NAO APAGAR!!!
                                     // Essa alteração é desfeita nas funções rowCancel, rowSave e deleteRow
                                     $("#dt-agrupamentos-energia").parent().css('min-height', '400px');
+                                    $("#dt-agrupamentos-agua").parent().css('min-height', '400px');
                                 },
                                 error: function (xhr, status, error) {
                                 },
@@ -401,6 +403,7 @@
 
                 // Gambiarra para desfazer gambiarra !!!NAO APAGAR!!!
                 $("#dt-agrupamentos-energia").parent().css('min-height', 'unset');
+                $("#dt-agrupamentos-agua").parent().css('min-height', 'unset');
 
                 if ($row.hasClass('adding')) {
                     $(this.$add).removeAttr('disabled');
@@ -498,6 +501,7 @@
 
                 // Gambiarra para desfazer gambiarra !!!NAO APAGAR!!!
                 $("#dt-agrupamentos-energia").parent().css('min-height', 'unset');
+                $("#dt-agrupamentos-agua").parent().css('min-height', 'unset');
 
                 // pega o valor do id
                 var id = $(_self.$modalId + ' .id').val();
@@ -913,6 +917,20 @@
                 // limpa id
                 $('#modalGenerateKey .id').val('').data('uid', null);
             });
+    });
+
+    $('.agrupamento-pill[data-bs-toggle="pill"]').on('shown.bs.tab', function (e) {
+        if ($('button[data-bs-target="#energia2"].active').html() === "Energia") {
+            setTimeout(function() {
+                $('.btn-new-agrupamento-agua').addClass("d-none");
+                $('.btn-new-agrupamento-energia').removeClass("d-none");
+            }, 100);
+        } else if ($('button[data-bs-target="#agua2"].active').html() === "Água") {
+            setTimeout(function() {
+                $('.btn-new-agrupamento-energia').addClass("d-none");
+                $('.btn-new-agrupamento-agua').removeClass("d-none");
+            }, 100);
+        }
     });
 
 }.apply(this, [jQuery]));

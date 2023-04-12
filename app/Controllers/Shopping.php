@@ -47,6 +47,17 @@ class Shopping extends UNO_Controller
 
         // set variables
         $this->url = service('uri')->getSegment(1);
+
+        if ($this->user->inGroup('superadmin')) {
+            $this->user->entity = (object)[];
+            $this->user->entity->classificacao = $this->user->page;
+        } else if ($this->user->inGroup('admin')) {
+            $this->user->entity = $this->shopping_model->get_condo($this->user->type->entity_id);
+        } else if ($this->user->inGroup('group')) {
+            $this->user->entity = $this->shopping_model->get_condo_by_group($this->user->type->group_id);
+        } else if ($this->user->inGroup('unity')) {
+            $this->user->entity = $this->shopping_model->get_condo_by_unity($this->user->type->unity_id);
+        }
     }
 
     public function index()

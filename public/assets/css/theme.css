@@ -18011,7 +18011,11 @@ a:active {
 		}
 
 		ul.simple-bullet-list li.green:before {
-			border-color: #4dd79c;
+			border-color: #1d8757;
+		}
+
+		ul.simple-bullet-list li.yellow:before {
+			border-color: #fec135;
 		}
 
 		ul.simple-bullet-list li.blue:before {

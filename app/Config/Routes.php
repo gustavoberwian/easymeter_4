@@ -70,6 +70,12 @@ $routes->post('/admin', 'Admin::index',['filter'=>'checkApiAuth']);
 $routes->post('/admin/(:any)', 'Admin::$1',['filter'=>'checkApiAuth']);
 $routes->post('/admin/(:any)/(:num)', 'Admin::$1/$2',['filter'=>'checkApiAuth']);
 
+// Routes para condomínios
+$routes->get('/condominio', 'Condominio::index',['filter'=>'checkApiAuth']);
+$routes->get('/condominio/(:any)', 'Condominio::$1',['filter'=>'checkApiAuth']);
+$routes->get('/condominio/(:any)/(:num)', 'Condominio::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/condominio/(:any)', 'Condominio::$1',['filter'=>'checkApiAuth']);
+
 
 service('auth')->routes($routes);
 

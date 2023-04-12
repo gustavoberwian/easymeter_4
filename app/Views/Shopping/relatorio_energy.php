@@ -17,7 +17,7 @@
                         </td>
 
                         <td class="text-end" style="vertical-align: text-top;">
-                            <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" height="60" alt="<?= $user->condo->nome; ?>" style="margin-top: 17px;"/>
+                            <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" height="60" alt="<?= $user->entity->nome; ?>" style="margin-top: 17px;"/>
                         </td>
                     </tr>
                     <tr>

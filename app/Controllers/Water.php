@@ -152,7 +152,7 @@ class Water extends UNO_Controller
             FROM
                 esm_fechamentos_agua
             JOIN 
-                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_agua.group_id AND esm_agrupamentos.id = $gid
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_agua.agrupamento_id AND esm_agrupamentos.id = $gid
             ORDER BY cadastro DESC
         ");
 
@@ -361,7 +361,7 @@ class Water extends UNO_Controller
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                esm_unidades.bloco_id = ".$this->input->getPost("group")." AND
+                esm_unidades.agrupamento_id = ".$this->input->getPost("group")." AND
                 esm_medidores.tipo = 'agua'
             ORDER BY 
             esm_unidades_config.type, esm_unidades.nome
@@ -522,13 +522,22 @@ class Water extends UNO_Controller
     public function lancamento()
     {
         $data = array(
-            "group_id"    => $this->input->getPost('tar-water-group'),
+            "agrupamento_id"    => $this->input->getPost('tar-water-group'),
             "entrada_id"  => 73,
             "competencia" => $this->input->getPost('tar-water-competencia'),
             "inicio"      => $this->input->getPost('tar-water-data-ini'),
             "fim"         => $this->input->getPost('tar-water-data-fim'),
             "mensagem"    => $this->input->getPost('tar-water-msg'),
         );
+
+        $this->user->config = $this->shopping_model->get_client_config($data['agrupamento_id']);
+
+        if (!$this->user->config) {
+            return json_encode(array(
+                "status" => "error",
+                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+            ));
+        }
 
         if ($this->water_model->VerifyCompetencia($data["entrada_id"], $data["competencia"])) {
 			echo '{ "status": "message", "field": "tar-water-competencia", "message" : "Competência já possui lançamento"}';
@@ -545,7 +554,7 @@ class Water extends UNO_Controller
 			return;
 		}
 
-        echo $this->water_model->Calculate($data, $this->user->config);
+        echo $this->water_model->Calculate($data, $this->user->config, $data['agrupamento_id']);
     }
 
     public function GetLancamentoUnidades($type = 0)
@@ -861,7 +870,7 @@ class Water extends UNO_Controller
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                esm_unidades.bloco_id = ".$this->input->getPost("group")." AND
+                esm_unidades.agrupamento_id = ".$this->input->getPost("group")." AND
                 esm_medidores.tipo = 'agua'
             ORDER BY 
             esm_unidades_config.type, esm_unidades.nome

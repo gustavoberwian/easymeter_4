@@ -1,8 +1,8 @@
 
 <section role="main" class="content-body" data-entity="<?= $entity_id ?>" data-class="<?= $url ?>">
 
-    <?php if (!empty($user->condo->image_url)) : ?>
-        <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= $user->condo->nome; ?>" class="mb-2 mt-2" height="50"/>
+    <?php if (!empty($user->entity->image_url)) : ?>
+        <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" alt="<?= $user->entity->nome; ?>" class="mb-2 mt-2" height="50"/>
     <?php endif; ?>
 
     <!-- start: page -->
@@ -19,14 +19,14 @@
         <?php endif; ?>
         <?php for ($i = 0; $i < count($groups); $i++): ?>
             <section class="col-md-6 p-2">
-                <div class="card" data-group="<?= $groups[$i]->bloco_id; ?>">
+                <div class="card" data-group="<?= $groups[$i]->agrupamento_id; ?>">
                     <div class="card-body card-body-nopadding">
                         <div class="mb-0 widget-twitter-profile bg-light">
                             <div class="item profile-info p-0 overflow-hidden">
                                 <?php if (is_null($groups[$i]->img)): ?>
-                                    <div class="img-fluid rounded img-hover" data-group="<?= $groups[$i]->bloco_id; ?>" style="background-image: url('<?= site_url("assets/img/" . $groups[$i]->img); ?>'); background-repeat: no-repeat; background-size: cover; height: 500px; background-position: center;"></div>
+                                    <div class="img-fluid rounded img-hover" data-group="<?= $groups[$i]->agrupamento_id; ?>" style="background-image: url('<?= site_url("assets/img/" . $groups[$i]->img); ?>'); background-repeat: no-repeat; background-size: cover; height: 500px; background-position: center;"></div>
                                 <?php else: ?>
-                                    <div class="img-fluid rounded img-hover" data-group="<?= $groups[$i]->bloco_id; ?>"  style="background-image: url('<?= site_url("assets/img/" . $groups[$i]->img); ?>'); background-repeat: no-repeat; background-size: cover; height: 500px; background-position: center;"></div>
+                                    <div class="img-fluid rounded img-hover" data-group="<?= $groups[$i]->agrupamento_id; ?>"  style="background-image: url('<?= site_url("assets/img/" . $groups[$i]->img); ?>'); background-repeat: no-repeat; background-size: cover; height: 500px; background-position: center;"></div>
                                 <?php endif; ?>
                                 <div class="row m-0 fixed-card-top">
                                     <div class="h5 color-f1">
@@ -39,32 +39,32 @@
                                         </span>
                                     </div>
                                 </div>
-                                <!--<div class="row m-0 fixed-card-bottom">
+                                <div class="row m-0 fixed-card-bottom">
                                     <div class="col-md-3">
-                                        <h6 class="card-body-title mb-0 text-primary"><?/*= $area_comum; */?></br> Consumo Mês</h6>
+                                        <h6 class="card-body-title mb-0 text-primary"><?= $area_comum[$i]; ?></br> Consumo Mês</h6>
                                         <div class="row">
-                                            <div class="h5 m0 color-f1"><span class="main"><?/*= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["consum"]; */?> <small>kWh</small></span></div>
+                                            <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["consum"]; ?> <small>kWh</small></span></div>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <h6 class="card-body-title mb-0 text-primary"></br>Previsão</h6>
                                         <div class="row">
-                                            <div class="h5 m0 color-f1"><span class="main"><?/*= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["prevision"] */?> <small>kWh</small></span></div>
+                                            <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["prevision"] ?> <small>kWh</small></span></div>
                                         </div>
                                     </div>
                                     <div class="col-md-3" style="border-left: 1px solid #777;">
                                         <h6 class="card-body-title mb-0 text-primary">Unidades</br>Consumo Mês</h6>
                                         <div class="row">
-                                            <div class="h5 m0 color-f1"><span class="main"><?/*= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["consum"]; */?> <small>kWh</small></span></div>
+                                            <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["consum"]; ?> <small>kWh</small></span></div>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
                                         <h6 class="card-body-title mb-0 text-primary"></br>Previsão</h6>
                                         <div class="row">
-                                            <div class="h5 m0 color-f1"><span class="main"><?/*= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["prevision"] */?> <small>kWh</small></span></div>
+                                            <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["prevision"] ?> <small>kWh</small></span></div>
                                         </div>
                                     </div>
-                                </div>-->
+                                </div>
                             </div>
                         </div>
                     </div>

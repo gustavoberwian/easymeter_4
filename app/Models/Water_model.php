@@ -13,29 +13,29 @@ class Water_model extends Base_model
         $dvc1 = "";
         if (is_numeric($device)) {
 
-            $dvc = "LEFT JOIN esm_medidores on esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id AND esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+            $dvc = "LEFT JOIN esm_medidores on esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id AND esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
 
         } else if ($device == "C") {
 
             $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id
-                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1 AND esm_unidades.bloco_id = $group_id";
+                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id
+                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1 AND esm_unidades.agrupamento_id = $group_id";
 
         } else if ($device == "U") {
 
             $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id
-                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2 AND esm_unidades.bloco_id = $group_id";
+                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id
+                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2 AND esm_unidades.agrupamento_id = $group_id";
 
         } else if ($device == "T") {
 
             $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id";
+                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id";
 
         } else if ($device == "ALL") {
 
             $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id";
+                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id";
 
         } else {
 
@@ -210,7 +210,7 @@ class Water_model extends Base_model
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                esm_unidades.bloco_id = $group AND
+                esm_unidades.agrupamento_id = $group AND
                 esm_medidores.tipo = 'agua'
             ORDER BY 
                 esm_unidades_config.type, esm_unidades.nome
@@ -241,14 +241,14 @@ class Water_model extends Base_model
             $query = "
                 SELECT SUM(ultima_leitura) AS value
                 FROM esm_medidores
-                WHERE esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                WHERE esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
 
         } else if ($device == "T") {
             $query = "
                 SELECT SUM(ultima_leitura) AS value
                 FROM esm_medidores
                 JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-                WHERE esm_unidades.bloco_id = $gid AND esm_medidores.tipo = 'agua'";
+                WHERE esm_unidades.agrupamento_id = $gid AND esm_medidores.tipo = 'agua'";
         } else {
             $query = "
                 SELECT ultima_leitura AS value
@@ -281,8 +281,10 @@ class Water_model extends Base_model
         return ($result->getNumRows());
     }
 
-    private function CalculateQuery($data, $inicio, $fim, $type, $config)
+    private function CalculateQuery($data, $group_id, $inicio, $fim, $type, $config)
     {
+        $entity = $this->get_entity_by_group($group_id);
+
         $query = $this->db->query("
             SELECT
                 {$data['id']} AS fechamento_id,
@@ -331,7 +333,7 @@ class Water_model extends Base_model
         return $query;
     }
 
-    public function Calculate($data, $config)
+    public function Calculate($data, $config, $group_id)
     {
         $inicio = date_create_from_format('d/m/Y', $data["inicio"])->format('Y-m-d');
         $fim = date_create_from_format('d/m/Y', $data["fim"])->format('Y-m-d');
@@ -352,7 +354,7 @@ class Water_model extends Base_model
         // retorna fechamento id
         $data['id'] = $this->db->insertID();
 
-        $query = $this->CalculateQuery($data, $inicio, $fim, 1, $config);
+        $query = $this->CalculateQuery($data, $group_id, $inicio, $fim, 1, $config);
 
         $comum = $query->getResult();
         $consumo_c = 0;
@@ -365,7 +367,7 @@ class Water_model extends Base_model
             $consumo_c_o += $c->consumo_o;
         }
 
-        $query = $this->CalculateQuery($data, $inicio, $fim, 2, $config);
+        $query = $this->CalculateQuery($data, $group_id, $inicio, $fim, 2, $config);
 
         $unidades = $query->getResult();
         $consumo_u = 0;
@@ -417,9 +419,9 @@ class Water_model extends Base_model
             FROM 
                 esm_fechamentos_agua
             JOIN 
-                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_agua.group_id
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_agua.agrupamento_id
             JOIN 
-                esm_unidades ON esm_agrupamentos.id = esm_unidades.bloco_id
+                esm_unidades ON esm_agrupamentos.id = esm_unidades.agrupamento_id
             JOIN
                 esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
             WHERE
@@ -483,7 +485,7 @@ class Water_model extends Base_model
             FROM 
                 esm_fechamentos_agua
             WHERE
-                group_id = $gid
+                agrupamento_id = $gid
             ORDER BY cadastro DESC
         ");
 

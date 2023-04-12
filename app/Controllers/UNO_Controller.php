@@ -39,14 +39,14 @@ class UNO_Controller extends BaseController {
             }
 
             if ($this->user->inGroup('superadmin')) {
-                $this->user->condo = (object)[];
-                $this->user->condo->classificacao = $this->user->page;
+                $this->user->entity = (object)[];
+                $this->user->entity->classificacao = $this->user->page;
             } else if ($this->user->inGroup('admin')) {
-                $this->user->condo = $this->shopping_model->get_condo($this->user->type->entity_id);
+                $this->user->entity = $this->shopping_model->get_condo($this->user->type->entity_id);
             } else if ($this->user->inGroup('group')) {
-                $this->user->condo = $this->shopping_model->get_condo_by_group($this->user->type->group_id);
+                $this->user->entity = $this->shopping_model->get_condo_by_group($this->user->type->group_id);
             } else if ($this->user->inGroup('unity')) {
-                $this->user->condo = $this->shopping_model->get_condo_by_unity($this->user->type->unity_id);
+                $this->user->entity = $this->shopping_model->get_condo_by_unity($this->user->type->unity_id);
             }
 
             date_default_timezone_set('America/Sao_Paulo');

@@ -280,7 +280,8 @@
                                 method: 'POST',
                                 url: '/shopping/get_subtipo_cliente_config',
                                 data: {
-                                    group: $(".page-header").data("group")
+                                    group: $(".page-header").data("group"),
+                                    uid: $row.data('item-id')
                                 },
                                 success: function (response) {
                                     options = [1, 2];
@@ -596,7 +597,7 @@
     energyGroupingsTable.initialize("#dt-agrupamentos-energia",
         [
             {class: "d-none id"},
-            {class: "d-none bloco_id"},
+            {class: "d-none agrupamento_id"},
             {class: "dt-body-left align-middle group"},
             {class: "dt-body-center align-middle select unidades"},
             {"bSortable": false, class: "dt-body-center align-middle actions",}
@@ -615,7 +616,7 @@
     waterGroupingsTable.initialize("#dt-agrupamentos-agua",
         [
             {class: "d-none id"},
-            {class: "d-none bloco_id"},
+            {class: "d-none agrupamento_id"},
             {class: "dt-body-left align-middle group"},
             {class: "dt-body-center align-middle select unidades"},
             {"bSortable": false, class: "dt-body-center align-middle actions",}

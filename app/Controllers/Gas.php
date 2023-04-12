@@ -337,7 +337,7 @@ class Gas extends UNO_Controller
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                esm_unidades.bloco_id = ".$this->input->getPost("group")." AND
+                esm_unidades.agrupamento_id = ".$this->input->getPost("group")." AND
                 esm_medidores.tipo = 'gas'
             ORDER BY 
             esm_unidades_config.type, esm_unidades.nome

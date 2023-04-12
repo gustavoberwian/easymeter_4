@@ -17,24 +17,24 @@ class Gas_model extends Base_model
         } else if ($device == "C") {
 
             $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_gas.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id
-                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1 AND esm_unidades.bloco_id = $group_id";
+                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id
+                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1 AND esm_unidades.agrupamento_id = $group_id";
 
         } else if ($device == "U") {
 
             $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_gas.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id
-                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2 AND esm_unidades.bloco_id = $group_id";
+                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id
+                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2 AND esm_unidades.agrupamento_id = $group_id";
 
         } else if ($device == "T") {
 
             $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_gas.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id";
+                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id";
 
         } else if ($device == "ALL") {
 
             $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_gas.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group_id";
+                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id";
 
         } else {
 
@@ -168,7 +168,7 @@ class Gas_model extends Base_model
                 SELECT SUM(ultima_leitura) AS value
                 FROM esm_medidores
                 JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-                WHERE esm_unidades.bloco_id = $gid AND esm_medidores.tipo = 'gas'";
+                WHERE esm_unidades.agrupamento_id = $gid AND esm_medidores.tipo = 'gas'";
         } else {
             $query = "
                 SELECT ultima_leitura AS value
@@ -257,7 +257,7 @@ class Gas_model extends Base_model
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                esm_unidades.bloco_id = $group AND
+                esm_unidades.agrupamento_id = $group AND
                 esm_medidores.tipo = 'gas'
             ORDER BY 
                 esm_unidades_config.type, esm_unidades.nome

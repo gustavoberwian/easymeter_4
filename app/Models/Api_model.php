@@ -110,7 +110,7 @@ class Api_model extends Model {
         $query = $this->db->query("
             SELECT esm_entidades.id, esm_entidades.tabela FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
             JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.condo_id
             WHERE esm_medidores.central = '$id' LIMIT 1
         ");
@@ -231,7 +231,7 @@ class Api_model extends Model {
                 MAX(esm_fechamentos_entradas.leitura_atual) AS leitura
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
             JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.condo_id
             JOIN esm_fechamentos ON esm_fechamentos.condo_id = esm_agrupamentos.condo_id
             JOIN esm_ramais ON esm_ramais.id = esm_fechamentos.ramal_id
@@ -379,7 +379,7 @@ class Api_model extends Model {
                 esm_alertas.finalizado
             FROM esm_medidores
             JOIN esm_unidades ON esm_medidores.unidade_id = esm_unidades.id
-            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
             JOIN esm_entradas ON esm_entradas.id = esm_medidores.entrada_id
             LEFT JOIN esm_alertas ON esm_alertas.unidade_id = esm_unidades.id AND esm_alertas.medidor_id = esm_medidores.id AND ISNULL(esm_alertas.finalizado)
             WHERE esm_medidores.central = '$central' and esm_medidores.horas_consumo > esm_medidores.alerta_horas
@@ -473,7 +473,7 @@ class Api_model extends Model {
             FROM esm_leituras_{$tabela}_agua
             JOIN esm_medidores ON esm_medidores.id = esm_leituras_{$tabela}_agua.medidor_id 
             JOIN esm_unidades ON esm_medidores.unidade_id = esm_unidades.id
-            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
             JOIN esm_entradas ON esm_entradas.id = esm_medidores.entrada_id
             WHERE 
                 timestamp > UNIX_TIMESTAMP() - $valor AND
@@ -1180,7 +1180,7 @@ class Api_model extends Model {
             SELECT auth_users_group.user_id AS id
             FROM auth_users_group
             WHERE group_id = (
-                SELECT esm_unidades.bloco_id
+                SELECT esm_unidades.agrupamento_id
                 FROM esm_medidores
                 JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
                 WHERE esm_medidores.nome = '$device'

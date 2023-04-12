@@ -20,7 +20,7 @@ class Energy_model extends Base_model
 
         $result = $this->db->query("
             SELECT
-                esm_unidades.bloco_id,
+                esm_unidades.agrupamento_id,
                 $value 
             FROM
                 esm_leituras_".$entity->tabela."_energia 
@@ -37,13 +37,13 @@ class Energy_model extends Base_model
                         esm_unidades_config
                         JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades_config.unidade_id
                         JOIN esm_unidades ON esm_unidades.id = esm_unidades_config.unidade_id 
-                    WHERE esm_unidades.bloco_id = $grp AND esm_unidades_config.type = $type
+                    WHERE esm_unidades.agrupamento_id = $grp AND esm_unidades_config.type = $type
                 )
         ");
 
         if ($result->getNumRows()) {
             return array (
-                "bloco"    => number_format(round($result->getRow()->bloco_id, 0), 0, ",", "."),
+                "bloco"    => number_format(round($result->getRow()->agrupamento_id, 0), 0, ",", "."),
                 "consum"    => number_format(round($result->getRow()->value, 0), 0, ",", "."),
                 "prevision" => number_format(round($result->getRow()->prevision, 0), 0, ",", "."),
                 "average"   => number_format(round($result->getRow()->average, 0), 0, ",", ".")
@@ -63,16 +63,16 @@ class Energy_model extends Base_model
             if ($device == 0) {
 
             } else {
-                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
             }
 
         } else if ($device == "C") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.agrupamento_id = $group)";
 
         } else if ($device == "U") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.agrupamento_id = $group)";
 
         } else {
             $dvc = " AND d.device = '$device'";
@@ -177,16 +177,16 @@ class Energy_model extends Base_model
             if ($device == 0) {
 
             } else {
-                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
             }
 
         } else if ($device == "C") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.agrupamento_id = $group)";
 
         } else if ($device == "U") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.agrupamento_id = $group)";
 
         } else {
             $dvc = " AND d.device = '$device'";
@@ -259,7 +259,7 @@ class Energy_model extends Base_model
 
         if (is_numeric($device)) {
             if ($device != 0) {
-                $dvc = " AND $tabela.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND $tabela.device IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
             }
         } else if ($device == "C") {
             $dvc = "AND device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id WHERE type = 1)";
@@ -303,16 +303,16 @@ class Energy_model extends Base_model
             if ($device == 0) {
 
             } else {
-                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
             }
 
         } else if ($device == "C") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.agrupamento_id = $group)";
 
         } else if ($device == "U") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.agrupamento_id = $group)";
 
         } else {
             $dvc = " AND d.device = '$device'";
@@ -381,16 +381,16 @@ class Energy_model extends Base_model
             if ($device == 0) {
 
             } else {
-                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
             }
 
         } else if ($device == "C") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.agrupamento_id = $group)";
 
         } else if ($device == "U") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.agrupamento_id = $group)";
 
         } else {
             $dvc = " AND d.device = '$device'";
@@ -459,16 +459,16 @@ class Energy_model extends Base_model
             if ($device == 0) {
 
             } else {
-                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
             }
 
         } else if ($device == "C") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.agrupamento_id = $group)";
 
         } else if ($device == "U") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.agrupamento_id = $group)";
 
         } else {
             $dvc = " AND d.device = '$device'";
@@ -540,16 +540,16 @@ class Energy_model extends Base_model
             if ($device == 0) {
 
             } else {
-                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
             }
 
         } else if ($device == "C") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.agrupamento_id = $group)";
 
         } else if ($device == "U") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.agrupamento_id = $group)";
 
         } else {
             $dvc = " AND d.device = '$device'";
@@ -629,16 +629,16 @@ class Energy_model extends Base_model
             if ($device == 0) {
 
             } else {
-                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
             }
 
         } else if ($device == "C") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.agrupamento_id = $group)";
 
         } else if ($device == "U") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.agrupamento_id = $group)";
 
         } else {
             $dvc = " AND d.device = '$device'";
@@ -712,16 +712,16 @@ class Energy_model extends Base_model
             if ($device == 0) {
 
             } else {
-                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
             }
 
         } else if ($device == "C") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.agrupamento_id = $group)";
 
         } else if ($device == "U") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.agrupamento_id = $group)";
 
         } else {
             $dvc = " AND d.device = '$device'";
@@ -790,16 +790,16 @@ class Energy_model extends Base_model
             if ($device == 0) {
 
             } else {
-                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                $dvc = " AND d.device IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
             }
 
         } else if ($device == "C") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 1 AND esm_unidades.agrupamento_id = $group)";
 
         } else if ($device == "U") {
 
-            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.bloco_id = $group)";
+            $dvc = "AND d.device IN (SELECT esm_medidores.nome FROM esm_unidades_config LEFT JOIN esm_medidores ON esm_medidores.unidade_id= esm_unidades_config.unidade_id LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id WHERE type = 2 AND esm_unidades.agrupamento_id = $group)";
 
         } else {
             $dvc = " AND d.device = '$device'";
@@ -871,20 +871,20 @@ class Energy_model extends Base_model
                 SELECT SUM(ultima_leitura) AS value
                 FROM esm_medidores
                 JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-                JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1 AND esm_unidades.bloco_id = $group
+                JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1 AND esm_unidades.agrupamento_id = $group
                 WHERE esm_medidores.tipo = 'energia'";
         } else if ($device == "U") {
             $query = "
                 SELECT SUM(ultima_leitura) AS value
                 FROM esm_medidores
                 JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-                JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2 AND esm_unidades.bloco_id = $group
+                JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2 AND esm_unidades.agrupamento_id = $group
                 WHERE esm_medidores.tipo = 'energia'";
         } else if (is_numeric($device)) {
             $query = "
                 SELECT SUM(ultima_leitura) AS value
                 FROM esm_medidores
-                WHERE esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+                WHERE esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
         } else {
             $query = "
                 SELECT ultima_leitura AS value
@@ -910,7 +910,7 @@ class Energy_model extends Base_model
                 *
             FROM esm_client_config
             WHERE 
-                group_id = $gid
+                agrupamento_id = $gid
         ");
 
         if ($result->getNumRows()) {
@@ -1081,7 +1081,7 @@ class Energy_model extends Base_model
                 (d.timestamp) <= (esm_calendar.ts_end + 600) 
                 $station
             JOIN esm_medidores ON esm_medidores.nome = d.device
-            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group
             WHERE 
                 esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
                 esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
@@ -1141,7 +1141,7 @@ class Energy_model extends Base_model
             FROM 
                 esm_fechamentos_energia
             JOIN 
-                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.agrupamento_id
             WHERE
                 esm_fechamentos_energia.id = $fid
         ");
@@ -1174,7 +1174,7 @@ class Energy_model extends Base_model
             FROM 
                 esm_fechamentos_energia
             JOIN 
-                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id AND esm_agrupamentos.id = $gid
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.agrupamento_id AND esm_agrupamentos.id = $gid
             ORDER BY cadastro DESC
         ");
 
@@ -1613,7 +1613,7 @@ class Energy_model extends Base_model
                     GROUP BY d.device
                 ) p ON p.device = esm_medidores.nome
             WHERE 
-                esm_unidades.bloco_id = $group AND
+                esm_unidades.agrupamento_id = $group AND
                 esm_medidores.tipo = 'energia'
             ORDER BY 
                 esm_unidades.nome
@@ -1626,8 +1626,10 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetAbnormal($device, $init, $end, $type, $min, $max)
+    public function GetAbnormal($group_id, $device, $init, $end, $type, $min, $max)
     {
+        $entity = $this->get_entity_by_group($group_id);
+
         if (!is_null($min))
             $min = floatval(str_replace(array('.', ','), array('', '.'), $min));
         if (!is_null($max))
@@ -1717,8 +1719,8 @@ class Energy_model extends Base_model
         $result = $this->db->query("
             SELECT auth_users_group.user_id AS id
             FROM auth_users_group
-            WHERE group_id = (
-                SELECT esm_unidades.bloco_id
+            WHERE agrupamento_id = (
+                SELECT esm_unidades.agrupamento_id
                 FROM esm_medidores
                 JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
                 WHERE esm_medidores.nome = '$device'
@@ -1783,7 +1785,7 @@ class Energy_model extends Base_model
             SELECT esm_medidores.*
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            WHERE esm_unidades.bloco_id = $group AND esm_medidores.tipo = 'energia'
+            WHERE esm_unidades.agrupamento_id = $group AND esm_medidores.tipo = 'energia'
         ");
 
         if ($result->getNumRows()) {

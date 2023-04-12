@@ -245,7 +245,7 @@ class Admin_model extends Base_model
     {
         $query = $this->db->table('esm_agrupamentos')
             ->select('esm_agrupamentos.*, COUNT(esm_unidades.id) AS unidades')
-            ->join('esm_unidades', 'esm_unidades.bloco_id = esm_agrupamentos.id', 'LEFT')
+            ->join('esm_unidades', 'esm_unidades.agrupamento_id = esm_agrupamentos.id', 'LEFT')
             ->where('esm_agrupamentos.id', $id)
             ->get();
 
@@ -270,7 +270,7 @@ class Admin_model extends Base_model
         $query = $this->db->query("
             SELECT DISTINCT fracao 
             FROM esm_unidades
-            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
             JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.condo_id
             WHERE esm_entidades.id = $cid
             ORDER BY fracao
@@ -289,7 +289,7 @@ class Admin_model extends Base_model
         }
 
         if ($completo) {
-            $query->join('esm_agrupamentos', 'esm_agrupamentos.id = esm_unidades.bloco_id', 'LEFT');
+            $query->join('esm_agrupamentos', 'esm_agrupamentos.id = esm_unidades.agrupamento_id', 'LEFT');
             $query->join('esm_entidades', 'esm_entidades.id = esm_agrupamentos.condo_id', 'LEFT');
         }
         // realiza a consulta

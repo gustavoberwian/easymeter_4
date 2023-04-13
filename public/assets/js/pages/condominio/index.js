@@ -12,7 +12,7 @@
         var d = new Date();
 
         if(d.getMinutes() == 1 && d.getSeconds() == 0) {
-            $.getJSON( "/ajax/get_leitura", function( json ) {
+            $.getJSON( "/condominio/get_leitura", function( json ) {
                 if (json.status == 'success' && json.data != false) {
                     $('.leitura-agua').prop('counter', parseInt( $('.leitura-agua').text() ) ).animate({
                         counter: json.data.leitura_agua
@@ -28,28 +28,28 @@
         }
     }, 1000);
 
-	// **
-	// * Handler abrir modal para novo chamado
-	// **
-	$(document).on('click', '.btn-chamado', function (e) {
+    // **
+    // * Handler abrir modal para novo chamado
+    // **
+    $(document).on('click', '.btn-chamado', function (e) {
         // para propagação
         e.preventDefault();
-        
+
         // abre modal
-		$.magnificPopup.open( {
-			items: {src: '/condominio/md_chamado'},
-			type: 'ajax',
-			modal:true,
-			callbacks: {
-				ajaxContentAdded: function() {
+        $.magnificPopup.open( {
+            items: {src: '/condominio/md_chamado'},
+            type: 'ajax',
+            modal:true,
+            callbacks: {
+                ajaxContentAdded: function() {
 
                     $('[data-loading-overlay]').loadingOverlay();
                     $(".form-chamado").validate();
 
                     $('select[name="assunto"]').on('change', function (e) {
                         if ($(this).val() == 'v') {
-                            $('textarea[name="message"]').attr("placeholder", 
-                            "Explique aqui o motivo da solicitação da visita.\nFaremos uma revisão do consumo da unidade\ne entraremos em contato para agendar a visita");
+                            $('textarea[name="message"]').attr("placeholder",
+                                "Explique aqui o motivo da solicitação da visita.\nFaremos uma revisão do consumo da unidade\ne entraremos em contato para agendar a visita");
                             $('.alert-warning.notification').show();
                         } else {
                             if ($(this).val() == 's')
@@ -59,7 +59,7 @@
                             else if ($(this).val() == 'r')
                                 $('textarea[name="message"]').attr("placeholder", "Explique aqui o motivo da solicitação de revisão");
 
-                                $('.alert-warning.notification').hide();
+                            $('.alert-warning.notification').hide();
                         }
                     });
 
@@ -71,9 +71,9 @@
                             $btn.trigger('loading-overlay:show');
                             // desabilita botões
                             var $btn_d = $('#modalChamado .btn:enabled').prop('disabled', true);
-                                        
-                            // Busca alternativas 
-                            $.post('/ajax/new_chamado', {a: $('select[name="assunto"]').val(), m: $('textarea[name="message"]').val()}, function(json) {
+
+                            // Busca alternativas
+                            $.post('/condominio/new_chamado', {a: $('select[name="assunto"]').val(), m: $('textarea[name="message"]').val()}, function(json) {
                                 $btn_d.prop('disabled', false);
                                 if (json.status == 'success') {
                                     $('#modalChamado .alert-success.notification').html(json.message).show();
@@ -82,20 +82,20 @@
                                     $('#modalChamado .alert-danger.notification').html(json.message).show();
                                 }
                             }, 'json')
-                            .fail(function(xhr, status, error) {
-                                // mostra erro
-                                $('#modalChamado .alert-danger.notification').html('<b>Erro no servidor</b>: '+error).show();
-                                $btn_d.prop('disabled', false);
-                            })
-                            .always(function() {
-                                $btn.trigger('loading-overlay:hide');
-                            });
-                        
+                                .fail(function(xhr, status, error) {
+                                    // mostra erro
+                                    $('#modalChamado .alert-danger.notification').html('<b>Erro no servidor</b>: '+error).show();
+                                    $btn_d.prop('disabled', false);
+                                })
+                                .always(function() {
+                                    $btn.trigger('loading-overlay:hide');
+                                });
+
                         }
                     });
-				}
-			}
-		});
+                }
+            }
+        });
     });
 
 	// **

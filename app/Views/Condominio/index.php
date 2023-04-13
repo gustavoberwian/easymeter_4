@@ -152,7 +152,7 @@
         </div>
     <?php if (substr($central->central, 0, 2) != "53") : ?>
         <div class="row pt-0">
-            <?php if($user->inGroup('agua') and $user->inGroup('unity', 'admin')) : ?>
+            <?php if($user->inGroup('agua') and ($user->inGroup('unity') or $user->inGroup('admin')) and (!is_null($hora_agua) or !is_null($hoje_agua) or !is_null($last_agua) or !is_null($fatu_agua))) : ?>
                 <div class="col-md-4">
                     <section class="card card-leitura mb-3">
                         <div class="card-body pb-0">
@@ -187,7 +187,7 @@
                     </section>
                 </div>
             <?php endif; ?>
-            <?php if($user->inGroup('gas') and ($user->inGroup('unity') or $user->inGroup('admin'))) : ?>
+            <?php if($user->inGroup('gas') and ($user->inGroup('unity') or $user->inGroup('admin')) and (!is_null($hora_gas) or !is_null($hoje_gas) or !is_null($last_gas) or !is_null($fatu_gas))) : ?>
                 <div class="col-md-4">
                     <section class="card card-leitura mb-3">
                         <div class="card-body pb-0">
@@ -222,7 +222,7 @@
                     </section>
                 </div>
             <?php endif; ?>
-            <?php if($user->inGroup('energia') and ($user->inGroup('unity') or $user->inGroup('admin'))) : ?>
+            <?php if($user->inGroup('energia') and ($user->inGroup('unity') or $user->inGroup('admin')) and (!is_null($hora_energia) or !is_null($hoje_energia) or !is_null($last_energia) or !is_null($fatu_energia))) : ?>
                 <div class="col-md-4">
                     <section class="card card-leitura mb-3">
                         <div class="card-body pb-0">

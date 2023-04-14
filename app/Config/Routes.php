@@ -102,6 +102,17 @@ $routes->get('/condominio/(:any)', 'Condominio::$1',['filter'=>'checkApiAuth']);
 $routes->get('/condominio/(:any)/(:num)', 'Condominio::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/condominio/(:any)', 'Condominio::$1',['filter'=>'checkApiAuth']);
 
+// Routes shopping
+$routes->get('/industria', 'Industria::index',['filter'=>'checkApiAuth']);
+$routes->get('/industria/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
+$routes->get('/industria/(:any)/(:num)', 'Industria::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/industria/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
+
+// Routes da Bauducco para indústria
+$routes->get('/bauducco', 'Industria::index',['filter'=>'checkApiAuth']);
+$routes->get('/bauducco/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
+$routes->get('/bauducco/(:any)/(:num)', 'Industria::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/bauducco/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
 
 service('auth')->routes($routes);
 

@@ -6,6 +6,7 @@ Theme Version: 	4.1.0
 html,
 body {
     background: #ecedf0;
+	font-family: poppins,Arial,sans-serif;
     width: 100%;
 }
 
@@ -18010,7 +18011,11 @@ a:active {
 		}
 
 		ul.simple-bullet-list li.green:before {
-			border-color: #4dd79c;
+			border-color: #1d8757;
+		}
+
+		ul.simple-bullet-list li.yellow:before {
+			border-color: #fec135;
 		}
 
 		ul.simple-bullet-list li.blue:before {

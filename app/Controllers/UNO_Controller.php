@@ -38,17 +38,6 @@ class UNO_Controller extends BaseController {
                 $this->user->config = $this->shopping_model->get_client_config(service('uri')->getSegment(3));
             }
 
-            if ($this->user->inGroup('superadmin')) {
-                $this->user->condo = (object)[];
-                $this->user->condo->classificacao = $this->user->page;
-            } else if ($this->user->inGroup('admin')) {
-                $this->user->condo = $this->shopping_model->get_condo($this->user->type->entity_id);
-            } else if ($this->user->inGroup('group')) {
-                $this->user->condo = $this->shopping_model->get_condo_by_group($this->user->type->group_id);
-            } else if ($this->user->inGroup('unity')) {
-                $this->user->condo = $this->shopping_model->get_condo_by_unity($this->user->type->unity_id);
-            }
-
             date_default_timezone_set('America/Sao_Paulo');
         }
     }

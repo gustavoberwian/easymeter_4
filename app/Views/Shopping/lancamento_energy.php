@@ -150,7 +150,7 @@
         <table class="text-dark w-100">
             <tbody><tr>
                 <td>
-                    <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= ""; ?>" class="mb-4" height="35"/>
+                    <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" alt="<?= ""; ?>" class="mb-4" height="35"/>
                 </td>
                 <td class="text-end">
                     <img src="<?php echo base_url('assets/img/logo.png'); ?>" alt="<?= "Easymeter"; ?>" class="mb-4" height="35"/>

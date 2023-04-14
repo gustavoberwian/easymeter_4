@@ -30,7 +30,7 @@
             </ul>
         </div>
         <div class="col-6 text-end">
-            <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
+            <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
         </div>
     </div>
 

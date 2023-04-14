@@ -11,23 +11,23 @@ class Shopping_model extends Base_model
                 esm_medidores.id as medidor_id,
                 esm_unidades.nome AS unidade_nome,
             CONCAT(
-                    esm_shoppings.logradouro,
+                    esm_agrupamentos_config.logradouro,
                     ', ',
-                    esm_shoppings.numero,
+                    esm_agrupamentos_config.numero,
                     ' - ',
-                    esm_shoppings.bairro,
+                    esm_agrupamentos_config.bairro,
                     ', ',
-                    esm_shoppings.cidade,
+                    esm_agrupamentos_config.cidade,
                     ' - ',
-                    esm_shoppings.uf 
+                    esm_agrupamentos_config.uf 
                 ) as endereco
             FROM
                 esm_unidades
-                JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
-                JOIN esm_shoppings ON esm_shoppings.bloco_id = esm_agrupamentos.id
+                JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+                JOIN esm_agrupamentos_config ON esm_agrupamentos_config.agrupamento_id = esm_agrupamentos.id
                 JOIN esm_medidores ON esm_unidades.id = esm_medidores.unidade_id
             WHERE
-                esm_unidades.bloco_id = $group_id
+                esm_unidades.agrupamento_id = $group_id
         ";
         $result = $this->db->query($query);
 
@@ -77,14 +77,14 @@ class Shopping_model extends Base_model
         if ($query->getNumRows() <= 0)
             return false;
 
-        if (is_null($query->getRow()->entity_id) && is_null($query->getRow()->group_id))
-            return (object) array("type" => "unity", "unity_id" => $query->getRow()->unity_id);
+        if (is_null($query->getRow()->entidade_id) && is_null($query->getRow()->agrupamento_id))
+            return (object) array("type" => "unity", "unity_id" => $query->getRow()->unidade_id);
 
-        if (is_null($query->getRow()->group_id) && is_null($query->getRow()->unity_id))
-            return (object) array("type" => "entity", "entity_id" => $query->getRow()->entity_id);
+        if (is_null($query->getRow()->agrupamento_id) && is_null($query->getRow()->unidade_id))
+            return (object) array("type" => "entity", "entity_id" => $query->getRow()->entidade_id);
 
-        if (is_null($query->getRow()->entity_id) && is_null($query->getRow()->unity_id))
-            return (object) array("type" => "group", "group_id" => $query->getRow()->group_id);
+        if (is_null($query->getRow()->entidade_id) && is_null($query->getRow()->unidade_id))
+            return (object) array("type" => "group", "group_id" => $query->getRow()->agrupamento_id);
 
         return $query->getRow();
     }
@@ -93,12 +93,12 @@ class Shopping_model extends Base_model
     {
         $query = "
             SELECT 
-                esm_agrupamentos.nome as nome, esm_shoppings.* 
+                esm_agrupamentos.nome as nome, esm_agrupamentos_config.* 
             FROM 
-                esm_shoppings
-            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_shoppings.bloco_id
+                esm_agrupamentos_config
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_agrupamentos_config.agrupamento_id
             WHERE 
-                esm_agrupamentos.condo_id = $entity
+                esm_agrupamentos.entidade_id = $entity
         ";
 
         if ($this->db->query($query)->getNumRows() <= 0)
@@ -114,7 +114,7 @@ class Shopping_model extends Base_model
                 *
             FROM esm_client_config
             WHERE 
-                group_id = '$gid'
+                agrupamento_id = '$gid'
         ");
 
         if ($result->getnumRows()) {
@@ -133,13 +133,13 @@ class Shopping_model extends Base_model
                     esm_agrupamentos.id as group_id, 
                     esm_agrupamentos.nome as group_name,
                     esm_agrupamentos.logo as logo,
-                    esm_shoppings.m_agua,
-                    esm_shoppings.m_energia,
-                    esm_shoppings.m_gas,
-                    esm_shoppings.m_nivel
-                FROM esm_shoppings
-                JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_shoppings.bloco_id
-                JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.condo_id
+                    esm_agrupamentos_config.m_agua,
+                    esm_agrupamentos_config.m_energia,
+                    esm_agrupamentos_config.m_gas,
+                    esm_agrupamentos_config.m_nivel
+                FROM esm_agrupamentos_config
+                JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_agrupamentos_config.agrupamento_id
+                JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
                 WHERE esm_agrupamentos.id = $group_id
         ");
 
@@ -155,7 +155,7 @@ class Shopping_model extends Base_model
     {
         $t = "";
         if (!is_null($tipo)) {
-            $t = " AND esm_entradas.tipo = '$tipo' ";
+            $t = " AND esm_medidores.tipo = '$tipo' ";
         }
         $result = $this->db->query("
             SELECT
@@ -171,7 +171,7 @@ class Shopping_model extends Base_model
             JOIN 
                 esm_entradas ON esm_entradas.id = esm_medidores.entrada_id
             WHERE 
-                esm_unidades.bloco_id = $eid
+                esm_unidades.agrupamento_id = $eid
                 $t
             ORDER BY 
                 esm_unidades.nome
@@ -190,7 +190,7 @@ class Shopping_model extends Base_model
             JOIN esm_medidores ON esm_medidores.entrada_id = esm_device_groups.entrada_id
             JOIN esm_unidades ON esm_medidores.unidade_id = esm_unidades.id
             WHERE
-                esm_unidades.bloco_id = $group_id AND esm_medidores.tipo = '$m'
+                esm_unidades.agrupamento_id = $group_id AND esm_medidores.tipo = '$m'
             GROUP BY NAME
             ORDER BY NAME
         ");
@@ -222,13 +222,13 @@ class Shopping_model extends Base_model
         $result = $this->db->query("
             SELECT 
                 esm_agrupamentos.nome, 
-                esm_shoppings.*
+                esm_agrupamentos_config.*
             FROM 
-                esm_shoppings
+                esm_agrupamentos_config
             JOIN 
-                esm_agrupamentos ON esm_agrupamentos.id = esm_shoppings.bloco_id
+                esm_agrupamentos ON esm_agrupamentos.id = esm_agrupamentos_config.agrupamento_id
             WHERE 
-                bloco_id = $gid
+                agrupamento_id = $gid
         ");
 
         if ($result->getNumRows()) {
@@ -340,7 +340,7 @@ class Shopping_model extends Base_model
             FROM
                 esm_alertas_cfg
             WHERE
-                esm_alertas_cfg.group_id = $group
+                esm_alertas_cfg.agrupamento_id = $group
             $gr"
         );
 
@@ -359,7 +359,7 @@ class Shopping_model extends Base_model
                 esm_alertas_cfg
 	    JOIN esm_alertas_cfg_devices ON esm_alertas_cfg_devices.config_id = esm_alertas_cfg.id
             WHERE
-                esm_alertas_cfg.group_id = $group AND esm_alertas_cfg.type = $type"
+                esm_alertas_cfg.agrupamento_id = $group AND esm_alertas_cfg.type = $type"
         );
 
         if ($result->getNumRows()) {
@@ -380,7 +380,7 @@ class Shopping_model extends Base_model
         $query = $this->db->query("
             SELECT token
             FROM esm_api_keys
-            WHERE group_id = $group_id
+            WHERE agrupamento_id = $group_id
         ");
 
         // verifica se retornou algo
@@ -461,7 +461,7 @@ class Shopping_model extends Base_model
                 esm_device_groups_entries
             JOIN esm_medidores ON esm_medidores.nome = esm_device_groups_entries.device
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            WHERE esm_device_groups_entries.group_id = $id"
+            WHERE esm_device_groups_entries.agrupamento_id = $id"
         );
 
         if ($result->getNumRows()) {
@@ -483,7 +483,7 @@ class Shopping_model extends Base_model
                 JOIN esm_medidores ON esm_medidores.nome = esm_alertas_cfg_devices.device
                 JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             WHERE
-                esm_alertas_cfg.group_id = $group AND esm_alertas_cfg_devices.config_id = $type"
+                esm_alertas_cfg.agrupamento_id = $group AND esm_alertas_cfg_devices.config_id = $type"
         );
 
         if ($result->getNumRows()) {
@@ -501,15 +501,15 @@ class Shopping_model extends Base_model
 
             if ($this->db->table($tabela)
 
-                ->where('group_id', $dados['group_id'])
+                ->where('agrupamento_id', $dados['group_id'])
                 ->get()->getNumRows()) {
                 $this->db->table($tabela)
-                    ->where('group_id', $dados['group_id'])
+                    ->where('agrupamento_id', $dados['group_id'])
                     ->set($campos)
                     ->update();
             } else {
 
-                $campos['group_id'] = $dados['group_id'];
+                $campos['agrupamento_id'] = $dados['group_id'];
                 $this->db->table($tabela)
                     ->set($campos)
                     ->insert();
@@ -528,13 +528,13 @@ class Shopping_model extends Base_model
     {
         $query = "
             SELECT
-                esm_shoppings.*,
+                esm_agrupamentos_config.*,
                 esm_agrupamentos.nome AS nome 
             FROM
-                esm_shoppings
-                JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_shoppings.bloco_id
-                JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.condo_id
-                JOIN auth_user_relation ON auth_user_relation.entity_id = esm_entidades.id 
+                esm_agrupamentos_config
+                JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_agrupamentos_config.agrupamento_id
+                JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
+                JOIN auth_user_relation ON auth_user_relation.entidade_id = esm_entidades.id 
             WHERE
                 auth_user_relation.user_id = $user_id";
 
@@ -555,18 +555,18 @@ class Shopping_model extends Base_model
         if ($user->inGroup("unity", "shopping")) {
 
             return $this->db->table('auth_users')
-                ->select("auth_users.*, esm_unidades.id as unidade_id, esm_unidades.nome as unidade_nome, esm_agrupamentos.id as bloco_id, esm_agrupamentos.nome as bloco_nome")
+                ->select("auth_users.*, esm_unidades.id as unidade_id, esm_unidades.nome as unidade_nome, esm_agrupamentos.id as agrupamento_id, esm_agrupamentos.nome as bloco_nome")
                 ->join("auth_user_relation", "auth_user_relation.user_id = auth_users.id")
                 ->join("esm_unidades", "esm_unidades.id = auth_user_relation.unity_id")
-                ->join("esm_agrupamentos", "esm_agrupamentos.id = esm_unidades.bloco_id")
+                ->join("esm_agrupamentos", "esm_agrupamentos.id = esm_unidades.agrupamento_id")
                 ->where("auth_users.id", $user_id)
                 ->get();
         } elseif ($user->inGroup("shopping", "shopping")) {
 
             return $this->db->table('auth_users')
-                ->select("auth_users.*, esm_agrupamentos.id as bloco_id, esm_agrupamentos.nome as bloco_nome")
+                ->select("auth_users.*, esm_agrupamentos.id as agrupamento_id, esm_agrupamentos.nome as bloco_nome")
                 ->join("auth_user_relation", "auth_user_relation.user_id = auth_users.id")
-                ->join("esm_agrupamentos", "esm_agrupamentos.id = auth_user_relation.group_id")
+                ->join("esm_agrupamentos", "esm_agrupamentos.id = auth_user_relation.agrupamento_id")
                 ->where("auth_users.id", $user_id)
                 ->get();
         } else {
@@ -574,7 +574,7 @@ class Shopping_model extends Base_model
             return $this->db->table('auth_users')
                 ->select("auth_users.*")
                 ->join("auth_user_relation", "auth_user_relation.user_id = auth_users.id")
-                ->join("esm_entidades", "esm_entidades.id = auth_user_relation.entity_id")
+                ->join("esm_entidades", "esm_entidades.id = auth_user_relation.entidade_id")
                 ->where("auth_users.id", $user_id)
                 ->get();
         }
@@ -585,17 +585,17 @@ class Shopping_model extends Base_model
         $this->db->transStart();
 
         $q = $this->db->table('esm_api_keys')
-            ->where('group_id', $group_id)
+            ->where('agrupamento_id', $group_id)
             ->get();
 
         if ( $q->getNumRows() > 0 ) {
             $this->db->table('esm_api_keys')
-                ->where('group_id', $group_id)
+                ->where('agrupamento_id', $group_id)
                 ->set(array("token" => $token))
                 ->update();
         } else {
             $this->db->table('esm_api_keys')
-                ->set(array("group_id" => $group_id, "token" => $token))
+                ->set(array("agrupamento_id" => $group_id, "token" => $token))
                 ->insert();
         }
 
@@ -613,13 +613,13 @@ class Shopping_model extends Base_model
         $this->db->transStart();
 
         $this->db->table('esm_device_groups_entries')
-            ->where("group_id", $dados['id'])
+            ->where("agrupamento_id", $dados['id'])
             ->delete();
 
         if ($dados['devices']) {
             foreach ($dados['devices'] as $dvc) {
                 $this->db->table("esm_device_groups_entries")
-                    ->set(array('group_id' => $dados['id'], 'device' => $dvc))
+                    ->set(array('agrupamento_id' => $dados['id'], 'device' => $dvc))
                     ->insert();
             }
         }
@@ -643,7 +643,7 @@ class Shopping_model extends Base_model
         $this->db->transStart();
 
         $this->db->table("esm_device_groups_entries")
-            ->where("group_id", $id)
+            ->where("agrupamento_id", $id)
             ->delete();
 
         $this->db->table("esm_device_groups")
@@ -672,7 +672,7 @@ class Shopping_model extends Base_model
         if ($dados['devices']) {
             foreach ($dados['devices'] as $dvc) {
                 $this->db->table("esm_device_groups_entries")
-                    ->set(array('group_id' => $inserted, 'device' => $dvc))
+                    ->set(array('agrupamento_id' => $inserted, 'device' => $dvc))
                     ->insert();
             }
         }
@@ -688,18 +688,20 @@ class Shopping_model extends Base_model
 
     public function get_subtipo_cliente_config($grp)
     {
-        $this->db->query("
+        $query = "
             SELECT
                 IF(unc.type <= 1,(
                     SELECT esm_client_config.area_comum 
                     FROM esm_client_config 
-                    WHERE esm_client_config.group_id = $grp
+                    WHERE esm_client_config.agrupamento_id = $grp
                 ),'Unidades') as subtipo
             FROM esm_medidores me
             JOIN esm_unidades un ON un.id = me.unidade_id
             JOIN esm_unidades_config unc ON unc.unidade_id = un.id
-            WHERE un.bloco_id = $grp AND me.tipo = 'energia'
-        ")->getRow()->subtipo;
+            WHERE un.agrupamento_id = $grp AND me.tipo = 'energia'
+        ";
+
+        return $this->db->query($query)->getRow()->subtipo;
     }
 
     public function edit_unidade($dados)
@@ -745,7 +747,7 @@ class Shopping_model extends Base_model
         }
 
         $this->db->table('esm_alertas_cfg')
-            ->where("group_id", $dados['group_id'])
+            ->where("agrupamento_id", $dados['group_id'])
             ->where("id", $dados['config_id'])
             ->set(array(
                 'when_type' => $dados['esm_alertas_cfg']['when_type'],
@@ -780,7 +782,7 @@ class Shopping_model extends Base_model
             SELECT esm_unidades.*
             FROM esm_unidades
             JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades.id
-            WHERE esm_unidades.bloco_id = $shopping_id";
+            WHERE esm_unidades.agrupamento_id = $shopping_id";
 
         $result = $this->db->query($query);
 
@@ -810,7 +812,7 @@ class Shopping_model extends Base_model
         $query = "
             SELECT *
             FROM esm_entidades
-            JOIN esm_agrupamentos ON esm_agrupamentos.condo_id = esm_entidades.id
+            JOIN esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id
             WHERE esm_agrupamentos.id = $group";
 
         $result = $this->db->query($query);
@@ -826,8 +828,8 @@ class Shopping_model extends Base_model
         $query = "
             SELECT *
             FROM esm_entidades
-            JOIN esm_agrupamentos ON esm_agrupamentos.condo_id = esm_entidades.id
-            JOIN esm_unidades ON esm_unidades.bloco_id = esm_agrupamentos.id
+            JOIN esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id
+            JOIN esm_unidades ON esm_unidades.agrupamento_id = esm_agrupamentos.id
             WHERE esm_unidades.id = $unity";
 
         $result = $this->db->query($query);
@@ -857,9 +859,9 @@ class Shopping_model extends Base_model
     public function get_group_by_unity($unity)
     {
         $query = "
-            SELECT esm_shoppings.*
-            FROM esm_shoppings
-            JOIN esm_unidades ON esm_unidades.bloco_id = esm_shoppings.bloco_id
+            SELECT esm_agrupamentos_config.*
+            FROM esm_agrupamentos_config
+            JOIN esm_unidades ON esm_unidades.agrupamento_id = esm_agrupamentos_config.agrupamento_id
             WHERE esm_unidades.id = $unity";
 
         $result = $this->db->query($query);
@@ -889,10 +891,10 @@ class Shopping_model extends Base_model
     {
         $query = "
             SELECT 
-                esm_shoppings.* 
+                esm_agrupamentos_config.* 
             FROM 
-                esm_shoppings
-            JOIN auth_user_relation ON auth_user_relation.group_id = esm_shoppings.bloco_id
+                esm_agrupamentos_config
+            JOIN auth_user_relation ON auth_user_relation.agrupamento_id = esm_agrupamentos_config.agrupamento_id
             WHERE 
                 auth_user_relation.user_id = $user
         ";

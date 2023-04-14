@@ -17,7 +17,7 @@ class Base_model extends Model
 
     public function get_entity_by_group($grp)
     {
-        $query = "SELECT esm_entidades.* FROM esm_entidades JOIN esm_agrupamentos ON esm_agrupamentos.condo_id = esm_entidades.id WHERE esm_agrupamentos.id = $grp";
+        $query = "SELECT esm_entidades.* FROM esm_entidades JOIN esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id WHERE esm_agrupamentos.id = $grp";
 
         return $this->db->query($query)->getRow();
     }
@@ -26,8 +26,8 @@ class Base_model extends Model
     {
         $query = "
             SELECT esm_entidades.* FROM esm_entidades 
-            JOIN esm_agrupamentos ON esm_agrupamentos.condo_id = esm_entidades.id
-            JOIN esm_unidades ON esm_unidades.bloco_id = esm_agrupamentos.id
+            JOIN esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id
+            JOIN esm_unidades ON esm_unidades.agrupamento_id = esm_agrupamentos.id
             JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades.id
             WHERE esm_medidores.nome = $dvc";
 

@@ -320,7 +320,7 @@ class Industria extends UNO_Controller
                 array("label" => "Total",  "value" => number_format(round($total), 0, ",", ".")." <span style='font-size:10px;'>m³</span>",                    "color" => "#0088cc"),
                 array("label" => "Médio",  "value" => number_format(round($total / count($leituras)), 0, ",", ".")." <span style='font-size:10px;'>m³</span>", "color" => "#0088cc"),
                 array("label" => "Máximo", "value" => number_format(round($max), 0, ",", ".")." <span style='font-size:10px;'>m³</span>",                      "color" => "#0088cc"),
-                array("label" => "Mínimo", "value" => number_format(round($min), 0, ",", ".")." <span style='font-size:10px;'>m³</span>",                      "color" => "#0088cc"),
+                array("label" => "Mínimo", "value" => number_format(round(($min == 999999999) ? 0 : $min), 0, ",", ".")." <span style='font-size:10px;'>m³</span>",                      "color" => "#0088cc"),
             ));
 
             $chart = $this->chart_config("bar", false, $series, $titles, $labels, "m³", 1, array(), $footer, $dates);

@@ -87,8 +87,8 @@ class Condominio extends UNO_Controller
 
         if ($this->user->inGroup('unity') or $this->user->inGroup('admin')) {
             // leitura atual do monitamento da unidade
-            $data['leitura_agua']    = $this->condominio_model->get_consumo_unidade($this->user->entity->tabela, 'agua', $this->user->unidade->id);
-            $data['leitura_gas']     = $this->condominio_model->get_consumo_unidade($this->user->entity->tabela, 'gas', $this->user->unidade->id);
+            $data['leitura_agua'] = $this->condominio_model->get_consumo_unidade($this->user->entity->tabela, 'agua', $this->user->unidade->id);
+            $data['leitura_gas'] = $this->condominio_model->get_consumo_unidade($this->user->entity->tabela, 'gas', $this->user->unidade->id);
             $data['leitura_energia'] = $this->condominio_model->get_consumo_unidade($this->user->entity->tabela, 'energia', $this->user->unidade->id);
 
             // busca resumo do consumo da água
@@ -108,7 +108,7 @@ class Condominio extends UNO_Controller
             $data['fatu_energia'] = $this->condominio_model->get_consumo_last_fechamento($this->user->unidade->id, $this->user->entity->tabela, 'energia');
 
             $data['ultima_leitura'] = $this->condominio_model->get_last_leitura($this->user->unidade->id, $this->user->entity->tabela, 'agua');
-            $data['central']        = $this->condominio_model->get_central_by_unidade($this->user->unidade->id);
+            $data['central'] = $this->condominio_model->get_central_by_unidade($this->user->unidade->id);
         }
 
         // renderiza pagina
@@ -185,7 +185,7 @@ class Condominio extends UNO_Controller
 
             $previsao_consumo = $consumo_faturamento / $dias * 31;
 
-            $faturamento_unidade = $this->condominio_model->get_faturamento_unidade($ultimo->id,  $unidade_id);
+            $faturamento_unidade = $this->condominio_model->get_faturamento_unidade($ultimo->id, $unidade_id);
 
             if ($faturamento_unidade) {
                 $data['previsao']['ate_agora'] = number_format($consumo_faturamento * $valor_litro, 2, ',', '.');

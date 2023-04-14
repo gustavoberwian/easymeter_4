@@ -1,5 +1,5 @@
 
-<section role="main" class="content-body" data-entity="<?= $entity_id ?>" data-class="<?= $url ?>">
+<section role="main" class="content-body" data-entity="<?= $entity_id ?>" data-class="<?= $url ?>" data-monitoria="<?= $monitoria ?>">
 
     <?php if (!empty($user->entity->image_url)) : ?>
         <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" alt="<?= $user->entity->nome; ?>" class="mb-2 mt-2" height="50"/>
@@ -10,8 +10,8 @@
         <?php if (empty($groups)) : ?>
             <div class="alert alert-warning alert-dismissible fade show" role="alert">
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true" aria-label="Close"></button>
-                <h4 class="font-weight-bold text-dark">Nenhum shopping cadastrado em sua conta</h4>
-                <p>Não encontramos nenhum shopping cadastrado em sua conta na nossa base de dados. Se você acredita que isso seja um erro, <b>entre em contato com nosso suporte clicando no botão abaixo.</b></p>
+                <h4 class="font-weight-bold text-dark">Nenhum estabelecimento cadastrado em sua conta</h4>
+                <p>Não encontramos nenhum estabelecimento cadastrado em sua conta na nossa base de dados. Se você acredita que isso seja um erro, <b>entre em contato com nosso suporte clicando no botão abaixo.</b></p>
                 <p>
                     <button class="btn btn-default mt-1 mb-1" type="button">Conversar com um de nossos atendentes</button>
                 </p>

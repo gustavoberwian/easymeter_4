@@ -29,25 +29,47 @@ $routes->set404Override();
 
 // We get a performance increase by specifying the default
 // route since we don't have to scan directories.
+
+// Route site principal
 $routes->get('/', 'Site::index');
+
+// Routes shopping
 $routes->get('/shopping', 'Shopping::index',['filter'=>'checkApiAuth']);
 $routes->get('/shopping/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/shopping/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/shopping/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+
+// Routes da Ford para shopping
 $routes->get('/ford', 'Shopping::index',['filter'=>'checkApiAuth']);
 $routes->get('/ford/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/ford/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/ford/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+
+// Routes da Ambev para shopping
 $routes->get('/ambev', 'Shopping::index',['filter'=>'checkApiAuth']);
 $routes->get('/ambev/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/ambev/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/ambev/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+
+// Routes da Congás para shopping
+$routes->get('/comgas', 'Shopping::index',['filter'=>'checkApiAuth']);
+$routes->get('/comgas/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+$routes->get('/comgas/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/comgas/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+
+// Routes para grandeza de energia
 $routes->post('/energia/(:any)', 'Energia::$1',['filter'=>'checkApiAuth']);
 $routes->post('/energia/(:any)/(:num)', 'Energia::$1/$2',['filter'=>'checkApiAuth']);
+
+// Routes para grandeza de água
 $routes->post('/water/(:any)', 'Water::$1',['filter'=>'checkApiAuth']);
 $routes->post('/water/(:any)/(:num)', 'Water::$1/$2',['filter'=>'checkApiAuth']);
+
+// Routes para grandeza de gás
 $routes->post('/gas/(:any)', 'Gas::$1',['filter'=>'checkApiAuth']);
 $routes->post('/gas/(:any)/(:num)', 'Gas::$1/$2',['filter'=>'checkApiAuth']);
+
+// Routes para autenticação
 $routes->post('/user-login','Api\AuthController::UserLogin');
 $routes->get('/get-users','Api\ApiController::getUsers',['filter'=>'checkApiAuth']);
 $routes->get('/logged-out','Api\AuthController::loggedOut');
@@ -57,12 +79,16 @@ $routes->get('register','Api\RegisterController::registerView');
 $routes->get('/verify-magic-link', 'Api\MagicLinkController::verify');
 $routes->post('/verify-magic-link', 'Api\MagicLinkController::updateP');
 $routes->get('/update_password', 'Api\UpdatePassword::index');
+
+// Routes para api easymeter
 $routes->get('/api', 'Api::index');
 $routes->get('/api/(:any)', 'Api::$1');
 $routes->get('/api/(:any)/(:num)', 'Api::$1/$2');
 $routes->post('/api', 'Api::index');
 $routes->post('/api/(:any)', 'Api::$1');
 $routes->post('/api/(:any)/(:num)', 'Api::$1/$2');
+
+// Routes para super admin
 $routes->get('/admin', 'Admin::index',['filter'=>'checkApiAuth']);
 $routes->get('/admin/(:any)', 'Admin::$1',['filter'=>'checkApiAuth']);
 $routes->get('/admin/(:any)/(:num)', 'Admin::$1/$2',['filter'=>'checkApiAuth']);

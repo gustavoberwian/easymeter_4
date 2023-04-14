@@ -135,69 +135,141 @@
                         </header>
                         <div class="card-body bordered">
                             <ul class="nav nav-pills nav-pills-primary mb-3 position-absolute" role="tablist" style="z-index: 999;">
-                                <li class="nav-item me-2" role="presentation">
-                                    <button class="nav-link color-energy active" data-bs-toggle="pill" data-bs-target="#energia1" type="button" aria-selected="true" role="tab">Energia</button>
-                                </li>
-                                <li class="nav-item me-2" role="presentation">
-                                    <button class="nav-link color-water" data-bs-toggle="pill" data-bs-target="#agua1" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
-                                </li>
+                                <?php if ($user->entity->m_energia) : ?>
+                                    <li class="nav-item me-2" role="presentation">
+                                        <button class="nav-link color-energy <?= $monitoria === 'energy' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#energia1" type="button" aria-selected="true" role="tab">Energia</button>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_agua) : ?>
+                                    <li class="nav-item me-2" role="presentation">
+                                        <button class="nav-link color-water <?= $monitoria === 'water' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#agua1" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_gas) : ?>
+                                    <li class="nav-item me-2" role="presentation">
+                                        <button class="nav-link color-gas <?= $monitoria === 'gas' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#gas1" type="button" aria-selected="false" role="tab" tabindex="-1">Gás</button>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_nivel) : ?>
+                                    <li class="nav-item me-2" role="presentation">
+                                        <button class="nav-link color-info <?= $monitoria === 'nivel' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#nivel1" type="button" aria-selected="false" role="tab" tabindex="-1">Nível</button>
+                                    </li>
+                                <?php endif; ?>
                             </ul>
 
                             <div class="tab-content configs p-0" style="border: none; box-shadow: none;">
 
-                                <div id="energia1" class="tab-pane active">
-                                    <div class="tab-form agrupamentos h-100">
-                                        <div class="table-responsive h-100">
-                                            <table class="table table-bordered table-striped dataTable table-hover no-footer" id="dt-unidades-energia" data-url="/shopping/get_unidades" data-tipo="energia">
-                                                <thead>
-                                                <tr role="row">
-                                                    <th class="d-none">id</th>
-                                                    <th class="text-center">Medidor</th>
-                                                    <th class="text-center">LUC</th>
-                                                    <th class="text-center">Subtipo</th>
-                                                    <th class="text-center">Tipo</th>
-                                                    <th class="text-center">Identificador</th>
-                                                    <th class="text-center">Localizador</th>
-                                                    <th class="text-center">Capacidade</th>
-                                                    <th class="text-center">Lançamentos</th>
-                                                    <th class="text-center">Ações</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
+                                <?php if ($user->entity->m_energia) : ?>
+                                    <div id="energia1" class="tab-pane active">
+                                        <div class="tab-form agrupamentos h-100">
+                                            <div class="table-responsive h-100">
+                                                <table class="table table-bordered table-striped dataTable table-hover no-footer" id="dt-unidades-energia" data-url="/shopping/get_unidades" data-tipo="energia">
+                                                    <thead>
+                                                    <tr role="row">
+                                                        <th class="d-none">id</th>
+                                                        <th class="text-center">Medidor</th>
+                                                        <th class="text-center">LUC</th>
+                                                        <th class="text-center">Subtipo</th>
+                                                        <th class="text-center">Tipo</th>
+                                                        <th class="text-center">Identificador</th>
+                                                        <th class="text-center">Localizador</th>
+                                                        <th class="text-center">Capacidade</th>
+                                                        <th class="text-center">Lançamentos</th>
+                                                        <th class="text-center">Ações</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
 
-                                                </tbody>
-                                            </table>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_agua) : ?>
+                                    <div id="agua1" class="tab-pane">
+                                        <div class="tab-form agrupamentos h-100">
+                                            <div class="table-responsive h-100">
+                                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
+                                                       id="dt-unidades-agua" data-url="/shopping/get_unidades" data-tipo="agua">
+                                                    <thead>
+                                                    <tr role="row">
+                                                        <th class="d-none">id</th>
+                                                        <th class="text-center">Medidor</th>
+                                                        <th class="text-center">LUC</th>
+                                                        <th class="text-center">Subtipo</th>
+                                                        <th class="text-center">Tipo</th>
+                                                        <th class="text-center">Identificador</th>
+                                                        <th class="text-center">Localizador</th>
+                                                        <th class="text-center d-none">Capacidade</th>
+                                                        <th class="text-center">Lançamentos</th>
+                                                        <th class="text-center">Ações</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
 
-                                <div id="agua1" class="tab-pane">
-                                    <div class="tab-form agrupamentos h-100">
-                                        <div class="table-responsive h-100">
-                                            <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
-                                                   id="dt-unidades-agua" data-url="/shopping/get_unidades" data-tipo="agua">
-                                                <thead>
-                                                <tr role="row">
-                                                    <th class="d-none">id</th>
-                                                    <th class="text-center">Medidor</th>
-                                                    <th class="text-center">LUC</th>
-                                                    <th class="text-center">Subtipo</th>
-                                                    <th class="text-center">Tipo</th>
-                                                    <th class="text-center">Identificador</th>
-                                                    <th class="text-center">Localizador</th>
-                                                    <th class="text-center d-none">Capacidade</th>
-                                                    <th class="text-center">Lançamentos</th>
-                                                    <th class="text-center">Ações</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                </tbody>
-                                            </table>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_gas) : ?>
+                                    <div id="gas1" class="tab-pane">
+                                        <div class="tab-form agrupamentos h-100">
+                                            <div class="table-responsive h-100">
+                                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
+                                                       id="dt-unidades-gas" data-url="/shopping/get_unidades" data-tipo="gas">
+                                                    <thead>
+                                                    <tr role="row">
+                                                        <th class="d-none">id</th>
+                                                        <th class="text-center">Medidor</th>
+                                                        <th class="text-center">LUC</th>
+                                                        <th class="text-center">Subtipo</th>
+                                                        <th class="text-center">Tipo</th>
+                                                        <th class="text-center">Identificador</th>
+                                                        <th class="text-center">Localizador</th>
+                                                        <th class="text-center d-none">Capacidade</th>
+                                                        <th class="text-center">Lançamentos</th>
+                                                        <th class="text-center">Ações</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
 
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_nivel) : ?>
+                                    <div id="nivel1" class="tab-pane">
+                                        <div class="tab-form agrupamentos h-100">
+                                            <div class="table-responsive h-100">
+                                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
+                                                       id="dt-unidades-nivel" data-url="/shopping/get_unidades" data-tipo="nivel">
+                                                    <thead>
+                                                    <tr role="row">
+                                                        <th class="d-none">id</th>
+                                                        <th class="text-center">Medidor</th>
+                                                        <th class="text-center">LUC</th>
+                                                        <th class="text-center">Subtipo</th>
+                                                        <th class="text-center">Tipo</th>
+                                                        <th class="text-center">Identificador</th>
+                                                        <th class="text-center">Localizador</th>
+                                                        <th class="text-center d-none">Capacidade</th>
+                                                        <th class="text-center">Lançamentos</th>
+                                                        <th class="text-center">Ações</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
                         </div>
                     </section>
@@ -220,60 +292,81 @@
                         </header>
                         <div class="card-body bordered">
                             <ul class="nav nav-pills nav-pills-primary mb-3 position-absolute" role="tablist" style="z-index: 999;">
-                                <li class="nav-item me-2" role="presentation">
-                                    <button class="nav-link color-energy agrupamento-pill active" data-bs-toggle="pill" data-bs-target="#energia2" type="button" aria-selected="true" role="tab">Energia</button>
-                                </li>
-                                <li class="nav-item me-2" role="presentation">
-                                    <button class="nav-link color-water agrupamento-pill" data-bs-toggle="pill" data-bs-target="#agua2" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
-                                </li>
+                                <?php if ($user->entity->m_energia) : ?>
+                                    <li class="nav-item me-2" role="presentation">
+                                        <button class="nav-link color-energy agrupamento-pill <?= $monitoria === 'energy' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#energia2" type="button" aria-selected="true" role="tab">Energia</button>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_agua) : ?>
+                                    <li class="nav-item me-2" role="presentation">
+                                        <button class="nav-link color-water agrupamento-pill <?= $monitoria === 'water' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#agua2" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_gas) : ?>
+                                    <li class="nav-item me-2" role="presentation">
+                                        <button class="nav-link color-gas agrupamento-pill <?= $monitoria === 'gas' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#gas2" type="button" aria-selected="false" role="tab" tabindex="-1">Gás</button>
+                                    </li>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_nivel) : ?>
+                                    <li class="nav-item me-2" role="presentation">
+                                        <button class="nav-link color-info agrupamento-pill <?= $monitoria === 'nivel' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#nivel2" type="button" aria-selected="false" role="tab" tabindex="-1">Nível</button>
+                                    </li>
+                                <?php endif; ?>
                             </ul>
 
                             <div class="tab-content configs">
+                                <?php if ($user->entity->m_energia) : ?>
+                                    <div id="energia2" class="tab-pane active">
+                                        <div class="tab-form agrupamentos h-100">
+                                            <div class="table-responsive h-100" style="min-height: 230px;">
+                                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
+                                                       id="dt-agrupamentos-energia" data-url="/shopping/get_agrupamentos" data-tipo="energia">
+                                                    <thead>
+                                                    <tr role="row">
+                                                        <th class="d-none"></th>
+                                                        <th class="d-none"></th>
+                                                        <th class="text-center">Grupo</th>
+                                                        <th class="text-center">Unidades</th>
+                                                        <th class="text-center">Ações</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
 
-                                <div id="energia2" class="tab-pane active">
-                                    <div class="tab-form agrupamentos h-100">
-                                        <div class="table-responsive h-100" style="min-height: 230px;">
-                                            <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
-                                                   id="dt-agrupamentos-energia" data-url="/shopping/get_agrupamentos" data-tipo="energia">
-                                                <thead>
-                                                <tr role="row">
-                                                    <th class="d-none"></th>
-                                                    <th class="d-none"></th>
-                                                    <th class="text-center">Grupo</th>
-                                                    <th class="text-center">Unidades</th>
-                                                    <th class="text-center">Ações</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                </tbody>
-                                            </table>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_agua) : ?>
+                                    <div id="agua2" class="tab-pane">
+                                        <div class="tab-form agrupamentos h-100">
+                                            <div class="table-responsive h-100">
+                                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
+                                                       id="dt-agrupamentos-agua" data-url="/shopping/get_agrupamentos" data-tipo="agua">
+                                                    <thead>
+                                                    <tr role="row">
+                                                        <th class="d-none"></th>
+                                                        <th class="d-none"></th>
+                                                        <th class="text-center">Grupo</th>
+                                                        <th class="text-center">Unidades</th>
+                                                        <th class="text-center">Ações</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
 
-                                <div id="agua2" class="tab-pane">
-                                    <div class="tab-form agrupamentos h-100">
-                                        <div class="table-responsive h-100">
-                                            <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
-                                                   id="dt-agrupamentos-agua" data-url="/shopping/get_agrupamentos" data-tipo="agua">
-                                                <thead>
-                                                <tr role="row">
-                                                    <th class="d-none"></th>
-                                                    <th class="d-none"></th>
-                                                    <th class="text-center">Grupo</th>
-                                                    <th class="text-center">Unidades</th>
-                                                    <th class="text-center">Ações</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-
-                                                </tbody>
-                                            </table>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
-                                </div>
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_gas) : ?>
 
+                                <?php endif; ?>
+                                <?php if ($user->entity->m_nivel) : ?>
+
+                                <?php endif; ?>
                             </div>
                         </div>
                     </section>
@@ -294,74 +387,95 @@
 
                             <div class="card-body bordered">
                                 <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
-                                    <li class="nav-item me-2" role="presentation">
-                                        <button class="nav-link color-energy active" data-bs-toggle="pill" data-bs-target="#energia3" type="button" aria-selected="true" role="tab">Energia</button>
-                                    </li>
-                                    <li class="nav-item me-2" role="presentation">
-                                        <button class="nav-link color-water" data-bs-toggle="pill" data-bs-target="#agua3" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
-                                    </li>
+                                    <?php if ($user->entity->m_energia) : ?>
+                                        <li class="nav-item me-2" role="presentation">
+                                            <button class="nav-link color-energy <?= $monitoria === 'energy' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#energia3" type="button" aria-selected="true" role="tab">Energia</button>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($user->entity->m_agua) : ?>
+                                        <li class="nav-item me-2" role="presentation">
+                                            <button class="nav-link color-water <?= $monitoria === 'water' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#agua3" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($user->entity->m_gas) : ?>
+                                        <li class="nav-item me-2" role="presentation">
+                                            <button class="nav-link color-gas <?= $monitoria === 'gas' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#gas3" type="button" aria-selected="false" role="tab" tabindex="-1">Gás</button>
+                                        </li>
+                                    <?php endif; ?>
+                                    <?php if ($user->entity->m_nivel) : ?>
+                                        <li class="nav-item me-2" role="presentation">
+                                            <button class="nav-link color-info <?= $monitoria === 'nivel' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#nivel3" type="button" aria-selected="false" role="tab" tabindex="-1">Nível</button>
+                                        </li>
+                                    <?php endif; ?>
                                 </ul>
 
                                 <div class="tab-content configs">
-                                    <div id="energia3" class="tab-pane active">
-                                        <div class="tab-form agrupamentos">
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered table-striped dataTable table-hover no-footer"
-                                                       id="dt-alertas-conf-energia" data-url="/shopping/get_alertas_conf" data-tipo="energia">
-                                                    <thead>
-                                                    <tr role="row">
-                                                        <th rowspan="2" class="d-none"></th>
-                                                        <th rowspan="2" class="d-none"></th>
-                                                        <th rowspan="2" class="text-center">Status</th>
-                                                        <th rowspan="2" class="text-center">Alerta</th>
-                                                        <th rowspan="2" class="text-center">Medidores</th>
-                                                        <th rowspan="2" class="text-center">Quando</th>
-                                                        <th colspan="2" class="text-center">Notificar</th>
-                                                        <th rowspan="2" class="text-center">Ações</th>
-                                                    </tr>
-                                                    <tr role="row">
-                                                        <th>Shopping</th>
-                                                        <th>Unidade</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
+                                    <?php if ($user->entity->m_energia) : ?>
+                                        <div id="energia3" class="tab-pane active">
+                                            <div class="tab-form agrupamentos">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped dataTable table-hover no-footer"
+                                                           id="dt-alertas-conf-energia" data-url="/shopping/get_alertas_conf" data-tipo="energia">
+                                                        <thead>
+                                                        <tr role="row">
+                                                            <th rowspan="2" class="d-none"></th>
+                                                            <th rowspan="2" class="d-none"></th>
+                                                            <th rowspan="2" class="text-center">Status</th>
+                                                            <th rowspan="2" class="text-center">Alerta</th>
+                                                            <th rowspan="2" class="text-center">Medidores</th>
+                                                            <th rowspan="2" class="text-center">Quando</th>
+                                                            <th colspan="2" class="text-center">Notificar</th>
+                                                            <th rowspan="2" class="text-center">Ações</th>
+                                                        </tr>
+                                                        <tr role="row">
+                                                            <th>Shopping</th>
+                                                            <th>Unidade</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
 
-                                                    </tbody>
-                                                </table>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
+                                    <?php endif; ?>
+                                    <?php if ($user->entity->m_agua) : ?>
+                                        <div id="agua3" class="tab-pane">
+                                            <div class="tab-form agrupamentos">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped dataTable table-hover no-footer"
+                                                           id="dt-alertas-conf-agua" data-url="/shopping/get_alertas_conf" data-tipo="agua">
+                                                        <thead>
+                                                        <tr role="row">
+                                                            <th rowspan="2" class="d-none"></th>
+                                                            <th rowspan="2" class="d-none"></th>
+                                                            <th rowspan="2" class="text-center">Status</th>
+                                                            <th rowspan="2" class="text-center">Alerta</th>
+                                                            <th rowspan="2" class="text-center">Medidores</th>
+                                                            <th rowspan="2" class="text-center">Quando</th>
+                                                            <th colspan="2" class="text-center">Notificar</th>
+                                                            <th rowspan="2" class="text-center">Ações</th>
+                                                        </tr>
+                                                        <tr role="row">
+                                                            <th>Shopping</th>
+                                                            <th>Unidade</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
 
-                                    <div id="agua3" class="tab-pane">
-
-                                        <div class="tab-form agrupamentos">
-                                            <div class="table-responsive">
-                                                <table class="table table-bordered table-striped dataTable table-hover no-footer"
-                                                       id="dt-alertas-conf-agua" data-url="/shopping/get_alertas_conf" data-tipo="agua">
-                                                    <thead>
-                                                    <tr role="row">
-                                                        <th rowspan="2" class="d-none"></th>
-                                                        <th rowspan="2" class="d-none"></th>
-                                                        <th rowspan="2" class="text-center">Status</th>
-                                                        <th rowspan="2" class="text-center">Alerta</th>
-                                                        <th rowspan="2" class="text-center">Medidores</th>
-                                                        <th rowspan="2" class="text-center">Quando</th>
-                                                        <th colspan="2" class="text-center">Notificar</th>
-                                                        <th rowspan="2" class="text-center">Ações</th>
-                                                    </tr>
-                                                    <tr role="row">
-                                                        <th>Shopping</th>
-                                                        <th>Unidade</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-
-                                                    </tbody>
-                                                </table>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
                                             </div>
                                         </div>
+                                    <?php endif; ?>
+                                    <?php if ($user->entity->m_gas) : ?>
 
-                                    </div>
+                                    <?php endif; ?>
+                                    <?php if ($user->entity->m_nivel) : ?>
+
+                                    <?php endif; ?>
                                 </div>
                             </div>
                         </section>

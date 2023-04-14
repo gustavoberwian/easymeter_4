@@ -47,6 +47,26 @@ class Shopping extends UNO_Controller
 
         // set variables
         $this->url = service('uri')->getSegment(1);
+
+        if ($this->user->inGroup('superadmin')) {
+            $this->user->entity = (object)[];
+            $this->user->entity->classificacao = $this->user->page;
+        } else if ($this->user->inGroup('admin')) {
+            $this->user->entity = $this->shopping_model->get_condo($this->user->type->entity_id);
+        } else if ($this->user->inGroup('group')) {
+            $this->user->entity = $this->shopping_model->get_condo_by_group($this->user->type->group_id);
+        } else if ($this->user->inGroup('unity')) {
+            $this->user->entity = $this->shopping_model->get_condo_by_unity($this->user->type->unity_id);
+        }
+
+        if ($this->user->entity->m_energia)
+            $this->monitoria = 'energy';
+        elseif ($this->user->entity->m_agua)
+            $this->monitoria = 'water';
+        elseif ($this->user->entity->m_gas)
+            $this->monitoria = 'gas';
+        elseif ($this->user->entity->m_nivel)
+            $this->monitoria = 'nivel';
     }
 
     public function index()
@@ -55,17 +75,20 @@ class Shopping extends UNO_Controller
 
         $data['user'] = $this->user;
         $data['url'] = $this->url;
+        $data['monitoria'] = $this->monitoria;
 
         if ($this->user->inGroup('shopping', 'admin')) {
 
             $data['entity_id'] = $this->user->type->entity_id;
             $data['groups'] = $this->shopping_model->get_groups_by_entity($this->user->type->entity_id);
-            $data['area_comum'] = 'Área Comum';//$this->user->config->area_comum;
 
             foreach ($data['groups'] as $grp) {
-                $data['overall_c'][] = $this->energy_model->GetOverallConsumption(1, $grp->bloco_id);
-                $data['overall_l'][] = $this->energy_model->GetOverallConsumption(2, $grp->bloco_id);
+                $data['overall_c'][] = $this->energy_model->GetOverallConsumption(1, $grp->agrupamento_id);
+                $data['overall_l'][] = $this->energy_model->GetOverallConsumption(2, $grp->agrupamento_id);
+                $data['area_comum'][] = $this->shopping_model->get_client_config($grp->agrupamento_id)->area_comum;
             }
+
+            // echo "<pre>"; print_r($data); echo "</pre>"; return;
 
             return $this->render("index", $data);
 
@@ -73,14 +96,14 @@ class Shopping extends UNO_Controller
 
             $group = $this->shopping_model->get_group_by_user($this->user->id);
 
-            return redirect()->to('/shopping/energy/' . $group->bloco_id);
+            return redirect()->to('/shopping/energy/' . $group->agrupamento_id);
 
         } else if ($this->user->inGroup('unity', 'shopping')) {
 
             $unidade = $this->shopping_model->get_unity_by_user($this->user->id);
             $group = $this->shopping_model->get_group_by_unity($unidade->id);
 
-            return redirect()->to('shopping/unidade/' . $group->bloco_id . '/' . $unidade->id);
+            return redirect()->to('shopping/unidade/' . $group->agrupamento_id . '/' . $unidade->id);
 
         }
     }
@@ -147,13 +170,14 @@ class Shopping extends UNO_Controller
     }*/
 
     // TODO: Finalizar página da unidade
-    /*public function unidade($group_id, $unidade_id, $alerta = null)
+
+    public function unidade($group_id, $unidade_id, $alerta = null)
     {
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
 
-        $data['user']    = $this->user;
-        $data['url']    = $this->url;
+        $data['user'] = $this->user;
+        $data['url'] = $this->url;
 
         $data['unidade'] = $this->shopping_model->get_unidade($unidade_id);
         $data['device_groups'] = $this->shopping_model->get_device_groups($group_id, 'energia');
@@ -161,21 +185,21 @@ class Shopping extends UNO_Controller
         $data['alerta'] = false;
         $data['faturamento'] = false;
         $data['unidade_id'] = $unidade_id;
-        $data['area_comum'] = "Área Comum";//$this->user->config->area_comum;
+        $data['area_comum'] = $this->user->config->area_comum;
 
         $data['permission'] = $this->get_user_permission($this->user->id);
 
         if (!is_null($alerta)) {
             if ($alerta === 'faturamentos') {
                 $data['faturamento'] = true;
-                $data['group_id']   = $group_id;
-                $data['group']      = $this->shopping_model->get_group_info($group_id);
-                $data['unidades']   = $this->shopping_model->get_unidades($group_id);
-                $data['area_comum'] = "Área Comum";//$this->user->config->area_comum;
+                $data['group_id'] = $group_id;
+                $data['group'] = $this->shopping_model->get_group_info($group_id);
+                $data['unidades'] = $this->shopping_model->get_unidades($group_id);
+                $data['area_comum'] = $this->user->config->area_comum;
 
                 $this->setHistory("Acesso aos faturamentos da unidade $unidade_id do shopping $group_id", 'acesso');
 
-                $this->render('faturamentos_unidade', $data);
+                echo $this->render('faturamentos_unidade', $data);
                 return;
             }
 
@@ -183,25 +207,25 @@ class Shopping extends UNO_Controller
 
             $this->setHistory("Acesso aos alertas da unidade $unidade_id do shopping $group_id", 'acesso');
 
-            $this->render('alertas_unidade', $data);
+            echo $this->render('alertas_unidade', $data);
             return;
         }
 
         $this->setHistory("Acesso ao consumo da unidade $unidade_id do shopping $group_id", 'acesso');
 
-        echo $this->render('energy', $data);
-    }*/
+        echo $this->render('unidade', $data);
+    }
 
     public function energy($group_id = null)
     {
         $data['permission'] = $this->shopping_model->get_user_permission($this->user->id);
 
         $data['url'] = $this->url;
-        $data['user']    = $this->user;
+        $data['user'] = $this->user;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
 
-        $data['area_comum'] = "Área Comum";
+        $data['area_comum'] = $this->user->config->area_comum;
 
         $data['unidades'] = $this->shopping_model->get_units($group_id, "energia");
         $data['device_groups'] = $this->shopping_model->get_device_groups($group_id, "energia");
@@ -217,12 +241,12 @@ class Shopping extends UNO_Controller
         $data['group'] = $this->shopping_model->get_group_info($group_id);
 
         $data['url'] = $this->url;
-        $data['user']    = $this->user;
+        $data['user'] = $this->user;
 
         $data['unidades'] = $this->shopping_model->get_units($group_id, "agua");
         $data['device_groups'] = $this->shopping_model->get_device_groups($group_id, "agua");
 
-        $data['area_comum'] = "Área Comum";
+        $data['area_comum'] = $this->user->config->area_comum;
 
         return $this->render('water', $data);
     }
@@ -230,7 +254,7 @@ class Shopping extends UNO_Controller
     public function level($group_id = null)
     {
         $data['url'] = $this->url;
-        $data['user']    = $this->user;
+        $data['user'] = $this->user;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
 
@@ -242,9 +266,14 @@ class Shopping extends UNO_Controller
     public function gas($group_id = null)
     {
         $data['url'] = $this->url;
-        $data['user']    = $this->user;
+        $data['user'] = $this->user;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
+
+        $data['unidades'] = $this->shopping_model->get_units($group_id, "gas");
+        $data['device_groups'] = $this->shopping_model->get_device_groups($group_id, "gas");
+
+        $data['area_comum'] = $this->user->config->area_comum;
 
         //echo "<pre>"; print_r($data); echo "</pre>";
 
@@ -254,10 +283,10 @@ class Shopping extends UNO_Controller
     public function faturamentos($group_id)
     {
         $data['url'] = $this->url;
-        $data['group_id']   = $group_id;
-        $data['group']      = $this->shopping_model->get_group_info($group_id);
-        $data['unidades']   = $this->shopping_model->get_unidades($group_id);
-        $data['area_comum'] = "Área Comum";
+        $data['group_id'] = $group_id;
+        $data['group'] = $this->shopping_model->get_group_info($group_id);
+        $data['unidades'] = $this->shopping_model->get_unidades($group_id);
+        $data['area_comum'] = $this->user->config->area_comum;
 
         return $this->render('faturamentos', $data);
     }
@@ -267,19 +296,19 @@ class Shopping extends UNO_Controller
         $data['url'] = $this->url;
         if ($type == "energia") {
 
-            $data['group_id']   = $group_id;
-            $data['group']      = $this->shopping_model->get_group_info($group_id);
+            $data['group_id'] = $group_id;
+            $data['group'] = $this->shopping_model->get_group_info($group_id);
             $data['fechamento'] = $this->energy_model->GetLancamento($id);
-            $data['area_comum'] = "Área Comum";
+            $data['area_comum'] = $this->user->config->area_comum;
 
             return $this->render('lancamento_energy', $data);
 
         } else if ($type == "agua") {
 
-            $data['group_id']   = $group_id;
-            $data['group']      = $this->shopping_model->get_group_info($group_id);
+            $data['group_id'] = $group_id;
+            $data['group'] = $this->shopping_model->get_group_info($group_id);
             $data['fechamento'] = $this->water_model->GetLancamento($id);
-            $data['area_comum'] = "Área Comum";
+            $data['area_comum'] = $this->user->config->area_comum;
 
             return $this->render('lancamento_water', $data);
         }
@@ -288,23 +317,23 @@ class Shopping extends UNO_Controller
     public function relatorio($type, $group_id, $fechamento_id, $relatorio_id)
     {
         $data['url'] = $this->url;
-        $data['group_id']   = $group_id;
-        $data['shopping']   = $this->shopping_model->GetGroup($group_id);
-        $data['group']      = $this->shopping_model->get_group_info($group_id);
+        $data['group_id'] = $group_id;
+        $data['shopping'] = $this->shopping_model->GetGroup($group_id);
+        $data['group'] = $this->shopping_model->get_group_info($group_id);
 
         if ($type == "energia") {
 
-            $data['unidade']    = $this->shopping_model->GetFechamentoUnidade("energia", $relatorio_id);
+            $data['unidade'] = $this->shopping_model->GetFechamentoUnidade("energia", $relatorio_id);
             $data['fechamento'] = $this->shopping_model->GetFechamento("energia", $fechamento_id);
-            $data['historico']  = $this->shopping_model->GetFechamentoHistoricoUnidade("energia", $data['unidade']->device, $data['fechamento']->cadastro);
+            $data['historico'] = $this->shopping_model->GetFechamentoHistoricoUnidade("energia", $data['unidade']->device, $data['fechamento']->cadastro);
 
             return $this->render('relatorio_energy', $data);
 
         } else if ($type == "agua") {
 
-            $data['unidade']    = $this->shopping_model->GetFechamentoUnidade("agua", $relatorio_id);
+            $data['unidade'] = $this->shopping_model->GetFechamentoUnidade("agua", $relatorio_id);
             $data['fechamento'] = $this->shopping_model->GetFechamento("agua", $fechamento_id);
-            $data['historico']  = $this->shopping_model->GetFechamentoHistoricoUnidade("agua", $data['unidade']->device, $data['fechamento']->cadastro);
+            $data['historico'] = $this->shopping_model->GetFechamentoHistoricoUnidade("agua", $data['unidade']->device, $data['fechamento']->cadastro);
 
             $data['equivalencia'][0] = floor($data['unidade']->consumo / 10000);
             $resto = $data['equivalencia'][0] * 10000;
@@ -321,10 +350,10 @@ class Shopping extends UNO_Controller
     public function alertas($group_id)
     {
         $data['url'] = $this->url;
-        $data['user']       = $this->user;
-        $data['group_id']   = $group_id;
-        $data['group']      = $this->shopping_model->get_group_info($group_id);
-        $data['unidades']   = $this->shopping_model->get_units($group_id);
+        $data['user'] = $this->user;
+        $data['group_id'] = $group_id;
+        $data['group'] = $this->shopping_model->get_group_info($group_id);
+        $data['unidades'] = $this->shopping_model->get_units($group_id);
 
         return $this->render('alertas', $data);
     }
@@ -334,6 +363,7 @@ class Shopping extends UNO_Controller
         $data['url'] = $this->url;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
+        $data['monitoria'] = $this->monitoria;
 
         return $this->render('insights', $data);
     }
@@ -342,6 +372,7 @@ class Shopping extends UNO_Controller
     {
         $data['url'] = $this->url;
         $data['user'] = $this->user;
+        $data['monitoria'] = $this->monitoria;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
         $data['unidades'] = $this->shopping_model->get_units($group_id);
@@ -350,8 +381,8 @@ class Shopping extends UNO_Controller
         $data['token'] = $this->shopping_model->getToken($group_id);
 
         foreach ($data['alerts_config'] as $c) {
-            $data['alerts']['devices']['type-'.$c->type] = $this->shopping_model->get_devices($group_id, $c->type);
-            $data['alerts']['config-type-'.$c->type] = $c;
+            $data['alerts']['devices']['type-' . $c->type] = $this->shopping_model->get_devices($group_id, $c->type);
+            $data['alerts']['config-type-' . $c->type] = $c;
         }
 
         return $this->render('configs', $data);
@@ -398,7 +429,7 @@ class Shopping extends UNO_Controller
                 un.id as id,
                 un.nome as unidade,
                 unc.luc as luc,
-                IF(unc.type <= 1,(SELECT esm_client_config.area_comum FROM esm_client_config WHERE esm_client_config.group_id = ".$group_id."),'Unidades') as subtipo,
+                IF(unc.type <= 1,(SELECT esm_client_config.area_comum FROM esm_client_config WHERE esm_client_config.agrupamento_id = " . $group_id . "),'Unidades') as subtipo,
                 unc.tipo as tipo,
                 unc.identificador as identificador,
                 unc.localizador as localizador,
@@ -407,8 +438,8 @@ class Shopping extends UNO_Controller
             FROM esm_medidores me
             JOIN esm_unidades un ON un.id = me.unidade_id
             LEFT JOIN esm_unidades_config unc ON unc.unidade_id = un.id
-            WHERE un.bloco_id = $group_id AND me.tipo = '$type'
-            GROUP BY id" ;
+            WHERE un.agrupamento_id = $group_id AND me.tipo = '$type'
+            GROUP BY id";
 
         $dt = $this->datatables->query($query);
 
@@ -416,7 +447,7 @@ class Shopping extends UNO_Controller
             if (is_null($data['disjuntor']))
                 return "";
             else
-                return $data['disjuntor']." A";
+                return $data['disjuntor'] . " A";
         });
 
         $dt->edit('luc', function ($data) {
@@ -448,7 +479,7 @@ class Shopping extends UNO_Controller
         });
 
         $dt->add('actions', function ($data) {
-            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo){
+            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo) {
                 return '
                     <a href="#" class="hidden on-editing btn-save save-row text-success"><i class="fas fa-save"></i></a>
                                         <a href="#" class="hidden on-editing btn-save cancel-row text-danger"><i
@@ -467,34 +498,34 @@ class Shopping extends UNO_Controller
     public function GetAlerts()
     {
         $m = $this->input->getPost('monitoramento');
-        $group         = $this->input->getPost('group');
+        $group = $this->input->getPost('group');
 
         $user_id = auth()->user()->id;
 
-        $dvc = 'esm_alertas_'.$m.'.device';
+        $dvc = 'esm_alertas_' . $m . '.device';
         $join = 'JOIN esm_medidores ON esm_medidores.nome = ' . $dvc;
 
         $dt = $this->datatables->query("
             SELECT 
                 1 AS type, 
-                esm_alertas_".$m.".tipo, 
+                esm_alertas_" . $m . ".tipo, 
                 $dvc,
                 esm_unidades.nome, 
-                esm_alertas_".$m.".titulo, 
-                esm_alertas_".$m.".enviada, 
+                esm_alertas_" . $m . ".titulo, 
+                esm_alertas_" . $m . ".enviada, 
                 0 as actions, 
-                IF(ISNULL(esm_alertas_".$m."_envios.lida), 'unread', '') as DT_RowClass,
-                esm_alertas_".$m."_envios.id AS DT_RowId
-            FROM esm_alertas_".$m."_envios 
-            JOIN esm_alertas_".$m." ON esm_alertas_".$m.".id = esm_alertas_".$m."_envios.alerta_id 
+                IF(ISNULL(esm_alertas_" . $m . "_envios.lida), 'unread', '') as DT_RowClass,
+                esm_alertas_" . $m . "_envios.id AS DT_RowId
+            FROM esm_alertas_" . $m . "_envios 
+            JOIN esm_alertas_" . $m . " ON esm_alertas_" . $m . ".id = esm_alertas_" . $m . "_envios.alerta_id 
             " . $join . " 
-            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.bloco_id = $group
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group
             WHERE
-                esm_alertas_".$m."_envios.user_id = $user_id AND 
-                esm_alertas_".$m.".visibility = 'normal' AND 
-                esm_alertas_".$m."_envios.visibility = 'normal' AND
-                esm_alertas_".$m.".enviada IS NOT NULL
-            ORDER BY esm_alertas_".$m.".enviada DESC
+                esm_alertas_" . $m . "_envios.user_id = $user_id AND 
+                esm_alertas_" . $m . ".visibility = 'normal' AND 
+                esm_alertas_" . $m . "_envios.visibility = 'normal' AND
+                esm_alertas_" . $m . ".enviada IS NOT NULL
+            ORDER BY esm_alertas_" . $m . ".enviada DESC
         ");
 
         $dt->edit('type', function ($data) {
@@ -588,14 +619,14 @@ class Shopping extends UNO_Controller
             WHERE
                 auth_identities.type = 'email_password' AND
                 auth_groups_users.group IN (" . $groupFilter . ") AND
-                auth_user_relation.group_id = " . $group . " OR !ISNULL(auth_user_relation.unity_id)
+                auth_user_relation.agrupamento_id = " . $group . " OR !ISNULL(auth_user_relation.unidade_id)
             GROUP BY auth_users.id
         ";
 
         $dt = $this->datatables->query($query);
 
         $dt->add('actions', function ($data) {
-            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo){
+            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo) {
                 return '
                     <a data-bs-toggle="tooltip" data-bs-placement="top" title="Ver" href="' . site_url('/shopping/users/' . $this->input->getPost('group') . '/view/' . $data['id']) . '" class="action-visualiza text-success"><i class="fas fa-eye me-2"></i></a>
                     <a data-bs-toggle="tooltip" data-bs-placement="top" title="Editar" href="' . site_url('/shopping/users/' . $this->input->getPost('group') . '/edit/' . $data['id']) . '" class="action-access text-primary"><i class="fas fa-pen me-2"></i></a>
@@ -618,13 +649,13 @@ class Shopping extends UNO_Controller
         $query = "
             SELECT
                     esm_device_groups.id as id,
-                    esm_unidades.bloco_id,
+                    esm_unidades.agrupamento_id,
                     esm_device_groups.name AS name
             FROM 
                     esm_device_groups
             JOIN esm_medidores ON esm_medidores.entrada_id = esm_device_groups.entrada_id
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            WHERE esm_unidades.bloco_id = $group_id AND esm_medidores.tipo = '$type'
+            WHERE esm_unidades.agrupamento_id = $group_id AND esm_medidores.tipo = '$type'
             GROUP BY esm_device_groups.name";
 
         $dt = $this->datatables->query($query);
@@ -654,7 +685,7 @@ class Shopping extends UNO_Controller
         });
 
         $dt->add('actions', function ($data) {
-            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo){
+            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo) {
                 return '
                     <a href="#" class="hidden on-editing btn-save save-row text-success"><i class="fas fa-save"></i></a>
                                         <a href="#" class="hidden on-editing btn-save cancel-row text-danger"><i
@@ -675,10 +706,10 @@ class Shopping extends UNO_Controller
     {
         $group_id = $this->input->getPost("group");
         $type = $this->input->getPost("tipo");
-        
+
         $query = "SELECT 
                 id,
-                group_id,
+                agrupamento_id,
                 active as status,
                 description as alerta,
                 null as medidores,
@@ -687,7 +718,7 @@ class Shopping extends UNO_Controller
                 notify_unity as unidade,
                 type as actions
             FROM esm_alertas_cfg
-            WHERE group_id = $group_id AND subtipo = '$type'" ;
+            WHERE agrupamento_id = $group_id AND subtipo = '$type'";
 
         $dt = $this->datatables->query($query);
 
@@ -817,7 +848,7 @@ class Shopping extends UNO_Controller
         });
 
         $dt->edit('actions', function ($data) {
-            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo){
+            if ($this->user->inGroup("admin", "shopping") && !$this->user->demo) {
                 return '
                     <a href="#" class="hidden on-editing btn-save save-row text-success"><i class="fas fa-save"></i></a>
                                         <a href="#" class="hidden on-editing btn-save cancel-row text-danger"><i
@@ -938,7 +969,7 @@ class Shopping extends UNO_Controller
 
     public function get_subtipo_cliente_config()
     {
-        echo $this->shopping_model->get_subtipo_cliente_config($this->input->getPost("group"));
+        echo $this->shopping_model->get_subtipo_cliente_config($this->input->getPost("group"), $this->input->getPost("uid"));
     }
 
     public function edit_unidade()

@@ -240,13 +240,13 @@ class Admin extends UNO_Controller
                     user.id AS prop_id, 
                     IFNULL(user.username, 'Não cadastrado') AS nome
             FROM esm_unidades
-            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.bloco_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
             LEFT JOIN (
                     SELECT auth_user_relation.unity_id, auth_users.id, auth_users.username
                     FROM auth_users
                     JOIN auth_user_relation ON auth_user_relation.user_id = auth_users.id 
             ) AS user ON user.unity_id = esm_unidades.id
-            WHERE esm_unidades.bloco_id = $bloco
+            WHERE esm_unidades.agrupamento_id = $bloco
             ORDER BY esm_agrupamentos.nome, esm_unidades.nome
         ");
 
@@ -400,7 +400,7 @@ class Admin extends UNO_Controller
     {
         $condo_id = $this->input->getGet('condo');
         $this->user = auth()->user();
-        if (is_null($condo_id)) $condo_id = $this->user->condo->id;
+        if (is_null($condo_id)) $condo_id = $this->user->entity->id;
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT esm_fechamentos.id AS DT_RowId, esm_fechamentos.competencia,
@@ -447,7 +447,7 @@ class Admin extends UNO_Controller
     {
         $condo_id = $this->input->getGet('condo');
         $this->user = auth()->user();
-        if (is_null($condo_id)) $condo_id = $this->user->condo->id;
+        if (is_null($condo_id)) $condo_id = $this->user->entity->id;
 
         // realiza a query via dt
         $dt = $this->datatables->query("
@@ -602,7 +602,7 @@ class Admin extends UNO_Controller
             echo $this->admin_model->update_bloco($id, $nome, $agua, $agua_edit, $agua_delete, $ramal_id);
         } else {
             $unidade = array(
-                'bloco_id' => $bid,
+                'agrupamento_id' => $bid,
                 'nome' => $nome,
                 'andar' => $andar,
                 'fracao' => is_null($fracao) ? 1 : $fracao,

@@ -852,7 +852,8 @@ class Energia extends UNO_Controller
         $device   = $this->input->getPost('device');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
-        $group      = $this->input->getPost('group');
+        $group    = $this->input->getPost('group');
+        $field    = $this->input->getPost('field');
 
         $value_a = array();
         $value_b = array();
@@ -2383,7 +2384,7 @@ class Energia extends UNO_Controller
                     GROUP BY d.device
                 ) p ON p.device = esm_medidores.nome
             WHERE 
-                esm_unidades.bloco_id = " . $this->input->getPost("group") . " AND
+                esm_unidades.agrupamento_id = " . $this->input->getPost("group") . " AND
                 esm_medidores.tipo = 'energia'
             ORDER BY 
             esm_unidades_config.type, esm_unidades.nome
@@ -2551,7 +2552,7 @@ class Energia extends UNO_Controller
                 GROUP BY d.device 
             ) p ON p.device = esm_medidores.nome
             WHERE 
-               esm_unidades.bloco_id = $group
+               esm_unidades.agrupamento_id = $group
             ORDER BY 
                 value
             LIMIT 10
@@ -2650,7 +2651,7 @@ class Energia extends UNO_Controller
                     GROUP BY d.device
                 ) p ON p.device = esm_medidores.nome
             WHERE 
-                esm_unidades.bloco_id = $group
+                esm_unidades.agrupamento_id = $group
             ORDER BY value DESC
             LIMIT 10
         ");
@@ -2686,26 +2687,6 @@ class Energia extends UNO_Controller
     {
         $group = $this->input->getPost('gid');
 
-/*
-            SELECT
-                esm_fechamentos_energia.id,
-                competencia,
-                FROM_UNIXTIME(inicio, '%d/%m/%Y') AS inicio,
-                FROM_UNIXTIME(fim, '%d/%m/%Y') AS fim,
-                FORMAT(consumo, 3, 'de_DE') AS consumo,
-                FORMAT(consumo_p, 3, 'de_DE') AS consumo_p,
-                FORMAT(consumo_f, 3, 'de_DE') AS consumo_f,
-                FORMAT(demanda_p, 3, 'de_DE') AS demanda_p,
-                FORMAT(demanda_f, 3, 'de_DE') AS demanda_f,
-                FORMAT(fracao_consumo, 3, 'de_DE') AS fracao_consumo,
-                DATE_FORMAT(cadastro, '%d/%m/%Y') AS emissao
-            FROM
-                esm_fechamentos_energia
-            JOIN
-                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id AND esm_agrupamentos.id = $group
-            ORDER BY cadastro DESC
-*/
-
         $dt = $this->datatables->query("
             SELECT
                 esm_fechamentos_energia.id,
@@ -2726,7 +2707,7 @@ class Energia extends UNO_Controller
             FROM
                 esm_fechamentos_energia
             JOIN 
-                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id AND esm_agrupamentos.id = $group
+                esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.agrupamento_id AND esm_agrupamentos.id = $group
             ORDER BY cadastro DESC
 
         ");
@@ -2824,7 +2805,7 @@ class Energia extends UNO_Controller
     public function faturamento()
     {
         $data = array(
-            "group_id"    => $this->input->getPost('tar-group'),
+            "agrupamento_id"    => $this->input->getPost('tar-group'),
             "entrada_id"  => 72,
             "competencia" => $this->input->getPost('tar-competencia'),
             "inicio"      => $this->input->getPost('tar-data-ini'),
@@ -2847,7 +2828,7 @@ class Energia extends UNO_Controller
 			return;
 		}
 
-        echo $this->energy_model->Calculate($data, $this->user->config, $data['group_id']);
+        echo $this->energy_model->Calculate($data, $this->user->config, $data['agrupamento_id']);
     }
 
     public function download()
@@ -2855,7 +2836,7 @@ class Energia extends UNO_Controller
         $fechamento_id = $this->input->getPost('id');
 
         $group = $this->shopping_model->get_group_by_fechamento($fechamento_id);
-        $this->user->config = $this->shopping_model->get_client_config($group->group_id);
+        $this->user->config = $this->shopping_model->get_client_config($group->agrupamento_id);
 
         // busca fechamento
         $fechamento = $this->energy_model->GetLancamento($fechamento_id);
@@ -3181,7 +3162,7 @@ class Energia extends UNO_Controller
         $max      = $this->input->getPost('max');
 
         // busca fechamento
-        $data  = $this->energy_model->GetAbnormal($device, $init, $end, $type, $min, $max);
+        $data  = $this->energy_model->GetAbnormal($group_id, $device, $init, $end, $type, $min, $max);
         $group = $this->shopping_model->get_group_info($group_id);
 
         //TODO verificar se usuário tem acesso a esse fechamento
@@ -3359,7 +3340,7 @@ class Energia extends UNO_Controller
                                 GROUP BY d.device
                             ) p ON p.device = esm_medidores.nome
                         WHERE 
-                            esm_unidades.bloco_id = " . $this->input->getPost("group") . " AND
+                            esm_unidades.agrupamento_id = " . $this->input->getPost("group") . " AND
                 esm_medidores.tipo = 'energia'
                     ORDER BY 
                     esm_unidades_config.type, esm_unidades.nome

@@ -758,7 +758,7 @@ var unidade_validator;
 				} else {
 					// ERRO
 					if(json.message.code == 1062) {
-						if (json.message.message.indexOf('bloco_id') > -1) {
+						if (json.message.message.indexOf('agrupamento_id') > -1) {
 							$msg.html('As prumadas não podem ter nomes iguais!');
 						} else {
 							$msg.html('Já existe um bloco com este nome no condomínio!');

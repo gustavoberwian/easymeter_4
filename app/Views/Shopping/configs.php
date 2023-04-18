@@ -6,7 +6,7 @@
     </header>
 
     <div class="row">
-        <div class="col-9">
+        <div class="col-8">
             <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
                 <li class="nav-item configs" role="presentation">
                     <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#geral" type="button" aria-selected="true" role="tab">Geral</button>
@@ -28,7 +28,7 @@
                 </li>
             </ul>
         </div>
-        <div class="col-3 text-end">
+        <div class="col-4 text-end">
             <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
         </div>
     </div>
@@ -134,7 +134,7 @@
                             <h2 class="card-title">Unidades</h2>
                         </header>
                         <div class="card-body bordered">
-                            <ul class="nav nav-pills nav-pills-primary mb-3 position-absolute" role="tablist" style="z-index: 999;">
+                            <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
                                 <?php if ($user->entity->m_energia) : ?>
                                     <li class="nav-item me-2" role="presentation">
                                         <button class="nav-link color-energy <?= $monitoria === 'energy' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#energia1" type="button" aria-selected="true" role="tab">Energia</button>
@@ -160,7 +160,7 @@
                             <div class="tab-content configs p-0" style="border: none; box-shadow: none;">
 
                                 <?php if ($user->entity->m_energia) : ?>
-                                    <div id="energia1" class="tab-pane active">
+                                    <div id="energia1" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
                                                 <table class="table table-bordered table-striped dataTable table-hover no-footer" id="dt-unidades-energia" data-url="/shopping/get_unidades" data-tipo="energia">
@@ -187,7 +187,7 @@
                                     </div>
                                 <?php endif; ?>
                                 <?php if ($user->entity->m_agua) : ?>
-                                    <div id="agua1" class="tab-pane">
+                                    <div id="agua1" class="tab-pane <?= $monitoria === 'water' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
                                                 <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
@@ -215,7 +215,7 @@
                                     </div>
                                 <?php endif; ?>
                                 <?php if ($user->entity->m_gas) : ?>
-                                    <div id="gas1" class="tab-pane">
+                                    <div id="gas1" class="tab-pane <?= $monitoria === 'gas' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
                                                 <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
@@ -243,7 +243,7 @@
                                     </div>
                                 <?php endif; ?>
                                 <?php if ($user->entity->m_nivel) : ?>
-                                    <div id="nivel1" class="tab-pane">
+                                    <div id="nivel1" class="tab-pane <?= $monitoria === 'nivel' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
                                                 <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
@@ -284,14 +284,16 @@
                         <header class="card-header">
                             <div class="card-actions buttons">
                                 <?php if (!$user->demo): ?>
-                                    <button class="btn btn-primary btn-new-agrupamento-energia">Criar Agrupamento</button>
-                                    <button class="btn btn-primary btn-new-agrupamento-agua d-none">Criar Agrupamento</button>
+                                    <button class="btn btn-primary btn-new-agrupamento-energia <?= $monitoria === 'energy' ? '' : 'd-none' ?>">Criar Agrupamento</button>
+                                    <button class="btn btn-primary btn-new-agrupamento-agua <?= $monitoria === 'water' ? '' : 'd-none' ?>">Criar Agrupamento</button>
+                                    <button class="btn btn-primary btn-new-agrupamento-gas <?= $monitoria === 'gas' ? '' : 'd-none' ?>">Criar Agrupamento</button>
+                                    <button class="btn btn-primary btn-new-agrupamento-nivel <?= $monitoria === 'nivel' ? '' : 'd-none' ?>">Criar Agrupamento</button>
                                 <?php endif; ?>
                             </div>
                             <h2 class="card-title">Agrupamentos</h2>
                         </header>
                         <div class="card-body bordered">
-                            <ul class="nav nav-pills nav-pills-primary mb-3 position-absolute" role="tablist" style="z-index: 999;">
+                            <ul class="nav nav-pills nav-pills-primary mb-3">
                                 <?php if ($user->entity->m_energia) : ?>
                                     <li class="nav-item me-2" role="presentation">
                                         <button class="nav-link color-energy agrupamento-pill <?= $monitoria === 'energy' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#energia2" type="button" aria-selected="true" role="tab">Energia</button>
@@ -316,7 +318,7 @@
 
                             <div class="tab-content configs">
                                 <?php if ($user->entity->m_energia) : ?>
-                                    <div id="energia2" class="tab-pane active">
+                                    <div id="energia2" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100" style="min-height: 230px;">
                                                 <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
@@ -339,7 +341,7 @@
                                     </div>
                                 <?php endif; ?>
                                 <?php if ($user->entity->m_agua) : ?>
-                                    <div id="agua2" class="tab-pane">
+                                    <div id="agua2" class="tab-pane <?= $monitoria === 'water' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
                                                 <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
@@ -362,10 +364,50 @@
                                     </div>
                                 <?php endif; ?>
                                 <?php if ($user->entity->m_gas) : ?>
+                                    <div id="gas2" class="tab-pane <?= $monitoria === 'gas' ? 'active' : '' ?>">
+                                        <div class="tab-form agrupamentos h-100">
+                                            <div class="table-responsive h-100">
+                                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
+                                                       id="dt-agrupamentos-gas" data-url="/shopping/get_agrupamentos" data-tipo="gas">
+                                                    <thead>
+                                                    <tr role="row">
+                                                        <th class="d-none"></th>
+                                                        <th class="d-none"></th>
+                                                        <th class="text-center">Grupo</th>
+                                                        <th class="text-center">Unidades</th>
+                                                        <th class="text-center">Ações</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
 
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
                                 <?php endif; ?>
                                 <?php if ($user->entity->m_nivel) : ?>
+                                    <div id="nivel2" class="tab-pane <?= $monitoria === 'nivel' ? 'active' : '' ?>">
+                                        <div class="tab-form agrupamentos h-100">
+                                            <div class="table-responsive h-100">
+                                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer"
+                                                       id="dt-agrupamentos-nivel" data-url="/shopping/get_agrupamentos" data-tipo="nivel">
+                                                    <thead>
+                                                    <tr role="row">
+                                                        <th class="d-none"></th>
+                                                        <th class="d-none"></th>
+                                                        <th class="text-center">Grupo</th>
+                                                        <th class="text-center">Unidades</th>
+                                                        <th class="text-center">Ações</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
 
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
                                 <?php endif; ?>
                             </div>
                         </div>
@@ -411,7 +453,7 @@
 
                                 <div class="tab-content configs">
                                     <?php if ($user->entity->m_energia) : ?>
-                                        <div id="energia3" class="tab-pane active">
+                                        <div id="energia3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
                                             <div class="tab-form agrupamentos">
                                                 <div class="table-responsive">
                                                     <table class="table table-bordered table-striped dataTable table-hover no-footer"
@@ -441,7 +483,7 @@
                                         </div>
                                     <?php endif; ?>
                                     <?php if ($user->entity->m_agua) : ?>
-                                        <div id="agua3" class="tab-pane">
+                                        <div id="agua3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
                                             <div class="tab-form agrupamentos">
                                                 <div class="table-responsive">
                                                     <table class="table table-bordered table-striped dataTable table-hover no-footer"
@@ -471,10 +513,64 @@
                                         </div>
                                     <?php endif; ?>
                                     <?php if ($user->entity->m_gas) : ?>
+                                        <div id="gas3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
+                                            <div class="tab-form agrupamentos">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped dataTable table-hover no-footer"
+                                                           id="dt-alertas-conf-gas" data-url="/shopping/get_alertas_conf" data-tipo="gas">
+                                                        <thead>
+                                                        <tr role="row">
+                                                            <th rowspan="2" class="d-none"></th>
+                                                            <th rowspan="2" class="d-none"></th>
+                                                            <th rowspan="2" class="text-center">Status</th>
+                                                            <th rowspan="2" class="text-center">Alerta</th>
+                                                            <th rowspan="2" class="text-center">Medidores</th>
+                                                            <th rowspan="2" class="text-center">Quando</th>
+                                                            <th colspan="2" class="text-center">Notificar</th>
+                                                            <th rowspan="2" class="text-center">Ações</th>
+                                                        </tr>
+                                                        <tr role="row">
+                                                            <th>Shopping</th>
+                                                            <th>Unidade</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
 
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
                                     <?php endif; ?>
                                     <?php if ($user->entity->m_nivel) : ?>
+                                        <div id="nivel3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
+                                            <div class="tab-form agrupamentos">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped dataTable table-hover no-footer"
+                                                           id="dt-alertas-conf-nivel" data-url="/shopping/get_alertas_conf" data-tipo="nivel">
+                                                        <thead>
+                                                        <tr role="row">
+                                                            <th rowspan="2" class="d-none"></th>
+                                                            <th rowspan="2" class="d-none"></th>
+                                                            <th rowspan="2" class="text-center">Status</th>
+                                                            <th rowspan="2" class="text-center">Alerta</th>
+                                                            <th rowspan="2" class="text-center">Medidores</th>
+                                                            <th rowspan="2" class="text-center">Quando</th>
+                                                            <th colspan="2" class="text-center">Notificar</th>
+                                                            <th rowspan="2" class="text-center">Ações</th>
+                                                        </tr>
+                                                        <tr role="row">
+                                                            <th>Shopping</th>
+                                                            <th>Unidade</th>
+                                                        </tr>
+                                                        </thead>
+                                                        <tbody>
 
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
                                     <?php endif; ?>
                                 </div>
                             </div>

@@ -547,131 +547,281 @@
         };
     }
 
-    var energyUnitsTable = new EditableTable();
-    energyUnitsTable.initialize("#dt-unidades-energia",
-        [
-            {class: "d-none id"},
-            {class: "dt-body-left align-middle medidor"},
-            {class: "dt-body-center align-middle luc"},
-            {class: "dt-body-center align-middle select subtipo"},
-            {class: "dt-body-center align-middle select tipo"},
-            {class: "dt-body-center align-middle identificador"},
-            {class: "dt-body-center align-middle localizador"},
-            {class: "dt-body-center align-middle capacidade"},
-            {class: "dt-body-center align-middle select faturamento"},
-            {"bSortable": false, class: "dt-body-center align-middle actions",}
-        ],
-        '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
-        '/shopping/edit_unidade',
-        '.save-row',
-        '.cancel-row',
-        '.edit-row',
-        '',
-        '',
-        '',
-        '',
-        [[ 3, "asc" ], [ 1, "asc" ]]);
+    if ($("#dt-unidades-energia").length) {
+        var energyUnitsTable = new EditableTable();
+        energyUnitsTable.initialize("#dt-unidades-energia",
+            [
+                {class: "d-none id"},
+                {class: "dt-body-left align-middle medidor"},
+                {class: "dt-body-center align-middle luc"},
+                {class: "dt-body-center align-middle select subtipo"},
+                {class: "dt-body-center align-middle select tipo"},
+                {class: "dt-body-center align-middle identificador"},
+                {class: "dt-body-center align-middle localizador"},
+                {class: "dt-body-center align-middle capacidade"},
+                {class: "dt-body-center align-middle select faturamento"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
+            '/shopping/edit_unidade',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row',
+            '',
+            '',
+            '',
+            '',
+            [[3, "asc"], [1, "asc"]]);
+    }
 
-    var waterUnitsTable = new EditableTable();
-    waterUnitsTable.initialize("#dt-unidades-agua",
-        [
-            {class: "d-none id"},
-            {class: "dt-body-left align-middle medidor"},
-            {class: "dt-body-center align-middle luc"},
-            {class: "dt-body-center align-middle select subtipo"},
-            {class: "dt-body-center align-middle select tipo"},
-            {class: "dt-body-center align-middle identificador"},
-            {class: "dt-body-center align-middle localizador"},
-            {class: "d-none dt-body-center align-middle capacidade"},
-            {class: "dt-body-center align-middle select faturamento"},
-            {"bSortable": false, class: "dt-body-center align-middle actions",}
-        ],
-        '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
-        '/shopping/edit_unidade',
-        '.save-row',
-        '.cancel-row',
-        '.edit-row',
-        '',
-        '',
-        '',
-        '',
-        [[ 3, "asc" ], [ 1, "asc" ]]);
+    if ($("#dt-unidades-agua").length) {
+        var waterUnitsTable = new EditableTable();
+        waterUnitsTable.initialize("#dt-unidades-agua",
+            [
+                {class: "d-none id"},
+                {class: "dt-body-left align-middle medidor"},
+                {class: "dt-body-center align-middle luc"},
+                {class: "dt-body-center align-middle select subtipo"},
+                {class: "dt-body-center align-middle select tipo"},
+                {class: "dt-body-center align-middle identificador"},
+                {class: "dt-body-center align-middle localizador"},
+                {class: "d-none dt-body-center align-middle capacidade"},
+                {class: "dt-body-center align-middle select faturamento"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
+            '/shopping/edit_unidade',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row',
+            '',
+            '',
+            '',
+            '',
+            [[3, "asc"], [1, "asc"]]);
+    }
 
-    var energyGroupingsTable = new EditableTable();
-    energyGroupingsTable.initialize("#dt-agrupamentos-energia",
-        [
-            {class: "d-none id"},
-            {class: "d-none agrupamento_id"},
-            {class: "dt-body-left align-middle group"},
-            {class: "dt-body-center align-middle select unidades"},
-            {"bSortable": false, class: "dt-body-center align-middle actions",}
-        ],
-        '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
-        '/shopping/edit_agrupamentos',
-        '.save-row',
-        '.cancel-row',
-        '.edit-row',
-        '.delete-row',
-        '.btn-new-agrupamento-energia',
-        '#modalExcluiAgrupamentoEnergia',
-        '/shopping/delete_agrupamento');
+    if ($("#dt-unidades-gas").length) {
+        var gasUnitsTable = new EditableTable();
+        gasUnitsTable.initialize("#dt-unidades-gas",
+            [
+                {class: "d-none id"},
+                {class: "dt-body-left align-middle medidor"},
+                {class: "dt-body-center align-middle luc"},
+                {class: "dt-body-center align-middle select subtipo"},
+                {class: "dt-body-center align-middle select tipo"},
+                {class: "dt-body-center align-middle identificador"},
+                {class: "dt-body-center align-middle localizador"},
+                {class: "d-none dt-body-center align-middle capacidade"},
+                {class: "dt-body-center align-middle select faturamento"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
+            '/shopping/edit_unidade',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row',
+            '',
+            '',
+            '',
+            '',
+            [[3, "asc"], [1, "asc"]]);
+    }
 
-    var waterGroupingsTable = new EditableTable();
-    waterGroupingsTable.initialize("#dt-agrupamentos-agua",
-        [
-            {class: "d-none id"},
-            {class: "d-none agrupamento_id"},
-            {class: "dt-body-left align-middle group"},
-            {class: "dt-body-center align-middle select unidades"},
-            {"bSortable": false, class: "dt-body-center align-middle actions",}
-        ],
-        '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
-        '/shopping/edit_agrupamentos',
-        '.save-row',
-        '.cancel-row',
-        '.edit-row',
-        '.delete-row',
-        '.btn-new-agrupamento-agua',
-        '#modalExcluiAgrupamentoAgua',
-        '/shopping/delete_agrupamento');
+    if ($("#dt-unidades-nivel").length) {
+        var nivelUnitsTable = new EditableTable();
+        nivelUnitsTable.initialize("#dt-unidades-nivel",
+            [
+                {class: "d-none id"},
+                {class: "dt-body-left align-middle medidor"},
+                {class: "dt-body-center align-middle luc"},
+                {class: "dt-body-center align-middle select subtipo"},
+                {class: "dt-body-center align-middle select tipo"},
+                {class: "dt-body-center align-middle identificador"},
+                {class: "dt-body-center align-middle localizador"},
+                {class: "d-none dt-body-center align-middle capacidade"},
+                {class: "dt-body-center align-middle select faturamento"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
+            '/shopping/edit_unidade',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row',
+            '',
+            '',
+            '',
+            '',
+            [[3, "asc"], [1, "asc"]]);
+    }
 
-    var alertsConfigTableEnergy = new EditableTable();
-    alertsConfigTableEnergy.initialize("#dt-alertas-conf-energia",
-        [
-            {"bSortable": false, class: "d-none config-id"},
-            {"bSortable": false, class: "d-none group-id"},
-            {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
-            {"bSortable": false, class: "dt-body-left align-middle static"},
-            {"bSortable": false, class: "dt-body-center align-middle select medidores"},
-            {"bSortable": false, class: "dt-body-center align-middle select quando"},
-            {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
-            {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
-            {"bSortable": false, class: "dt-body-center align-middle actions",}
-        ],
-        '<"table-responsive"t>r',
-        '/shopping/edit_alert_conf',
-        '.save-row',
-        '.cancel-row',
-        '.edit-row');
+    if ($("#dt-agrupamentos-energia").length) {
+        var energyGroupingsTable = new EditableTable();
+        energyGroupingsTable.initialize("#dt-agrupamentos-energia",
+            [
+                {class: "d-none id"},
+                {class: "d-none agrupamento_id"},
+                {class: "dt-body-left align-middle group"},
+                {class: "dt-body-center align-middle select unidades"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
+            '/shopping/edit_agrupamentos',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row',
+            '.delete-row',
+            '.btn-new-agrupamento-energia',
+            '#modalExcluiAgrupamentoEnergia',
+            '/shopping/delete_agrupamento');
+    }
 
-    var alertsConfigTableWater = new EditableTable();
-    alertsConfigTableWater.initialize("#dt-alertas-conf-agua",
-        [
-            {"bSortable": false, class: "d-none config-id"},
-            {"bSortable": false, class: "d-none group-id"},
-            {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
-            {"bSortable": false, class: "dt-body-left align-middle static"},
-            {"bSortable": false, class: "dt-body-center align-middle select medidores"},
-            {"bSortable": false, class: "dt-body-center align-middle select quando"},
-            {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
-            {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
-            {"bSortable": false, class: "dt-body-center align-middle actions",}
-        ],
-        '<"table-responsive"t>r',
-        '/shopping/edit_alert_conf',
-        '.save-row',
-        '.cancel-row',
-        '.edit-row');
+    if ($("#dt-agrupamentos-agua").length) {
+        var waterGroupingsTable = new EditableTable();
+        waterGroupingsTable.initialize("#dt-agrupamentos-agua",
+            [
+                {class: "d-none id"},
+                {class: "d-none agrupamento_id"},
+                {class: "dt-body-left align-middle group"},
+                {class: "dt-body-center align-middle select unidades"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
+            '/shopping/edit_agrupamentos',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row',
+            '.delete-row',
+            '.btn-new-agrupamento-agua',
+            '#modalExcluiAgrupamentoAgua',
+            '/shopping/delete_agrupamento');
+    }
+
+    if ($("#dt-agrupamentos-gas").length) {
+        var gasGroupingsTable = new EditableTable();
+        gasGroupingsTable.initialize("#dt-agrupamentos-gas",
+            [
+                {class: "d-none id"},
+                {class: "d-none agrupamento_id"},
+                {class: "dt-body-left align-middle group"},
+                {class: "dt-body-center align-middle select unidades"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
+            '/shopping/edit_agrupamentos',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row',
+            '.delete-row',
+            '.btn-new-agrupamento-gas',
+            '#modalExcluiAgrupamentoAgua',
+            '/shopping/delete_agrupamento');
+    }
+
+    if ($("#dt-agrupamentos-nivel").length) {
+        var nivelGroupingsTable = new EditableTable();
+        nivelGroupingsTable.initialize("#dt-agrupamentos-nivel",
+            [
+                {class: "d-none id"},
+                {class: "d-none agrupamento_id"},
+                {class: "dt-body-left align-middle group"},
+                {class: "dt-body-center align-middle select unidades"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"row"<"col-md-6"><"col-md-6"f>><"table-responsive"t>pr',
+            '/shopping/edit_agrupamentos',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row',
+            '.delete-row',
+            '.btn-new-agrupamento-nivel',
+            '#modalExcluiAgrupamentoAgua',
+            '/shopping/delete_agrupamento');
+    }
+
+    if ($("#dt-alertas-conf-energia").length) {
+        var alertsConfigTableEnergy = new EditableTable();
+        alertsConfigTableEnergy.initialize("#dt-alertas-conf-energia",
+            [
+                {"bSortable": false, class: "d-none config-id"},
+                {"bSortable": false, class: "d-none group-id"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-left align-middle static"},
+                {"bSortable": false, class: "dt-body-center align-middle select medidores"},
+                {"bSortable": false, class: "dt-body-center align-middle select quando"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"table-responsive"t>r',
+            '/shopping/edit_alert_conf',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row');
+    }
+
+    if ($("#dt-alertas-conf-agua").length) {
+        var alertsConfigTableWater = new EditableTable();
+        alertsConfigTableWater.initialize("#dt-alertas-conf-agua",
+            [
+                {"bSortable": false, class: "d-none config-id"},
+                {"bSortable": false, class: "d-none group-id"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-left align-middle static"},
+                {"bSortable": false, class: "dt-body-center align-middle select medidores"},
+                {"bSortable": false, class: "dt-body-center align-middle select quando"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"table-responsive"t>r',
+            '/shopping/edit_alert_conf',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row');
+    }
+
+    if ($("#dt-alertas-conf-gas").length) {
+        var alertsConfigTableGas = new EditableTable();
+        alertsConfigTableGas.initialize("#dt-alertas-conf-gas",
+            [
+                {"bSortable": false, class: "d-none config-id"},
+                {"bSortable": false, class: "d-none group-id"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-left align-middle static"},
+                {"bSortable": false, class: "dt-body-center align-middle select medidores"},
+                {"bSortable": false, class: "dt-body-center align-middle select quando"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"table-responsive"t>r',
+            '/shopping/edit_alert_conf',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row');
+    }
+
+    if ($("#dt-alertas-conf-nivel").length) {
+        var alertsConfigTableNivel = new EditableTable();
+        alertsConfigTableNivel.initialize("#dt-alertas-conf-nivel",
+            [
+                {"bSortable": false, class: "d-none config-id"},
+                {"bSortable": false, class: "d-none group-id"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-left align-middle static"},
+                {"bSortable": false, class: "dt-body-center align-middle select medidores"},
+                {"bSortable": false, class: "dt-body-center align-middle select quando"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-center align-middle switch-dt"},
+                {"bSortable": false, class: "dt-body-center align-middle actions",}
+            ],
+            '<"table-responsive"t>r',
+            '/shopping/edit_alert_conf',
+            '.save-row',
+            '.cancel-row',
+            '.edit-row');
+    }
 
 
     // GERAL START
@@ -923,12 +1073,30 @@
         if ($('button[data-bs-target="#energia2"].active').html() === "Energia") {
             setTimeout(function() {
                 $('.btn-new-agrupamento-agua').addClass("d-none");
+                $('.btn-new-agrupamento-gas').addClass("d-none");
+                $('.btn-new-agrupamento-nivel').addClass("d-none");
                 $('.btn-new-agrupamento-energia').removeClass("d-none");
             }, 100);
         } else if ($('button[data-bs-target="#agua2"].active').html() === "Água") {
             setTimeout(function() {
                 $('.btn-new-agrupamento-energia').addClass("d-none");
+                $('.btn-new-agrupamento-gas').addClass("d-none");
+                $('.btn-new-agrupamento-nivel').addClass("d-none");
                 $('.btn-new-agrupamento-agua').removeClass("d-none");
+            }, 100);
+        } else if ($('button[data-bs-target="#gas2"].active').html() === "Água") {
+            setTimeout(function() {
+                $('.btn-new-agrupamento-energia').addClass("d-none");
+                $('.btn-new-agrupamento-nivel').addClass("d-none");
+                $('.btn-new-agrupamento-agua').addClass("d-none");
+                $('.btn-new-agrupamento-gas').removeClass("d-none");
+            }, 100);
+        } else if ($('button[data-bs-target="#nivel2"].active').html() === "Água") {
+            setTimeout(function() {
+                $('.btn-new-agrupamento-energia').addClass("d-none");
+                $('.btn-new-agrupamento-agua').addClass("d-none");
+                $('.btn-new-agrupamento-gas').addClass("d-none");
+                $('.btn-new-agrupamento-nivel').removeClass("d-none");
             }, 100);
         }
     });

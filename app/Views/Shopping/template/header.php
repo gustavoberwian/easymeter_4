@@ -23,7 +23,8 @@
         <link rel="stylesheet" href="<?= base_url('vendor/datatables/media/css/dataTables.bootstrap5.css'); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/bootstrap/css/bootstrap.css"); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/animate/animate.compat.css"); ?>">
-		<link rel="stylesheet" href="<?php echo base_url("vendor/font-awesome/css/all.min.css"); ?>" />
+		<!--<link rel="stylesheet" href="<?php /*echo base_url("vendor/font-awesome/css/all.min.css"); */?>" />-->
+		<link rel="stylesheet" href="<?php echo base_url("vendor/font-awesome-6/css/all.min.css"); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/boxicons/css/boxicons.min.css"); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/magnific-popup/magnific-popup.css"); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css"); ?>" />

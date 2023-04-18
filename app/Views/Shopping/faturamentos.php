@@ -7,23 +7,23 @@
     <div class="row">
         <div class="col-6">
             <ul class="nav nav-pills nav-pills-primary mb-3">
-                <?php if (!is_null($group->m_energia)) : ?>
+                <?php if (($group->m_energia)) : ?>
                     <li class="nav-item configs" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#energy" type="button">Energia</button>
                     </li>
                 <?php endif; ?>
-                <?php if (!is_null($group->m_agua)) : ?>
-                    <li class="nav-item me-2" role="presentation">
+                <?php if (($group->m_agua)) : ?>
+                    <li class="nav-item configs" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#water" type="button">Água</button>
                     </li>
                 <?php endif; ?>
-                <?php if (!is_null($group->m_gas)) : ?>
-                    <li class="nav-item me-2" role="presentation">
+                <?php if (($group->m_gas)) : ?>
+                    <li class="nav-item configs" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#gas" type="button">Gás</button>
                     </li>
                 <?php endif; ?>
-                <?php if (!is_null($group->m_nivel)) : ?>
-                    <li class="nav-item me-2" role="presentation">
+                <?php if (($group->m_nivel)) : ?>
+                    <li class="nav-item configs" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#nivel" type="button">Nível</button>
                     </li>
                 <?php endif; ?>
@@ -36,82 +36,130 @@
 
     <div class="tab-content" style="background-color: transparent; box-shadow: none; padding: 0;">
 
-        <div class="tab-pane fade show active" id="energy">
+        <?php if (($group->m_energia)) : ?>
+            <div class="tab-pane fade show active" id="energy">
 
-            <div class="row pt-0">
-                <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
-                    <header class="card-header">
-                        <div class="card-actions buttons">
-                            <button class="btn btn-primary btn-download" data-group="<?= $group_id; ?>" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
-                        </div>
-                        <h2 class="card-title">Lançamentos</h2>
-                    </header>
+                <div class="row pt-0">
+                    <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
+                        <header class="card-header">
+                            <div class="card-actions buttons">
+                                <button class="btn btn-primary btn-download" data-group="<?= $group_id; ?>" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
+                            </div>
+                            <h2 class="card-title">Lançamentos</h2>
+                        </header>
 
-                    <div class="card-body">
-                        <?php if (!$user->demo) : ?>
-                            <div class="d-flex justify-content-end">
-                                <button class="ml-3 btn btn-success btn-incluir mb-3">Incluir</button>
-                            </div>
-                        <?php endif; ?>
-                        <div class="tab-form faturamento">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-faturamentos" data-url="/energia/GetFaturamentos" data-group="<?=$group_id ?>">
-                                    <thead>
-                                        <tr role="row">
-                                            <th rowspan="3">Competência</th>
-                                            <th rowspan="3">Data inicial</th>
-                                            <th rowspan="3">Data final</th>
-                                            <th colspan="4" class="text-center"><?= $area_comum; ?></th>
-                                            <th colspan="4" class="text-center">Unidades</th>
-                                        </tr>
-                                        <tr role="row">
-                                            <th colspan="3" class="text-center">Consumo - kWh</th>
-                                            <th rowspan="2" class="text-center">Demanda - Kw</th>
-                                            <th colspan="3" class="text-center">Consumo - kWh</th>
-                                            <th rowspan="2" class="text-center">Demanda - Kw</th>
-                                            <th rowspan="2">Emissão</th>
-                                            <th rowspan="2">Ações</th>
-                                        </tr>
-                                        <tr role="row">
-                                            <th>Total</th>
-                                            <th>Ponta</th>
-                                            <th>Fora Ponta</th>
-                                            <th>Total</th>
-                                            <th>Ponta</th>
-                                            <th>Fora Ponta</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
+                        <div class="card-body">
+                            <?php if (!$user->demo) : ?>
+                                <div class="d-flex justify-content-end">
+                                    <button class="ml-3 btn btn-success btn-incluir mb-3">Incluir</button>
+                                </div>
+                            <?php endif; ?>
+                            <div class="tab-form faturamento">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-faturamentos" data-url="/energia/GetFaturamentos" data-group="<?=$group_id ?>">
+                                        <thead>
+                                            <tr role="row">
+                                                <th rowspan="3">Competência</th>
+                                                <th rowspan="3">Data inicial</th>
+                                                <th rowspan="3">Data final</th>
+                                                <th colspan="4" class="text-center"><?= $area_comum; ?></th>
+                                                <th colspan="4" class="text-center">Unidades</th>
+                                            </tr>
+                                            <tr role="row">
+                                                <th colspan="3" class="text-center">Consumo - kWh</th>
+                                                <th rowspan="2" class="text-center">Demanda - Kw</th>
+                                                <th colspan="3" class="text-center">Consumo - kWh</th>
+                                                <th rowspan="2" class="text-center">Demanda - Kw</th>
+                                                <th rowspan="2">Emissão</th>
+                                                <th rowspan="2">Ações</th>
+                                            </tr>
+                                            <tr role="row">
+                                                <th>Total</th>
+                                                <th>Ponta</th>
+                                                <th>Fora Ponta</th>
+                                                <th>Total</th>
+                                                <th>Ponta</th>
+                                                <th>Fora Ponta</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                </div>
             </div>
-        </div>
+        <?php endif; ?>
+        <?php if (($group->m_agua)) : ?>
+            <div class="tab-pane fade" id="water">
 
-        <div class="tab-pane fade" id="water">
-
-            <div class="row pt-0">
-                <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
-                    <header class="card-header">
-                        <div class="card-actions buttons">
-                            <button class="btn btn-primary btn-water-download" data-group="<?= $group_id; ?>" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
-                        </div>
-                        <h2 class="card-title">Lançamentos</h2>
-                    </header>
-
-                    <div class="card-body">
-                        <?php if (!$user->demo) : ?>
-                            <div class="d-flex justify-content-end">
-                                <button class="ml-3 btn btn-success btn-water-incluir mb-3">Incluir</button>
+                <div class="row pt-0">
+                    <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
+                        <header class="card-header">
+                            <div class="card-actions buttons">
+                                <button class="btn btn-primary btn-water-download" data-group="<?= $group_id; ?>" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
                             </div>
-                        <?php endif; ?>
-                        <div class="tab-form faturamento">
-                            <div class="table-responsive">
-                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-water" data-url="/water/GetLancamentosAgua" data-group="<?=$group_id ?>">
-                                    <thead>
+                            <h2 class="card-title">Lançamentos</h2>
+                        </header>
+
+                        <div class="card-body">
+                            <?php if (!$user->demo) : ?>
+                                <div class="d-flex justify-content-end">
+                                    <button class="ml-3 btn btn-success btn-water-incluir mb-3">Incluir</button>
+                                </div>
+                            <?php endif; ?>
+                            <div class="tab-form faturamento">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-water" data-url="/water/GetLancamentosAgua" data-group="<?=$group_id ?>">
+                                        <thead>
+                                            <tr role="row">
+                                                <th rowspan="2">Competência</th>
+                                                <th rowspan="2">Data inicial</th>
+                                                <th rowspan="2">Data final</th>
+                                                <th colspan="3" class="text-center">Consumo - L</th>
+                                                <th rowspan="2">Emissão</th>
+                                                <th rowspan="2">Ações</th>
+                                            </tr>
+                                            <tr role="row">
+                                                <th>Total</th>
+                                                <th>Aberto</th>
+                                                <th>Fechado</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        <?php endif; ?>
+        <?php if (($group->m_gas)) : ?>
+            <div class="tab-pane fade" id="gas">
+
+                <div class="row pt-0">
+                    <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
+                        <header class="card-header">
+                            <div class="card-actions buttons">
+                                <button class="btn btn-primary btn-water-download" data-group="<?= $group_id; ?>" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
+                            </div>
+                            <h2 class="card-title">Lançamentos</h2>
+                        </header>
+
+                        <div class="card-body">
+                            <?php if (!$user->demo) : ?>
+                                <div class="d-flex justify-content-end">
+                                    <button class="ml-3 btn btn-success btn-water-incluir mb-3">Incluir</button>
+                                </div>
+                            <?php endif; ?>
+                            <div class="tab-form faturamento">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-water" data-url="/water/GetLancamentosAgua" data-group="<?=$group_id ?>">
+                                        <thead>
                                         <tr role="row">
                                             <th rowspan="2">Competência</th>
                                             <th rowspan="2">Data inicial</th>
@@ -125,16 +173,63 @@
                                             <th>Aberto</th>
                                             <th>Fechado</th>
                                         </tr>
-                                    </thead>
-                                    <tbody>
-                                    </tbody>
-                                </table>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </section>
+                    </section>
+                </div>
             </div>
-        </div>
+        <?php endif; ?>
+        <?php if (($group->m_nivel)) : ?>
+            <div class="tab-pane fade" id="nivel">
+
+                <div class="row pt-0">
+                    <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
+                        <header class="card-header">
+                            <div class="card-actions buttons">
+                                <button class="btn btn-primary btn-water-download" data-group="<?= $group_id; ?>" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
+                            </div>
+                            <h2 class="card-title">Lançamentos</h2>
+                        </header>
+
+                        <div class="card-body">
+                            <?php if (!$user->demo) : ?>
+                                <div class="d-flex justify-content-end">
+                                    <button class="ml-3 btn btn-success btn-water-incluir mb-3">Incluir</button>
+                                </div>
+                            <?php endif; ?>
+                            <div class="tab-form faturamento">
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-water" data-url="/water/GetLancamentosAgua" data-group="<?=$group_id ?>">
+                                        <thead>
+                                        <tr role="row">
+                                            <th rowspan="2">Competência</th>
+                                            <th rowspan="2">Data inicial</th>
+                                            <th rowspan="2">Data final</th>
+                                            <th colspan="3" class="text-center">Consumo - L</th>
+                                            <th rowspan="2">Emissão</th>
+                                            <th rowspan="2">Ações</th>
+                                        </tr>
+                                        <tr role="row">
+                                            <th>Total</th>
+                                            <th>Aberto</th>
+                                            <th>Fechado</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div>

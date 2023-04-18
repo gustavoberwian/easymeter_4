@@ -93,10 +93,15 @@ class Shopping_model extends Base_model
     {
         $query = "
             SELECT 
-                esm_agrupamentos.nome as nome, esm_agrupamentos_config.* 
+                esm_agrupamentos.nome as nome,
+                esm_entidades.tipo as tipo,
+                CONCAT(esm_agrupamentos_config.logradouro, ', ', esm_agrupamentos_config.numero) as endereco,
+                CONCAT(esm_agrupamentos_config.cidade, ', ', esm_agrupamentos_config.uf) as municipio,
+                esm_agrupamentos_config.* 
             FROM 
                 esm_agrupamentos_config
             JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_agrupamentos_config.agrupamento_id
+            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
             WHERE 
                 esm_agrupamentos.entidade_id = $entity
         ";

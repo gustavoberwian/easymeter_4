@@ -299,7 +299,7 @@ class Shopping extends UNO_Controller
             $data['group_id'] = $group_id;
             $data['group'] = $this->shopping_model->get_group_info($group_id);
             $data['fechamento'] = $this->energy_model->GetLancamento($id);
-            $data['area_comum'] = $this->user->config->area_comum;
+            $data['area_comum'] = $this->shopping_model->get_client_config($group_id)->area_comum;
 
             return $this->render('lancamento_energy', $data);
 
@@ -308,7 +308,7 @@ class Shopping extends UNO_Controller
             $data['group_id'] = $group_id;
             $data['group'] = $this->shopping_model->get_group_info($group_id);
             $data['fechamento'] = $this->water_model->GetLancamento($id);
-            $data['area_comum'] = $this->user->config->area_comum;
+            $data['area_comum'] = $this->shopping_model->get_client_config($group_id)->area_comum;
 
             return $this->render('lancamento_water', $data);
         }

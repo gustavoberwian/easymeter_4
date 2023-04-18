@@ -89,12 +89,12 @@
     font-family: 'Square-Roman';
     font-style: normal;
     font-weight: 400;
-    src: url('../../../fonts/Square721 BT Roman.ttf');
+    src: url('../../../fonts/square721_bt_roman.ttf');
 }
 /* Square - Bold */
 @font-face {
     font-family: 'Square-Roman';
     font-style: normal;
     font-weight: bold;
-    src: url('../../../fonts/Square721 BT Bold.ttf');
+    src: url('../../../fonts/Square721_bt_bold.ttf');
 }

@@ -16,6 +16,11 @@ html.no-overflowscrolling .sidebar-left .nano {
         margin-left: 152px;
     }    
 }
+
+html {
+    scroll-behavior: smooth !important;
+}
+
 .page-header {
     background: #03aeef;
     border-bottom: none;

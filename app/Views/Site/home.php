@@ -19,7 +19,7 @@
                                 <h1 class="title-banner text-light">Plataforma para gestão e monitoramento inteligente de água, energia e gás!</h1>
                                 <p class="subtitle-banners text-light p-4">Monitoramento em tempo real, alertando sobre excessos de consumo e possíveis vazamento. Tudo isso desenvolvido por uma empresa de robótica</p>
                                 <p class="d-flex justify-content-center">
-                                    <a class="btn-banner text-light" href="#plataforma" role="button">Saiba mais</a>
+                                    <a id="slide" class="btn-banner text-light" href="#plataforma" role="button">Saiba mais</a>
                                 </p>
                             </div>
                         </div>
@@ -37,7 +37,7 @@
                                             Pesquisas comprovam que o consumo cai até 35% quando começamos a medir
                                         </p>
                                         <p class="d-flex justify-content-end">
-                                            <a class="btn-banner mt-3 text-light" href="#individualizacao" role="button">Saiba mais</a>
+                                            <a id="slide" class="btn-banner mt-3 text-light" href="#individualizacao" role="button">Saiba mais</a>
                                         </p>
                                     </div>
                                     <div class="col banner-icons-item">
@@ -81,7 +81,7 @@
                                 <h1 class="title-banner text-light">O sistema mais completo para melhorar a performance e gestão</h1>
                                 <p class="subtitle-banners text-light">de água, energia e gás do seu empreendimento.</p>
                                 <p class="d-flex justify-content-center">
-                                    <a class="btn-banner mt-3 text-light" href="#aplicacao" role="button">Saiba mais</a>
+                                    <a id="slide" class="btn-banner mt-3 text-light" href="#aplicacao" role="button">Saiba mais</a>
                                 </p>
                             </div>
                         </div>
@@ -249,7 +249,7 @@
                     </div>
 
                     <div class="space-light"></div>
-                    <a class="btn-home-page-2" href="#contato">Entre em contato</a>
+                    <a class="btn-home-page-2" id="slide" href="#contato">Entre em contato</a>
                 </div>
             </div>
         </div>
@@ -426,12 +426,10 @@
                         <div class="bloco d-flex">
                             <?php include_once 'assets/svgs/icon_conta.php'; ?>
                             <div class="text-structure">
-                                <h4 class="small-title">Minha conta de água é cara? mesmo?</h4>
-                                <p class="text-structure">
-                                    <b>Sim, e sua conta de água é tão cara quanto de luz e gás. </b>A maioria dos moradores
-                                    dividem a conta geral do condomínio, com base na fração ideal do imóvel. Você pode se
-                                    surpreender ao saber que 40% a 50% do valor da conta é desperdício, custo das bombas e a
-                                    inadimplência.
+                                <h4 class="small-title">Minha conta de água é cara? mesmo?</h4> 
+		                        <p class="text-structure"><b><br>Sim, e sua conta de água é tão cara quanto a de luz e gás.<br></b>
+                                    A maioria dos moradores dividem a conta geral do condomínio, com base na fração ideal do imóvel. 
+                                    Você pode se surpreender ao saber que 40% a 50% do valor da conta é desperdício, custo das bombas e a inadimplência.
                                 </p>
                             </div>
                         </div>
@@ -439,7 +437,8 @@
                             <?php include_once 'assets/svgs/icon_stop.php'; ?>
                             <div class="text-structure">
                                 <h4 class="small-title">Não é viável no meu prédio</h4>
-                                <p class="text-structure"> <b>A maioria dos apartamentos atuais possuem várias prumadas.</b> Até poucos anos, os apartamentos não eram projetados para mediçao individual devido às práticas
+                                <p class="text-structure"> <b><br>A maioria dos apartamentos atuais possuem várias prumadas.<br></b> 
+                                    Até poucos anos, os apartamentos não eram projetados para mediçao individual devido às práticas
                                     predominantes e custos envolvidos. A implementação de medidores individuais realmente é difícil com as soluções existentes no mercado.
                                 </p>
                             </div>
@@ -449,7 +448,7 @@
                             <div class="text-structure">
                                 <h4 class="small-title">Vou ter gastos extras com pessoal e serviços</h4>
                                 <p class="text-structure">
-                                    <b>É verdade se os medidores forem lidos manualmente.</b> A leitura dos
+                                    <b><br>É verdade se os medidores forem lidos manualmente.<br></b> A leitura dos
                                     medidores e o cálculos das tarifas são propensos a erros quando feitas manualmente.
                                     E pior, a tarifa da água por m³ mudará a cada mês com base nos consumos individuais
                                     e comuns, e ainda com a inadimplência.

@@ -16,28 +16,29 @@
         }
      })
 
-     $(".img-container1").mouseover(function () {
+    $(".img-container1").mouseover(function () {
         $('.img-hov1').attr('src', $('.img-hov1').data("hover"));
       }).mouseout(function () {
         $('.img-hov1').attr('src', $('.img-hov1').data("src"));
       });
 
-      $(".img-container2").mouseover(function () {
+    $(".img-container2").mouseover(function () {
         $('.img-hov2').attr('src', $('.img-hov2').data("hover"));
       }).mouseout(function () {
         $('.img-hov2').attr('src', $('.img-hov2').data("src"));
       });
 
-      $(".img-container3").mouseover(function () {
+    $(".img-container3").mouseover(function () {
         $('.img-hov3').attr('src', $('.img-hov3').data("hover"));
       }).mouseout(function () {
         $('.img-hov3').attr('src', $('.img-hov3').data("src"));
       });
 
-      $(".img-container4").mouseover(function () {
+    $(".img-container4").mouseover(function () {
         $('.img-hov4').attr('src', $('.img-hov4').data("hover"));
       }).mouseout(function () {
         $('.img-hov4').attr('src', $('.img-hov4').data("src"));
       });
+
 
 }).apply(this, [jQuery]);

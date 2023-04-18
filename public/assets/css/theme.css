@@ -66,6 +66,7 @@ a:active {
     padding: 40px;
     position: relative;
     vertical-align: top;
+	scroll-behavior: smooth !important;
 }
 
 .content-body:not(.card-margin) > .row + .row {

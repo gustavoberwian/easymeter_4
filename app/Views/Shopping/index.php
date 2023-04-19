@@ -57,7 +57,7 @@
             <?php for ($i = 0; $i < count($groups); $i++): ?>
                 <section class="col-md-6 p-2 card">
                     <div class="card" data-group="<?= $groups[$i]->agrupamento_id; ?>">
-                        <div class="card-body card-body-nopadding">
+                        <div class="card-body card-body-nopadding" data-group="<?= $groups[$i]->agrupamento_id; ?>">
                             <div class="mb-0 widget-twitter-profile bg-light">
                                 <div class="item profile-info p-0 overflow-hidden">
                                     <?php if (is_null($groups[$i]->img)): ?>

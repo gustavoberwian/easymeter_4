@@ -36,6 +36,7 @@ class Shopping extends UNO_Controller
 
         // load requests
         $this->input = \Config\Services::request();
+       
 
         // load models
         $this->shopping_model = new Shopping_model();
@@ -83,8 +84,17 @@ class Shopping extends UNO_Controller
             $data['groups'] = $this->shopping_model->get_groups_by_entity($this->user->type->entity_id);
 
             foreach ($data['groups'] as $grp) {
-                $data['overall_c'][] = $this->energy_model->GetOverallConsumption(1, $grp->agrupamento_id);
-                $data['overall_l'][] = $this->energy_model->GetOverallConsumption(2, $grp->agrupamento_id);
+                if ($this->user->inGroup('energia')) {
+                    $data['overall_c'][] = $this->energy_model->GetOverallConsumption(1, $grp->agrupamento_id);
+                    $data['overall_l'][] = $this->energy_model->GetOverallConsumption(2, $grp->agrupamento_id);
+                } else if ($this->user->inGroup('agua')) {
+                    $data['overall_c'][] = $this->water_model->GetOverallConsumption(1, $grp->agrupamento_id);
+                    $data['overall_l'][] = $this->water_model->GetOverallConsumption(2, $grp->agrupamento_id);
+                } else {
+                    $data['overall_c'][] = 0;
+                    $data['overall_l'][] = 0;
+                }
+
                 $data['area_comum'][] = $this->shopping_model->get_client_config($grp->agrupamento_id)->area_comum;
             }
 
@@ -109,17 +119,22 @@ class Shopping extends UNO_Controller
     }
 
     // TODO: Finalizar página  profile
-    /*public function profile()
+    public function profile()
     {
+        $data['validation'] = \Config\Services::validation();
+        $data['session'] = \Config\Services::session();
         $data['set'] = false;
+        $data['url'] = $this->url;
+        $data['condo'] = $this->shopping_model->get_condo($this->user->type->entity_id);
+        $data['user'] = $this->user;
+        $data['emails'] = $this->shopping_model->get_user_emails($this->user->id);
+        helper('form');
+        $user_id = $this->user->id;
 
-        $this->load->helper('form');
-        $this->load->library('form_validation');
-        $this->form_validation->set_error_delimiters('<label id="fullname-error" class="error" for="fullname">', '</label>');
-
-        if ($this->input->method() == 'post') {
-            $image = $this->input->post('crop-image');
-
+        if ($this->input->getMethod() == 'post') {
+            $image = $this->input->getPost('crop-image');
+            $senha = $this->input->getPost('password');
+        
             if ($image) {
                 // valida se é imagem...
 
@@ -128,18 +143,23 @@ class Shopping extends UNO_Controller
                 list(, $image) = explode(',', $image);
                 $image = base64_decode($image);
                 $filename = time() . $this->user->id . '.png';
-                if (file_put_contents('uploads/avatars/' . $filename, $image)) {
-                    // atualiza avatar em auth_users
-                    $data['avatar'] = $filename;
-                    if ($this->ion_auth->update($this->user->id, $data)) {
-                        // apaga avatar anterior
-                        if (file_exists('uploads/avatars/' . $this->user->avatar)) {
-                            unlink('uploads/avatars/' . $this->user->avatar);
-                        }
-                        $data['error'] = false;
-                        // mensagem
+                if (file_put_contents('../public/assets/img/uploads/avatars/' . $filename, $image)) {
+        
+                // mensagem
+                    $img['avatar'] = $filename;
+
+                    // apaga avatar anterior
+                    if ($this->user->avatar && file_exists('../public/assets/img/uploads/avatars/' . $this->user->avatar)) {
+                        unlink('../public/assets/img/uploads/avatars/' . $this->user->avatar);
                         $this->user->avatar = $filename;
-                    } else {
+                                
+                }
+                    
+                    // atualiza avatar em auth_users
+                    if ($this->shopping_model->update_avatar($this->user->id, $img)) {
+                        $data['error'] = false;
+                        }
+                         else {
                         //erro e mensagem
                     }
                 } else {
@@ -147,27 +167,64 @@ class Shopping extends UNO_Controller
                 }
             } else {
 
-                $this->load->library('form_validation');
-                $this->form_validation->set_rules('password', 'Senha', 'required|min_length[6]');
-                $this->form_validation->set_rules('confirm', 'Confirmação da Senha', 'required|matches[password]');
 
-                if ($this->form_validation->run() == TRUE) {
+                if($this->input->getPost('password'))
+                {
+                    $rules = [
+                'password' => 'required|min_length[6]',
+                'confirm' => 'required|matches[password]',
+                'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
+                'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
+               ];
+                } else {
+                    $rules = [
+                        'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
+                        'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
+                    ];
+                };
+                
+
+                 $emails = null;
+                 if ($this->input->getPost('emails') != '') {
+                     $emails = explode(',', $this->input->getPost('emails'));
+                        $rules = [
+                            'emails' => 'valid_email'
+                        ];
+                     }
+                 
+               
+                if ($this->validate($rules) && !isset($data['email_form'])) {
                     // coleta os dados do post
-                    $password = $this->input->post('password');
-                    $user     = $this->input->post('user');
+                    $password = $this->input->getPost('password');
+                    $telefone = $this->input->getPost('telefone');
+                    $celular  = $this->input->getPost('celular');
+                    
 
                     // atualiza dados
-                    if (!$this->shopping_model->update_user($user, $password)) {
+                    if (!$this->shopping_model->update_user($user_id, $password, $telefone, $celular, $emails)) {
                         $data['error'] = true;
+                        echo json_encode(array(
+                            'status' => 'error',
+                            'message' => 'Não foi possível atualizar os dados. Tente novamente em alguns minutos.'
+                        ));
+
                     } else {
                         $data['error'] = false;
                         //mensagem
+                        echo json_encode(array(
+                            'status' => 'success',
+                            'message' => 'Seus dados foram atualizados com sucesso.'
+                        ));
+                        
+
                     }
                 }
+                return;
             }
         }
+        $data['avatar'] = $this->user->avatar;
         echo $this->render('profile', $data);
-    }*/
+    }
 
     // TODO: Finalizar página da unidade
 
@@ -283,6 +340,8 @@ class Shopping extends UNO_Controller
     public function faturamentos($group_id)
     {
         $data['url'] = $this->url;
+        $data['user'] = $this->user;
+        $data['monitoria'] = $this->monitoria;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
         $data['unidades'] = $this->shopping_model->get_unidades($group_id);
@@ -299,7 +358,7 @@ class Shopping extends UNO_Controller
             $data['group_id'] = $group_id;
             $data['group'] = $this->shopping_model->get_group_info($group_id);
             $data['fechamento'] = $this->energy_model->GetLancamento($id);
-            $data['area_comum'] = $this->user->config->area_comum;
+            $data['area_comum'] = $this->shopping_model->get_client_config($group_id)->area_comum;
 
             return $this->render('lancamento_energy', $data);
 
@@ -308,7 +367,7 @@ class Shopping extends UNO_Controller
             $data['group_id'] = $group_id;
             $data['group'] = $this->shopping_model->get_group_info($group_id);
             $data['fechamento'] = $this->water_model->GetLancamento($id);
-            $data['area_comum'] = $this->user->config->area_comum;
+            $data['area_comum'] = $this->shopping_model->get_client_config($group_id)->area_comum;
 
             return $this->render('lancamento_water', $data);
         }
@@ -351,6 +410,7 @@ class Shopping extends UNO_Controller
     {
         $data['url'] = $this->url;
         $data['user'] = $this->user;
+        $data['monitoria'] = $this->monitoria;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
         $data['unidades'] = $this->shopping_model->get_units($group_id);
@@ -1074,5 +1134,11 @@ class Shopping extends UNO_Controller
     public function get_user_permission($uid)
     {
         return $this->shopping_model->get_user_permission($uid);
+    }
+
+    public function md_profile_image_edit()
+    {
+
+        return view('modals/shopping/md_profile_image_edit');
     }
 }

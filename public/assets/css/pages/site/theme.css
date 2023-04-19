@@ -65,6 +65,7 @@ h6 {
 }
 
 body {
+  scroll-behavior: smooth !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   font-size: 15px;
@@ -7026,6 +7027,7 @@ footer.bg-dark a {
 
 html {
   background-image: url(/assets/img/gray_jean.png);
+  scroll-behavior: smooth !important;
 }
 
 @media (min-width: 991px) {

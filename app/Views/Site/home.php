@@ -19,7 +19,7 @@
                                 <h1 class="title-banner text-light">Plataforma para gestão e monitoramento inteligente de água, energia e gás!</h1>
                                 <p class="subtitle-banners text-light p-4">Monitoramento em tempo real, alertando sobre excessos de consumo e possíveis vazamento. Tudo isso desenvolvido por uma empresa de robótica</p>
                                 <p class="d-flex justify-content-center">
-                                    <a class="btn-banner text-light" href="#plataforma" role="button">Saiba mais</a>
+                                    <a id="slide" class="btn-banner text-light" href="#plataforma" role="button">Saiba mais</a>
                                 </p>
                             </div>
                         </div>
@@ -37,7 +37,7 @@
                                             Pesquisas comprovam que o consumo cai até 35% quando começamos a medir
                                         </p>
                                         <p class="d-flex justify-content-end">
-                                            <a class="btn-banner mt-3 text-light" href="#individualizacao" role="button">Saiba mais</a>
+                                            <a id="slide" class="btn-banner mt-3 text-light" href="#individualizacao" role="button">Saiba mais</a>
                                         </p>
                                     </div>
                                     <div class="col banner-icons-item">
@@ -81,7 +81,7 @@
                                 <h1 class="title-banner text-light">O sistema mais completo para melhorar a performance e gestão</h1>
                                 <p class="subtitle-banners text-light">de água, energia e gás do seu empreendimento.</p>
                                 <p class="d-flex justify-content-center">
-                                    <a class="btn-banner mt-3 text-light" href="#aplicacao" role="button">Saiba mais</a>
+                                    <a id="slide" class="btn-banner mt-3 text-light" href="#aplicacao" role="button">Saiba mais</a>
                                 </p>
                             </div>
                         </div>
@@ -107,24 +107,24 @@
             <div class="padding-swiper pt-0 pb-0 text-center">
                 <h2>Sobre Nós</h2>
                 <p class="text">
-                    O Easymeter foi desenvolvido pela UNO Robótica, empresa com mais
-                    de 10 anos de atuação no mercado, fundada por dois especialistas
-                    nas áreas de desenvolvimento de produtos eletrônicos, IoT (Internet
-                    das coisas), tecnologias embarcadas e serviços web.
+                O Easymeter foi desenvolvido pela empresa UNO Robótica, que possui mais de 10 anos
+                de experiência no mercado e foi fundada por dois especialistas em desenvolvimento
+                de produtos eletrônicos, IoT, tecnologias embarcadas e serviços web.
+
                 </p>
                 <p class="text">
-                    O Sistema Easymeter foi primordialmente pensado para atender
-                    demandas em condomínios no que se refere a medição e
-                    individualização dos consumos com o pensamento de "o que não se
-                    monitora, não se controla". E essa ideia se reflete na prática como:
-                    condomínios que passam a utilizar nosso sistema apresentam uma
-                    diminuição no consumo em cerca de 30%
+                O principal objetivo do Sistema Easymeter é atender às demandas de condomínios em
+                relação à medição e individualização do consumo, com base na ideia de que "o que não
+                é monitorado, não é controlado". Na prática, condomínios que utilizam nosso sistema
+                apresentam uma redução de cerca de 30% no consumo.
+
+
                 </p>
                 <p class="text">
-                    Atualmente o sistema atende demandas voltadas ao monitoramento
-                    e controle remoto e assistido de processos ligados à água, energia,
-                    gás e resíduos tanto nos condomínios quanto de indústrias,
-                    comércios e agronegócio.
+                Além disso, o sistema também atende às demandas de monitoramento e controle
+                remoto e assistido de processos relacionados a água, energia, gás e resíduos em
+                condomínios, indústrias, comércios e agronegócio.
+
                 </p>
                 <div class="space"></div>
                 <img alt src="<?= base_url('assets/img/site/easymeter_mandala.svg'); ?>" style="max-height: 550px;" />
@@ -151,11 +151,11 @@
                 <div class="padding-swiper text-center">
                     <h2 class="text-light">Painel de visualização simples e completo!</h2>
                     <p class="text text-light">
-                        Informações em tempo real dos medidores de água, energia e gás,
-                        identificando padrões de consumo, tendências e diversas outras
-                        informações importantes para a tomada de decisão. Tudo isso online
-                        e em tempo real no Tablet e Celular <b>Dentre as principais aplicações
-                            da Plataforma Easymeter, temos:</b>
+                    A Plataforma Easymeter oferece informações em tempo real dos medidores de água,
+                    energia e gás, permitindo a identificação de padrões de consumo, tendências e outras
+                    informações relevantes para a tomada de decisão. Esses dados podem ser acessados
+                    de forma online e em tempo real através de tablets e celulares.</p>
+                    <p class="text text-light">Dentre as principais aplicações da plataforma, destacam-se:</b>
                     </p>
 
                     <div class="space-light"></div>
@@ -249,7 +249,7 @@
                     </div>
 
                     <div class="space-light"></div>
-                    <a class="btn-home-page-2">Entre em contato</a>
+                    <a class="btn-home-page-2" id="slide" href="#contato">Entre em contato</a>
                 </div>
             </div>
         </div>
@@ -260,14 +260,14 @@
             <div class="padding-swiper pt-0 pb-0 text-center">
                 <h2>Diferenciais Easymeter</h2>
                 <p class="text black">
-                    Diferente de muitas soluções de mercado que utilizam hardware de
-                    terceiros para medição do consumo,<b>
-                        nossa solução contempla
-                        hardware e software de desenvolvimento próprio, trazendo maior
-                        qualidade e muito mais precisão nas informações.
-                    </b>Além disso, como
-                    nosso hardware tem capacidade de identificar consumos em
-                    mililitros, qualquer sinal de vazamento é alertado instantaneamente.
+                    Nossa solução é diferente das demais do mercado, pois utilizamos hardware e software de
+                    desenvolvimento próprio para medir o consumo, 
+                <b>garantindo maior qualidade e precisão das
+                    informações. 
+                </b>
+                    Além disso, nosso hardware é capaz de identificar até mesmo o menor consumo em
+                    mililitros, o que nos permite detectar instantaneamente qualquer sinal de vazamento e emitir um
+                    alerta imediato.
                 </p>
 
                 <div class="row mt-5  justify-content-around mb-4">
@@ -329,36 +329,39 @@
                     <div class="col-md-6">
                         <h3 class="text-left"><strong class="color-primary-site">Easymeter</strong> • O primeiro medidor de água 100% automatizado do Brasil</h3>
                         <p class="aplica-text text-left">
-                            Condomínios já individualizados quanto a análise dos dados
-                            de nossos clientes comprovam que os <b>
-                                condomínios que
-                                implementaram a medição individual reduziram seu
-                                consumo total de água em pelo menos 35%
-                            </b>Além disso,
-                            eles também economizam custos de energia, uma vez que
-                            uma menor quantidade de água é bombeada para as caixas
-                            de água. Menos consumo também significa menos
-                            desperdício de água, resultando em muita economia
+                            A análise dos dados dos nossos clientes comprova que 
+                            <b>
+                                condomínios com medição
+                                individual reduziram o consumo total de água em pelo menos 35%.
+                            </b>
+                            Além disso, eles economizam em custos de energia, 
+                            já que menos água é bombeada para as caixas
+                            d'água. A redução no consumo também resulta em menos 
+                            desperdício de água, o que significa uma economia 
+                            significativa. Portanto, a implementação de medição
+                            individualizada é uma opção altamente benéfica para 
+                            condomínios que desejam reduzir seu consumo de água e economizar em custos operacionais.
+
                         </p>
                     </div>
                     <div class="stats">
-                        <div class="stat">
-                            <img src="<?= base_url('/assets/img/site/easymeter_diferenciais_icone11_a.svg'); ?>" alt="" width="80px">
+                        <div class="stat img-container1">
+                            <img src="<?= base_url('/assets/img/site/easymeter_diferenciais_icone11_a.svg'); ?>" class="img-hov1" data-src="<?= base_url('/assets/img/site/easymeter_diferenciais_icone11_a.svg'); ?>" data-hover="<?= base_url('/assets/img/site/easymeter_diferenciais_icone11_b.svg'); ?>" alt="escudo_cifrao" width="80px">
                             <p class="subtitle">Custos ocultos zero</p>
                             <p class="text">Valor bem definido, sem mutios elementos de custos complicados</p>
                         </div>
-                        <div class="stat">
-                            <img src="<?= base_url('assets/img/site/easymeter_diferenciais_icone05.svg') ?>" width="80px" alt="chave_de_fenda">
+                        <div class="stat img-container2">
+                            <img src="<?= base_url('assets/img/site/easymeter_diferenciais_icone05.svg') ?>" class="img-hov2" data-src="<?= base_url('assets/img/site/easymeter_diferenciais_icone05.svg') ?>" data-hover="<?= base_url('/assets/img/site/easymeter_diferenciais_icone12_b.svg'); ?>" width="80px" alt="chave_de_fenda">
                             <p class="subtitle">Execução do projeto</p>
                             <p class="text"> Experientes e dedicados parceiros encanadores e engenheiros civis</p>
                         </div>
-                        <div class="stat">
-                            <img src="<?= base_url('assets/img/site/easymeter_diferenciais_icone13_a.svg') ?>" width="80px" alt="suporte_proativo">
+                        <div class="stat img-container3">
+                            <img src="<?= base_url('assets/img/site/easymeter_diferenciais_icone13_a.svg') ?>" class="img-hov3" data-src="<?= base_url('assets/img/site/easymeter_diferenciais_icone13_a.svg') ?>" data-hover="<?= base_url('/assets/img/site/easymeter_diferenciais_icone13_b.svg'); ?>"  width="80px" alt="suporte_proativo">
                             <p class="subtitle">Suporte proativo</p>
                             <p class="text">Rotina de manutenção preventiva</p>
                         </div>
-                        <div class="stat">
-                            <img src="<?= base_url('assets/img/site/easymeter_diferenciais_icone14_a.svg') ?>" width="80px" alt="solucao_ponta">
+                        <div class="stat img-container4">
+                            <img src="<?= base_url('assets/img/site/easymeter_diferenciais_icone14_a.svg') ?>" class="img-hov4" data-src="<?= base_url('assets/img/site/easymeter_diferenciais_icone14_a.svg') ?>" data-hover="<?= base_url('/assets/img/site/easymeter_diferenciais_icone14_b.svg'); ?>" width="80px" alt="solucao_ponta">
                             <p class="subtitle">Solução de ponta a ponta</p>
                             <p class="text">Dados entregues em tempo real e sem falhas</p>
                         </div>
@@ -375,7 +378,7 @@
                 <div class="box mb-3">
                     <b class="subtitle-bold">
                         O Easymeter está trabalhando 24 horas por dia, 7 dias por semana para
-                        oferecer um valor execpcional aos seus clientes.
+                        oferecer um valor excepcional aos seus clientes.
                     </b>
                 </div>
                 <div class="group-stats">
@@ -413,22 +416,20 @@
     <section id="individualizacao" class="gray-wallpaper">
         <div class="container">
             <div class="individualizacao-box">
-                <h2 class="text-center text-uppercase title-solution"><strong class="title-color">A melhor solução</strong><br> para individualização de <br>consumo em condominios</h2>
+                <h2 class="text-center text-uppercase title-solution"><strong class="title-color">A melhor solução</strong><br> para individualização de <br>consumo em condomínios</h2>
                 <div class="row d-flex">
                     <div class="col-5 left-side">
                         <h1 class="super-title">3 Mitos</h1>
-                        <h3> porque os condomínios <strong> não individualizam a medição de água, energia e gás.</strong></h3>
+                        <h3> por que os condomínios <strong> não individualizam a medição de água, energia e gás.</strong></h3>
                     </div>
                     <div class="col-7 right-side">
                         <div class="bloco d-flex">
                             <?php include_once 'assets/svgs/icon_conta.php'; ?>
                             <div class="text-structure">
-                                <h4 class="small-title">Minha conta de água é cara? mesmo?</h4>
-                                <p class="text-structure">
-                                    <b>Sim, e sua conta de água é tão cara quanto de luz e gás. </b>A maioria dos moradores
-                                    dividem a conta geral do condomínio, com base na fração ideal do imóvel. Você pode se
-                                    surpreender ao saber que 40% a 50% do valor da conta é desperdício, custo das bombas e a
-                                    inadimplência.
+                                <h4 class="small-title">Minha conta de água é cara? mesmo?</h4> 
+		                        <p class="text-structure"><b><br>Sim, e sua conta de água é tão cara quanto a de luz e gás.<br></b>
+                                    A maioria dos moradores dividem a conta geral do condomínio, com base na fração ideal do imóvel. 
+                                    Você pode se surpreender ao saber que 40% a 50% do valor da conta é desperdício, custo das bombas e a inadimplência.
                                 </p>
                             </div>
                         </div>
@@ -436,7 +437,8 @@
                             <?php include_once 'assets/svgs/icon_stop.php'; ?>
                             <div class="text-structure">
                                 <h4 class="small-title">Não é viável no meu prédio</h4>
-                                <p class="text-structure"> <b>A maioria dos apartamentos atuais possuem várias prumadas.</b> Até poucos anos, os apartamentos não eram projetados para mediçao individual devido às práticas
+                                <p class="text-structure"> <b><br>A maioria dos apartamentos atuais possuem várias prumadas.<br></b> 
+                                    Até poucos anos, os apartamentos não eram projetados para mediçao individual devido às práticas
                                     predominantes e custos envolvidos. A implementação de medidores individuais realmente é difícil com as soluções existentes no mercado.
                                 </p>
                             </div>
@@ -446,9 +448,9 @@
                             <div class="text-structure">
                                 <h4 class="small-title">Vou ter gastos extras com pessoal e serviços</h4>
                                 <p class="text-structure">
-                                    <b>É verdade se os medidores forem lidos manualmente.</b> A leitura dos
+                                    <b><br>É verdade se os medidores forem lidos manualmente.<br></b> A leitura dos
                                     medidores e o cálculos das tarifas são propensos a erros quando feitas manualmente.
-                                    É pior, a tarifa da água por m3 mudará a cada mês com base nos consumos individuais
+                                    E pior, a tarifa da água por m³ mudará a cada mês com base nos consumos individuais
                                     e comuns, e ainda com a inadimplência.
                                 </p>
                             </div>
@@ -478,7 +480,9 @@
                         <p class="subtitle-card">monitoramento<br><b class="strong_card">industrial</b></p>
                         <div class="content photo-background ">
                             <span class="detail"></span>
-                            <p class="text-card">Text </p>
+                            <p class="text-card">O monitoramento do uso de água na indústria é crucial para garantir um uso eficiente
+                                dos recursos hídricos e minimizar impactos ambientais. 
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -487,14 +491,17 @@
                         <p class="subtitle-card">Monitoramento de <br><strong class="strong_card"> poços, ETA<small style="font-weight:bold;">s</small> e ETE<small style="font-weight:bold;">s</small> </strong></p>
                         <div class="content photo-background ">
                             <span class="detail"></span>
-                            <p class="text-card">Text </p>
+                            <p class="text-card">O monitoramento do uso de água em poços, Estações de Tratamento de Água (ETAs) e
+Estações de Tratamento de Efluentes (ETEs) é fundamental para garantir a qualidade
+da água e o uso sustentável dos recursos hídricos. </p>
                         </div>
                     </div>
                     <div class="col-4 box-card ">
                         <p class="subtitle-card">monitoramento<br><strong class="strong_card"> agronegócio </strong></p>
                         <div class="content photo-background ">
                             <span class="detail"></span>
-                            <p class="text-card">Text </p>
+                            <p class="text-card">O monitoramento do uso de água em poços no agronegócio é uma prática importante para garantir
+a eficiência na irrigação e a preservação dos recursos hídricos. </p>
                         </div>
                     </div>
                 </div>
@@ -531,6 +538,45 @@
             </div>
         </div>
     </section>
+
+    <section id="contato" class="pb64 pb-xs-40">
+		        <div class="container">
+		            <div class="row contats">
+		                <div class="col-sm-4 contats-item">
+		                    <div class="feature feature-2 text-center">
+		                        <div class="text-center">
+                                <a href="tel:+5508005916181" class="number_footer"><i class="pe-7s-headphones icon-sm"></i></a>
+		                            <h3>Por telefone</h3>
+		                        </div>
+                                <a href="tel:+5508005916181" class="number_footer"><h4 class="color-orange"><b> 0800 591 6181</b></h4></a>
+                                <h4>De segunda a sexta<br/> das 9:00 as 17:00</h4>
+		                    </div>
+		                </div>
+		                <div class="col-sm-4 contats-item">
+		                    <div class="feature feature-2 text-center">
+		                        <div class="text-center">
+		                            <a href="mailto:contato@easymeter.com.br"><i class="pe-7s-mail icon-sm"></i></a>
+		                            <h3>Por E-mail</h3>
+		                        </div>
+		                        <a href="mailto:contato@easymeter.com.br"><h4 class="color-orange text-center"><b>suporte@easymeter.com.br<br></b></h4></a>
+                                <h4>Um membro da equipe de suporte responderá o mais rápido possível.</h4>
+		                    </div>
+		                </div>
+		                <div class="col-sm-4 contats-item">
+		                    <div class="feature feature-2 text-center pop-up-chat">
+		                        <div class="text-center">
+                                <a href="javascript:void(Tawk_API.toggle())"><i class="pe-7s-comment icon-sm" ></i></a>
+		                            <h3>Pelo Chat</h3>
+		                        </div>
+								<a href="javascript:void(Tawk_API.toggle())"><h4 class="color-orange open-chat"><b>Iniciar</b></h3></a>
+		                        <h4>Converse agora mesmo com um de nossos atendentes.</h4>
+		                    </div>
+		                </div>
+		            </div>
+		        </div>
+		    </section>
+
+   
 
 </main>
 

@@ -220,4 +220,84 @@
         });
     });
 
+    // AQUI COMEÇA A ÁGUA
+
+    let dtConsumo = $("#dt-consumo").DataTable({
+        dom: '<"table-responsive"t>r',
+        processing: true,
+        paging: true,
+        columns: [
+            {data: "id", className: "dt-body-center"},
+            {data: "name", className: "dt-body-left"},
+            {data: "value", className: "dt-body-center"},
+            {data: "percentage", className: "dt-body-center"},
+            {data: "participation", className: "dt-body-center"},
+        ],
+        serverSide: true,
+        ordering: false,
+        sorting: [],
+        pagingType: "numbers",
+        pageLength: 10,
+        ajax: {
+            type: 'POST',
+            url: "/water/insights/1",
+            data: {
+                group: $(".page-header").data("group")
+            },
+            error: function () {
+                notifyError(
+                    "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
+                );
+                $("#" + this.api().context[0].sTableId).dataTable().fnProcessingIndicator(false);
+                $("#" + this.api().context[0].sTableId + "_wrapper .table-responsive").removeClass("processing");
+            },
+        },
+    });
+
+    dtConsumo.on( 'draw.dt', function () {
+        var info = $('#dt-consumo').DataTable().page.info();
+        dtConsumo.column(0, {page: 'current'}).nodes().each(function(cell, i) {
+            cell.innerHTML = i + 1 + info.start;
+        });
+    });
+
+    let dtVazamento = $("#dt-vazamento").DataTable({
+        dom: '<"table-responsive"t>r',
+        processing: true,
+        paging: true,
+        columns: [
+            {data: "id", className: "dt-body-center"},
+            {data: "name", className: "dt-body-left"},
+            {data: "value", className: "dt-body-center"},
+            {data: "percentage", className: "dt-body-center"},
+            {data: "participation", className: "dt-body-center"},
+        ],
+        serverSide: true,
+        ordering: false,
+        sorting: [],
+        pagingType: "numbers",
+        pageLength: 10,
+        ajax: {
+            type: 'POST',
+            url: "/water/insights/1",
+            data: {
+                group: $(".page-header").data("group")
+            },
+            error: function () {
+                notifyError(
+                    "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
+                );
+                $("#" + this.api().context[0].sTableId).dataTable().fnProcessingIndicator(false);
+                $("#" + this.api().context[0].sTableId + "_wrapper .table-responsive").removeClass("processing");
+            },
+        },
+    });
+
+    dtVazamento.on( 'draw.dt', function () {
+        var info = $('#dt-vazamento').DataTable().page.info();
+        dtVazamento.column(0, {page: 'current'}).nodes().each(function(cell, i) {
+            cell.innerHTML = i + 1 + info.start;
+        });
+    });
+
 }.apply(this, [jQuery]));

@@ -917,4 +917,148 @@ class Water extends UNO_Controller
         // gera resultados
         echo $dt->generate();
     }
+
+    private function GetFactorInsightWater($group)
+    {
+        $entity = $this->shopping_model->get_entity_by_group($group);
+
+        $value = "p.value AS value";
+        $tabela = "esm_leituras_".$entity->tabela."_agua";
+        if ($this->user->demo) {
+            $value = "RAND() * 1 AS value";
+            $tabela = "esm_leituras_".$entity->tabela."_agua_demo";
+            $group = 113;
+        }
+        
+
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT 
+                esm_unidades.nome AS name, 
+                $value
+            FROM esm_medidores
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            JOIN (
+                SELECT 
+                    d.medidor_id,
+                    IFNULL(SUM(consumo),1) AS value
+                FROM esm_calendar
+                LEFT JOIN $tabela d ON 
+                    d.timestamp > (esm_calendar.ts_start) AND 
+                    d.timestamp <= (esm_calendar.ts_end) 
+                WHERE 
+                    esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
+                    esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
+                GROUP BY d.medidor_id
+            ) p ON p.medidor_id = esm_medidores.id
+            WHERE 
+               esm_unidades.agrupamento_id = $group
+            ORDER BY 
+                value
+            LIMIT 10
+        ");
+
+        $dt->add('id', function ($data) {
+            return "-";
+        });
+
+        $dt->edit('value', function ($data) {
+            return number_format($data["value"], 3, ",", ".");
+        });
+
+
+        return $dt->generate();
+    }
+
+    public function insights($iud)
+    {
+        $group = $this->input->getPost("group");
+
+        $entity = $this->shopping_model->get_entity_by_group($group);
+
+        $this->user->config = $this->shopping_model->get_client_config($group);
+
+        if (!$this->user->config) {
+            return json_encode(array(
+                "status" => "error",
+                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+            ));
+        }
+
+        // Query que calcula os valores totais e faz a participação em porcentagem
+
+        $station = "";
+        $st = "";
+        $total = false;
+        $factor = 1;
+        if ($iud == 1) {
+            $station = "AND ((MOD((d.timestamp), 86400) >= {$this->user->config->ponta_start} AND MOD((d.timestamp), 86400) <= {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)";
+            $st = "consumo";
+            $total = $this->water_model->GetMonthByStationWater(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group, $this->user->demo);
+        } else if ($iud == 2) {
+            $station = "AND (((MOD((d.timestamp), 86400) < {$this->user->config->ponta_start} OR MOD((d.timestamp), 86400) > {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)";
+            $st = "fora";
+            $total = $this->water_model->GetMonthByStationWater(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group, $this->user->demo);
+        }
+
+            //echo $this->GetFactorInsightWater($group);
+            //return;
+
+        $value = "p.value AS value";
+        $tabela = "esm_leituras_".$entity->tabela."_agua";
+        if ($this->user->demo) {
+            $value = "RAND() * 1000 AS value";
+            $tabela = "esm_leituras_".$entity->tabela."_agua_demo";
+            $group = 113;
+        }
+
+        // realiza a query medidor e consumo via dt
+      
+        $dt = $this->datatables->query("
+            SELECT 
+                esm_unidades.nome AS name, 
+                $value
+            FROM esm_medidores
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            JOIN (
+                    SELECT 
+                        d.medidor_id,
+                        SUM(consumo) AS value
+                    FROM esm_calendar
+                    LEFT JOIN $tabela d ON 
+                        (d.timestamp) > (esm_calendar.ts_start) AND 
+                        (d.timestamp) <= (esm_calendar.ts_end + 600) 
+                        $station
+                    WHERE 
+                        esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
+                        esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
+                    GROUP BY d.medidor_id
+                ) p ON p.medidor_id = esm_medidores.id
+            WHERE 
+                esm_unidades.agrupamento_id = $group
+            ORDER BY value DESC LIMIT 10");
+            
+        $dt->add('id', function ($data) {
+            return "-";
+        });
+
+        $dt->edit('value', function ($data) use ($factor) {
+            return number_format($data["value"] * $factor, 3, ",", ".").($factor == 1000 ? " m³" : " L");
+
+        });
+
+        $dt->add('percentage', function ($data) use ($total, $factor) {
+            $v = round(($data['value'] * $factor) / $total * 100);
+            return "<div class=\"progress progress-sm progress-half-rounded m-0 mt-1 light\">
+                <div class=\"progress-bar progress-bar-primary t-$total\" role=\"progressbar\" aria-valuenow=\"100\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $v%;\">
+                </div>
+            </div>";
+        });
+
+        $dt->add('participation', function ($data) use ($total, $factor) {
+            return number_format(round(($data['value'] * $factor) / $total * 100, 1), 1, ",", ".") . "%";
+        });
+
+        echo $dt->generate();
+    }
 }

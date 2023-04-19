@@ -1,18 +1,21 @@
 <?php
 function avatar($avatar)
 {
-    if ($avatar == 'none') {
+    if ($avatar == '') {
 
         return base_url('assets/img/user.png');
+        
 
-    } elseif  (file_exists('uploads/avatars/'.$avatar)) {
+    } elseif  (file_exists('assets/img/uploads/avatars/' . $avatar)) {
 
-        return base_url('uploads/avatars/' . $avatar);
+        return base_url('assets/img/uploads/avatars/' . $avatar);
+        // return base_url('assets/img/sistema.png');
 
     } else {
 
         // verificar qdo mostra
         return base_url('assets/img/sistema.png');
+       
     }
 }
 
@@ -114,31 +117,34 @@ function time_ago($date)
 }
 
 
-function user_groups_nice($id, $ion_auth)
+function user_groups_nice($id)
 {
-    if ($ion_auth->in_group(array('industria'), $id, true))
+    $users = model('UserModel');
+    $user = $users->findById($id);
+
+    if ($user->inGroup('industria'))
         return 'Indústria';
-    if ($ion_auth->in_group(array('sindicos', 'unidades'), $id, true))
+    if ($user->inGroup('sindicos', 'unidades'))
         return 'Morador e Síndico';
-    if ($ion_auth->in_group(array('sindicos', 'proprietarios'), $id, true))
+    if ($user->inGroup('sindicos', 'proprietarios'))
         return 'Proprietário e Síndico';
-    if ($ion_auth->in_group('sindicos', $id))
+    if ($user->inGroup('sindicos'))
         return 'Síndico';
-    if ($ion_auth->in_group('proprietarios', $id))
+    if ($user->inGroup('proprietarios'))
         return 'Proprietário';
-    if ($ion_auth->in_group('unidades', $id))
+    if ($user->inGroup('unidades'))
         return 'Morador';
-    if ($ion_auth->in_group('admin', $id))
+    if ($user->inGroup('admin'))
         return 'Administrador';
-    if ($ion_auth->in_group('zelador', $id))
+    if ($user->inGroup('zelador'))
         return 'Zelador';
-    if ($ion_auth->in_group('monitoramento', $id))
+    if ($user->inGroup('monitoramento'))
         return 'Monitoramento';
-    if ($ion_auth->in_group('administradora', $id))
+    if ($user->inGroup('administradora'))
         return 'Administradora';
-    if ($ion_auth->in_group('representante', $id))
+    if ($user->inGroup('representante'))
         return 'Representante';
-    if ($ion_auth->in_group('trc', $id))
+    if ($user->inGroup('trc'))
         return 'NeoWater';
 
     return 'Usuário';

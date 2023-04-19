@@ -4,6 +4,54 @@ namespace App\Models;
 
 class Water_model extends Base_model
 {
+    public function GetOverallConsumption($type, $grp, $demo = false)
+    {
+        $entity = $this->get_entity_by_group($grp);
+
+        $value = "SUM( consumo ) AS value,
+                SUM( consumo ) / ( DATEDIFF( CURDATE(), DATE_FORMAT( CURDATE(), '%Y-%m-01' )) + 1 ) * DAY (LAST_DAY(CURDATE())) AS prevision,
+                SUM( consumo ) / ( DATEDIFF( CURDATE(), DATE_FORMAT( CURDATE(), '%Y-%m-01' )) + 1 ) AS average";
+
+        if ($demo) {
+            $value = "RAND() * 10000 AS value
+                    RAND() * 10000 AS prevision
+                    RAND() * 10000 AS average";
+        }
+
+        $result = $this->db->query("
+            SELECT
+                esm_unidades.agrupamento_id,
+                $value 
+            FROM
+                esm_leituras_".$entity->tabela."_agua 
+            JOIN 
+                esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+            JOIN 
+                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id 
+            WHERE
+                TIMESTAMP > DATE_FORMAT( CURDATE(), '%Y-%m-01' ) 
+                AND esm_leituras_".$entity->tabela."_agua.medidor_id IN (
+                    SELECT
+                        esm_medidores.id 
+                    FROM
+                        esm_unidades_config
+                        JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades_config.unidade_id
+                        JOIN esm_unidades ON esm_unidades.id = esm_unidades_config.unidade_id 
+                    WHERE esm_unidades.agrupamento_id = $grp AND esm_unidades_config.type = $type
+                )
+        ");
+
+        if ($result->getNumRows()) {
+            return array (
+                "bloco"    => number_format(round($result->getRow()->agrupamento_id, 0), 0, ",", "."),
+                "consum"    => number_format(round($result->getRow()->value, 0), 0, ",", "."),
+                "prevision" => number_format(round($result->getRow()->prevision, 0), 0, ",", "."),
+                "average"   => number_format(round($result->getRow()->average, 0), 0, ",", ".")
+            );
+        }
+
+        return array ("consum"    => "-","prevision" => "-","average"   => "-");
+    }
 
     public function GetConsumption($device, $group_id, $start, $end, $st = array(), $group = true, $interval = null, $demo = false)
     {
@@ -64,7 +112,7 @@ class Water_model extends Base_model
             if ($group)
                 $group_by = "GROUP BY esm_hours.num";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
@@ -79,7 +127,7 @@ class Water_model extends Base_model
                     $dvc
                 $group_by
                 ORDER BY esm_hours.num
-            ");
+            ";
 
         } elseif ($start == $end) {
 
@@ -90,7 +138,7 @@ class Water_model extends Base_model
             if ($group)
                 $group_by = "GROUP BY esm_hours.num";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
@@ -105,7 +153,7 @@ class Water_model extends Base_model
                     $dvc
                 $group_by
                 ORDER BY esm_hours.num
-            ");
+            ";
 
         } else {
 
@@ -116,7 +164,7 @@ class Water_model extends Base_model
             if ($group)
                 $group_by = "GROUP BY esm_calendar.dt";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
@@ -134,8 +182,10 @@ class Water_model extends Base_model
                     esm_calendar.dt <= '$end' 
                 $group_by
                 ORDER BY esm_calendar.dt
-            ");
+            ";
         }
+
+        $result = $this->db->query($query);
 
         if ($result->getNumRows()) {
             return $result->getResult();
@@ -503,5 +553,51 @@ class Water_model extends Base_model
         } else {
             echo json_encode(array("status" => "success", "message" => "Lançamento excluído com sucesso"));
         }
+    }
+
+    // Query que traz os valores totais
+
+    public function GetMonthByStationWater($st, $group, $demo = false)
+    {
+        $entity = $this->get_entity_by_group($group);
+
+        $station = "";
+        if ($st[0] == 'fora') {
+            $station = " AND (((MOD((d.timestamp), 86400) < $st[1] OR MOD((d.timestamp), 86400) > $st[2]) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)";
+        } else if ($st[0] == 'consumo') {
+            $station = "AND ((MOD((d.timestamp), 86400) >= $st[1] AND MOD((d.timestamp), 86400) <= $st[2]) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)";
+        }
+
+        $value = "SUM(consumo) AS value";
+        $tabela = "esm_leituras_" . $entity->tabela . "_agua";
+
+        if ($demo) {
+            $value = "RAND() * 100000 AS value";
+            $tabela = "esm_leituras_ford_agua_demo";
+            $group = 113;
+        }
+
+     $q = "
+            SELECT
+                $value
+            FROM esm_calendar
+            LEFT JOIN $tabela d ON 
+                (d.timestamp) > (esm_calendar.ts_start) AND 
+                (d.timestamp) <= (esm_calendar.ts_end + 600) 
+                $station
+            JOIN esm_medidores ON esm_medidores.id = d.medidor_id
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group
+            WHERE 
+                esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
+                esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
+        ";
+
+        $result = $this->db->query($q);
+
+        if ($result->getNumRows()) {
+            return $result->getRow()->value;
+        }
+
+        return false;
     }
 }

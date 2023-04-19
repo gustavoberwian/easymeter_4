@@ -83,7 +83,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 <script src="<?php echo base_url('vendor/jquery-smooth-scroll/jquery.smooth-scroll.min.js'); ?>"></script>
 <!-- <script src="<?php echo base_url('vendor/parallax/parallax.js'); ?>"></script> -->
 <script src="<?php echo base_url('vendor/bootbox/bootbox.min.js'); ?>"></script>
-<script src="<?php echo base_url('assets/js/scripts.js'); ?>"></script>
+
 
 <script type="text/javascript">
     $('button#requestdemosubmit').on("click", function(event) {
@@ -136,8 +136,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
 </a>
 
 <script src="https://unpkg.com/scrollreveal"></script>
-<script src="<?php echo base_url('assets/js/pages/site/custom.js'); ?>"></script>
-<script src="<?php echo base_url('assets/js/pages/site/jquery.js'); ?>"></script>
+
 
 
 </body>

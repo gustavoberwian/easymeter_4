@@ -93,10 +93,15 @@ class Shopping_model extends Base_model
     {
         $query = "
             SELECT 
-                esm_agrupamentos.nome as nome, esm_agrupamentos_config.* 
+                esm_agrupamentos.nome as nome,
+                esm_entidades.tipo as tipo,
+                CONCAT(esm_agrupamentos_config.logradouro, ', ', esm_agrupamentos_config.numero) as endereco,
+                CONCAT(esm_agrupamentos_config.cidade, ', ', esm_agrupamentos_config.uf) as municipio,
+                esm_agrupamentos_config.* 
             FROM 
                 esm_agrupamentos_config
             JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_agrupamentos_config.agrupamento_id
+            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
             WHERE 
                 esm_agrupamentos.entidade_id = $entity
         ";
@@ -903,5 +908,111 @@ class Shopping_model extends Base_model
             return array();
 
         return $this->db->query($query)->getRow();
+    }
+
+   
+
+    public function update_user($user_id, $password, $telefone, $celular, $emails)
+    {
+        $users = model('userModel');
+        $user = $users->findById($user_id);
+        
+
+        $user->fill([
+            'password' => $password
+        ]);
+        $users->save($user);
+
+
+        if($emails)
+        {
+            foreach ($emails as $e) {
+                $query = $this->db->query("
+                    SELECT
+                        esm_user_emails.email
+                    FROM
+                        esm_user_emails
+                    WHERE
+                        esm_user_emails.email = '$e'
+                ");
+                if ($query->getNumRows() == 0) {
+                    $this->db->table('esm_user_emails')
+                    ->set('user_id', $user_id)
+                    ->set('email', $e)
+                    ->insert();
+                }
+            }
+        }
+        if(!$emails) {
+            $this->db->table("esm_user_emails")
+            ->where("user_id", $user_id)
+            ->delete();
+                
+        }
+        $query = $this->db->query("
+            SELECT
+	            auth_users.celular
+            FROM
+	            auth_users
+        ");
+
+        $this->db->table('auth_users')
+        ->where('id', $user_id)
+        ->set('celular', $celular)
+        ->update();
+
+
+        $query = $this->db->query("
+        SELECT
+            auth_users.telefone
+        FROM
+            auth_users
+    ");
+
+    $this->db->table('auth_users')
+    ->where('id', $user_id)
+    ->set('telefone', $telefone)
+    ->update();
+
+        return true;
+    }
+
+    public function update_avatar($user_id, $img) 
+    {
+        $query = $this->db->query("
+            SELECT
+	            auth_users.avatar
+            FROM
+	            auth_users
+        ");
+
+        $this->db->table('auth_users')
+        ->where('id', $user_id)
+        ->set('avatar', $img)
+        ->update();   
+    }
+
+    public function get_user_emails($user_id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+            SELECT
+                esm_user_emails.email
+            FROM
+                esm_user_emails
+            WHERE
+                esm_user_emails.user_id = $user_id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return '';
+
+        $emails = '';
+        foreach ($query->getResult() as $e) {
+            $emails .= $e->email . ',';
+        }
+
+        return trim($emails, ',');
     }
 }

@@ -16,6 +16,11 @@ html.no-overflowscrolling .sidebar-left .nano {
         margin-left: 152px;
     }    
 }
+
+html {
+    scroll-behavior: smooth !important;
+}
+
 .page-header {
     background: #03aeef;
     border-bottom: none;
@@ -55,6 +60,15 @@ table thead th {
 }
 .card-actions.buttons {
     top: 10px;
+}
+.readonly .bootstrap-tagsinput .badge [data-role="remove"]:after {
+    color: #5f9ea0;
+    pointer-events: none;
+    cursor: default;
+}
+
+.readonly .bootstrap-tagsinput .badge [data-role="remove"]:hover:after {
+    background-color: rgba(0, 0, 0, 0.1);
 }
 .card-actions.buttons .btn-primary {
     background-color: #0088cc;
@@ -169,4 +183,7 @@ button.nav-link.configs {
 .comp-img-fluid {
     max-width: 100%;
     height: 160px;
+}
+.nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
+    border-top-color: #0088CC;
 }

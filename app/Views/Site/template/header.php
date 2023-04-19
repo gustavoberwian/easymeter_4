@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xml:lang="pt-BR" xmlns="http://www.w3.org/1999/xhtml">
+    
 
 <head>
+    
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127828864-1"></script>
     <script>
@@ -107,7 +109,7 @@
                                 <a class="link_nav" href="#aplicacao">Onde se aplica?</a>
                             </li>
                             <li>
-                                <a class="link_nav btn-contato">Contato</a>
+                                <a class="link_nav" href="#contato">Contato</a>
                             </li>
                         </ul>
                     </div>

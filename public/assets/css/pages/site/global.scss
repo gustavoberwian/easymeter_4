@@ -1,16 +1,16 @@
  @font-face {
    font-family: "Square721 BT";
-   src: url('/assets/fonts/Square721 BT Roman.ttf')
+   src: url('../../../fonts/square721_bt.ttf')
  }
 
  @font-face {
    font-family: "Square721 BT Bold";
-   src: url('/assets/fonts/Square721 BT Bold.ttf')
+   src: url('../../../fonts/square721_bt_bold.ttf')
  }
 
  @font-face {
    font-family: "Square-Roman";
-   src: url('/assets/fonts/Square721 BT Roman.ttf')
+   src: url('../../../fonts/square721_bt_roman.ttf')
  }
 
  @font-face {
@@ -284,7 +284,7 @@
 
  .subtitle-banners {
    font-size: 22px;
-   font-family: "Square721 BT";
+   font-family: "Square-Roman";
  }
 
  .banner01 {
@@ -917,6 +917,7 @@
 
    #aplica>div>div>div>div.stats {
      width: 66%;
+     height: 60%;
    }
 
  }

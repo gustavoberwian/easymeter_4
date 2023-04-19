@@ -66,6 +66,7 @@ a:active {
     padding: 40px;
     position: relative;
     vertical-align: top;
+	scroll-behavior: smooth !important;
 }
 
 .content-body:not(.card-margin) > .row + .row {
@@ -20953,3 +20954,15 @@ td .table-one-line, tr .table-one-line{
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
+
+.email-input {
+	margin-top: 20px;
+}
+/* .content-body-profile {
+    margin: auto;
+	position: relative;
+	max-width: 1360px;
+	min-height: 90vh;
+	width: 100%;
+} */
+

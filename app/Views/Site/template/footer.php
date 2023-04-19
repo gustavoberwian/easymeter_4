@@ -80,7 +80,7 @@
 <script src="<?php echo base_url('vendor/jquery-smooth-scroll/jquery.smooth-scroll.min.js'); ?>"></script>
 <!-- <script src="<?php echo base_url('vendor/parallax/parallax.js'); ?>"></script> -->
 <script src="<?php echo base_url('vendor/bootbox/bootbox.min.js'); ?>"></script>
-<script src="<?php echo base_url('assets/js/scripts.js'); ?>"></script>
+<script src="<?php echo base_url('assets/js/pages/site/home.js'); ?>"></script>
 
 <script type="text/javascript">
     $('button#requestdemosubmit').on("click", function(event) {
@@ -131,10 +131,10 @@
 <a href="https://api.whatsapp.com/send?phone=5551999359616&amp;text=Olá, gostaria de entrar em contato com a Easymeter" class="whatsapp" target="_blank">
     <i class="fab fa-whatsapp whatsapp-float"></i>
 </a>
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
 
-<script src="https://unpkg.com/scrollreveal"></script>
-<script src="<?php echo base_url('assets/js/pages/site/custom.js'); ?>"></script>
-<script src="<?php echo base_url('assets/js/pages/site/jquery.js'); ?>"></script>
 
 
 </body>

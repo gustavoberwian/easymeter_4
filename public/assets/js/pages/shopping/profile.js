@@ -2,59 +2,8 @@
 
 	'use strict';
 
-	var $image_crop = $('.img-preview').croppie({
-        enableExif: true,
-        viewport: {
-            width:300,
-            height:300,
-            type:'square'
-        },
-        boundary:{
-            width:400,
-            height:400
-        }
-    });
     
-    $('#upload_image').on('change', function() {
-        var reader = new FileReader();
-        
-        reader.onload = function (event) {
-            $('.croppie-container .cr-boundary').css('background', 'none');
-            $image_crop.croppie('bind', {
-                url: event.target.result
-            });
-        };
 
-        if (this.files.length > 0)
-            reader.readAsDataURL(this.files[0]);
-            
-    });
-    
-    $('.btn-update').on('click', function(e) {
-        e.preventDefault();
-        // crop image
-        $image_crop.croppie('result', { type: 'canvas', size: 'viewport' } )
-        .then( function(img) {
-            // atualiza field
-            $("#crop-image").val(img);
-            // envia form
-            $('.avatar').submit();
-        });
-    });
-/*
-    $('.btn-facebook').on('click', function(e) {
-        e.preventDefault();
-        // atualiza field
-        $('input[name="facebook"]').val('profile');
-        // envia form
-        $('.avatar').submit();
-    });
-*/
-    $(document).on('click', '.fileupload-exists[data-dismiss="fileupload"]', function (e) {
-        $("#crop-image").val('');
-        $('.cr-image, .cr-overlay').removeAttr('style src');
-        $('.croppie-container .cr-boundary').css('background', 'url(/assets/img/default_avatar.jpg)');
-    });
 
     // **
     // * Adiciona validadores especificos
@@ -80,10 +29,74 @@
     // **
     // * Inicializa tagsinput
     // **
-    $('.profile #emails').tagsinput({
-        tagClass: 'badge badge-primary',
-        allowDuplicates: false,
-        maxTags: 3
+
+	$('.profile #emails').tagsinput({
+		tagClass: 'badge badge-primary',
+		allowDuplicates: false,
+		maxTags: 3,
+	});
+
+	 
+	// 
+    // abre a modal
+
+     $(document).on('click', '.btn-edit-image', function (e) {
+        
+        e.preventDefault();
+        
+       
+        $.magnificPopup.open( {
+			items: {src: '/shopping/md_profile_image_edit'},
+			type: 'ajax',
+			modal:true,
+			ajax: {
+				settings: {
+					type: 'POST',
+					data: {
+                        id: $(this).data('id'), 
+                        img: $(this).data('img')
+                    }
+				}
+			},
+		});
+     });
+            
+
+    // **
+	// * Handler Fechar Modal 
+	// **
+
+    $(document).on('click', '.modal-dismiss', function (e) {
+		// para propagação
+        e.preventDefault();
+      
+
+		// fecha a modal
+		$.magnificPopup.close();
     });
+
+  $(document).on('click', '.modal-confirm', function(e) {
+	e.preventDefault();
+	
+	$.ajax({
+		method: 'POST',
+		url: '/shopping/profile',
+		dataType: 'json',
+		data: $('#profile').serialize(),
+		success: function (response) {
+			if(response.status == "success") {
+				notifySuccess(response.message);
+				
+			} else {
+				notifyError(response.message);
+				
+			}
+		},
+		error: function (xhr, status, error) {
+		},
+		complete: function () {
+		}
+	});
+  })
 
 }).apply(this, [jQuery]);

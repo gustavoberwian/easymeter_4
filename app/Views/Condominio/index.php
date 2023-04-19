@@ -18,27 +18,32 @@
                                 <th width="5%">Monitora</th>
                                 <th width="25%">Endereço</th>
                                 <th width="20%">Municipio</th>
-                                <th width="25%">Síndico</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <?php foreach($user->condos as $c): ?>
+                            <?php foreach($user->entitys as $c): ?>
                                 <tr data-id="<?= $c->id; ?>">
                                     <td><?= $c->nome; ?></td>
                                     <td><?= ucfirst($c->tipo); ?></td>
                                     <td class="dt-body-center monitor">
                                         <?php
-                                        $ret = '';
-                                        if ($c->m_agua == 1) $ret .= '<i class="fas fa-tint color-agua" title="Água"></i> ';
-                                        if ($c->m_gas == 1) $ret .= '<i class="fas fa-fire color-gas" title="Gás"></i> ';
-                                        if ($c->m_gas == 2) $ret .= '<i class="fas fa-fire color-gas" title="Gás Mensal"></i> ';
-                                        if ($c->m_energia == 1) $ret .= '<i class="fas fa-bolt color-energia" title="Energia Elétrica"></i>';
-                                        echo $ret;
+                                        if ($c->m_agua == 1) echo '<i class="fas fa-tint text-primary" title="Água"></i> ';
+                                        if ($c->m_gas == 1) echo '<i class="fas fa-fire text-success" title="Gás"></i> ';
+                                        if ($c->m_gas == 2) echo '<i class="fas fa-fire text-success" title="Gás Mensal"></i> ';
+                                        if ($c->m_energia == 1) echo '<i class="fas fa-bolt text-warning" title="Energia Elétrica"></i>';
+                                        if ($c->m_nivel == 1) echo '<i class="fas fa-database text-info" title="Energia Elétrica"></i>';
                                         ?>
                                     </td>
-                                    <td><?= $c->logradouro.', '.$c->numero; ?></td>
-                                    <td><?= $c->cidade.'/'.$c->uf; ?></td>
-                                    <td><?= $c->sindico; ?></td>
+                                    <?php if (!is_null($c->logradouro) or !is_null($c->numero)) : ?>
+                                        <td><?= $c->logradouro.', '.$c->numero; ?></td>
+                                    <?php else : ?>
+                                        <td></td>
+                                    <?php endif; ?>
+                                    <?php if (!is_null($c->cidade) or !is_null($c->uf)) : ?>
+                                        <td><?= $c->cidade.'/'.$c->uf; ?></td>
+                                    <?php else : ?>
+                                        <td></td>
+                                    <?php endif; ?>
                                 </tr>
                             <?php endforeach; ?>
                             </tbody>

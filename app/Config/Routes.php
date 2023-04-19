@@ -45,17 +45,23 @@ $routes->get('/ford/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/ford/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/ford/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 
+// Routes da Fras-le para shopping
+$routes->get('/frasle', 'Shopping::index',['filter'=>'checkApiAuth']);
+$routes->get('/frasle/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+$routes->get('/frasle/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/frasle/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+
 // Routes da Ambev para shopping
 $routes->get('/ambev', 'Shopping::index',['filter'=>'checkApiAuth']);
 $routes->get('/ambev/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/ambev/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/ambev/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 
-// Routes da Congás para shopping
-$routes->get('/comgas', 'Shopping::index',['filter'=>'checkApiAuth']);
-$routes->get('/comgas/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
-$routes->get('/comgas/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
-$routes->post('/comgas/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+// Routes da Consigaz para shopping
+$routes->get('/consigaz', 'Shopping::index',['filter'=>'checkApiAuth']);
+$routes->get('/consigaz/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+$routes->get('/consigaz/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/consigaz/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 
 // Routes para grandeza de energia
 $routes->post('/energia/(:any)', 'Energia::$1',['filter'=>'checkApiAuth']);

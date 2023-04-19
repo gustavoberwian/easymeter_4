@@ -71,7 +71,7 @@
                             <?php if ($group->m_nivel) : ?>
                                 <li class="<?php if (in_array($method, array('level'))) echo 'nav-active'; ?>">
                                     <a class="nav-link" href="<?= site_url( $url . '/level/' . $group_id); ?>">
-                                        <i class="fas fa-ruler-vertical" aria-hidden="true"></i>
+                                        <i class="fas fa-database" aria-hidden="true"></i>
                                         <span>Nível</span>
                                     </a>
                                 </li>

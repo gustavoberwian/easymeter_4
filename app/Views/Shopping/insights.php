@@ -44,7 +44,7 @@
     <div id="insights" class="tab-pane">
         <div class="tab-content">
             <?php if ($user->entity->m_energia) : ?>
-                <div id="energia" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
+                <div id="energia" class="tab-pane <?= $monitoria === 'energy' ? 'show active' : '' ?>">
                     <div class="row">
                         <div class="col-lg-6 mb-4">
                             <section class="card card-easymeter h-100">
@@ -199,17 +199,42 @@
                 </div>
             <?php endif; ?>
             <?php if ($user->entity->m_agua) : ?>
-                <div id="agua" class="tab-pane <?= $monitoria === 'agua' ? 'active' : '' ?>">
-                    <!-- TODO -> insights água -->
+                <div id="agua" class="tab-pane <?= $monitoria === 'water' ? 'show active' : '' ?>">
+                    <div class="row">
+                        <div class="col-lg-12 mb-4">
+                            <section class="card card-easymeter h-100">
+                                <header class="card-header">
+                                    <div class="card-actions">
+                                    </div>
+                                    <h2 class="card-title pr-4 mr-4">Maior consumo de água</h2>
+                                </header>
+                                <div class="card-body" style="min-height: 463px;">
+                                    <table class="table table-bordered table-responsive-md table-striped mb-0" id="dt-consumo">
+                                        <thead>
+                                        <tr>
+                                            <th width="5%"></th>
+                                            <th width="25%">Medidor</th>
+                                            <th width="20%">Consumo</th>
+                                            <th width="40%">Participação</th>
+                                            <th width="10%"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
                 </div>
             <?php endif; ?>
             <?php if ($user->entity->m_gas) : ?>
-                <div id="gas" class="tab-pane <?= $monitoria === 'gas' ? 'active' : '' ?>">
+                <div id="gas" class="tab-pane <?= $monitoria === 'gas' ? 'show active' : '' ?>">
                     <!-- TODO -> insights gás -->
                 </div>
             <?php endif; ?>
             <?php if ($user->entity->m_nivel) : ?>
-                <div id="nivel" class="tab-pane <?= $monitoria === 'nivel' ? 'active' : '' ?>">
+                <div id="nivel" class="tab-pane <?= $monitoria === 'nivel' ? 'show active' : '' ?>">
                     <!-- TODO -> insights nivel -->
                 </div>
             <?php endif; ?>

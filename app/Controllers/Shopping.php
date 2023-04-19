@@ -84,8 +84,17 @@ class Shopping extends UNO_Controller
             $data['groups'] = $this->shopping_model->get_groups_by_entity($this->user->type->entity_id);
 
             foreach ($data['groups'] as $grp) {
-                $data['overall_c'][] = $this->energy_model->GetOverallConsumption(1, $grp->agrupamento_id);
-                $data['overall_l'][] = $this->energy_model->GetOverallConsumption(2, $grp->agrupamento_id);
+                if ($this->user->inGroup('energia')) {
+                    $data['overall_c'][] = $this->energy_model->GetOverallConsumption(1, $grp->agrupamento_id);
+                    $data['overall_l'][] = $this->energy_model->GetOverallConsumption(2, $grp->agrupamento_id);
+                } else if ($this->user->inGroup('agua')) {
+                    $data['overall_c'][] = $this->water_model->GetOverallConsumption(1, $grp->agrupamento_id);
+                    $data['overall_l'][] = $this->water_model->GetOverallConsumption(2, $grp->agrupamento_id);
+                } else {
+                    $data['overall_c'][] = 0;
+                    $data['overall_l'][] = 0;
+                }
+
                 $data['area_comum'][] = $this->shopping_model->get_client_config($grp->agrupamento_id)->area_comum;
             }
 
@@ -331,6 +340,8 @@ class Shopping extends UNO_Controller
     public function faturamentos($group_id)
     {
         $data['url'] = $this->url;
+        $data['user'] = $this->user;
+        $data['monitoria'] = $this->monitoria;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
         $data['unidades'] = $this->shopping_model->get_unidades($group_id);
@@ -399,6 +410,7 @@ class Shopping extends UNO_Controller
     {
         $data['url'] = $this->url;
         $data['user'] = $this->user;
+        $data['monitoria'] = $this->monitoria;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
         $data['unidades'] = $this->shopping_model->get_units($group_id);

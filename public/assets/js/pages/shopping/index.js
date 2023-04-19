@@ -9,8 +9,7 @@
             window.location = $(".content-body").data("class") + "/" + $(".content-body").data("monitoria") + "/" + $(this).data('group');
         });
     } else {
-        $(document).on('click', '.card-body', function () {
-            console.log($(this).data('group'));
+        $(document).on('click', '.card-group', function () {
             window.location = $(".content-body").data("class") + "/" + $(".content-body").data("monitoria") + "/" + $(this).data('group');
         });
     }

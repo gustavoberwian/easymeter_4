@@ -433,4 +433,58 @@ class Condominio_model extends Base_model
 
         return $query->getRow();
     }
+
+    public function get_admin_condos($user_id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+            SELECT 
+                esm_entidades.id, 
+                esm_entidades.nome, 
+                esm_entidades.tabela, 
+                esm_entidades.tipo,
+                esm_entidades.logradouro,
+                esm_entidades.numero,
+                esm_entidades.cidade,
+                esm_entidades.uf,   
+                esm_entidades.m_agua, 
+                esm_entidades.m_gas, 
+                esm_entidades.m_energia,
+                esm_entidades.m_nivel,
+                esm_entidades.timezone,
+                esm_administradoras.nome AS adm
+            FROM esm_entidades
+            JOIN auth_user_relation ON auth_user_relation.entidade_id = esm_entidades.id
+            JOIN esm_administradoras_users ON esm_administradoras_users.user_id = auth_user_relation.user_id
+            JOIN esm_administradoras ON esm_administradoras.id = esm_administradoras_users.admin_id
+            WHERE auth_user_relation.user_id = $user_id
+            ORDER BY esm_entidades.nome");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getResult();
+    }
+
+    public function get_condo($id)
+    {
+        // seleciona todos os campos
+        $query = $this->db->table('esm_entidades')
+            ->select('esm_entidades.*, esm_administradoras.nome AS nome_adm')
+            ->join('auth_user_relation', 'auth_user_relation.entidade_id = esm_entidades.id')
+            ->join('esm_administradoras_users', 'esm_administradoras_users.user_id = auth_user_relation.user_id')
+            ->join('esm_administradoras', 'esm_administradoras.id = esm_administradoras_users.admin_id')
+            ->where('esm_entidades.id', $id)
+            ->where('esm_entidades.visibility', 'normal');
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // verifica se retornou algo
+        if ($result->getNumRows() == 0)
+            return false;
+
+        return $result->getRow();
+    }
 }

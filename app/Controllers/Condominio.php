@@ -75,6 +75,19 @@ class Condominio extends UNO_Controller
         } else if ($this->user->inGroup('unity')) {
             $this->user->unidade = $this->condominio_model->get_unidade_by_user($this->user->id);
         }
+        if ($this->user->inGroup('administradora')) {
+            $this->user->entitys = $this->condominio_model->get_admin_condos($this->user->id);
+            $this->active = true;
+        }
+
+        if ($this->user->inGroup("energia"))
+            $this->monitoria = 'energy';
+        elseif ($this->user->inGroup("agua"))
+            $this->monitoria = 'water';
+        elseif ($this->user->inGroup("gas"))
+            $this->monitoria = 'gas';
+        elseif ($this->user->inGroup("nivel"))
+            $this->monitoria = 'nivel';
     }
 
     public function index()
@@ -85,7 +98,7 @@ class Condominio extends UNO_Controller
         // busca aviso se ultimo aviso recebido não estiver lido
         $data['aviso'] = $this->condominio_model->get_last_aviso($this->user->id);
 
-        if ($this->user->inGroup('unity') or $this->user->inGroup('admin')) {
+        if ($this->user->inGroup('unity', 'admin')) {
             // leitura atual do monitamento da unidade
             $data['leitura_agua'] = $this->condominio_model->get_consumo_unidade($this->user->entity->tabela, 'agua', $this->user->unidade->id);
             $data['leitura_gas'] = $this->condominio_model->get_consumo_unidade($this->user->entity->tabela, 'gas', $this->user->unidade->id);
@@ -109,6 +122,10 @@ class Condominio extends UNO_Controller
 
             $data['ultima_leitura'] = $this->condominio_model->get_last_leitura($this->user->unidade->id, $this->user->entity->tabela, 'agua');
             $data['central'] = $this->condominio_model->get_central_by_unidade($this->user->unidade->id);
+        }
+
+        if ($this->user->inGroup('administradora')) {
+
         }
 
         // renderiza pagina
@@ -201,6 +218,99 @@ class Condominio extends UNO_Controller
         echo $this->render('agua', $data);
     }
 
+    public function administra($condo_id)
+    {
+        //TODO: verificar se tem acesso ao condo
+        $data['user'] = $this->user;
+        $data['url'] = $this->url;
+        $data['monitoria'] = $this->monitoria;
+
+        $data['entity'] = $this->condominio_model->get_condo($condo_id);
+        echo $this->render('administra', $data);
+    }
+
+    public function gas($unidade_id = false)
+    {
+        // verifica se pode acessar
+        if (!$this->user->inGroup('gas')) {
+            // mostra proibição
+            $this->render('403');
+            return;
+        }
+
+        // se unidade_id não definida, usa a unidade do usuário logado
+        $data['acesso'] = $unidade_id;
+        if (!$data['acesso']) {
+            $unidade_id = $this->user->unidade->id;
+            $data['unidade'] = $this->user->unidade;
+        } else {
+            $data['unidade'] = $this->condominio_model->get_unidade($unidade_id);
+        }
+
+
+        // user
+        $data['user'] = $this->user;
+        $data['url'] = $this->url;
+        // busca lista das entradas de gás da unidade do usuário
+        $data['entradas'] = $this->condominio_model->get_entradas($this->user->entity->id, 'gas');
+        // leitura atual do monitoramento da unidade
+        $data['leitura'] = $this->condominio_model->get_consumo_unidade($this->user->entity->tabela, 'gas', $unidade_id);
+        // busca últimos 3 alertas de gas recebidos pelo usuário
+        $data['alertas'] = $this->condominio_model->get_alertas($this->user->id, '', 'gas', 3);
+        // busca data da primeira leitura
+        $data['primeira_leitura'] = date("d/m/Y", $this->condominio_model->get_primeira_leitura($this->user->entity->tabela, 'gas', $unidade_id));
+
+        if ($this->user->entity->m_gas == 2) {
+
+            $this->render('gas_mensal', $data);
+        } else {
+
+            // busca dados do consumo de gás de todas entradas da unidade das últimas 24hs
+            $data['bar_data'] = $this->verify_chart_data($this->get_24h_chart($data['entradas'], 'gas'));
+
+            // calcula a direrença % do consumo de hoje em relação a ontem (levando em conta a hora atual)
+            $data['diferenca'] = $this->diff_hoje_ontem($this->user->id, $this->user->entity->tabela, 'gas');
+
+            // busca dados da última conta do monitoramento cadastrada
+            $ultima = $this->condominio_model->get_ultima_conta($this->user->unidade->id, 'gas');
+            $data['notificacao'] = false;
+            // se possui conta cadastrada usa a data, senão últimos 30 dias
+            if (!is_null($ultima)) {
+                // se data mais de 35 dias, usa ultimos 30
+                if ($ultima->data_fim < strtotime('-35 days')) {
+                    $data_desde = strtotime('-30 days');
+                    $data['aviso'] = '<i class="fas fa-exclamation-circle ml-1 text-danger" data-toggle="tooltip" data-placement="bottom" title="A última conta cadastrada é antiga, usando últimos 30 dias como referência"></i>';
+                    $data['notificacao'] = true;
+                } else {
+                    $data_desde = $ultima->data_fim;
+                    $data['aviso'] = false;
+                }
+            } else {
+                $data_desde = strtotime('-30 days');
+                $data['aviso'] = '<i class="fas fa-exclamation-circle ml-1 text-danger" data-toggle="tooltip" data-placement="bottom" title="Nenhuma conta cadastrada, usando últimos 30 dias como referência"></i>';
+            }
+            //busca consumos (fator de conversão m3 para kg: 2.3 segundo conta do viver canoas. internet fala em 2.5)
+            $data['voce'] = number_format($this->condominio_model->get_consumo_desde($this->user->unidade->id, $this->user->entity->tabela, 'gas', strtotime(date('Y-m-d', $data_desde) . ' 23:59')) * 2.3, 0, '', '.');
+            $vizinhos = $this->condominio_model->get_consumo_vizinhos_desde($this->user->unidade->id, $this->user->entity->tabela, 'gas', strtotime(date('Y-m-d', $data_desde) . ' 23:59'));
+            $data['vizinhos'] = ($vizinhos->medidores == 0) ? 0 : number_format($vizinhos->consumo / $vizinhos->medidores * 2.3, 0, '', '.');
+            $data['brasil'] = number_format(130000, 0, '', '.'); //TODO: como definir esse valor?
+            $data['max'] = max($data['voce'], $data['vizinhos'], $data['brasil']) * 1.1; // aumenta em 10% para fins visuais da progress
+
+            // rederiza página
+            $this->render('gas', $data);
+        }
+    }
+
+    public function configuracoes()
+    {
+        $data['user'] = $this->user;
+        $data['url'] = $this->url;
+        $data['monitoria'] = $this->monitoria;
+        $data['token'] = 1;
+
+        echo $this->render('configuracoes', $data);
+    }
+
 
     /////////////////////////
     /// REQUESTS
@@ -254,7 +364,7 @@ class Condominio extends UNO_Controller
 
     public function get_leitura()
     {
-        $leitura = $this->condominio_model->get_leitura_unidade($this->user->condo->tabela, $this->user->unidade->id);
+        $leitura = $this->condominio_model->get_leitura_unidade($this->user->entity->tabela, $this->user->unidade->id);
 
         if ($leitura) {
             //$this->user->unidade->leitura_agua = $leitura->leitura_agua;
@@ -262,5 +372,123 @@ class Condominio extends UNO_Controller
             echo json_encode(array('status' => 'success', 'data' => $leitura));
         } else
             echo json_encode(array('status' => 'success', 'data' => false));
+    }
+
+    public function get_leituras()
+    {
+        $entity_id = $this->input->getGet('entity');
+        if (is_null($entity_id)) $entity_id = $this->user->entity->id;
+
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT 
+                UNIX_TIMESTAMP(STR_TO_DATE(CONCAT('01/', competencia), '%d/%m/%Y')) AS competencia,
+                esm_fechamentos.data_inicio,
+                esm_fechamentos.data_fim, 
+                esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior AS consumo,
+                esm_fechamentos.cadastro AS leitura,
+                esm_fechamentos.id AS DT_RowId
+            FROM esm_fechamentos
+            LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
+            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
+            WHERE esm_entidades.id = $entity_id AND esm_ramais.nome LIKE \"G%\" ORDER BY esm_fechamentos.id DESC
+        ");
+
+        $dt->edit('competencia', function ($data) {
+            return competencia_nice(date("m/Y", $data['competencia']));
+        });
+
+        $dt->edit('data_inicio', function ($data) {
+            return date("d/m/Y", $data['data_inicio']);
+        });
+
+        $dt->edit('data_fim', function ($data) {
+            return date("d/m/Y", $data['data_fim']);
+        });
+
+        $dt->edit('leitura', function ($data) {
+            return date_format(date_create($data['leitura']), "d/m/Y");
+        });
+
+        $dt->edit('consumo', function ($data) {
+            return number_format($data['consumo'] / 1000, 3, ',', '.') . ' m<sup>3</sup>';
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            return '<a href="#" class="action-download-gas" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function get_unidades_bloco()
+    {
+        $agrupamento = intval($this->input->getGet('agrupamento'));
+
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT 
+                esm_unidades.id, 
+                esm_unidades.nome AS apto, 
+                esm_unidades.andar, 
+                esm_unidades.fracao, 
+                esm_unidades.codigo, 
+                esm_unidades.tipo,
+                esm_agrupamentos.nome AS bloco, 
+                user.id AS prop_id, 
+                IFNULL(user.nome, 'Não cadastrado') AS nome, 
+                IFNULL(user.username, '-') AS email, 
+                IFNULL(user.telefone, '-') AS telefone
+            FROM esm_unidades
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+            LEFT JOIN (
+                SELECT auth_users_unidades.unidade_id, auth_users.id, auth_users.nome, auth_users.username, auth_users.telefone
+                FROM auth_users
+                JOIN auth_users_groups ON auth_users_groups.user_id = auth_users.id
+                JOIN auth_users_unidades ON auth_users_unidades.user_id = auth_users.id
+                WHERE auth_users_groups.group_id = 3) AS user ON user.unidade_id = esm_unidades.id
+            WHERE esm_unidades.agrupamento_id = $agrupamento
+            ORDER BY esm_agrupamentos.nome, esm_unidades.nome
+        ");
+
+        // inclui campo medidores
+        $dt->add('medidores', function ($data) {
+            $entradas = $this->admin_model->get_medidores_unidade($data['id']);
+            $medidores = '';
+            foreach ($entradas as $e) {
+                if ($e->tipo == 'agua') {
+                    if (is_null($e->central))
+                        $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/>Não monitorado">&nbsp;</span>';
+                    else {
+                        $s = is_null($e->sensor_id) ? '' : '<b>Sensor:</b> ' . $e->sensor_id;
+                        $medidores .= '<span class="badge badge-' . ($e->posicao == 0 ? 'secondary' : $e->tipo) . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/><b>Central</b>: ' . $e->central . '<br/><b>Posição:</b> ' . $e->posicao . '<br/>' . $s . '">' . $e->nome . '</span>';
+                    }
+                } else if ($e->tipo == 'gas') {
+                    if (is_null($e->central))
+                        $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '">' . $e->nome . '</span>';
+                    else {
+                        $s = is_null($e->sensor_id) ? '' : '<b>Sensor:</b> ' . $e->sensor_id;
+                        $medidores .= '<span class="badge badge-' . $e->tipo . ' action-medidor mr-3" data-id="' . $e->id . '" data-content="<b>Entrada:</b> ' . $e->entrada . '<br/><b>Central</b>: ' . $e->central . '<br/><b>Posição:</b> ' . $e->posicao . '<br/>' . $s . '">' . $e->nome . '</span>';
+                    }
+                }
+            }
+
+            return $medidores;
+        });
+
+        // inclui campo status
+        $dt->add('action', function ($data) {
+            return '<div class="dropdown"><a class="" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"><i class="fas fa-bars" title="Ações"></i></a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" data-id="' . $data['id'] . '" href="' . site_url('admin/unidades/' . $data['id']) . '" target="_blank"><i class="fas fa-eye mr-2"></i> Consumo</a>
+                        <a class="dropdown-item action-edit" data-id="' . $data['id'] . '" href="#"><i class="fas fa-pencil-alt mr-2"></i> Editar</a>
+                        <a class="dropdown-item action-delete" data-id="' . $data['id'] . '" href="#"><i class="fas fa-trash mr-2"></i> Excluir</a>
+                    </div></div>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
     }
 }

@@ -36,7 +36,7 @@
 
     <div class="tab-content" style="background-color: transparent; box-shadow: none; padding: 0;">
 
-        <div class="tab-pane fade show active" id="energy">
+        <div class="tab-pane fade <?= $monitoria === 'energy' ? 'show active' : '' ?>" id="energy">
 
             <section class="card card-easymeter mb-4">
                 <header class="card-header">
@@ -66,7 +66,7 @@
 
         </div>
 
-        <div class="tab-pane fade" id="water">
+        <div class="tab-pane fade <?= $monitoria === 'water' ? 'show active' : '' ?>" id="water">
 
             <section class="card card-easymeter mb-4">
                 <header class="card-header">

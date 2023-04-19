@@ -8,22 +8,22 @@
         <div class="col-6">
             <ul class="nav nav-pills nav-pills-primary mb-3">
                 <?php if (($group->m_energia)) : ?>
-                    <li class="nav-item configs" role="presentation">
+                    <li class="nav-item configs <?= $monitoria === 'energy' ? 'active' : '' ?>" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#energy" type="button">Energia</button>
                     </li>
                 <?php endif; ?>
                 <?php if (($group->m_agua)) : ?>
-                    <li class="nav-item configs" role="presentation">
+                    <li class="nav-item configs <?= $monitoria === 'water' ? 'active' : '' ?>" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#water" type="button">Água</button>
                     </li>
                 <?php endif; ?>
                 <?php if (($group->m_gas)) : ?>
-                    <li class="nav-item configs" role="presentation">
+                    <li class="nav-item configs <?= $monitoria === 'gas' ? 'active' : '' ?>" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#gas" type="button">Gás</button>
                     </li>
                 <?php endif; ?>
                 <?php if (($group->m_nivel)) : ?>
-                    <li class="nav-item configs" role="presentation">
+                    <li class="nav-item configs <?= $monitoria === 'nivel' ? 'active' : '' ?>" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#nivel" type="button">Nível</button>
                     </li>
                 <?php endif; ?>
@@ -37,7 +37,7 @@
     <div class="tab-content" style="background-color: transparent; box-shadow: none; padding: 0;">
 
         <?php if (($group->m_energia)) : ?>
-            <div class="tab-pane fade show active" id="energy">
+            <div class="tab-pane fade <?= $monitoria === 'energy' ? 'show active' : '' ?>" id="energy">
 
                 <div class="row pt-0">
                     <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
@@ -93,7 +93,7 @@
             </div>
         <?php endif; ?>
         <?php if (($group->m_agua)) : ?>
-            <div class="tab-pane fade" id="water">
+            <div class="tab-pane fade <?= $monitoria === 'water' ? 'show active' : '' ?>" id="water">
 
                 <div class="row pt-0">
                     <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
@@ -139,7 +139,7 @@
             </div>
         <?php endif; ?>
         <?php if (($group->m_gas)) : ?>
-            <div class="tab-pane fade" id="gas">
+            <div class="tab-pane fade <?= $monitoria === 'gas' ? 'show active' : '' ?>" id="gas">
 
                 <div class="row pt-0">
                     <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
@@ -185,7 +185,7 @@
             </div>
         <?php endif; ?>
         <?php if (($group->m_nivel)) : ?>
-            <div class="tab-pane fade" id="nivel">
+            <div class="tab-pane fade <?= $monitoria === 'nivel' ? 'show active' : '' ?>" id="nivel">
 
                 <div class="row pt-0">
                     <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">

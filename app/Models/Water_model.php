@@ -4,6 +4,54 @@ namespace App\Models;
 
 class Water_model extends Base_model
 {
+    public function GetOverallConsumption($type, $grp, $demo = false)
+    {
+        $entity = $this->get_entity_by_group($grp);
+
+        $value = "SUM( consumo ) AS value,
+                SUM( consumo ) / ( DATEDIFF( CURDATE(), DATE_FORMAT( CURDATE(), '%Y-%m-01' )) + 1 ) * DAY (LAST_DAY(CURDATE())) AS prevision,
+                SUM( consumo ) / ( DATEDIFF( CURDATE(), DATE_FORMAT( CURDATE(), '%Y-%m-01' )) + 1 ) AS average";
+
+        if ($demo) {
+            $value = "RAND() * 10000 AS value
+                    RAND() * 10000 AS prevision
+                    RAND() * 10000 AS average";
+        }
+
+        $result = $this->db->query("
+            SELECT
+                esm_unidades.agrupamento_id,
+                $value 
+            FROM
+                esm_leituras_".$entity->tabela."_agua 
+            JOIN 
+                esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+            JOIN 
+                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id 
+            WHERE
+                TIMESTAMP > DATE_FORMAT( CURDATE(), '%Y-%m-01' ) 
+                AND esm_leituras_".$entity->tabela."_agua.medidor_id IN (
+                    SELECT
+                        esm_medidores.id 
+                    FROM
+                        esm_unidades_config
+                        JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades_config.unidade_id
+                        JOIN esm_unidades ON esm_unidades.id = esm_unidades_config.unidade_id 
+                    WHERE esm_unidades.agrupamento_id = $grp AND esm_unidades_config.type = $type
+                )
+        ");
+
+        if ($result->getNumRows()) {
+            return array (
+                "bloco"    => number_format(round($result->getRow()->agrupamento_id, 0), 0, ",", "."),
+                "consum"    => number_format(round($result->getRow()->value, 0), 0, ",", "."),
+                "prevision" => number_format(round($result->getRow()->prevision, 0), 0, ",", "."),
+                "average"   => number_format(round($result->getRow()->average, 0), 0, ",", ".")
+            );
+        }
+
+        return array ("consum"    => "-","prevision" => "-","average"   => "-");
+    }
 
     public function GetConsumption($device, $group_id, $start, $end, $st = array(), $group = true, $interval = null, $demo = false)
     {

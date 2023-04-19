@@ -1,8 +1,8 @@
 <section role="main" class="content-body">
     <!-- start: page -->
 
-    <header class="page-header" data-group="<?= $group_id ?>">
-        <h2><?= $group->group_name; ?></h2>
+    <header class="page-header">
+        <h2>Configurações</h2>
     </header>
 
     <div class="row">
@@ -11,7 +11,7 @@
                 <li class="nav-item configs" role="presentation">
                     <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#geral" type="button" aria-selected="true" role="tab">Geral</button>
                 </li>
-                <li class="nav-item configs d-none" role="presentation">
+                <li class="nav-item configs" role="presentation">
                     <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#usuarios" type="button" aria-selected="false" role="tab" tabindex="-1">Usuários</button>
                 </li>
                 <li class="nav-item configs" role="presentation">
@@ -28,9 +28,6 @@
                 </li>
             </ul>
         </div>
-        <div class="col-4 text-end">
-            <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
-        </div>
     </div>
 
     <div class="tab-content configs">
@@ -39,7 +36,7 @@
                 <div class="col-md-12 mb-4">
                     <section class="card card-easymeter h-100">
                         <form class="form-config-geral">
-                            <input type="hidden" value="<?= $group_id; ?>" id="group-id" name="group_id">
+                            <input type="hidden" id="group-id" name="group_id">
                             <header class="card-header">
                                 <div class="card-actions"></div>
                                 <h2 class="card-title">Geral</h2>
@@ -47,26 +44,24 @@
                             <div class="card-body">
 
                                 <div class="row">
-                                    <?php if ($user->inGroup("energia")) : ?>
-                                        <div class="col-md-4 mb-3">
-                                            <label for="ponta-start" class="form-label">Horário Início Ponta</label>
-                                            <input id="ponta-start" value="<?= isset($client_config->ponta_start) ? date('H:i', $client_config->ponta_start) : ''; ?>" name="ponta_start" type="time" class="form-control" placeholder="">
-                                        </div>
-                                        <div class="col-md-4 mb-3">
-                                            <label for="ponta-end" class="form-label">Horário Fim Ponta</label>
-                                            <input id="ponta-end" value="<?= isset($client_config->ponta_end) ? date('H:i', $client_config->ponta_end) : ''; ?>" name="ponta_end" type="time" class="form-control" placeholder="">
-                                        </div>
-                                    <?php endif; ?>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="ponta-start" class="form-label">Horário Início Ponta</label>
+                                        <input id="ponta-start" value="<?= isset($client_config->ponta_start) ? date('H:i', $client_config->ponta_start) : ''; ?>" name="ponta_start" type="time" class="form-control" placeholder="">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label for="ponta-end" class="form-label">Horário Fim Ponta</label>
+                                        <input id="ponta-end" value="<?= isset($client_config->ponta_end) ? date('H:i', $client_config->ponta_end) : ''; ?>" name="ponta_end" type="time" class="form-control" placeholder="">
+                                    </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="area-comum" class="form-label">Identificador da Área Comum</label>
                                         <input id="area-comum" value="<?= $client_config->area_comum ?? ''; ?>" name="area_comum" type="text" class="form-control" placeholder="">
                                     </div>
                                     <div class="col-md-4 mb-3">
-                                        <label for="open" class="form-label">Horário Abertura <?= ucfirst($url) ?></label>
+                                        <label for="open" class="form-label">Horário Abertura Shopping</label>
                                         <input id="open" value="<?= isset($client_config->open) ? date('H:i', $client_config->open) : ''; ?>" name="open" type="time" class="form-control" placeholder="">
                                     </div>
                                     <div class="col-md-4 mb-3">
-                                        <label for="close" class="form-label">Horário Fechamento <?= ucfirst($url) ?></label>
+                                        <label for="close" class="form-label">Horário Fechamento Shopping</label>
                                         <input id="close" value="<?= isset($client_config->close) ? date('H:i', $client_config->close) : ''; ?>" name="close" type="time" class="form-control" placeholder="">
                                     </div>
                                     <div class="col-md-4 mb-3">
@@ -90,7 +85,7 @@
             </div>
         </div>
 
-        <div class="tab-pane fade d-none" id="usuarios" role="tabpanel">
+        <div class="tab-pane fade" id="usuarios" role="tabpanel">
             <div class="row pt-0" id="usuarios">
                 <div class="col-md-12 mb-4">
                     <section class="card card-users card-easymeter h-100">
@@ -137,22 +132,22 @@
                         </header>
                         <div class="card-body bordered">
                             <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
-                                <?php if ($user->entity->m_energia) : ?>
+                                <?php if ($user->inGroup("energia")) : ?>
                                     <li class="nav-item me-2" role="presentation">
                                         <button class="nav-link color-energy <?= $monitoria === 'energy' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#energia1" type="button" aria-selected="true" role="tab">Energia</button>
                                     </li>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_agua) : ?>
+                                <?php if ($user->inGroup("agua")) : ?>
                                     <li class="nav-item me-2" role="presentation">
                                         <button class="nav-link color-water <?= $monitoria === 'water' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#agua1" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
                                     </li>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_gas) : ?>
+                                <?php if ($user->inGroup("gas")) : ?>
                                     <li class="nav-item me-2" role="presentation">
                                         <button class="nav-link color-gas <?= $monitoria === 'gas' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#gas1" type="button" aria-selected="false" role="tab" tabindex="-1">Gás</button>
                                     </li>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_nivel) : ?>
+                                <?php if ($user->inGroup("nivel")) : ?>
                                     <li class="nav-item me-2" role="presentation">
                                         <button class="nav-link color-info <?= $monitoria === 'nivel' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#nivel1" type="button" aria-selected="false" role="tab" tabindex="-1">Nível</button>
                                     </li>
@@ -161,7 +156,7 @@
 
                             <div class="tab-content configs p-0" style="border: none; box-shadow: none;">
 
-                                <?php if ($user->entity->m_energia) : ?>
+                                <?php if ($user->inGroup("energia")) : ?>
                                     <div id="energia1" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
@@ -188,7 +183,7 @@
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_agua) : ?>
+                                <?php if ($user->inGroup("agua")) : ?>
                                     <div id="agua1" class="tab-pane <?= $monitoria === 'water' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
@@ -216,7 +211,7 @@
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_gas) : ?>
+                                <?php if ($user->inGroup("gas")) : ?>
                                     <div id="gas1" class="tab-pane <?= $monitoria === 'gas' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
@@ -244,7 +239,7 @@
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_nivel) : ?>
+                                <?php if ($user->inGroup("nivel")) : ?>
                                     <div id="nivel1" class="tab-pane <?= $monitoria === 'nivel' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
@@ -296,22 +291,22 @@
                         </header>
                         <div class="card-body bordered">
                             <ul class="nav nav-pills nav-pills-primary mb-3">
-                                <?php if ($user->entity->m_energia) : ?>
+                                <?php if ($user->inGroup("energia")) : ?>
                                     <li class="nav-item me-2" role="presentation">
                                         <button class="nav-link color-energy agrupamento-pill <?= $monitoria === 'energy' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#energia2" type="button" aria-selected="true" role="tab">Energia</button>
                                     </li>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_agua) : ?>
+                                <?php if ($user->inGroup("agua")) : ?>
                                     <li class="nav-item me-2" role="presentation">
                                         <button class="nav-link color-water agrupamento-pill <?= $monitoria === 'water' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#agua2" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
                                     </li>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_gas) : ?>
+                                <?php if ($user->inGroup("gas")) : ?>
                                     <li class="nav-item me-2" role="presentation">
                                         <button class="nav-link color-gas agrupamento-pill <?= $monitoria === 'gas' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#gas2" type="button" aria-selected="false" role="tab" tabindex="-1">Gás</button>
                                     </li>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_nivel) : ?>
+                                <?php if ($user->inGroup("nivel")) : ?>
                                     <li class="nav-item me-2" role="presentation">
                                         <button class="nav-link color-info agrupamento-pill <?= $monitoria === 'nivel' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#nivel2" type="button" aria-selected="false" role="tab" tabindex="-1">Nível</button>
                                     </li>
@@ -319,7 +314,7 @@
                             </ul>
 
                             <div class="tab-content configs">
-                                <?php if ($user->entity->m_energia) : ?>
+                                <?php if ($user->inGroup("energia")) : ?>
                                     <div id="energia2" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100" style="min-height: 230px;">
@@ -342,7 +337,7 @@
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_agua) : ?>
+                                <?php if ($user->inGroup("agua")) : ?>
                                     <div id="agua2" class="tab-pane <?= $monitoria === 'water' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
@@ -365,7 +360,7 @@
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_gas) : ?>
+                                <?php if ($user->inGroup("gas")) : ?>
                                     <div id="gas2" class="tab-pane <?= $monitoria === 'gas' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
@@ -388,7 +383,7 @@
                                         </div>
                                     </div>
                                 <?php endif; ?>
-                                <?php if ($user->entity->m_nivel) : ?>
+                                <?php if ($user->inGroup("nivel")) : ?>
                                     <div id="nivel2" class="tab-pane <?= $monitoria === 'nivel' ? 'active' : '' ?>">
                                         <div class="tab-form agrupamentos h-100">
                                             <div class="table-responsive h-100">
@@ -431,22 +426,22 @@
 
                             <div class="card-body bordered">
                                 <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
-                                    <?php if ($user->entity->m_energia) : ?>
+                                    <?php if ($user->inGroup("energia")) : ?>
                                         <li class="nav-item me-2" role="presentation">
                                             <button class="nav-link color-energy <?= $monitoria === 'energy' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#energia3" type="button" aria-selected="true" role="tab">Energia</button>
                                         </li>
                                     <?php endif; ?>
-                                    <?php if ($user->entity->m_agua) : ?>
+                                    <?php if ($user->inGroup("agua")) : ?>
                                         <li class="nav-item me-2" role="presentation">
                                             <button class="nav-link color-water <?= $monitoria === 'water' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#agua3" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
                                         </li>
                                     <?php endif; ?>
-                                    <?php if ($user->entity->m_gas) : ?>
+                                    <?php if ($user->inGroup("gas")) : ?>
                                         <li class="nav-item me-2" role="presentation">
                                             <button class="nav-link color-gas <?= $monitoria === 'gas' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#gas3" type="button" aria-selected="false" role="tab" tabindex="-1">Gás</button>
                                         </li>
                                     <?php endif; ?>
-                                    <?php if ($user->entity->m_nivel) : ?>
+                                    <?php if ($user->inGroup("nivel")) : ?>
                                         <li class="nav-item me-2" role="presentation">
                                             <button class="nav-link color-info <?= $monitoria === 'nivel' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#nivel3" type="button" aria-selected="false" role="tab" tabindex="-1">Nível</button>
                                         </li>
@@ -454,7 +449,7 @@
                                 </ul>
 
                                 <div class="tab-content configs">
-                                    <?php if ($user->entity->m_energia) : ?>
+                                    <?php if ($user->inGroup("energia")) : ?>
                                         <div id="energia3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
                                             <div class="tab-form agrupamentos">
                                                 <div class="table-responsive">
@@ -484,7 +479,7 @@
                                             </div>
                                         </div>
                                     <?php endif; ?>
-                                    <?php if ($user->entity->m_agua) : ?>
+                                    <?php if ($user->inGroup("agua")) : ?>
                                         <div id="agua3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
                                             <div class="tab-form agrupamentos">
                                                 <div class="table-responsive">
@@ -514,7 +509,7 @@
                                             </div>
                                         </div>
                                     <?php endif; ?>
-                                    <?php if ($user->entity->m_gas) : ?>
+                                    <?php if ($user->inGroup("gas")) : ?>
                                         <div id="gas3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
                                             <div class="tab-form agrupamentos">
                                                 <div class="table-responsive">
@@ -544,7 +539,7 @@
                                             </div>
                                         </div>
                                     <?php endif; ?>
-                                    <?php if ($user->entity->m_nivel) : ?>
+                                    <?php if ($user->inGroup("nivel")) : ?>
                                         <div id="nivel3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
                                             <div class="tab-form agrupamentos">
                                                 <div class="table-responsive">
@@ -586,8 +581,8 @@
             <div class="row pt-0">
                 <div class="col-md-12 mb-4">
                     <section class="card card-easymeter h-100">
-                        <form class="form-config-api" data-grupo="<?= $group_id; ?>">
-                            <input type="hidden" value="<?= $group_id; ?>" id="group-id" name="group_id">
+                        <form class="form-config-api">
+                            <input type="hidden" id="group-id" name="group_id">
                             <header class="card-header">
                                 <div class="card-actions"></div>
                                 <h2 class="card-title">API</h2>

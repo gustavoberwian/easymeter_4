@@ -129,7 +129,7 @@
         // se o clique não foi em uma celula ou na última, retorna
         if (event.target.cellIndex == undefined) return;
         // redireciona para o fechamento
-        window.location = "/painel/administra/" + $(this).data('id');
+        window.location = "/condominio/administra/" + $(this).data('id');
     });
 
 

@@ -112,7 +112,7 @@ class Water_model extends Base_model
             if ($group)
                 $group_by = "GROUP BY esm_hours.num";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
@@ -127,7 +127,7 @@ class Water_model extends Base_model
                     $dvc
                 $group_by
                 ORDER BY esm_hours.num
-            ");
+            ";
 
         } elseif ($start == $end) {
 
@@ -138,7 +138,7 @@ class Water_model extends Base_model
             if ($group)
                 $group_by = "GROUP BY esm_hours.num";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
@@ -153,7 +153,7 @@ class Water_model extends Base_model
                     $dvc
                 $group_by
                 ORDER BY esm_hours.num
-            ");
+            ";
 
         } else {
 
@@ -164,7 +164,7 @@ class Water_model extends Base_model
             if ($group)
                 $group_by = "GROUP BY esm_calendar.dt";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
@@ -182,8 +182,10 @@ class Water_model extends Base_model
                     esm_calendar.dt <= '$end' 
                 $group_by
                 ORDER BY esm_calendar.dt
-            ");
+            ";
         }
+
+        $result = $this->db->query($query);
 
         if ($result->getNumRows()) {
             return $result->getResult();

@@ -202,6 +202,63 @@
                 <div id="agua" class="tab-pane <?= $monitoria === 'agua' ? 'active' : '' ?>">
                     <!-- TODO -> insights água -->
                 </div>
+                <div id="agua" class="tab-pane <?= $monitoria === 'water' ? 'active' : '' ?>">
+                    <div class="row">
+                        <div class="col-lg-6 mb-4">
+                            <section class="card card-easymeter h-100">
+                                <header class="card-header">
+                                    <div class="card-actions">
+                                    </div>
+                                    <h2 class="card-title pr-4 mr-4">Maior consumo de água</h2>
+                                </header>
+                                <div class="card-body" style="min-height: 463px;">
+                                    <table class="table table-bordered table-responsive-md table-striped mb-0" id="dt-consumo">
+                                        <thead>
+                                        <tr>
+                                            <th width="5%"></th>
+                                            <th width="25%">Medidor</th>
+                                            <th width="20%">Consumo</th>
+                                            <th width="40%">Participação</th>
+                                            <th width="10%"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- TODO -> ÁGUA ALERTA VAZAMENTO -->
+
+                        <div class="col-lg-6 mb-4">
+                            <section class="card card-easymeter h-100">
+                                <header class="card-header">
+                                    <div class="card-actions">
+                                    </div>
+                                    <h2 class="card-title pr-4 mr-4">Alertas de vazamento</h2>
+                                </header>
+                                <div class="card-body" style="min-height: 463px;">
+                                    <table class="table table-bordered table-responsive-md table-striped mb-0" id="dt-vazamento">
+                                        <thead>
+                                        <tr>
+                                            <th width="5%"></th>
+                                            <th width="25%">Medidor</th>
+                                            <th width="20%">Tipo</th>
+                                            <th width="40%">Local</th>
+                                            <th width="40%">Quantidade vazamento</th>
+                                            <th width="10%"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                        </div>
+                    </div>
+
+                    
             <?php endif; ?>
             <?php if ($user->entity->m_gas) : ?>
                 <div id="gas" class="tab-pane <?= $monitoria === 'gas' ? 'active' : '' ?>">

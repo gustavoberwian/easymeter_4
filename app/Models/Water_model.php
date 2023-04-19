@@ -504,4 +504,50 @@ class Water_model extends Base_model
             echo json_encode(array("status" => "success", "message" => "Lançamento excluído com sucesso"));
         }
     }
+
+    // Query que traz os valores totais
+
+    public function GetMonthByStationWater($st, $group, $demo = false)
+    {
+        $entity = $this->get_entity_by_group($group);
+
+        $station = "";
+        if ($st[0] == 'fora') {
+            $station = " AND (((MOD((d.timestamp), 86400) < $st[1] OR MOD((d.timestamp), 86400) > $st[2]) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)";
+        } else if ($st[0] == 'consumo') {
+            $station = "AND ((MOD((d.timestamp), 86400) >= $st[1] AND MOD((d.timestamp), 86400) <= $st[2]) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)";
+        }
+
+        $value = "SUM(consumo) AS value";
+        $tabela = "esm_leituras_" . $entity->tabela . "_agua";
+
+        if ($demo) {
+            $value = "RAND() * 100000 AS value";
+            $tabela = "esm_leituras_ford_agua_demo";
+            $group = 113;
+        }
+
+     $q = "
+            SELECT
+                $value
+            FROM esm_calendar
+            LEFT JOIN $tabela d ON 
+                (d.timestamp) > (esm_calendar.ts_start) AND 
+                (d.timestamp) <= (esm_calendar.ts_end + 600) 
+                $station
+            JOIN esm_medidores ON esm_medidores.id = d.medidor_id
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group
+            WHERE 
+                esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
+                esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
+        ";
+
+        $result = $this->db->query($q);
+
+        if ($result->getNumRows()) {
+            return $result->getRow()->value;
+        }
+
+        return false;
+    }
 }

@@ -23,7 +23,7 @@
         <link rel="stylesheet" href="<?= base_url('vendor/datatables/media/css/dataTables.bootstrap5.css'); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/bootstrap/css/bootstrap.css"); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/animate/animate.compat.css"); ?>">
-		<!--<link rel="stylesheet" href="<?php /*echo base_url("vendor/font-awesome/css/all.min.css"); */?>" />-->
+		<link rel="stylesheet" href="<?php echo base_url("vendor/font-awesome/css/all.min.css"); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/font-awesome-6/css/all.min.css"); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/boxicons/css/boxicons.min.css"); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/magnific-popup/magnific-popup.css"); ?>" />
@@ -39,11 +39,9 @@
         <link rel="stylesheet" href="<?php echo base_url('vendor/pnotify/pnotify.custom.css'); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-multiselect/css/bootstrap-multiselect.css'); ?>" />
 
-        <?php if (in_array($method, array('profile'))) : ?>
-            <link rel="stylesheet" href="<?php echo base_url('vendor/croppie/croppie.css'); ?>" />
-            <link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-fileupload/bootstrap-fileupload.min.css'); ?>" />
-        <?php endif; ?>
-
+        <link rel="stylesheet" href="<?php echo base_url('vendor/croppie/croppie.css'); ?>" />
+        <link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-fileupload/bootstrap-fileupload.min.css'); ?>" />
+       
 		<!-- Theme CSS -->
 		<link rel="stylesheet" href="<?php echo base_url("assets/css/theme.css"); ?>" />
 
@@ -56,6 +54,7 @@
 
         <link rel="stylesheet" href="<?php echo base_url('vendor/select2/css/select2.css'); ?>" />
         <link rel="stylesheet" href="<?php echo base_url('vendor/select2-bootstrap-theme/select2-bootstrap.min.css'); ?>" />
+		<link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-tagsinput/bootstrap-tagsinput.css'); ?>" />
 
 		<!-- Head Libs -->
 		<script src="<?php echo base_url("vendor/modernizr/modernizr.js"); ?>"></script>

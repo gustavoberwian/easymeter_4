@@ -72,11 +72,11 @@
 		<!-- Theme Initialization Files -->
 		<script src="<?php echo base_url('assets/js/theme.init.js'); ?>"></script>
 
-        <?php if (in_array($method, array('profile'))) : ?>
-            <script src="<?php echo base_url('vendor/bootstrap-tagsinput/bootstrap-tagsinput.js'); ?>"></script>
-            <script src="<?php echo base_url('vendor/croppie/croppie.js'); ?>"></script>
-            <script src="<?php echo base_url('vendor/bootstrap-fileupload/bootstrap-fileupload.min.js'); ?>"></script>
-        <?php endif; ?>
+       
+        <script src="<?php echo base_url('vendor/bootstrap-tagsinput/bootstrap-tagsinput.js'); ?>"></script>
+        <script src="<?php echo base_url('vendor/croppie/croppie.js'); ?>"></script>
+        <script src="<?php echo base_url('vendor/bootstrap-fileupload/bootstrap-fileupload.min.js'); ?>"></script>
+       
 
         <!-- Page Specific -->
         <?php if (file_exists('assets/js/pages/' . strtolower($class) . '/' . strtolower($method) . '.js') || file_exists('public/assets/js/pages/' . strtolower($class) . '/' . strtolower($method) . '.js')) : ?>

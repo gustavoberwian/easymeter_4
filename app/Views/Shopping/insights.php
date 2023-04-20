@@ -70,6 +70,7 @@
                                 </div>
                             </section>
                         </div>
+
                         <div class="col-lg-6 mb-4">
                             <section class="card card-easymeter h-100">
                                 <header class="card-header">
@@ -198,10 +199,13 @@
                     </div>
                 </div>
             <?php endif; ?>
+
+            <!-- TODO -> ÁGUA CONSUMO -->
+
             <?php if ($user->entity->m_agua) : ?>
-                <div id="agua" class="tab-pane <?= $monitoria === 'water' ? 'show active' : '' ?>">
+                <div id="agua" class="tab-pane <?= $monitoria === 'water' ? 'active' : '' ?>">
                     <div class="row">
-                        <div class="col-lg-12 mb-4">
+                        <div class="col-lg-6 mb-4">
                             <section class="card card-easymeter h-100">
                                 <header class="card-header">
                                     <div class="card-actions">
@@ -217,6 +221,33 @@
                                             <th width="20%">Consumo</th>
                                             <th width="40%">Participação</th>
                                             <th width="10%"></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </section>
+                        </div>
+
+                        <!-- TODO -> ÁGUA ALERTA VAZAMENTO -->
+
+                        <div class="col-lg-6 mb-4">
+                            <section class="card card-easymeter h-100">
+                                <header class="card-header">
+                                    <div class="card-actions">
+                                    </div>
+                                    <h2 class="card-title pr-4 mr-4">Alertas de vazamento</h2>
+                                </header>
+                                <div class="card-body" style="min-height: 463px;">
+                                    <table class="table table-bordered table-responsive-md table-striped mb-0" id="dt-vazamento">
+                                        <thead>
+                                        <tr>
+                                            <th width="10%"></th>
+                                            <th width="25%">Nome</th>
+                                            <th width="30%">Vazamento</th>
+                                            <th width="30%">Participação</th>
+                                            <th width="5%"></th>
                                         </tr>
                                         </thead>
                                         <tbody>

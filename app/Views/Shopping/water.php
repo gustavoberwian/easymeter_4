@@ -12,7 +12,7 @@
 
     <?php if (empty($user->config)) : ?>
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
-            <strong>Atenção!</strong> Configurações gerais do shopping não fornecidas. <a href="/shopping/configuracoes/<?=$group_id ?>" class="alert-link">Clique aqui</a> e configure-os para visualizar os dados corretamente.
+            <strong>Atenção!</strong> Configurações gerais não fornecidas. <a href="/<?=$url ?>/configuracoes/<?=$group_id ?>" class="alert-link">Clique aqui</a> e configure-os para visualizar os dados corretamente.
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-hidden="true" aria-label="Close"></button>
         </div>
     <?php endif; ?>
@@ -49,7 +49,7 @@
             </div>
 
             <div class="col-md-2 mb-4">
-                <section class="card card-comparativo h-100 h-100">
+                <section class="card card-comparativo h-100">
                     <div class="card-body" style="background-color: #03aeef;">
                         <h6 class="card-body-title mb-3 mt-0 text-light"><label for="sel-device">Medidor</label> <i class="float-end fas fa-microchip"></i></h6>
                         <select class="form-control" name="sel-device" id="sel-device">
@@ -70,7 +70,7 @@
             </div>
 
             <div class="col-md-4 mb-4">
-                <section class="card card-comparativo h-100 h-100">
+                <section class="card card-comparativo h-100">
                     <div class="card-body" style="background-color: #03aeef;">
                         <h6 class="card-body-title mb-3 mt-0 text-light">Período <i class="float-end fas fa-calendar"></i></h6>
                         <div id="daterange-main" class="btn btn-light w-100 overflow-hidden" data-loading-overlay data-loading-overlay-options='{ "css": { "backgroundColor": "#00000080" } }'>
@@ -91,11 +91,11 @@
                             </div>
                             <div class="col-lg-4 pr-1">
                                 <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='day-o'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0">Shopping Aberto</p>
+                                <p class="text-3 text-muted mb-0"><?= ucfirst($url) ?> Aberto</p>
                             </div>
                             <div class="col-lg-4 pr-1">
                                 <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='day-c'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0">Shopping Fechado</p>
+                                <p class="text-3 text-muted mb-0"><?= ucfirst($url) ?> Fechado</p>
                             </div>
                         </div>
                     </div>
@@ -131,7 +131,7 @@
             <div class="col-md-4 mb-4">
                 <section class="card card-comparativo h-100">
                     <div class="card-body">
-                        <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo Shopping Aberto</h6>
+                        <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo <?= ucfirst($url) ?> Aberto</h6>
                         <div class="row">
                             <div class="col-lg-4 pr-1">
                                 <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='period-o'>-</span>" ?></div>
@@ -153,7 +153,7 @@
             <div class="col-md-4 mb-4">
                 <section class="card card-comparativo h-100">
                     <div class="card-body">
-                        <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo Shopping Fechado</h6>
+                        <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo <?= ucfirst($url) ?> Fechado</h6>
                         <div class="row">
                             <div class="col-lg-4 pr-1">
                                 <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='period-c'>-</span>" ?></div>

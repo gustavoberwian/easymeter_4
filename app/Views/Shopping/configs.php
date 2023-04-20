@@ -485,7 +485,7 @@
                                         </div>
                                     <?php endif; ?>
                                     <?php if ($user->entity->m_agua) : ?>
-                                        <div id="agua3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
+                                        <div id="agua3" class="tab-pane <?= $monitoria === 'water' ? 'active' : '' ?>">
                                             <div class="tab-form agrupamentos">
                                                 <div class="table-responsive">
                                                     <table class="table table-bordered table-striped dataTable table-hover no-footer"
@@ -515,7 +515,7 @@
                                         </div>
                                     <?php endif; ?>
                                     <?php if ($user->entity->m_gas) : ?>
-                                        <div id="gas3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
+                                        <div id="gas3" class="tab-pane <?= $monitoria === 'gas' ? 'active' : '' ?>">
                                             <div class="tab-form agrupamentos">
                                                 <div class="table-responsive">
                                                     <table class="table table-bordered table-striped dataTable table-hover no-footer"
@@ -545,7 +545,7 @@
                                         </div>
                                     <?php endif; ?>
                                     <?php if ($user->entity->m_nivel) : ?>
-                                        <div id="nivel3" class="tab-pane <?= $monitoria === 'energy' ? 'active' : '' ?>">
+                                        <div id="nivel3" class="tab-pane <?= $monitoria === 'nivel' ? 'active' : '' ?>">
                                             <div class="tab-form agrupamentos">
                                                 <div class="table-responsive">
                                                     <table class="table table-bordered table-striped dataTable table-hover no-footer"

@@ -42,7 +42,7 @@
     </div>
 
     <div id="insights" class="tab-pane">
-        <div class="tab-content">
+        <div class="tab-content configs">
             <?php if ($user->entity->m_energia) : ?>
                 <div id="energia" class="tab-pane <?= $monitoria === 'energy' ? 'show active' : '' ?>">
                     <div class="row">

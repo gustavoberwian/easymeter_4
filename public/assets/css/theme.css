@@ -10934,7 +10934,7 @@ a:active {
 		}
 
 		.form-group + .form-group {
-			border-top: 1px solid #f3f3f3;
+			
 			padding-top: 16px;
 			padding-top: 1rem;
 		}

@@ -1,0 +1,141 @@
+@media only screen and (min-width: 1200px) {
+	/* Layout - Body Tag */
+	html body {
+		background: url(../img/gray_jean.png) repeat;
+		padding-bottom: 5px;
+	}
+
+	/* Layout - Main Wrapper */
+	html .body {
+		position: relative;
+		max-width: 1366px;
+		margin: 0 auto;
+		padding-top: 25px;
+		background-color: transparent;
+	}
+
+	/* Layout - Header */
+	html .header {
+		border-top: 3px solid #CCC;
+		height: 60px;
+		position: absolute;
+		top: 25px;
+	}
+
+	/* Layout - Inner Wrapper */
+	html .inner-wrapper {
+		padding-top: 60px;
+		margin-bottom: 20px;
+		border-radius: 5px;
+		-webkit-box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+		        box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+	}
+
+	/* Layout - Content Body */
+	html .content-body {
+		background-color: #ecedf0;
+	}
+
+	/* Layout - Base */
+	html .header {
+		border-radius: 5px 5px 0 0;
+	}
+
+	html .sidebar-left {
+		border-radius: 0 0 0 5px;
+		position: relative;
+		margin-bottom: 0;
+	}
+
+	html .content-body {
+		border-radius: 0 0 5px 0;
+	}
+
+	html .sidebar-right {
+		border-radius: 0 5px 5px 0;
+	}
+
+	/* Layout - Sidebar Right */
+	html .sidebar-right {
+		border-top: 3px solid #CCC;
+		min-height: 0;
+	}
+
+	/* Layout - Sidebar Right Opened */
+	html.sidebar-right-opened .body {
+		overflow: hidden;
+	}
+
+	html.sidebar-right-opened .header {
+		border-radius: 5px 0 0 0;
+	}
+
+	html.sidebar-right-opened .content-body {
+		border-radius: 0 0 0 5px;
+	}
+
+	html.sidebar-right-opened .sidebar-right {
+		bottom: 20px;
+		position: absolute;
+		top: 25px;
+		border-radius: 0 5px 5px 5px;
+	}
+
+    .form-row {
+        display: -ms-flexbox;
+        display: flex;
+        -ms-flex-wrap: wrap;
+        flex-wrap: wrap;
+        margin-right: -5px;
+        margin-left: -5px;
+        
+    }
+    .col-md-6 {
+        position: relative;
+        padding-right: 15px;
+        padding-left: 15px;
+		border: 0;
+    }
+    .col-md-6 {
+        flex: 0 0 50%;
+        max-width: 50%;
+		border-top: 0;
+    }
+    .col-md-12 {
+        margin-left: 15px;
+		margin-right: 15px;
+		padding-right: 28px;
+    }
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    .form {
+        display: block;
+        margin-top: 0em;
+    }
+    .p-3 {
+        padding: 1rem !important;
+    }
+	hr.dotted {
+		height: 0;
+		border-bottom: 1px dotted #000;
+		margin-left: 12px;
+
+	}
+	h4 {
+		margin-left: 10px;
+	}
+}    
+@media only screen and (min-width: 768px) {
+    .form-group + .form-group {
+        
+        padding-top: 0;
+        padding-top: 0;
+    }
+	hr.dotted {
+		height: 0;
+		border-bottom: 1px dotted #000;
+	}
+}
+    
+    

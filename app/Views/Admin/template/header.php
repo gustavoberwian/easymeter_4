@@ -60,6 +60,12 @@
 		<!-- Head Libs -->
 		<script src="<?php echo base_url("vendor/modernizr/modernizr.js"); ?>"></script>
 
+			<!-- Custom Profile CSS -->
+			<?php if(service('uri')->getSegment(2) === 'profile') : ?>
+		<link rel="stylesheet" href="<?php echo base_url("assets/css/profile.css"); ?>">
+		<?php endif; ?>
+		
+
 	</head>
 
     <body>
@@ -275,7 +281,7 @@
 							<ul class="list-unstyled mb-2">
 								<li class="divider"></li>
 								<li>
-									<a role="menuitem" tabindex="-1" href="<?php echo site_url('shopping/profile/'); ?>"><i class="fas fa-user"></i> Minha Conta</a>
+									<a role="menuitem" tabindex="-1" href="<?php echo site_url('admin/profile/'); ?>"><i class="fas fa-user"></i> Minha Conta</a>
 								</li>
 								<li>
 									<a role="menuitem" tabindex="-1" href="<?php echo site_url('logout'); ?>"><i class="fas fa-power-off"></i> Sair</a>

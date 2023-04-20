@@ -9,13 +9,13 @@ class Admin_model extends Base_model
         // realiza a consulta
         $query = $this->db->query("
             SELECT esm_entidades_centrais.nome as DT_RowId, esm_entidades_centrais.nome, esm_entidades_centrais.modo, esm_entidades_centrais.board, 
-                esm_entidades_centrais.firmware, esm_entidades_centrais.simcard, esm_entidades.nome AS condo, esm_entidades.tabela, 
+                esm_entidades_centrais.firmware, esm_entidades_centrais.simcard, esm_entidades.nome AS entidade, esm_entidades.tabela, 
                 esm_entidades_centrais.parent, esm_entidades_centrais.auto_ok, esm_entidades_centrais.ultimo_envio,
                 esm_entidades_centrais.localizador, esm_entidades_centrais.tamanho, esm_central_data.fonte, esm_central_data.tensao, esm_central_data.fraude_hi, esm_central_data.fraude_low
             FROM esm_entidades_centrais 
-            JOIN esm_entidades ON esm_entidades.id = esm_entidades_centrais.condo_id
+            JOIN esm_entidades ON esm_entidades.id = esm_entidades_centrais.entidade_id
             LEFT JOIN esm_central_data ON esm_central_data.nome = esm_entidades_centrais.nome AND esm_central_data.timestamp = esm_entidades_centrais.ultimo_envio
-            ORDER BY esm_entidades.ordem, esm_entidades_centrais.condo_id, esm_entidades_centrais.nome
+            ORDER BY esm_entidades.ordem, esm_entidades_centrais.entidade_id, esm_entidades_centrais.nome
         ");
 
         return $query->getResult();
@@ -39,19 +39,19 @@ class Admin_model extends Base_model
         return $query->getRow();
     }
 
-    public function get_groups($condo)
+    public function get_groups($entidade)
     {
         $query = $this->db->table('esm_agrupamentos')
-            ->where('esm_agrupamentos.condo_id', $condo)
+            ->where('esm_agrupamentos.entidade_id', $entidade)
             ->orderBy('nome', 'ASC')
             ->get();
 
         return $query->getResult();
     }
 
-    public function get_ramais($condo, $as_string = false, $tipo = '')
+    public function get_ramais($entidade, $as_string = false, $tipo = '')
     {
-        $query = $this->db->table('esm_ramais')->orderBy('id')->where('condo_id', $condo);
+        $query = $this->db->table('esm_ramais')->orderBy('id')->where('entidade_id', $entidade);
 
         if ($tipo != '')
             $query->where('tipo', $tipo);
@@ -71,10 +71,10 @@ class Admin_model extends Base_model
         }
     }
 
-    public function get_centrais($condo, $as_string = false)
+    public function get_centrais($entidade, $as_string = false)
     {
         $query = $this->db->table('esm_entidades_centrais')
-            ->where('condo_id', $condo)
+            ->where('entidade_id', $entidade)
             ->orderBy('id')
             ->get();
 
@@ -91,12 +91,12 @@ class Admin_model extends Base_model
         }
     }
 
-    public function get_entradas($condo_id)
+    public function get_entradas($entidade_id)
     {
         $query = $this->db->query("
             SELECT id AS eid, nome AS entrada, tipo
             FROM esm_entradas
-            WHERE condo_id = $condo_id
+            WHERE entidade_id = $entidade_id
             ORDER BY FIELD(tipo, 'agua', 'gas', 'energia'), ordem, id
         ");
 
@@ -256,7 +256,7 @@ class Admin_model extends Base_model
     {
         $query = $this->db->table('esm_entidades')
             ->select('esm_entidades.fracao_ideal, esm_entidades.m_agua, esm_entidades.m_gas, esm_entidades.m_energia' . $extra)
-            ->join('esm_agrupamentos', 'esm_agrupamentos.condo_id = esm_entidades.id')
+            ->join('esm_agrupamentos', 'esm_agrupamentos.entidade_id = esm_entidades.id')
             ->where('esm_agrupamentos.id', $b);
 
         // realiza a consulta
@@ -265,13 +265,13 @@ class Admin_model extends Base_model
         return $result->getRow();
     }
 
-    public function get_fracoes_condominio($cid)
+    public function get_fracoes_entidademinio($cid)
     {
         $query = $this->db->query("
             SELECT DISTINCT fracao 
             FROM esm_unidades
             JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
-            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.condo_id
+            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
             WHERE esm_entidades.id = $cid
             ORDER BY fracao
         ");
@@ -290,7 +290,7 @@ class Admin_model extends Base_model
 
         if ($completo) {
             $query->join('esm_agrupamentos', 'esm_agrupamentos.id = esm_unidades.agrupamento_id', 'LEFT');
-            $query->join('esm_entidades', 'esm_entidades.id = esm_agrupamentos.condo_id', 'LEFT');
+            $query->join('esm_entidades', 'esm_entidades.id = esm_agrupamentos.entidade_id', 'LEFT');
         }
         // realiza a consulta
         $result = $query->get();
@@ -343,7 +343,7 @@ class Admin_model extends Base_model
     public function add_bloco($cid, $nome, $rid)
     {
         // insere bloco
-        if (!$this->db->table('esm_agrupamentos')->set(array('condo_id' => $cid, 'nome' => $nome, 'ramal_id' => $rid))->insert()) {
+        if (!$this->db->table('esm_agrupamentos')->set(array('entidade_id' => $cid, 'nome' => $nome, 'ramal_id' => $rid))->insert()) {
             return json_encode(array("status"  => "error", "message" => $this->db->error()));
         }
 
@@ -392,5 +392,92 @@ class Admin_model extends Base_model
             return json_encode(array("status"  => "error", "message" => $this->db->error()));
         }
         return json_encode(array("status"  => "success", "message" => "Unidade excluída com sucesso"));
+    }
+
+    public function get_user_emails($user_id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+            SELECT
+                esm_user_emails.email
+            FROM
+                esm_user_emails
+            WHERE
+                esm_user_emails.user_id = $user_id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return '';
+
+        $emails = '';
+        foreach ($query->getResult() as $e) {
+            $emails .= $e->email . ',';
+        }
+
+        return trim($emails, ',');
+    }
+
+    public function get_entidade($entidade)
+    {
+        $query = "
+            SELECT *
+            FROM esm_entidades
+            WHERE id = $entidade";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getRow();
+    }
+
+    public function get_entidade_by_group($group)
+    {
+        $query = "
+            SELECT *
+            FROM esm_entidades
+            JOIN esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id
+            WHERE esm_agrupamentos.id = $group";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getRow();
+    }
+
+    public function get_entidade_by_unity($unity)
+    {
+        $query = "
+            SELECT *
+            FROM esm_entidades
+            JOIN esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id
+            JOIN esm_unidades ON esm_unidades.agrupamento_id = esm_agrupamentos.id
+            WHERE esm_unidades.id = $unity";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0)
+            return false;
+
+        return $result->getRow();
+    }
+
+     public function update_avatar($user_id, $img) 
+    {
+        $query = $this->db->query("
+            SELECT
+	            auth_users.avatar
+            FROM
+	            auth_users
+        ");
+
+        $this->db->table('auth_users')
+        ->where('id', $user_id)
+        ->set('avatar', $img)
+        ->update();   
     }
 }

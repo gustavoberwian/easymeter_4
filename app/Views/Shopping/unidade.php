@@ -35,7 +35,9 @@
             </ul>
         </div>
         <div class="col-6 text-end">
-            <img src="<?php echo base_url('assets/img/' . $user->condo->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
+        <?php if (!$user->inGroup("unity")): ?>
+            <img src="<?php echo base_url('assets/img/' . $avatar); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
+            <?php endif; ?>
         </div>
     </div>
 
@@ -165,7 +167,7 @@
                         <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo Ponta</h6>
                         <div class="row">
                             <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "-<span class='period-p'>-</span>" ?></div>
+                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>kWh</span>" : "<span class='period-p'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Período selecionado</p>
                             </div>
                             <div class="col-lg-4 pl-1">

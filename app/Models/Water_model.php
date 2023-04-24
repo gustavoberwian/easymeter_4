@@ -196,6 +196,7 @@ class Water_model extends Base_model
 
     public function GetResume($group, $config, $type, $demo = false)
     {
+
         $entity = $this->get_entity_by_group($group);
 
         $values = "LPAD(ROUND(esm_medidores.ultima_leitura, 0), 6, '0') AS value_read,
@@ -221,8 +222,8 @@ class Water_model extends Base_model
                 esm_unidades.nome AS name, 
                 $values
             FROM esm_medidores
-            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+            LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
             LEFT JOIN (  
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
                 FROM esm_leituras_" . $entity->tabela . "_agua
@@ -590,6 +591,31 @@ class Water_model extends Base_model
             WHERE 
                 esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
                 esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
+        ";
+
+        $result = $this->db->query($q);
+
+        if ($result->getNumRows()) {
+            return $result->getRow()->value;
+        }
+
+        return false;
+    }
+
+    public function GetMonthByStationWaterAlert($group, $demo = false)
+    {
+        $value = "SUM(esm_alertas.consumo_horas) AS value";
+        if ($demo) {
+            $value = "RAND() * 100000 AS value";
+            $group = 113;
+        }
+
+        $q = "
+            SELECT
+            $value
+            FROM esm_alertas
+            JOIN esm_medidores 	ON esm_medidores.id = esm_alertas.medidor_id
+            JOIN esm_unidades 	ON esm_unidades.id = esm_alertas.unidade_id AND esm_unidades.agrupamento_id = $group
         ";
 
         $result = $this->db->query($q);

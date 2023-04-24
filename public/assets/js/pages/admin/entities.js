@@ -208,6 +208,13 @@ var unidade_validator;
 		}
 		
 	});
+
+	$('#select-adm').select2({}).on("change", function () {
+		if (!$.isEmptyObject($('#select-adm').val())) {
+			valid.element( "#select-adm" );
+		}
+    });
+
 	/*
 	jQuery.validator.addMethod('greaterThan', function(value, element, param) {
 		return ( parseInt(value) > parseInt(jQuery(param).val()) );
@@ -321,11 +328,8 @@ var unidade_validator;
     // **
     // * Select2 Administradora valida a cada mudança
     // **
-	$(document).on("change", "#select-adm", function () {
-		if (!$.isEmptyObject(valid.submitted)) {
-			valid.element( "#select-adm" );
-		}
-    });
+	
+	
 		
     // **
     // * Handler para limpar o form principal
@@ -348,9 +352,11 @@ var unidade_validator;
     // **
 	$(document).on("click", ".form-entity .btn-salvar", function()
 	{
+		console.log($('#select-adm').validate());
 		// verifica se campos do modal são válidos
 		if ( $(".form-entity").valid() ) {
 			// mostra indicador
+			
 			var $btn = $(this);
 			$btn.trigger('loading-overlay:show');
 			// desabilita botões

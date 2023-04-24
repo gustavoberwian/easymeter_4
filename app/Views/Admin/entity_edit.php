@@ -169,7 +169,7 @@
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Administradora</label>
                                 <div class="col-lg-6">
                                     <select id="select-adm" name="select-adm" class="form-control populate" data-url="<?= site_url('admin/get_admnistadoras'); ?>" <?php if ($readonly != '') echo 'disabled="true"';?>>
-                                        <option><?php if (isset($entity->nome_adm)) echo $entity->nome_adm; ?></option>
+                                        <option></option>
                                     </select>
                                 </div>
                             </div>
@@ -391,6 +391,7 @@
 
                         <!-- tab-form configurações -->
                         <div class="tab-form configuracoes d-none">
+                            <form>
                             <div class="form-group row">
                                 <label class="col-lg-3 control-label text-lg-right pt-2">Config 1 <span class="required">*</span></label>
                                 <div class="col-lg-6">
@@ -420,6 +421,7 @@
                                     </div>
                                 </div>
                             <?php endif; ?>
+                            </form>
 
                         </div>
                         <!-- tab-form configurações -->

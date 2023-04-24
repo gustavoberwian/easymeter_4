@@ -59,15 +59,18 @@ class Shopping extends UNO_Controller
         } else if ($this->user->inGroup('unity')) {
             $this->user->entity = $this->shopping_model->get_condo_by_unity($this->user->type->unity_id);
         }
-
-        if ($this->user->entity->m_energia)
+        if(!$this->user->inGroup('superadmin'))
+        {
+          if ($this->user->entity->m_energia)
             $this->monitoria = 'energy';
         elseif ($this->user->entity->m_agua)
             $this->monitoria = 'water';
         elseif ($this->user->entity->m_gas)
             $this->monitoria = 'gas';
         elseif ($this->user->entity->m_nivel)
-            $this->monitoria = 'nivel';
+            $this->monitoria = 'nivel';  
+        }
+        
     }
 
     public function index()
@@ -125,11 +128,25 @@ class Shopping extends UNO_Controller
         $data['session'] = \Config\Services::session();
         $data['set'] = false;
         $data['url'] = $this->url;
-        $data['condo'] = $this->shopping_model->get_condo($this->user->type->entity_id);
         $data['user'] = $this->user;
         $data['emails'] = $this->shopping_model->get_user_emails($this->user->id);
         helper('form');
         $user_id = $this->user->id;
+        
+        if ($this->user->inGroup('shopping', 'admin'))
+        {
+            $data['condo'] = $this->shopping_model->get_condo($this->user->type->entity_id);
+        } elseif ($this->user->inGroup('group')) {
+            $data['condo'] = $this->shopping_model->get_condo_by_group($this->user->type->group_id);
+        } elseif ($this->user->inGroup('unity')) {
+            $data['condo'] = $this->shopping_model->get_condo_by_unity($this->user->type->unity_id);
+        } else {
+            $data['condo'] = '';
+        }
+
+        
+
+
 
         if ($this->input->getMethod() == 'post') {
             $image = $this->input->getPost('crop-image');

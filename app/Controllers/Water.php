@@ -321,8 +321,8 @@ class Water extends UNO_Controller
                 m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())) AS value_future,
                 c.value AS value_last_month
             FROM esm_medidores
-            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+            LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
             LEFT JOIN (  
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
                 FROM esm_leituras_".$entity->tabela."_agua
@@ -918,6 +918,56 @@ class Water extends UNO_Controller
         echo $dt->generate();
     }
 
+    private function GetVazamentoInsights($group)
+    {
+        $entity = $this->shopping_model->get_entity_by_group($group);
+
+        $total = $this->water_model->GetMonthByStationWaterAlert($group, $this->user->demo);
+        $factor = 1;
+
+        $value = "SUM(esm_alertas.consumo_horas) AS value";
+        if ($this->user->demo) {
+            $value = "RAND() * 1 AS value";
+            $group = 113;
+        }
+
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+        SELECT 	
+            esm_unidades.nome 					AS name,
+            $value 	
+        from esm_alertas
+            JOIN esm_medidores 	ON esm_medidores.id = esm_alertas.medidor_id
+            JOIN esm_unidades 	ON esm_unidades.id = esm_alertas.unidade_id
+        where esm_alertas.tipo = 'vazamento' and esm_unidades.agrupamento_id = $group
+        GROUP BY esm_alertas.medidor_id, esm_alertas.unidade_id
+        ORDER BY value DESC 
+        ");
+
+        $dt->add('id', function ($data) {
+            return "-";
+        });
+
+        $dt->edit('value', function ($data) use ($factor) {
+            return number_format($data["value"] * $factor, 3, ",", ".").($factor == 1000 ? " m³" : " L");
+        });
+
+        $dt->add('percentage', function ($data) use ($total, $factor) {
+            $v = round(($data['value'] * $factor) / $total * 100);
+            return "<div class=\"progress progress-sm progress-half-rounded m-0 mt-1 light\">
+                <div class=\"progress-bar progress-bar-primary t-$total\" role=\"progressbar\" aria-valuenow=\"100\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $v%;\">
+                </div>
+            </div>";
+        });
+
+        $dt->add('participation', function ($data) use ($total, $factor) {
+            return number_format(round(($data['value'] * $factor) / $total * 100, 1), 1, ",", ".") . "%";
+        });
+
+        echo $dt->generate();
+
+    }
+
     private function GetFactorInsightWater($group)
     {
         $entity = $this->shopping_model->get_entity_by_group($group);
@@ -930,7 +980,6 @@ class Water extends UNO_Controller
             $group = 113;
         }
         
-
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 
@@ -966,7 +1015,6 @@ class Water extends UNO_Controller
             return number_format($data["value"], 3, ",", ".");
         });
 
-
         return $dt->generate();
     }
 
@@ -997,13 +1045,13 @@ class Water extends UNO_Controller
             $total = $this->water_model->GetMonthByStationWater(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group, $this->user->demo);
         } else if ($iud == 2) {
             $station = "AND (((MOD((d.timestamp), 86400) < {$this->user->config->ponta_start} OR MOD((d.timestamp), 86400) > {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)";
-            $st = "fora";
+            $st = "vazamento";
             $total = $this->water_model->GetMonthByStationWater(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group, $this->user->demo);
+
+            echo $this->GetVazamentoInsights($group);
+            return;
         }
-
-            //echo $this->GetFactorInsightWater($group);
-            //return;
-
+    
         $value = "p.value AS value";
         $tabela = "esm_leituras_".$entity->tabela."_agua";
         if ($this->user->demo) {
@@ -1013,7 +1061,7 @@ class Water extends UNO_Controller
         }
 
         // realiza a query medidor e consumo via dt
-      
+
         $dt = $this->datatables->query("
             SELECT 
                 esm_unidades.nome AS name, 

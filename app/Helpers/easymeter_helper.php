@@ -122,6 +122,8 @@ function user_groups_nice($id)
     $users = model('UserModel');
     $user = $users->findById($id);
 
+    if ($user->inGroup('superadmin'))
+        return 'Super Admin';
     if ($user->inGroup('industria'))
         return 'Indústria';
     if ($user->inGroup('sindicos', 'unidades'))

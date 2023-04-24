@@ -2,6 +2,8 @@
 
     "use strict";
 
+    //COMEÇA
+
     let dtPonta = $("#dt-ponta").DataTable({
         dom: '<"table-responsive"t>r',
         processing: true,
@@ -41,6 +43,10 @@
         });
     });
 
+    //TERMINA
+
+    //COMEÇA
+
     let dtFora = $("#dt-fora").DataTable({
         dom: '<"table-responsive"t>r',
         processing: true,
@@ -76,6 +82,8 @@
             cell.innerHTML = i + 1 + info.start;
         });
     });
+
+    //TERMINA
 
     let dtOpen = $("#dt-open").DataTable({
         dom: '<"table-responsive"t>r',
@@ -279,7 +287,7 @@
         pageLength: 10,
         ajax: {
             type: 'POST',
-            url: "/water/insights/1",
+            url: "/water/insights/2",
             data: {
                 group: $(".page-header").data("group")
             },

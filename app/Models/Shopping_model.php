@@ -850,7 +850,7 @@ class Shopping_model extends Base_model
         $query = "
             SELECT esm_unidades.*
             FROM esm_unidades
-            JOIN auth_user_relation ON auth_user_relation.unity_id = esm_unidades.id
+            JOIN auth_user_relation ON auth_user_relation.unidade_id = esm_unidades.id
             WHERE auth_user_relation.user_id = $user";
 
         $result = $this->db->query($query);

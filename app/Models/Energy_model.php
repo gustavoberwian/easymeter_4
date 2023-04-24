@@ -1552,8 +1552,8 @@ class Energy_model extends Base_model
                 esm_unidades.nome AS name, 
                 $values
             FROM esm_medidores
-            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id $type
+            LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id $type
             LEFT JOIN (  
                     SELECT 
                         device,

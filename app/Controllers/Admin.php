@@ -17,6 +17,8 @@ class Admin extends UNO_Controller
 
     protected Viacep $viacep;
 
+    public $url;
+
     public function __construct()
     {
         parent::__construct();
@@ -24,12 +26,16 @@ class Admin extends UNO_Controller
         // load requests
         $this->input = \Config\Services::request();
 
+
         // load models
         $this->admin_model = new Admin_model();
 
         // load libraries
         $this->datatables = new Datatables(new Codeigniter4Adapter);
         $this->viacep = new Viacep();
+
+         // set variables
+         $this->url = service('uri')->getSegment(1);
     }
 
     public function index(): string
@@ -149,6 +155,126 @@ class Admin extends UNO_Controller
         return $this->render("users");
     }
 
+    public function profile()
+    {
+        $data['validation'] = \Config\Services::validation();
+        $data['session'] = \Config\Services::session();
+        $data['set'] = false;
+        $data['url'] = $this->url;
+        $data['user'] = $this->user;
+        $data['emails'] = $this->admin_model->get_user_emails($this->user->id);
+        helper('form');
+        $user_id = $this->user->id;
+        
+        if ($this->user->inGroup('shopping', 'admin'))
+        {
+            $data['condo'] = $this->admin_model->get_condo($this->user->type->entity_id);
+        } elseif ($this->user->inGroup('group')) {
+            $data['condo'] = $this->admin_model->get_condo_by_group($this->user->type->group_id);
+        } elseif ($this->user->inGroup('unity')) {
+            $data['condo'] = $this->admin_model->get_condo_by_unity($this->user->type->unity_id);
+        } else {
+            $data['condo'] = '';
+        }
+
+        
+
+
+
+        if ($this->input->getMethod() == 'post') {
+            $image = $this->input->getPost('crop-image');
+            $senha = $this->input->getPost('password');
+        
+            if ($image) {
+                // valida se é imagem...
+
+                // salva avatar
+                list($type, $image) = explode(';', $image);
+                list(, $image) = explode(',', $image);
+                $image = base64_decode($image);
+                $filename = time() . $this->user->id . '.png';
+                if (file_put_contents('../public/assets/img/uploads/avatars/' . $filename, $image)) {
+        
+                // mensagem
+                    $img['avatar'] = $filename;
+
+                    // apaga avatar anterior
+                    if ($this->user->avatar && file_exists('../public/assets/img/uploads/avatars/' . $this->user->avatar)) {
+                        unlink('../public/assets/img/uploads/avatars/' . $this->user->avatar);
+                        $this->user->avatar = $filename;
+                                
+                }
+                    
+                    // atualiza avatar em auth_users
+                    if ($this->admin_model->update_avatar($this->user->id, $img)) {
+                        $data['error'] = false;
+                        }
+                         else {
+                        //erro e mensagem
+                    }
+                } else {
+                    //erro e mensagem
+                }
+            } else {
+
+
+                if($this->input->getPost('password'))
+                {
+                    $rules = [
+                'password' => 'required|min_length[6]',
+                'confirm' => 'required|matches[password]',
+                'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
+                'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
+               ];
+                } else {
+                    $rules = [
+                        'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
+                        'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
+                    ];
+                };
+                
+
+                 $emails = null;
+                 if ($this->input->getPost('emails') != '') {
+                     $emails = explode(',', $this->input->getPost('emails'));
+                        $rules = [
+                            'emails' => 'valid_email'
+                        ];
+                     }
+                 
+               
+                if ($this->validate($rules) && !isset($data['email_form'])) {
+                    // coleta os dados do post
+                    $password = $this->input->getPost('password');
+                    $telefone = $this->input->getPost('telefone');
+                    $celular  = $this->input->getPost('celular');
+                    
+
+                    // atualiza dados
+                    if (!$this->admin_model->update_user($user_id, $password, $telefone, $celular, $emails)) {
+                        $data['error'] = true;
+                        echo json_encode(array(
+                            'status' => 'error',
+                            'message' => 'Não foi possível atualizar os dados. Tente novamente em alguns minutos.'
+                        ));
+
+                    } else {
+                        $data['error'] = false;
+                        //mensagem
+                        echo json_encode(array(
+                            'status' => 'success',
+                            'message' => 'Seus dados foram atualizados com sucesso.'
+                        ));
+                        
+
+                    }
+                }
+                return;
+            }
+        }
+        $data['avatar'] = $this->user->avatar;
+        echo $this->render('profile', $data);
+    }
 
 
     // POST PART FILE
@@ -242,10 +368,10 @@ class Admin extends UNO_Controller
             FROM esm_unidades
             JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
             LEFT JOIN (
-                    SELECT auth_user_relation.unity_id, auth_users.id, auth_users.username
+                    SELECT auth_user_relation.unidade_id, auth_users.id, auth_users.username
                     FROM auth_users
                     JOIN auth_user_relation ON auth_user_relation.user_id = auth_users.id 
-            ) AS user ON user.unity_id = esm_unidades.id
+            ) AS user ON user.unidade_id = esm_unidades.id
             WHERE esm_unidades.agrupamento_id = $bloco
             ORDER BY esm_agrupamentos.nome, esm_unidades.nome
         ");
@@ -413,7 +539,7 @@ class Admin extends UNO_Controller
             (SELECT IFNULL(GROUP_CONCAT(DATE_FORMAT(data, '%d/%m/%Y') SEPARATOR '<br/>'), 'Não Enviados') FROM esm_fechamentos_envios WHERE fechamento_id = esm_fechamentos.id) AS envios
             FROM esm_fechamentos
 			LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
-            LEFT JOIN esm_entidades ON esm_ramais.condo_id = esm_entidades.id
+            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
             WHERE esm_entidades.id = $condo_id AND esm_ramais.tipo = 'agua' ORDER BY esm_fechamentos.id DESC
         ");
 

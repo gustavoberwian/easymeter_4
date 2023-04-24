@@ -321,8 +321,8 @@ class Water extends UNO_Controller
                 m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())) AS value_future,
                 c.value AS value_last_month
             FROM esm_medidores
-            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+            LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
             LEFT JOIN (  
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
                 FROM esm_leituras_".$entity->tabela."_agua

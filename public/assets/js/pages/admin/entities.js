@@ -209,10 +209,14 @@ var unidade_validator;
 		
 	});
 
+	 // **
+    // * Select2 Administradora valida a cada mudança
+    // **
+	
 	$('#select-adm').select2({}).on("change", function () {
 		if (!$.isEmptyObject($('#select-adm').val())) {
-			valid.element( "#select-adm" );
-		}
+			valid.element( "#select-adm" );		
+		} 
     });
 
 	/*
@@ -325,10 +329,7 @@ var unidade_validator;
 		}
     });
 
-    // **
-    // * Select2 Administradora valida a cada mudança
-    // **
-	
+   
 	
 		
     // **
@@ -352,7 +353,6 @@ var unidade_validator;
     // **
 	$(document).on("click", ".form-entity .btn-salvar", function()
 	{
-		console.log($('#select-adm').validate());
 		// verifica se campos do modal são válidos
 		if ( $(".form-entity").valid() ) {
 			// mostra indicador
@@ -388,6 +388,46 @@ var unidade_validator;
 		}
     });
 	
+	// **
+	// * Handler editar condominio
+	// ** 
+
+	$(document).on("click", ".form-entity .btn-edit-cond", function()
+	{
+		// verifica se campos do modal são válidos
+		if ( $(".form-entity").valid() ) {
+			// mostra indicador
+			
+			var $btn = $(this);
+			$btn.trigger('loading-overlay:show');
+			// desabilita botões
+			var $btn_d = $('.form-entity .btn:enabled').prop('disabled', true);
+			// envia os dados
+			$.post('/admin/edit_entity', $('.form-entity').serialize(), function(json) {
+				if (json.status == 'success') {
+					//TODO Pergunta se quer cadastrar os blocos
+					notifySuccess(json.message)	
+				} else if(json.message.code == 1062) {
+					// cnpj jé existe...avisa
+					notifyError('Já existe um Condomínio cadastrado com o CNPJ informado!');
+				} else {
+					// notifica erro
+					notifyError(json.message.message);
+				}
+			}, 'json')
+			.fail(function(xhr, status, error) {
+				// falha no ajax: notifica
+				notifyError(error);
+			})
+			.always(function() {
+				// oculta indicador
+				$btn.trigger('loading-overlay:hide');
+				// habilita botões
+				$btn_d.prop('disabled', false);
+			});
+		}
+    });
+
 	// **
     // * Handler Botão voltar em Edita condominio
     // **

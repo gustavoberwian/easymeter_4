@@ -7513,6 +7513,7 @@ a:active {
 			border-radius: 0 0 5px 5px;
 			margin-top: -5px;
 			background: #FFF;
+			padding-left: 315px;
 		}
 
 		.card-footer::after {

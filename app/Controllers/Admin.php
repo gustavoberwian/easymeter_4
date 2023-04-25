@@ -87,68 +87,68 @@ class Admin extends UNO_Controller
         return $this->render('entities');
     }
 
-    public function entitiess($param1 = null, $param2 = null): string
-    {
-        if ( intval($param1) > 0 ) {
+    // public function entitiess($param1 = null, $param2 = null): string
+    // {
+    //     if ( intval($param1) > 0 ) {
 
-            $data['condo'] = $this->admin_model->get_condo($param1);
-            $data['blocos'] = $this->admin_model->get_groups($data['condo']->id);
+    //         $data['condo'] = $this->admin_model->get_condo($param1);
+    //         $data['blocos'] = $this->admin_model->get_groups($data['condo']->id);
 
-            if ($param2 == "editar") {
+    //         if ($param2 == "editar") {
 
-                $data['ramais'] = $this->admin_model->get_ramais($param1, true);
-                $data['centrais'] = $this->admin_model->get_centrais($param1, true);
-                $data['entradas'] = $this->admin_model->get_entradas($param1);
-                $data['readonly'] = '';
-                $data['title'] = 'Editar Condomínio';
-                $data['geral'] = false;
-                $labels = array();
-                for($i = 0; $i < 40; $i++) {
-                    $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
-                }
-                $data['leituras'] = $labels;
+    //             $data['ramais'] = $this->admin_model->get_ramais($param1, true);
+    //             $data['centrais'] = $this->admin_model->get_centrais($param1, true);
+    //             $data['entradas'] = $this->admin_model->get_entradas($param1);
+    //             $data['readonly'] = '';
+    //             $data['title'] = 'Editar Condomínio';
+    //             $data['geral'] = false;
+    //             $labels = array();
+    //             for($i = 0; $i < 40; $i++) {
+    //                 $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
+    //             }
+    //             $data['leituras'] = $labels;
 
-                return $this->render('entity_edit', $data);
-            } else {
+    //             return $this->render('entity_edit', $data);
+    //         } else {
 
-                $data['readonly'] = 'readonly';
-                $data['title'] = 'Visualizar Condomínio';
-                $data['ramais'] = $this->admin_model->get_ramais($param1, true);
-                $data['centrais'] = $this->admin_model->get_centrais($param1, true);
-                $data['entradas'] = $this->admin_model->get_entradas($param1);
-                $data['geral'] = false;
+    //             $data['readonly'] = 'readonly';
+    //             $data['title'] = 'Visualizar Condomínio';
+    //             $data['ramais'] = $this->admin_model->get_ramais($param1, true);
+    //             $data['centrais'] = $this->admin_model->get_centrais($param1, true);
+    //             $data['entradas'] = $this->admin_model->get_entradas($param1);
+    //             $data['geral'] = false;
 
-                foreach ($data['entradas'] as $e) {
-                    if ($e->entrada == "Geral") {
-                        $data['geral'] = true;
-                        break;
-                    }
-                }
+    //             foreach ($data['entradas'] as $e) {
+    //                 if ($e->entrada == "Geral") {
+    //                     $data['geral'] = true;
+    //                     break;
+    //                 }
+    //             }
 
-                if ($data['geral']) {
-                    $data['unidade_geral'] = $this->painel_model->get_unidade_medidor_principal($param1);
-                    $data['central_geral'] = $this->painel_model->get_central_by_unidade($data['unidade_geral'])->central;
-                    $data['primeira_leitura'] = date("d/m/Y", $this->painel_model->get_primeira_leitura($data['condo']->tabela, 'agua', $data['unidade_geral']));
+    //             if ($data['geral']) {
+    //                 $data['unidade_geral'] = $this->painel_model->get_unidade_medidor_principal($param1);
+    //                 $data['central_geral'] = $this->painel_model->get_central_by_unidade($data['unidade_geral'])->central;
+    //                 $data['primeira_leitura'] = date("d/m/Y", $this->painel_model->get_primeira_leitura($data['condo']->tabela, 'agua', $data['unidade_geral']));
 
-                }
+    //             }
 
-                $labels = array();
-                for($i = 0; $i < 40; $i++) {
-                    $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
-                }
-                $data['leituras'] = $labels;
+    //             $labels = array();
+    //             for($i = 0; $i < 40; $i++) {
+    //                 $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
+    //             }
+    //             $data['leituras'] = $labels;
 
-                return $this->render('entity_edit', $data);
-            }
+    //             return $this->render('entity_edit', $data);
+    //         }
 
-        } else if ($param1 == "incluir") {
+    //     } else if ($param1 == "incluir") {
 
-            return $this->render('entity_add');
-        } else {
+    //         return $this->render('entity_add');
+    //     } else {
 
-            return $this->render('entities');
-        }
-    }
+    //         return $this->render('entities');
+    //     }
+    // }
 
     public function users()
     {
@@ -512,6 +512,35 @@ class Admin extends UNO_Controller
         $dados['gestor_id']      = $this->input->getPost('select-gestor') ?? '';
 
         echo $this->admin_model->add_entity($dados);
+    }
+
+    public function edit_entity()
+    {
+        $dados['id']             = $this->input->getPost('id-entity');
+        $dados['classificacao']  = $this->input->getPost('classificacao-entity') ?? '';
+        $dados['nome']           = $this->input->getPost('nome-entity') ?? '';
+        $dados['cnpj']           = $this->input->getPost('cnpj-entity') ?? '';
+        $dados['tipo']           = $this->input->getPost('tipo-entity') ?? '';
+        $dados['cep']            = $this->input->getPost('cep-entity') ?? '';
+        $dados['logradouro']     = $this->input->getPost('logradouro-entity') ?? '';
+        $dados['numero']         = $this->input->getPost('numero-entity') ?? '';
+        $dados['complemento']    = $this->input->getPost('complemento-entity') ?? '';
+        $dados['bairro']         = $this->input->getPost('bairro-entity') ?? '';
+        $dados['cidade']         = $this->input->getPost('cidade-entity') ?? '';
+        $dados['uf']             = $this->input->getPost('estado-entity') ?? '';
+        $dados['inicio']         = $this->input->getPost('inicio-entity') ?? '';
+        $dados['fim']            = $this->input->getPost('fim-entity') ?? '';
+        $dados['m_agua']         = $this->input->getPost('agua-entity') === 'on' ? 1 : 0;
+        $dados['m_gas']          = $this->input->getPost('gas-entity') === 'on' ? 1 : 0;
+        $dados['m_energia']      = $this->input->getPost('energia-entity') === 'on' ? 1 : 0;
+        $dados['m_nivel']        = $this->input->getPost('nivel-entity') === 'on' ? 1 : 0;
+        $dados['fracao_ideal']   = $this->input->getPost('fracao-entity') === 'on' ? 1 : 0;
+        $dados['status']         = $this->input->getPost('switch') === 'on' ? 'ativo' : 'inativo';
+        $dados['admin_id']       = $this->input->getPost('select-adm') ?? '';
+        $dados['gestor_id']      = $this->input->getPost('select-gestor');
+
+
+        echo $this->admin_model->edit_entity($dados);
     }
 
     public function busca_endereco()

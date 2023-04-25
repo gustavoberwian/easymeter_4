@@ -388,10 +388,7 @@ class Auth extends BaseConfig
      */
     public function loginRedirect(): string
     {
-        // UNO Change -> To user page
-        //$url = setting('Auth.redirects')['login'];
-
-        $url = auth()->user()->page;
+        $url = !is_null(auth()->user()->page) ? auth()->user()->page : setting('Auth.redirects')['login'];
 
         return $this->getUrl($url);
     }

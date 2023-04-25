@@ -13,7 +13,7 @@ class Api_model extends Model {
         //$this->db->insert('post', array('text' => $data, 'header' => implode(",", $header), 'stamp' => date('Y-m-d H:i:s')));
         $this->db->insert('post', array('text' => $data, 'header' => json_encode($header), 'stamp' => date('Y-m-d H:i:s')));
 
-        return $this->db->insert_id();
+        return $this->db->insertId();
     }
 
     public function atualiza_ultimo_envio($central, $timestamp, $tamanho)
@@ -64,13 +64,13 @@ class Api_model extends Model {
 
         $query = $this->db->get();
 
-        return $query->result();
+        return $query->getResult();
     }
 
     public function get_last_post($id)
     {
 //        $query = $this->db->select("*")->limit(1)->order_by('id','DESC')->get('post');
-        return $this->db->select("*")-> where('id', $id)->get('post')->row();
+        return $this->db->select("*")-> where('id', $id)->get('post')->getRow();
 //        return $query->row();
     }
 
@@ -80,7 +80,7 @@ class Api_model extends Model {
             SELECT timestamp FROM esm_leituras_".$tabela."_agua WHERE timestamp = $timestamp LIMIT 1
         ");
 
-        return ($query->num_rows() > 0);
+        return ($query->getNumRows() > 0);
     }
 
     public function get_central_count($id)
@@ -90,10 +90,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return 0;
 
-        return $query->row()->total;
+        return $query->getRow()->total;
     }
 
     public function get_medidores_central($id)
@@ -102,7 +102,7 @@ class Api_model extends Model {
             SELECT id, fator, tipo, offset, posicao FROM esm_medidores WHERE central = '$id' ORDER BY posicao
         ");
 
-        return $query->result_array();
+        return $query->getResultArray();
     }
 
     public function get_condo_central($id)
@@ -116,10 +116,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->row_array();
+        return $query->getRowArray();
     }
 
     public function get_central_pos($id)
@@ -129,21 +129,21 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return 0;
 
-        return $query->result_array();
+        return $query->getResultArray();
     }
 
     public function salva_leitura($id, $data)
     {
-        $this->db->trans_start();
+        $this->db->transStart();
 
         $this->db->insert('esm_envios', array( 'central_id' => $id,'dados' => substr($data, 4) ));
 
-        $this->db->trans_complete();
+        $this->db->transComplete();
 
-        return $this->db->trans_status();
+        return $this->db->transStatus();
     }
 
     public function salva_leituras($tabela, $leituras_agua, $leituras_gas, $leituras_energia)
@@ -151,7 +151,7 @@ class Api_model extends Model {
         $error = 0;
 
         // inicia transação
-        $this->db->trans_start();
+        $this->db->transStart();
 
         // insere registros de agua se possui registros
         if (count($leituras_agua))
@@ -169,10 +169,10 @@ class Api_model extends Model {
         $error = $this->db->error()['code'];
 
         // finaliza transação
-        $this->db->trans_complete();
+        $this->db->transComplete();
 
         // retorna status da transação
-        return array('status' => $this->db->trans_status(), 'code' => $error);
+        return array('status' => $this->db->transStatus(), 'code' => $error);
     }
 
     public function verifica_timestamp($tabela, $tipo, $central, $timestamp)
@@ -183,7 +183,7 @@ class Api_model extends Model {
             WHERE esm_medidores.central = '{$central}'
         ");
 
-        return ($timestamp > intval($query->row()->ts));
+        return ($timestamp > intval($query->getRow()->ts));
     }
 
     public function get_posts($central, $start)
@@ -195,7 +195,7 @@ class Api_model extends Model {
             ORDER BY stamp asc
         ");
 
-        return $query->result();
+        return $query->getResult();
     }
 
     public function get_central($central)
@@ -210,10 +210,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->row_array();
+        return $query->getRowArray();
     }
 
     public function get_medidor($field, $id)
@@ -240,10 +240,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0) {
+        if ($query->getNumRows() == 0) {
             return json_encode(array("status"  => "error", "message" => "Unidade não encontrada!"));
         } else {
-            $row = $query->row();
+            $row = $query->getRow();
 
             return json_encode(
                 array(
@@ -269,7 +269,7 @@ class Api_model extends Model {
 
     public function inclui_entrevistas($user_id, $data) {
         $failure = array();
-        $this->db->trans_start();
+        $this->db->transStart();
 
         // salva cada medidor de cada registro
         foreach ($data as $d) {
@@ -289,9 +289,9 @@ class Api_model extends Model {
             }
         }
 
-        $this->db->trans_complete();
+        $this->db->transComplete();
 
-        if ($this->db->trans_status() === FALSE) {
+        if ($this->db->transStatus() === FALSE) {
             return json_encode(array("status"  => "error", "message" => $failure[0]));
         } else {
             return json_encode(array("status"  => "success", "message" => "OK"));
@@ -318,10 +318,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->row()->user_id;
+        return $query->getRow()->user_id;
     }
 
     private function get_administrador_by_entrada($eid) {
@@ -335,10 +335,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->row()->user_id;
+        return $query->getRow()->user_id;
     }
 
     private function get_users_by_unidade($uid) {
@@ -348,7 +348,7 @@ class Api_model extends Model {
             WHERE unidade_id = $uid
         ");
 
-        return $query->result();
+        return $query->getResult();
     }
 
     public function verifica_alertas($central)
@@ -385,9 +385,9 @@ class Api_model extends Model {
             WHERE esm_medidores.central = '$central' and esm_medidores.horas_consumo > esm_medidores.alerta_horas
         ");
 
-        $vazamentos = $query->result();
+        $vazamentos = $query->getResult();
 
-        $this->db->trans_start();
+        $this->db->transStart();
 
         foreach ($vazamentos as $v) {
             // para cada medidor, cria um alerta
@@ -407,7 +407,7 @@ class Api_model extends Model {
                     'consumo_horas' => $v->consumo,
                 ))) {
 
-                    $id = $this->db->insert_id();
+                    $id = $this->db->insertId();
 
                     // insere mensagem para o sindico
                     $sindico = $this->get_sindico_by_entrada($v->entrada_id);
@@ -439,9 +439,9 @@ class Api_model extends Model {
             }
         }
 
-        $this->db->trans_complete();
+        $this->db->transComplete();
 
-        return $this->db->trans_status();
+        return $this->db->transStatus();
     }
 
     public function verifica_consumos($central, $tabela, $dia = false)
@@ -481,9 +481,9 @@ class Api_model extends Model {
                 $where
             GROUP BY esm_medidores.id
             HAVING SUM(esm_leituras_{$tabela}_agua.consumo) > $field
-        ")->result();
+        ")->getResult();
 
-        $this->db->trans_start();
+        $this->db->transStart();
 
         foreach ($excesso as $v) {
             // para cada medidor, cria um alerta
@@ -500,7 +500,7 @@ class Api_model extends Model {
                 'consumo_horas' => 0,
             ))) {
                 /*
-                                $id = $this->db->insert_id();
+                                $id = $this->db->insertId();
 
                                 // insere mensagem para o sindico
                                 $sindico = $this->get_sindico_by_entrada($v->entrada_id);
@@ -532,9 +532,9 @@ class Api_model extends Model {
             }
         }
 
-        $this->db->trans_complete();
+        $this->db->transComplete();
 
-        return $this->db->trans_status();
+        return $this->db->transStatus();
     }
 
     public function agrometer($data)
@@ -599,7 +599,7 @@ class Api_model extends Model {
     public function insert_energy($data)
     {
         if ($this->db->insert('esm_leituras_energia', $data)) {
-            return $this->db->insert_id();
+            return $this->db->insertId();
         } else {
             return $this->db->error()['code'];
         }
@@ -608,7 +608,7 @@ class Api_model extends Model {
     public function insert_multilaser($data)
     {
         if ($this->db->insert('esm_leituras_multilaser', $data)) {
-            return $this->db->insert_id();
+            return $this->db->insertId();
         } else {
             return $this->db->error()['code'];
         }
@@ -617,7 +617,7 @@ class Api_model extends Model {
     public function insert_alive($data)
     {
         if ($this->db->insert('esm_central_post', $data)) {
-            return $this->db->insert_id();
+            return $this->db->insertId();
         } else {
             return $this->db->error()['code'];
         }
@@ -626,7 +626,7 @@ class Api_model extends Model {
     public function insert_raw($device, $origin, $data, $headers)
     {
         if ($this->db->insert('post_raw', array('device' => $device, 'origin' => $origin, 'payload' => $data, 'header' => json_encode($headers), 'stamp' => date('Y-m-d H:i:s')))) {
-            return $this->db->insert_id();
+            return $this->db->insertId();
         } else {
             return $this->db->error()['code'];
         }
@@ -636,14 +636,14 @@ class Api_model extends Model {
     {
         $this->db->insert('post_ambev', array('text' => $data, 'header' => json_encode($header), 'stamp' => date('Y-m-d H:i:s')));
 
-        return $this->db->insert_id();
+        return $this->db->insertId();
     }
 
     public function inclui_bancada($data, $header)
     {
         $this->db->insert('post_bancada', array('text' => $data, 'header' => json_encode($header), 'stamp' => date('Y-m-d H:i:s')));
 
-        return $this->db->insert_id();
+        return $this->db->insertId();
     }
 
     public function inclui_log($data, $header, $tipo, $time, $devi, $mess)
@@ -658,13 +658,13 @@ class Api_model extends Model {
             'stamp' => date('Y-m-d H:i:s')
         ));
 
-        return $this->db->insert_id();
+        return $this->db->insertId();
     }
 
     public function inclui_ambev_data($data)
     {
         if ($this->db->insert('esm_leituras_ambev', $data)) {
-            return $this->db->insert_id();
+            return $this->db->insertId();
         } else {
             return $this->db->error()['code'] + 500;
         }
@@ -673,34 +673,34 @@ class Api_model extends Model {
     public function get_last_post_ambev($id)
     {
         if ($id == 0) {
-            $query = $this->db->query("SELECT MAX(id) AS id FROM post_ambev")->row();
+            $query = $this->db->query("SELECT MAX(id) AS id FROM post_ambev")->getRow();
 
             $id = $query->id;
         }
 
-        return $this->db->select("*")-> where('id', $id)->get('post_ambev')->row();
+        return $this->db->select("*")-> where('id', $id)->get('post_ambev')->getRow();
     }
 
     public function get_last_post_bancada($id)
     {
         if ($id == 0) {
-            $query = $this->db->query("SELECT MAX(id) AS id FROM post_bancada")->row();
+            $query = $this->db->query("SELECT MAX(id) AS id FROM post_bancada")->getRow();
 
             $id = $query->id;
         }
 
-        return $this->db->select("*")-> where('id', $id)->get('post_bancada')->row();
+        return $this->db->select("*")-> where('id', $id)->get('post_bancada')->getRow();
     }
 
     public function get_data_raw($id)
     {
         if ($id == 0) {
-            $query = $this->db->query("SELECT MAX(id) AS id FROM post_raw")->row();
+            $query = $this->db->query("SELECT MAX(id) AS id FROM post_raw")-getRow();
 
             $id = $query->id;
         }
 
-        return $this->db->select("*")-> where('id', $id)->get('post_raw')->row();
+        return $this->db->select("*")-> where('id', $id)->get('post_raw')->getRow();
     }
 
     public function get_device($device, $port, $type)
@@ -720,10 +720,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return 0;
 
-        return $query->row_array();
+        return $query->getRowArray();
     }
 
     public function get_medidor_ambev($id, $port, $type)
@@ -740,10 +740,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return 0;
 
-        return $query->row_array();
+        return $query->getRowArray();
     }
 
     public function salva_leituras_detalhes($device)
@@ -775,7 +775,7 @@ class Api_model extends Model {
         $error = 0;
 
         // inicia transação
-//        $this->db->trans_start();
+//        $this->db->transStart();
 
         // insere registros de agua se possui registros
         if (count($pulse)) {
@@ -813,7 +813,7 @@ class Api_model extends Model {
         $error = $this->db->error()['code'];
 
         // finaliza transação
-//        $this->db->trans_complete();
+//        $this->db->transComplete();
 
         // retorna status da transação
         return $error;
@@ -824,7 +824,7 @@ class Api_model extends Model {
         $error = 0;
 
         // inicia transação
-        $this->db->trans_start();
+        $this->db->transStart();
 
         // insere registros de agua se possui registros
         if (count($pulse)) {
@@ -847,7 +847,7 @@ class Api_model extends Model {
         $error = $this->db->error()['code'];
 
         // finaliza transação
-        $this->db->trans_complete();
+        $this->db->transComplete();
 
         // retorna status da transação
         return $error;
@@ -860,10 +860,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->row();
+        return $query->getRow();
     }
 
     public function set_central_cfg($central, $cfg)
@@ -881,10 +881,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->result_array();
+        return $query->getResultArray();
     }
 
     public function get_central_device_count($central)
@@ -896,13 +896,13 @@ class Api_model extends Model {
             GROUP BY sensor_id
         ");
 
-        return $query->num_rows();
+        return $query->getNumRows();
     }
 
     public function insert_config($data)
     {
         if ($this->db->insert('esm_central_config', $data)) {
-            return $this->db->insert_id();
+            return $this->db->insertId();
         } else {
             return $this->db->error()['code'];
         }
@@ -957,10 +957,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->result();
+        return $query->getResult();
 
     }
 
@@ -976,7 +976,7 @@ class Api_model extends Model {
             ORDER BY stamp ASC
         ");
 
-        return $query->result();
+        return $query->getResult();
     }
 
     public function save_energy_data($data)
@@ -994,10 +994,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->result();
+        return $query->getResult();
     }
 
     public function ancar()
@@ -1015,10 +1015,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->result();
+        return $query->getResult();
     }
 
     public function get_ancar($id, $post)
@@ -1033,10 +1033,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->row();
+        return $query->getRow();
     }
 
     public function get_ancar_devices()
@@ -1050,10 +1050,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->result();
+        return $query->getResult();
     }
 
     public function GetBobs()
@@ -1067,10 +1067,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->row();
+        return $query->getRow();
     }
 
     public function GetFabrica()
@@ -1084,10 +1084,10 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        return $query->row();
+        return $query->getRow();
     }
 
     public function GetAlertCfg($aid)
@@ -1105,8 +1105,8 @@ class Api_model extends Model {
                 esm_alertas_cfg.active = 1 AND esm_alertas_cfg.type = $aid
         ");
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -1151,7 +1151,7 @@ class Api_model extends Model {
                 ) last
             ");
 
-            return ($result->num_rows()) ? $result->row() : false;
+            return ($result->getNumRows()) ? $result->getRow() : false;
         }
 
         return false;
@@ -1167,8 +1167,8 @@ class Api_model extends Model {
             WHERE esm_medidores.nome = '$device'        
         ");
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -1187,8 +1187,8 @@ class Api_model extends Model {
             )
         ");
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -1198,12 +1198,12 @@ class Api_model extends Model {
     {
         foreach($data as $d) {
 
-            $this->db->trans_start();
+            $this->db->transStart();
 
             // insere alerta
             $this->db->insert('esm_alertas_energia', $d);
 
-            $id = $this->db->insert_id();
+            $id = $this->db->insertId();
 
             // envia para ancar
             $this->db->insert('esm_alertas_energia_envios', array("user_id" => 538, "alerta_id" => $id));
@@ -1235,7 +1235,7 @@ class Api_model extends Model {
                 $this->db->update('esm_unidades_config', array('alerta_consumo' => $set["current"]), array('unidade_id' => $set["unidade_id"]));
             }
 
-            $this->db->trans_complete();
+            $this->db->transComplete();
         }
     }
 
@@ -1248,19 +1248,19 @@ class Api_model extends Model {
             WHERE esm_relatorios_config.central = '$device' AND esm_relatorios_config.tipo = $type AND esm_relatorios_config.ultimo != '$start'
         ");
 
-        if ($result->num_rows()) {
+        if ($result->getNumRows()) {
 
-            $rels = $result->result();
+            $rels = $result->getResult();
 
             foreach($rels as $r) {
 
                 if ($r->tipo == 1 || $r->tipo == 2) {
 
-                    $this->db->trans_start();
+                    $this->db->transStart();
 
                     $this->db->insert('esm_relatorios', array('condo_id' => $r->condo_id, 'tipo' => $r->tipo, 'competencia' => date($r->tipo == 1 ? "m/Y" : "d/m/Y", strtotime($start))));
 
-                    $rid = $this->db->insert_id();
+                    $rid = $this->db->insertId();
 
                     $result = $this->db->query("
                         SELECT 
@@ -1280,9 +1280,9 @@ class Api_model extends Model {
                         GROUP BY esm_medidores.id
                     ");
 
-                    if ($result->num_rows()) {
+                    if ($result->getNumRows()) {
 
-                        $data = $result->result_array();
+                        $data = $result->getResultArray();
 
                         $total = 0;
                         foreach($data as $d) {
@@ -1291,7 +1291,7 @@ class Api_model extends Model {
 
                         $this->db->update('esm_relatorios', array('consumo' => $total), array('id' => $rid));
 
-                        if ($this->db->insert_batch('esm_relatorios_dados', $data)) {
+                        if ($this->db->insertBatch('esm_relatorios_dados', $data)) {
                             // insert envios
                             $result = $this->db->query("
                                 SELECT email
@@ -1303,9 +1303,9 @@ class Api_model extends Model {
                                 WHERE user_id = {$r->user_id}
                             ");
 
-                            if ($result->num_rows()) {
+                            if ($result->getNumRows()) {
 
-                                $users = $result->result();
+                                $users = $result->getResult();
 
                                 foreach($users as $u) {
                                     $this->db->insert('esm_relatorios_envios', array('relatorio_id' => $rid, 'email' => $u->email, 'data' => date("Y-m-d H:i:s", time()), 'uid' => md5($rid.$u->email)));
@@ -1322,23 +1322,23 @@ class Api_model extends Model {
                                     $config['mailtype']     = "html";
                                     $config['smtp_crypto']  = 'tls';
 
-                                    $this->load->library('email');
-                                    $this->email->initialize($config);
+                                    $email = \Config\Services::email();
+                                    $email->initialize($config);
 
-                                    $this->email->attach('assets/img/logo_b.png');
-                                    $this->email->attach('assets/img/convite.png');
+                                    $email->attach('assets/img/logo_b.png');
+                                    $email->attach('assets/img/convite.png');
 
-                                    $logo    = $this->email->attachment_cid('assets/img/logo_b.png');
-                                    $convite = $this->email->attachment_cid('assets/img/convite.png');
+                                    $logo    = $email->attachment_cid('assets/img/logo_b.png');
+                                    $convite = $email->attachment_cid('assets/img/convite.png');
 
-                                    $this->email->from('contato@easymeter.com.br');
-                                    //$this->email->to("gustavo@unorobotica.com.br");
-                                    $this->email->to($u->email);
-                                    $this->email->reply_to('');
-                                    $this->email->subject('Relatório de Consumo');
-                                    $this->email->message($this->load->view('painel/template/emails/report', array('uid' => md5($rid.$u->email), 'tipo' => $r->tipo, 'logo' => $logo, 'convite' => $convite), TRUE));
+                                    $email->from('contato@easymeter.com.br');
+                                    //$email->to("gustavo@unorobotica.com.br");
+                                    $email->to($u->email);
+                                    $email->reply_to('');
+                                    $email->subject('Relatório de Consumo');
+                                    $email->message($this->load->view('painel/template/emails/report', array('uid' => md5($rid.$u->email), 'tipo' => $r->tipo, 'logo' => $logo, 'convite' => $convite), TRUE));
 
-                                    if ($this->email->send()) {
+                                    if ($email->send()) {
 
                                     }
                                 }
@@ -1357,7 +1357,7 @@ class Api_model extends Model {
                                 'consumo_horas' => 0
                             ))) {
 
-                                $aid = $this->db->insert_id();
+                                $aid = $this->db->insertId();
 
                                 $this->db->insert('esm_alertas_envios', array(
                                     'user_id' => $r->user_id,
@@ -1369,7 +1369,7 @@ class Api_model extends Model {
 
                     $this->db->update('esm_relatorios_config', array('ultimo' => $start), array('condo_id' => $r->condo_id, 'central' => $r->central, 'tipo' => $r->tipo));
 
-                    $this->db->trans_complete();
+                    $this->db->transComplete();
                 }
             }
         }
@@ -1383,9 +1383,9 @@ class Api_model extends Model {
             WHERE central = '$central'
         ");
 
-        if ($result->num_rows()) {
+        if ($result->getNumRows()) {
 
-            return $result->result();
+            return $result->getResult();
         }
 
         return false;
@@ -1404,9 +1404,9 @@ class Api_model extends Model {
             WHERE user_id = {$alerta->user_id}
         ");
 
-        if ($result->num_rows()) {
+        if ($result->getNumRows()) {
 
-            $users = $result->result();
+            $users = $result->getResult();
 
             $config['protocol']     = 'smtp';
             $config['smtp_host']    = 'email-ssl.com.br';
@@ -1419,28 +1419,28 @@ class Api_model extends Model {
             $config['mailtype']     = "html";
             $config['smtp_crypto']  = 'tls';
 
-            $this->load->library('email');
-            $this->email->initialize($config);
+            $email = \Config\Services::email();
+            $email->initialize($config);
 
-            $this->email->attach('assets/img/logo_b.png');
-            $this->email->attach('assets/img/'.$alerta->tipo.'.png');
+            $email->attach('assets/img/logo_b.png');
+            $email->attach('assets/img/'.$alerta->tipo.'.png');
 
-            $logo = $this->email->attachment_cid('assets/img/logo_b.png');
-            $icon = $this->email->attachment_cid('assets/img/'.$alerta->tipo.'.png');
+            $logo = $email->attachment_cid('assets/img/logo_b.png');
+            $icon = $email->attachment_cid('assets/img/'.$alerta->tipo.'.png');
             $bg   = $alerta->tipo == 'consumo' ? 'aviso' : 'orange';
             $tit  = $alerta->tipo == 'consumo' ? 'Alerta de Consumo' : 'Alerta de Nível';
 
-            $this->email->from('contato@easymeter.com.br');
-            $this->email->to("gustavo@unorobotica.com.br");
-            //$this->email->to($u->email);
-            $this->email->reply_to('');
-            $this->email->subject($tit);
+            $email->from('contato@easymeter.com.br');
+            $email->to("gustavo@unorobotica.com.br");
+            //$email->to($u->email);
+            $email->reply_to('');
+            $email->subject($tit);
 
             foreach($users as $u) {
 
-                $this->email->message($this->load->view('painel/template/emails/alerta', array('logo' => $logo, 'icon' => $icon, 'bg' => $bg, 'titulo' => $tit, 'mensagem' => $mensagem), TRUE));
+                $email->message($this->load->view('painel/template/emails/alerta', array('logo' => $logo, 'icon' => $icon, 'bg' => $bg, 'titulo' => $tit, 'mensagem' => $mensagem), TRUE));
 
-                $this->email->send();
+                $email->send();
             }
         }
     }
@@ -1465,8 +1465,8 @@ class Api_model extends Model {
                     medidor_id = {$alerta->medidor_id}
             ");
 
-            if ($query->num_rows()) {
-                $result = $query->row();
+            if ($query->getNumRows()) {
+                $result = $query->getRow();
                 $data    = date('d/m/Y', strtotime('yesterday'));
                 $process = true;
             }
@@ -1486,9 +1486,9 @@ class Api_model extends Model {
                     timestamp = (SELECT MAX(timestamp) FROM esm_leituras_{$alerta->tabela}_nivel WHERE timestamp = UNIX_TIMESTAMP(DATE_FORMAT(NOW(), '%Y-%m-%d %H')))
             ");
 
-            if ($query->num_rows()) {
+            if ($query->getNumRows()) {
 
-                $result = $query->row();
+                $result = $query->getRow();
 
                 $process = is_null($alerta->ultimo);
 
@@ -1524,8 +1524,8 @@ class Api_model extends Model {
                     medidor_id = {$alerta->medidor_id}
             ");
 
-            if ($query->num_rows()) {
-                $result = $query->row();
+            if ($query->getNumRows()) {
+                $result = $query->getRow();
                 $data    = date('d/m/Y H:00', strtotime('last hour'));
                 $process = true;
             }
@@ -1546,8 +1546,8 @@ class Api_model extends Model {
                     medidor_id = {$alerta->medidor_id}
             ");
 
-            if ($query->num_rows()) {
-                $result  = $query->row();
+            if ($query->getNumRows()) {
+                $result  = $query->getRow();
                 $data    = date('d/m/Y', strtotime('yesterday'));
                 $process = true;
             }
@@ -1578,11 +1578,11 @@ class Api_model extends Model {
                 }
             }
 
-            if ($generate) {
+            if ($generate && $alerta->monitoramento = 'agua') {
 
-                $this->db->trans_start();
+                $this->db->transStart();
 
-                if ($this->db->insert('esm_alertas', array(
+                if ($this->db->insert('esm_alertas_agua', array(
                     'tipo'          => $alerta->tipo,
                     'titulo'        => $titulo,
                     'texto'         => $mensagem,
@@ -1595,19 +1595,47 @@ class Api_model extends Model {
                     'consumo_horas' => $result->value
                 ))) {
 
-                    $id = $this->db->insert_id();
+                    $id = $this->db->insertId();
 
-                    $this->db->insert('esm_alertas_envios', array(
+                    $this->db->insert('esm_alertas_agua_envios', array(
                         'user_id' => $alerta->user_id,
                         'alerta_id' => $id
                     ));
 
                     $this->alertas_send_email($alerta, $id, $mensagem);
-                }
+
+                }   elseif ($generate) {
+
+                        $this->db->transStart();
+        
+                        if ($this->db->insert('esm_alertas', array(
+                            'tipo'          => $alerta->tipo,
+                            'titulo'        => $titulo,
+                            'texto'         => $mensagem,
+                            'enviada'       => date('Y-m-d H:i:s'),
+                            'enviado_por'   => 0,
+                            'email'         => 0,
+                            'monitoramento' => $alerta->monitoramento,
+                            'unidade_id'    => 0,
+                            'medidor_id'    => $alerta->medidor_id,
+                            'consumo_horas' => $result->value
+                        ))) {
+        
+                            $id = $this->db->insertId();
+        
+                            $this->db->insert('esm_alertas_envios', array(
+                                'user_id' => $alerta->user_id,
+                                'alerta_id' => $id
+                            ));
+        
+                            $this->alertas_send_email($alerta, $id, $mensagem);
+                        }
 
                 $this->db->update('esm_alertas_config', array('ultimo' => date('Y-m-d 00:00:00')), array('id' => $alerta->id));
 
-                $this->db->trans_complete();
+                $this->db->transComplete();
+            
+                }
             }
         }
     }
@@ -1624,8 +1652,8 @@ class Api_model extends Model {
                 group_id = $gid
         ");
 
-        if ($result->num_rows()) {
-            return $result->row();
+        if ($result->getNumRows()) {
+            return $result->getRow();
         }
 
         return false;
@@ -1719,16 +1747,16 @@ class Api_model extends Model {
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
         if ($array) {
 
-            return $query->result_array();
+            return $query->getResultArray();
 
         } else {
 
-            $data = $query->result();
+            $data = $query->getResult();
 
             foreach ($data as $d) {
                 $d->type         = intval($d->type);
@@ -1835,8 +1863,8 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -1901,8 +1929,8 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -1967,8 +1995,8 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -2031,9 +2059,9 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
+        if ($result->getNumRows()) {
 
-            $data = $result->result();
+            $data = $result->getResult();
 
             foreach ($data as $d) {
                 $d->value = floatval($d->value);
@@ -2112,8 +2140,8 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -2181,8 +2209,8 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -2255,8 +2283,8 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -2345,8 +2373,8 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->result();
+        if ($result->getNumRows()) {
+            return $result->getResult();
         }
 
         return false;
@@ -2415,10 +2443,10 @@ class Api_model extends Model {
             esm_unidades_config.type, esm_unidades.nome
         ");
 
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
-        $data = $query->result();
+        $data = $query->getResult();
 
         foreach ($data as $d) {
             $d->type         = intval($d->type);
@@ -2446,9 +2474,9 @@ class Api_model extends Model {
             WHERE esm_medidores.entrada_id = $id $where
         ");
 
-        if ($result->num_rows()) {
+        if ($result->getNumRows()) {
 
-            $data = $result->result();
+            $data = $result->getResult();
 
             foreach ($data as $d) {
                 $d->type = intval($d->type);
@@ -2471,8 +2499,8 @@ class Api_model extends Model {
             WHERE token = '$key'
         ");
 
-        if ($result->num_rows()) {
-            return $result->row();
+        if ($result->getNumRows()) {
+            return $result->getRow();
         }
 
         return false;
@@ -2486,7 +2514,7 @@ class Api_model extends Model {
             WHERE nome = '$device' AND entrada_id = $entrada AND tipo = '$tipo'
         ");
 
-        return ($result->num_rows() > 0);
+        return ($result->getNumRows() > 0);
     }
 
     public function api_get_lancamentos($type, $gid, $pag)
@@ -2537,9 +2565,9 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
+        if ($result->getNumRows()) {
 
-            $data = $result->result();
+            $data = $result->getResult();
 
             if ($type == 'agua') {
 
@@ -2628,11 +2656,11 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
+        if ($result->getNumRows()) {
 
             if ($type == 'agua') {
 
-                $data = $result->result();
+                $data = $result->getResult();
 
                 foreach ($data as $d) {
                     $d->consumption        = floatval($d->consumption);
@@ -2644,7 +2672,7 @@ class Api_model extends Model {
 
             } else if ($type == 'energia') {
 
-                $data = $result->result();
+                $data = $result->getResult();
 
                 foreach ($data as $d) {
                     $d->consumption        = floatval($d->consumption);
@@ -2687,8 +2715,8 @@ class Api_model extends Model {
             ");
         }
 
-        if ($result->num_rows()) {
-            return $result->row();
+        if ($result->getNumRows()) {
+            return $result->getRow();
         }
 
         return false;
@@ -2702,7 +2730,7 @@ class Api_model extends Model {
             WHERE entrada_id = $entrada_id AND competencia = '$competencia'
         ");
 
-        return ($result->num_rows() > 0);
+        return ($result->getNumRows() > 0);
     }
 
     private function CalculateQuery($data, $inicio, $fim, $type, $config)
@@ -2831,7 +2859,7 @@ class Api_model extends Model {
 
         // inicia transação
         $failure = array();
-        $this->db->trans_start();
+        $this->db->transStart();
 
         // insere novo registro
         if (!$this->db->insert('esm_fechamentos_agua', $data)) {
@@ -2840,11 +2868,11 @@ class Api_model extends Model {
         }
 
         // retorna fechamento id
-        $data['id'] = $this->db->insert_id();
+        $data['id'] = $this->db->insertId();
 
         $query = $this->CalculateQuery($data, $inicio, $fim, 1, $config);
 
-        $comum       = $query->result();
+        $comum       = $query->getResult();
         $consumo_c   = 0;
         $consumo_c_c = 0;
         $consumo_c_o = 0;
@@ -2857,7 +2885,7 @@ class Api_model extends Model {
 
         $query = $this->CalculateQuery($data, $inicio, $fim, 2, $config);
 
-        $unidades    = $query->result();
+        $unidades    = $query->getResult();
         $consumo_u   = 0;
         $consumo_u_c = 0;
         $consumo_u_o = 0;
@@ -2869,11 +2897,11 @@ class Api_model extends Model {
         }
 
         // inclui dados na tabela esm_fechamentos_entradas
-        if (!$this->db->insert_batch('esm_fechamentos_agua_entradas', $comum)) {
+        if (!$this->db->insertBatch('esm_fechamentos_agua_entradas', $comum)) {
             $failure[] = $this->db->error();
         }
 
-        if (!$this->db->insert_batch('esm_fechamentos_agua_entradas', $unidades)) {
+        if (!$this->db->insertBatch('esm_fechamentos_agua_entradas', $unidades)) {
             $failure[] = $this->db->error();
         }
 
@@ -2889,9 +2917,9 @@ class Api_model extends Model {
             $failure[] = $this->db->error();
         }
 
-        $this->db->trans_complete();
+        $this->db->transComplete();
 
-        if ($this->db->trans_status() === FALSE) {
+        if ($this->db->transStatus() === FALSE) {
             return json_encode(array("status"  => "error", "message" => $failure[0]));
         } else {
             return json_encode(array("status"  => "success", "accounting" => $data['id']));
@@ -2908,7 +2936,7 @@ class Api_model extends Model {
 
         // inicia transação
         $failure = array();
-        $this->db->trans_start();
+        $this->db->transStart();
 
         // insere novo registro
         if (!$this->db->insert('esm_fechamentos_energia', $data)) {
@@ -2917,11 +2945,11 @@ class Api_model extends Model {
         }
 
         // retorna fechamento id
-        $data['id'] = $this->db->insert_id();
+        $data['id'] = $this->db->insertId();
 
         $query = $this->calculate_query_energy($data, $inicio, $fim, $config, 1);
 
-        $comum       = $query->result();
+        $comum       = $query->getResult();
         $consumo_c   = 0;
         $consumo_c_f = 0;
         $consumo_c_p = 0;
@@ -2938,7 +2966,7 @@ class Api_model extends Model {
 
         $query = $this->calculate_query_energy($data, $inicio, $fim, $config, 2);
 
-        $unidades    = $query->result();
+        $unidades    = $query->getResult();
         $consumo_u   = 0;
         $consumo_u_p = 0;
         $consumo_u_f = 0;
@@ -2954,11 +2982,11 @@ class Api_model extends Model {
         }
 
         // inclui dados na tabela esm_fechamentos_entradas
-        if (!$this->db->insert_batch('esm_fechamentos_energia_entradas', $comum)) {
+        if (!$this->db->insertBatch('esm_fechamentos_energia_entradas', $comum)) {
             $failure[] = $this->db->error();
         }
 
-        if (!$this->db->insert_batch('esm_fechamentos_energia_entradas', $unidades)) {
+        if (!$this->db->insertBatch('esm_fechamentos_energia_entradas', $unidades)) {
             $failure[] = $this->db->error();
         }
 
@@ -2981,9 +3009,9 @@ class Api_model extends Model {
             $failure[] = $this->db->error();
         }
 
-        $this->db->trans_complete();
+        $this->db->transComplete();
 
-        if ($this->db->trans_status() === FALSE) {
+        if ($this->db->transStatus() === FALSE) {
             return json_encode(array("status"  => "error", "message" => $failure[0]));
         } else {
             return json_encode(array("status"  => "success", "accounting" => $data['id']));

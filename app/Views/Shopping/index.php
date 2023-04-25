@@ -80,7 +80,7 @@
                                         <div class="col-md-3">
                                             <h6 class="card-body-title mb-0 text-primary"><?= $area_comum[$i]; ?></br> Consumo Mês</h6>
                                             <div class="row">
-                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["consum"]; ?> <small>kWh</small></span></div>
+                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->inGroup('demo')) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["consum"]; ?> <small>kWh</small></span></div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">

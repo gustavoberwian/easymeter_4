@@ -56,6 +56,7 @@
 
         <link rel="stylesheet" href="<?php echo base_url('vendor/select2/css/select2.css'); ?>" />
         <link rel="stylesheet" href="<?php echo base_url('vendor/select2-bootstrap-theme/select2-bootstrap.min.css'); ?>" />
+		
 
 		<!-- Head Libs -->
 		<script src="<?php echo base_url("vendor/modernizr/modernizr.js"); ?>"></script>
@@ -63,7 +64,9 @@
 			<!-- Custom Profile CSS -->
 			<?php if(service('uri')->getSegment(2) === 'profile') : ?>
 		<link rel="stylesheet" href="<?php echo base_url("assets/css/profile.css"); ?>">
+		<link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-tagsinput/bootstrap-tagsinput.css'); ?>" />
 		<?php endif; ?>
+		
 		
 
 	</head>

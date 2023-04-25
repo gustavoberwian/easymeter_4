@@ -193,8 +193,7 @@ class Admin_model extends Base_model
             // configura filtros
             $query->groupStart()
                 ->like('nome', $q)
-                ->orLike('documento', preg_replace('/[^0-9]/', '', $q))
-                ->orLike('email', $q)
+                ->orLike('cpf', $q)
                 ->groupEnd();
         }
 
@@ -239,6 +238,15 @@ class Admin_model extends Base_model
         }
 
         return json_encode(array("status" => "success", "message" => "Entidade criada com sucesso.", "id" => $this->db->insertID()));
+    }
+
+    public function edit_entity($dados)
+    {
+        if (!$this->db->table('esm_entidades')->set($dados)->where('esm_entidades.id', $dados['id'])->update()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        return json_encode(array("status" => "success", "message" => "Entidade editada com sucesso."));
     }
 
     public function get_bloco($id)
@@ -480,4 +488,40 @@ class Admin_model extends Base_model
         ->set('avatar', $img)
         ->update();   
     }
-}
+
+    public function get_id_by_name($name)
+    {
+        $query = $this->db->query("
+        SELECT
+            esm_pessoas.id
+        FROM
+            esm_pessoas
+        WHERE
+            esm_pessoas.nome = '$name'
+        ");
+
+        if ($query->getNumRows() === 0)
+            return false;
+
+        return $query->getRow()->id;
+        }
+    
+
+    public function get_id_by_adm_name($name)
+    {
+        $query = $this->db->query("
+        SELECT
+            esm_administradoras.id
+        FROM
+            esm_administradoras
+        WHERE
+            esm_administradoras.nome = '$name'
+        ");
+
+        if ($query->getNumRows() === 0)
+            return false;
+
+        return $query->getRow()->id;
+    }
+}    
+    

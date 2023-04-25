@@ -37,11 +37,13 @@
                     <li class="footer-list ">
                         <img src="<?= base_url('/assets/img/site/easymeter_rodape_icone_endereco.svg') ?>" class="point_icon" alt="hello" width="30px">
                         <address class="footer-address">
+                            <a href="https://goo.gl/maps/YbPLxMmcdBpR9gLE7" target="_blank">
                             Rua Rumania, 172.<br>
                             Bairro Rincão.<br>
                             Novo Hamburgo - RS.<br>
                             CEP: 93348-480
                             <hr>
+                            </a>
                             <div class="footer-uno">
                                 <small>Uma solução</small>
                                 <img src="<?= base_url('/assets/img/site/easymeter_rodape_logo_unorobotica.svg') ?>" alt="UNO_Robótica" width="70px">

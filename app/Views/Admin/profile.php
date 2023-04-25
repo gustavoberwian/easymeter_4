@@ -79,11 +79,6 @@
                                                     <label>E-mail principal</label>
                                                     <input id="principal" type="text" class="form-control" value="<?php echo $user->email; ?>" readonly>
                                                 </div>
-                                                <?php if(!$condo): ?>
-                                                    <div class="form-group col-md-6">
-                                                        <label>Código da Unidade</label>   
-                                                    </div>
-                                                <?php endif; ?>
                                             </div>
                                             <div class="form-row">
                                                 <div class="form-group col-md-6">

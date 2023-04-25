@@ -21,11 +21,11 @@ function avatar($avatar)
 
 function group2page($auth)
 {
-    if ($auth->in_group(array('admin', 'shopping'))) {
+    if ($auth->inGroup(array('admin', 'shopping'))) {
         return 'shopping';
-    } elseif ($auth->in_group('admin')) {
+    } elseif ($auth->inGroup('admin')) {
         return 'admin';
-    } elseif ($auth->in_group('shopping')) {
+    } elseif ($auth->inGroup('shopping')) {
         return 'shopping';
     }
 

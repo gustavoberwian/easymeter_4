@@ -13,25 +13,25 @@
 
     <div class="row">
         <div class="col-9">
-            <ul class="nav nav-pills nav-pills-primary mb-3 position-absolute" role="tablist" style="z-index: 999;">
-                <?php if ($user->entity->m_energia) : ?>
-                    <li class="nav-item me-2" role="presentation">
-                        <button class="nav-link color-energy <?= $monitoria === 'energy' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#energia" type="button" aria-selected="true" role="tab">Energia</button>
+            <ul class="nav nav-pills nav-pills-primary mb-3">
+                <?php if (!is_null($group->m_energia)) : ?>
+                    <li class="nav-item configs" role="presentation">
+                        <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#energy" type="button">Energia</button>
                     </li>
                 <?php endif; ?>
-                <?php if ($user->entity->m_agua) : ?>
+                <?php if (!is_null($group->m_agua)) : ?>
                     <li class="nav-item me-2" role="presentation">
-                        <button class="nav-link color-water <?= $monitoria === 'water' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#agua" type="button" aria-selected="false" role="tab" tabindex="-1">Água</button>
+                        <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#water" type="button">Água</button>
                     </li>
                 <?php endif; ?>
-                <?php if ($user->entity->m_gas) : ?>
+                <?php if (!is_null($group->m_gas)) : ?>
                     <li class="nav-item me-2" role="presentation">
-                        <button class="nav-link color-gas <?= $monitoria === 'gas' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#gas" type="button" aria-selected="false" role="tab" tabindex="-1">Gás</button>
+                        <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#gas" type="button">Gás</button>
                     </li>
                 <?php endif; ?>
-                <?php if ($user->entity->m_nivel) : ?>
+                <?php if (!is_null($group->m_nivel)) : ?>
                     <li class="nav-item me-2" role="presentation">
-                        <button class="nav-link color-info <?= $monitoria === 'nivel' ? 'active' : '' ?>" data-bs-toggle="pill" data-bs-target="#nivel" type="button" aria-selected="false" role="tab" tabindex="-1">Nível</button>
+                        <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#nivel" type="button">Nível</button>
                     </li>
                 <?php endif; ?>
             </ul>
@@ -44,7 +44,7 @@
     <div id="insights" class="tab-pane">
         <div class="tab-content configs">
             <?php if ($user->entity->m_energia) : ?>
-                <div id="energia" class="tab-pane <?= $monitoria === 'energy' ? 'show active' : '' ?>">
+                <div id="energy" class="tab-pane <?= $monitoria === 'energy' ? 'show active' : '' ?>">
                     <div class="row">
                         <div class="col-lg-6 mb-4">
                             <section class="card card-easymeter h-100">
@@ -200,10 +200,8 @@
                 </div>
             <?php endif; ?>
 
-            <!-- TODO -> ÁGUA CONSUMO -->
-
             <?php if ($user->entity->m_agua) : ?>
-                <div id="agua" class="tab-pane <?= $monitoria === 'water' ? 'active' : '' ?>">
+                <div id="water" class="tab-pane <?= $monitoria === 'water' ? 'active' : '' ?>">
                     <div class="row">
                         <div class="col-lg-6 mb-4">
                             <section class="card card-easymeter h-100">
@@ -229,8 +227,6 @@
                                 </div>
                             </section>
                         </div>
-
-                        <!-- TODO -> ÁGUA ALERTA VAZAMENTO -->
 
                         <div class="col-lg-6 mb-4">
                             <section class="card card-easymeter h-100">

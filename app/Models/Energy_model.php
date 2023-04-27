@@ -1255,7 +1255,7 @@ class Energy_model extends Base_model
                 WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
                 GROUP BY device
             ) a ON a.device = esm_medidores.nome
-            JOIN (  
+            LEFT JOIN (  
                 SELECT 
                     d.device,
                     SUM(activePositiveConsumption) AS consumo_p,
@@ -1270,7 +1270,7 @@ class Energy_model extends Base_model
                     esm_calendar.dt < '$fim'
                 GROUP BY device
             ) p ON p.device = esm_medidores.nome
-            JOIN (  
+            LEFT JOIN (  
                 SELECT 
                     d.device,
                     SUM(activePositiveConsumption) AS consumo_f,
@@ -1288,6 +1288,7 @@ class Energy_model extends Base_model
             WHERE 
                 entrada_id = {$data['entrada_id']}
         ");
+
         return $query;
     }
 

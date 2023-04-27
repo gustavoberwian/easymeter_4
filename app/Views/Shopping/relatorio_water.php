@@ -16,7 +16,7 @@
                             CEP <?php echo $shopping->cep; ?>
                         </td>
                         <td class="text-end" style="vertical-align: text-top;">
-                            <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" height="60" alt="<?= $shopping->nome; ?>" style="margin-top: 17px;"/>
+                            <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" height="50" alt="<?= ""; ?>" style="margin-top: 17px;"/>
                         </td>
                     </tr>
                     <tr>

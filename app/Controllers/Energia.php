@@ -2898,10 +2898,10 @@ class Energia extends UNO_Controller
             $spreadsheet->getActiveSheet()->setCellValue('E4', 'Consumo - kWh')->mergeCells('E4:G4');
             $spreadsheet->getActiveSheet()->setCellValue('H4', 'Demanda - kW')->mergeCells('H4:J4');
 
+            $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'B5');
+
             $spreadsheet->getActiveSheet()->getStyle('A1:I5')->getFont()->setBold(true);
             $spreadsheet->getActiveSheet()->getStyle('A4:I5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-            $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'B5');
 
             $linhas = $this->energy_model->GetFechamentoUnidades($fechamento_id, $this->user->config, $i + 1);
 
@@ -2919,9 +2919,7 @@ class Energia extends UNO_Controller
 
             $spreadsheet->getActiveSheet()->getStyle('B6:I'.(count($linhas) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-
             $spreadsheet->getActiveSheet()->setCellValue('A'.(count($linhas) + 7), 'Gerado em '.date("d/m/Y H:i"));
-
 
             $spreadsheet->getActiveSheet()->setSelectedCell('A1');
         }
@@ -2942,7 +2940,7 @@ class Energia extends UNO_Controller
             'name'   => $filename,
             'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
         );
-
+        
         echo json_encode($response);
     }
 

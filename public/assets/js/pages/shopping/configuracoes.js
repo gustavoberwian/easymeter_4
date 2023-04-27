@@ -582,7 +582,6 @@
                 {class: "dt-body-left align-middle medidor"},
                 {class: "dt-body-center align-middle luc"},
                 {class: "dt-body-center align-middle select subtipo"},
-                {class: "dt-body-center align-middle select tipo"},
                 {class: "dt-body-center align-middle identificador"},
                 {class: "dt-body-center align-middle localizador"},
                 {class: "d-none dt-body-center align-middle capacidade"},

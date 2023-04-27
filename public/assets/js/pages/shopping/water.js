@@ -198,7 +198,7 @@
         ],
         serverSide: true,
         sorting: [],
-        order: [[ 2, "asc" ], [ 1, "asc" ]],
+        order: [[ 0, "asc" ]],
         pagingType: "numbers",
         pageLength: 36,
         searching: true,

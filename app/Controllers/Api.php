@@ -684,11 +684,6 @@ class Api extends UNO_Controller {
         return array("status" => "success", "name" => "Consumo", "data" => $values);
     }
 
-    public function test()
-    {
-        echo $this->verifica_alertas();
-    }
-
 
     private function verifica_alertas($central = '14030D08')
     {

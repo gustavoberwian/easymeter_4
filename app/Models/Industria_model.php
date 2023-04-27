@@ -227,4 +227,36 @@ class Industria_model extends Base_model
         else
             return $query->result();
     }
+
+    public function get_user_alert($id, $monitoramento = null, $readed = false)
+    {
+        $query = $this->db->query("
+            SELECT 
+                esm_alertas_" . $monitoramento . ".tipo, 
+                esm_alertas_" . $monitoramento . ".titulo, 
+                esm_alertas_" . $monitoramento . ".texto, 
+                COALESCE(esm_alertas_" . $monitoramento . ".enviada, 0) AS enviada,
+                COALESCE(esm_alertas_" . $monitoramento . "_envios.lida, '') AS lida
+            FROM esm_alertas_" . $monitoramento . "_envios
+            JOIN esm_alertas_" . $monitoramento . " ON esm_alertas_" . $monitoramento . ".id = esm_alertas_" . $monitoramento . "_envios.alerta_id
+            WHERE esm_alertas_" . $monitoramento . "_envios.id = $id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        $ret = $query->getRow();
+
+        if ($readed) {
+            // atualiza esm_alertas
+            $this->db->table('esm_alertas_' . $monitoramento . '_envios')
+                ->where('id', $id)
+                ->where('lida', NULL)
+                ->set(array('lida' => date("Y-m-d H:i:s")))
+                ->update();
+        }
+
+        return $ret;
+    }
 }

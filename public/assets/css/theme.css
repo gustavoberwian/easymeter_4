@@ -8626,9 +8626,7 @@ html.dark .colorpicker:after {
 	margin: 0
 }
 
-.dataTables_wrapper table thead th {
-	padding-right: 21px!important
-}
+
 
 .dataTables_wrapper table.dataTable {
 	border-collapse: collapse!important;

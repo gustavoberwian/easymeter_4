@@ -6,6 +6,7 @@
 <script src="<?= base_url('vendor/jquery-browser-mobile/jquery.browser.mobile.js'); ?>"></script>
 <script src="<?= base_url('vendor/popper/umd/popper.min.js'); ?>"></script>
 <script src="<?= base_url('vendor/bootstrap/js/bootstrap.bundle.min.js'); ?>"></script>
+<script src="<?php echo base_url('vendor/magnific-popup/jquery.magnific-popup.js'); ?>"></script>
 <script src="<?= base_url('vendor/common/common.js'); ?>"></script>
 <script src="<?= base_url('vendor/nanoscroller/nanoscroller.js'); ?>"></script>
 <script src="<?= base_url('vendor/datatables/media/js/jquery.dataTables.min.js'); ?>"></script>

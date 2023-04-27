@@ -24,6 +24,7 @@ class Industria extends UNO_Controller
      */
     private Industria_model $industria_model;
 
+
     /**
      * @var Energy_model
      */
@@ -74,6 +75,18 @@ class Industria extends UNO_Controller
             $this->user->entity = $this->industria_model->get_entidade_by_user($this->user->id);
         } else if ($this->user->inGroup('unity')) {
             $this->user->unidade = $this->industria_model->get_unidade_by_user($this->user->id);
+        }
+
+        if(!$this->user->inGroup('superadmin'))
+        {
+          if ($this->user->entity->m_energia)
+            $this->monitoria = 'energy';
+        elseif ($this->user->entity->m_agua)
+            $this->monitoria = 'water';
+        elseif ($this->user->entity->m_gas)
+            $this->monitoria = 'gas';
+        elseif ($this->user->entity->m_nivel)
+            $this->monitoria = 'nivel';  
         }
     }
 
@@ -131,7 +144,7 @@ class Industria extends UNO_Controller
     {
         $data['user'] = $this->user;
         $data['url'] = $this->url;
-
+        $data['monitoria'] = $this->monitoria;
         echo $this->render('alerts', $data);
     }
 
@@ -361,31 +374,48 @@ class Industria extends UNO_Controller
 
     public function get_alerts()
     {
-        // realiza a query via dt
+        $m = $this->input->getPost('monitoramento');
+        $user_id = auth()->user()->id;
+
+        
+
+        $dvc = 'esm_alertas_' . $m . '.device';
+        $join = 'JOIN esm_medidores ON esm_medidores.nome = ' . $dvc;
+
         $dt = $this->datatables->query("
-            SELECT 
-                esm_alertas.tipo, 
-                esm_alertas.titulo, 
-                esm_alertas.texto AS mensagem, 
-                esm_alertas.enviada, 
-                IFNULL(esm_alertas_envios.lida, 'unread') as DT_RowClass, 
-                IF(ISNULL(esm_alertas.finalizado), 'active', 'ended') as active, 
-                esm_alertas.monitoramento,
-                esm_alertas.id
-            FROM esm_alertas_envios 
-            LEFT JOIN esm_alertas ON esm_alertas.id = esm_alertas_envios.alerta_id 
-            LEFT JOIN auth_users ON auth_users.id = esm_alertas.enviado_por 
+            SELECT DISTINCT
+                1 AS type, 
+                esm_alertas_" . $m . ".tipo, 
+                $dvc,
+                esm_alertas_" . $m . ".titulo, 
+                esm_alertas_" . $m . ".enviada, 
+                0 as actions, 
+                IF(ISNULL(esm_alertas_" . $m . "_envios.lida), 'unread', '') as DT_RowClass,
+                esm_alertas_" . $m . "_envios.id AS DT_RowId
+            FROM esm_alertas_" . $m . "_envios 
+            JOIN esm_alertas_" . $m . " ON esm_alertas_" . $m . ".id = esm_alertas_" . $m . "_envios.alerta_id 
+            " . $join . " 
             WHERE
-                esm_alertas_envios.user_id = 600 AND 
-                esm_alertas.visibility = 'normal' AND 
-                esm_alertas_envios.visibility = 'normal' AND
-                esm_alertas.enviada IS NOT NULL
-                ORDER BY esm_alertas.enviada DESC
+                esm_alertas_" . $m . "_envios.user_id = $user_id AND 
+                esm_alertas_" . $m . ".visibility = 'normal' AND 
+                esm_alertas_" . $m . "_envios.visibility = 'normal' AND
+                esm_alertas_" . $m . ".enviada IS NOT NULL
+            ORDER BY esm_alertas_" . $m . ".enviada DESC
         ");
 
+        $dt->edit('type', function ($data) {
+            if ($this->input->getPost('monitoramento') === 'energia')
+                return "<i class=\"fas fa-bolt text-warning\"></i>";
+            elseif ($this->input->getPost('monitoramento') === 'agua')
+                return "<i class=\"fas fa-tint text-primary\"></i>";
+            elseif ($this->input->getPost('monitoramento') === 'gas')
+                return "<i class=\"fas fa-fire text-success\"></i>";
+            elseif ($this->input->getPost('monitoramento') === 'nivel')
+                return "<i class=\"fas fa-database text-info\"></i>";
+        });
+
         $dt->edit('tipo', function ($data) {
-            $f = $data['active'] == 'active' ? '' : ' text-muted';
-            return '<span class="fa-stack">'.alerta_tipo2icon($data['tipo'], 'fa-stack-2x' . $f).entrada_icon($data['monitoramento'], 'fa-stack-1x') . '</span>';
+            return alerta_tipo2icon($data['tipo']);
         });
 
         // formata data envio
@@ -393,12 +423,13 @@ class Industria extends UNO_Controller
             return time_ago($data['enviada']);
         });
 
-        $dt->add('actions', function ($data) {
+        $dt->edit('actions', function ($data) {
             $show = '';
             if ($data['DT_RowClass'] == 'unread') $show = ' d-none';
-            return '<a href="#" class="action-delete' . $show . '" data-id="' . $data['id'] . '"><i class="fas fa-trash" title="Excluir alerta"></i></a>';
+            return '<a href="#" class="text-danger action-delete' . $show . '" data-id="' . $data['DT_RowId'] . '"><i class="fas fa-trash" title="Excluir alerta"></i></a>';
         });
 
+        // gera resultados
         echo $dt->generate();
     }
 
@@ -447,5 +478,25 @@ class Industria extends UNO_Controller
         }
 
         echo json_encode($series);
+    }
+
+    public function show_alert()
+    {
+        // pega o id do post
+        $id = $this->input->getPost('id');
+        $m = $this->input->getPost('monitoramento');
+
+        // busca o alerta
+        $data['alerta'] = $this->industria_model->Get_user_alert($id, $m, true);
+
+        $data['alerta']->enviada = time_ago($data['alerta']->enviada);
+
+        // verifica e informa erros
+        if (!$data['alerta']) {
+            return view('modals/erro', array('message' => 'Alerta não encontrado!'));
+        }
+
+        // carrega a modal
+        return view('modals/alert', $data);
     }
 }

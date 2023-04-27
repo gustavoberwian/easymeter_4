@@ -1395,9 +1395,9 @@ class Api_model extends Model {
     {
         // insert envios
         $result = $this->db->query("
-            SELECT email
-            FROM auth_users
-            WHERE auth_users.id = {$alerta->user_id}
+            SELECT secret
+            FROM auth_identities
+            WHERE auth_identities.user_id = {$this->get_user_id_by_name($alerta->tabela)}
             UNION
             SELECT email
             FROM esm_user_emails
@@ -1408,39 +1408,40 @@ class Api_model extends Model {
 
             $users = $result->getResult();
 
-            $config['protocol']     = 'smtp';
-            $config['smtp_host']    = 'email-ssl.com.br';
-            $config['smtp_port']    = '587';
-            $config['smtp_timeout'] = '60';
-            $config['smtp_user']    = 'contato@easymeter.com.br';
-            $config['smtp_pass']    = 'index#1996';
-            $config['charset']      = 'utf-8';
-            $config['newline']      = "\r\n";
-            $config['mailtype']     = "html";
-            $config['smtp_crypto']  = 'tls';
-
             $email = \Config\Services::email();
-            $email->initialize($config);
+            
 
-            $email->attach('assets/img/logo_b.png');
-            $email->attach('assets/img/'.$alerta->tipo.'.png');
+            // $email->attach('../public/assets/img/logo_b.png');
+            // $email->attach('../public/assets/img/'.$alerta->tipo.'.png');
 
-            $logo = $email->attachment_cid('assets/img/logo_b.png');
-            $icon = $email->attachment_cid('assets/img/'.$alerta->tipo.'.png');
+            $logo = $email->setAttachmentCID('../public/assets/img/logo_b.png');
+            $icon = $email->setAttachmentCID('../public/assets/img/'.$alerta->tipo.'.png');
             $bg   = $alerta->tipo == 'consumo' ? 'aviso' : 'orange';
             $tit  = $alerta->tipo == 'consumo' ? 'Alerta de Consumo' : 'Alerta de Nível';
 
-            $email->from('contato@easymeter.com.br');
-            $email->to("gustavo@unorobotica.com.br");
+            $email->setFrom('contato@easymeter.com.br');
+            $email->setTo("rafa.assisn06@gmail.com");
+            // $email->to("gustavo@unorobotica.com.br");
             //$email->to($u->email);
-            $email->reply_to('');
-            $email->subject($tit);
+            $email->setReplyTo('');
+            $email->setSubject($tit);
 
-            foreach($users as $u) {
+            foreach($users as $u) {  
 
-                $email->message($this->load->view('painel/template/emails/alerta', array('logo' => $logo, 'icon' => $icon, 'bg' => $bg, 'titulo' => $tit, 'mensagem' => $mensagem), TRUE));
+                $email->setMessage(view('../Views/Email/alerta', array('logo' => $logo, 'icon' => $icon, 'bg' => $bg, 'titulo' => $tit, 'mensagem' => $mensagem)));
 
-                $email->send();
+                if (!$email->send()) {
+
+                     $email->send(false);
+                print_r($email->printDebugger());
+                
+                 }else{
+                
+                    print_r($email);
+                
+                }
+               
+                
             }
         }
     }
@@ -1450,8 +1451,9 @@ class Api_model extends Model {
         $process = false;
         $data    = "";
 
-        if ($alerta->tipo == 'consumo' && $alerta->monitoramento = 'agua' && $alerta->quando == 'dia') {
+        
 
+        if ($alerta->tipo == 'consumo' && $alerta->monitoramento = 'agua' && $alerta->quando == 'dia') {
             $query = $this->db->query("
                 SELECT 
                     esm_unidades.nome, 
@@ -1465,14 +1467,14 @@ class Api_model extends Model {
                     medidor_id = {$alerta->medidor_id}
             ");
 
-            if ($query->getNumRows()) {
-                $result = $query->getRow();
-                $data    = date('d/m/Y', strtotime('yesterday'));
-                $process = true;
-            }
+                if ($query->getNumRows()) {
+                    $result = $query->getRow();
+                    $data    = date('d/m/Y', strtotime('yesterday'));
+                    $process = true;
+                    $monitoramento = 'agua';
+                }
 
         } else if ($alerta->tipo == 'nivel' && $alerta->monitoramento = 'nivel' && $alerta->quando == 'hora' ) {
-
             $query = $this->db->query("
                 SELECT 
                     esm_medidores.nome,
@@ -1486,34 +1488,32 @@ class Api_model extends Model {
                     timestamp = (SELECT MAX(timestamp) FROM esm_leituras_{$alerta->tabela}_nivel WHERE timestamp = UNIX_TIMESTAMP(DATE_FORMAT(NOW(), '%Y-%m-%d %H')))
             ");
 
-            if ($query->getNumRows()) {
+                if ($query->getNumRows()) {
+                    $result = $query->getRow();
+                    $process = is_null($alerta->ultimo);
+                    $monitoramento = 'nivel';
 
-                $result = $query->getRow();
+                    if (!$process) {
+                        
+                        if ($result->value >= $alerta->min) {
+                            
+                            $this->db->update('esm_alertas_config', array('ultimo' => null), array('id' => $this->get_user_id_by_name($alerta->tabela)));
 
-                $process = is_null($alerta->ultimo);
-
-                if (!$process) {
-
-                    if ($result->value >= $alerta->min) {
-
-                        $this->db->update('esm_alertas_config', array('ultimo' => null), array('id' => $alerta->id));
-
-                        // resolve os vazamentos finalizados
-                        $query = $this->db->query("
-                            UPDATE esm_alertas
-                            SET finalizado = NOW()
-                            WHERE 
-                                ISNULL(finalizado) AND 
-                                medidor_id = {$alerta->medidor_id}
-                        ");
+                            // resolve os vazamentos finalizados
+                            $query = $this->db->query("
+                                UPDATE esm_alertas
+                                SET finalizado = NOW()
+                                WHERE 
+                                    ISNULL(finalizado) AND 
+                                    medidor_id = {$alerta->medidor_id}
+                            ");
+                        }
                     }
                 }
-            }
 
         } else if ($alerta->tipo == 'captacao' && $alerta->monitoramento = 'agua' && $alerta->quando == 'hora' ) {
-
             $query = $this->db->query("
-                SELECT 
+                SELECT DISTINCT
                     esm_unidades.nome, 
                     SUM(consumo) AS value
                 FROM esm_leituras_{$alerta->tabela}_agua
@@ -1524,16 +1524,17 @@ class Api_model extends Model {
                     medidor_id = {$alerta->medidor_id}
             ");
 
-            if ($query->getNumRows()) {
-                $result = $query->getRow();
-                $data    = date('d/m/Y H:00', strtotime('last hour'));
-                $process = true;
-            }
+                if ($query->getNumRows()) {
+                    $result = $query->getRow();
+                    $data    = date('d/m/Y H:00', strtotime('last hour'));
+                    $process = true;
+                    $monitoramento = 'agua';
+
+                }
 
         } else if ($alerta->tipo == 'tempo' && $alerta->monitoramento = 'agua' && $alerta->quando == 'dia' ) {
-
             $query = $this->db->query("
-                SELECT 
+                SELECT DISTINCT
                     esm_unidades.nome, 
                     COUNT(consumo) AS value
                 FROM esm_leituras_{$alerta->tabela}_agua
@@ -1546,18 +1547,19 @@ class Api_model extends Model {
                     medidor_id = {$alerta->medidor_id}
             ");
 
-            if ($query->getNumRows()) {
-                $result  = $query->getRow();
-                $data    = date('d/m/Y', strtotime('yesterday'));
-                $process = true;
-            }
+                if ($query->getNumRows()) {
+                    $result  = $query->getRow();
+                    $data    = date('d/m/Y', strtotime('yesterday'));
+                    $process = true;
+                    $monitoramento = 'agua';
+
+                }
         }
 
         if ($process) {
-
             $titulo   = str_replace('%d', $result->nome, $alerta->titulo);
             $mensagem = str_replace(array('%d', '%v', '%i', '%a', '%t'), array($result->nome, number_format($result->value, 0, '', '.'), number_format($alerta->min, 0, '', '.'), number_format($alerta->max, 0, '', '.'), $data), $alerta->texto);
-            $generate = false;
+            $generate = false;    
 
             if (!is_null($alerta->max) && is_null($alerta->min)) {
                 // maior que
@@ -1578,66 +1580,66 @@ class Api_model extends Model {
                 }
             }
 
-            if ($generate && $alerta->monitoramento = 'agua') {
+            if ($generate && $monitoramento == 'agua') {
 
                 $this->db->transStart();
+                
+                $data = array(
 
-                if ($this->db->insert('esm_alertas_agua', array(
-                    'tipo'          => $alerta->tipo,
+                    'tipo'          => ($alerta->tipo == 'consumo') ? 1 : 2,
                     'titulo'        => $titulo,
                     'texto'         => $mensagem,
                     'enviada'       => date('Y-m-d H:i:s'),
-                    'enviado_por'   => 0,
-                    'email'         => 0,
-                    'monitoramento' => $alerta->monitoramento,
-                    'unidade_id'    => 0,
-                    'medidor_id'    => $alerta->medidor_id,
-                    'consumo_horas' => $result->value
-                ))) {
+                    'unidade_id'    => '',
+                    'visibility'    => "normal",
+                    'device'        => $this->get_device_by_medidor_id($alerta->medidor_id),
 
+                );
+
+                if ($this->db->table('esm_alertas_agua')->set($data)->insert()) {
+
+                    $id = $this->db->insertID();
+                    
+                    $this->db->table('esm_alertas_agua_envios')->set(array(
+                        'user_id' => $this->get_user_id_by_name($alerta->tabela),
+                        'alerta_id' => $id
+                    ))->insert();
+
+                    $this->alertas_send_email($alerta, $id, $mensagem);
+                    $this->db->table('esm_alertas_config')->update(array('ultimo' => date('Y-m-d 00:00:00')), array('id' => $this->get_user_id_by_name($alerta->tabela)));
+
+                    $this->db->transComplete();
+
+                }   
+            
+                } elseif ($generate  && $monitoramento == 'nivel') {
+                    
+                    $this->db->transStart();
+            
+                    if ($this->db->table('esm_alertas_nivel')->insert(array(
+                        'tipo'          => 2,
+                        'titulo'        => $titulo,
+                        'texto'         => $mensagem,
+                        'enviada'       => date('Y-m-d H:i:s'),
+                        'unidade_id'    => '',
+                        'visibility'    => "normal",
+                        'device'        => $this->get_device_by_medidor_id($alerta->medidor_id),
+                    ))) {
+            
                     $id = $this->db->insertId();
-
-                    $this->db->insert('esm_alertas_agua_envios', array(
-                        'user_id' => $alerta->user_id,
+                    $this->db->table('esm_alertas_nivel_envios')->insert(array(
+                        'user_id' => $this->get_user_id_by_name($alerta->tabela),
                         'alerta_id' => $id
                     ));
 
                     $this->alertas_send_email($alerta, $id, $mensagem);
+                    $this->db->table('esm_alertas_config')->update(array('ultimo' => date('Y-m-d 00:00:00')), array('id' => $this->get_user_id_by_name($alerta->tabela)));
 
-                }   elseif ($generate) {
+                    $this->db->transComplete();
 
-                        $this->db->transStart();
-        
-                        if ($this->db->insert('esm_alertas', array(
-                            'tipo'          => $alerta->tipo,
-                            'titulo'        => $titulo,
-                            'texto'         => $mensagem,
-                            'enviada'       => date('Y-m-d H:i:s'),
-                            'enviado_por'   => 0,
-                            'email'         => 0,
-                            'monitoramento' => $alerta->monitoramento,
-                            'unidade_id'    => 0,
-                            'medidor_id'    => $alerta->medidor_id,
-                            'consumo_horas' => $result->value
-                        ))) {
-        
-                            $id = $this->db->insertId();
-        
-                            $this->db->insert('esm_alertas_envios', array(
-                                'user_id' => $alerta->user_id,
-                                'alerta_id' => $id
-                            ));
-        
-                            $this->alertas_send_email($alerta, $id, $mensagem);
-                        }
-
-                $this->db->update('esm_alertas_config', array('ultimo' => date('Y-m-d 00:00:00')), array('id' => $alerta->id));
-
-                $this->db->transComplete();
-            
-                }
-            }
-        }
+                } 
+            }           
+        }   
     }
 
     /* API */
@@ -3017,4 +3019,47 @@ class Api_model extends Model {
             return json_encode(array("status"  => "success", "accounting" => $data['id']));
         }
     }
+
+    public function get_device_by_medidor_id($medidor_id)
+    {
+        $query = $this->db->query("
+            SELECT
+                esm_medidores.nome
+            FROM
+                esm_medidores
+            WHERE
+                esm_medidores.id = '$medidor_id' 
+        ");
+
+        if ($query->getNumRows()) {
+            return $query->getRow()->nome;
+        }
+
+        return false;
+
+    }
+
+    public function get_user_id_by_name($name)
+    {
+        if ($name === 'ancar')
+            $name = 'Admin Shopping';
+        
+        $query = $this->db->query("
+            SELECT
+                auth_users.id
+            FROM
+                auth_users
+            WHERE
+                auth_users.username = '$name'
+        ");
+
+        if ($query->getNumRows()) {
+            return $query->getRow()->id;
+        }
+
+        return false;
+
+    }
+    
+
 }

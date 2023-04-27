@@ -683,4 +683,32 @@ class Api extends UNO_Controller {
 
         return array("status" => "success", "name" => "Consumo", "data" => $values);
     }
+
+    public function test()
+    {
+        echo $this->verifica_alertas();
+    }
+
+
+    private function verifica_alertas($central = '14030D08')
+    {
+        $alertas = $this->api_model->get_alertas_config($central);
+
+        if ($alertas) {
+            
+            
+            foreach($alertas as $a) {
+                if ($a->quando == 'dia' &&  $a->ultimo != date("Y-m-d 00:00:00")) {
+                    
+                    $this->api_model->generate_alertas($a);
+                
+                } else if ($a->quando == 'hora') {
+
+                    $this->api_model->generate_alertas($a);
+
+                }
+            }
+        }
+        
+    }
 }

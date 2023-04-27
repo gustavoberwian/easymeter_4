@@ -200,7 +200,6 @@
                                                         <th class="text-center">Medidor</th>
                                                         <th class="text-center">LUC</th>
                                                         <th class="text-center">Subtipo</th>
-                                                        <th class="text-center">Tipo</th>
                                                         <th class="text-center">Identificador</th>
                                                         <th class="text-center">Localizador</th>
                                                         <th class="text-center d-none">Capacidade</th>

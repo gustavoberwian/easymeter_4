@@ -505,7 +505,7 @@ class Shopping extends UNO_Controller
         $query = "SELECT 
                 un.id as id,
                 un.nome as unidade,
-                unc.luc as luc,
+                me.nome as luc,
                 IF(unc.type <= 1,(SELECT esm_client_config.area_comum FROM esm_client_config WHERE esm_client_config.agrupamento_id = " . $group_id . "),'Unidades') as subtipo,
                 unc.tipo as tipo,
                 unc.identificador as identificador,
@@ -546,6 +546,10 @@ class Shopping extends UNO_Controller
                 return 'Quiosque';
             }
         });
+
+        if ($type === 'agua') {
+            $dt->hide('tipo');
+        }
 
         $dt->edit('faturamento', function ($data) {
             if ($data['faturamento'] === 'incluir') {
@@ -1062,7 +1066,7 @@ class Shopping extends UNO_Controller
             } elseif ($index === "group_id") {
                 $dados['tabela']['esm_unidades']['nome'] = $post;
             } elseif ($index === "luc") {
-                $dados['tabela']['esm_unidades_config']['luc'] = $post;
+                $dados['tabela']['esm_medidores']['luc'] = $post;
             } elseif ($index === "subtipo") {
                 $dados['tabela']['esm_unidades_config']['type'] = $post;
             } elseif ($index === "tipo") {

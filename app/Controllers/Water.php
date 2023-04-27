@@ -659,9 +659,7 @@ class Water extends UNO_Controller
             $spreadsheet->getActiveSheet()->getStyle('A1:E4')->getFont()->setBold(true);
             $spreadsheet->getActiveSheet()->getStyle('A4:E4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-
             $linhas = $this->water_model->GetLancamentoUnidades($fechamento_id, $this->user->config, $i + 1);
-
             $spreadsheet->getActiveSheet()->fromArray($linhas, NULL, 'A5');
 
             $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(30);

@@ -1420,9 +1420,8 @@ class Api_model extends Model {
             $tit  = $alerta->tipo == 'consumo' ? 'Alerta de Consumo' : 'Alerta de Nível';
 
             $email->setFrom('contato@easymeter.com.br');
-            $email->setTo("rafa.assisn06@gmail.com");
             // $email->to("gustavo@unorobotica.com.br");
-            //$email->to($u->email);
+            $email->to($u->email);
             $email->setReplyTo('');
             $email->setSubject($tit);
 

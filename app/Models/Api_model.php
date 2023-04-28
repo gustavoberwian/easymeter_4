@@ -1201,12 +1201,12 @@ class Api_model extends Model {
             $this->db->transStart();
 
             // insere alerta
-            $this->db->insert('esm_alertas_energia', $d);
+            $this->db->table('esm_alertas_energia')->insert($d);
 
             $id = $this->db->insertId();
 
             // envia para ancar
-            $this->db->insert('esm_alertas_energia_envios', array("user_id" => 538, "alerta_id" => $id));
+            $this->db->table('esm_alertas_energia_envios')->insert(array("user_id" => 538, "alerta_id" => $id));
 
             // envia para shopping
             if ($cfg->notify_shopping) {
@@ -1215,7 +1215,7 @@ class Api_model extends Model {
 
                 if ($group) {
                     foreach($group as $g) {
-                        $this->db->insert('esm_alertas_energia_envios', array("user_id" => $g->id, "alerta_id" => $id));
+                        $this->db->table('esm_alertas_energia_envios')->insert(array("user_id" => $g->id, "alerta_id" => $id));
                     }
                 }
             }
@@ -1225,14 +1225,14 @@ class Api_model extends Model {
                 $users = $this-> GetUserIdByDevice($d["device"]);
                 if ($users) {
                     foreach($users as $u) {
-                        $this->db->insert('esm_alertas_energia_envios', array("user_id" => $u->id, "alerta_id" => $id));
+                        $this->db->table('esm_alertas_energia_envios')->insert(array("user_id" => $u->id, "alerta_id" => $id));
                     }
                 }
             }
 
             // atualiza dados
             if ($cfg->type == 2) {
-                $this->db->update('esm_unidades_config', array('alerta_consumo' => $set["current"]), array('unidade_id' => $set["unidade_id"]));
+                $this->db->table('esm_unidades_config')->update(array('alerta_consumo' => $set["current"]), array('unidade_id' => $set["unidade_id"]));
             }
 
             $this->db->transComplete();
@@ -1289,7 +1289,7 @@ class Api_model extends Model {
                             $total += $d['consumo'];
                         }
 
-                        $this->db->update('esm_relatorios', array('consumo' => $total), array('id' => $rid));
+                        $this->db->table('esm_relatorios')->update(array('consumo' => $total), array('id' => $rid));
 
                         if ($this->db->insertBatch('esm_relatorios_dados', $data)) {
                             // insert envios
@@ -1308,35 +1308,24 @@ class Api_model extends Model {
                                 $users = $result->getResult();
 
                                 foreach($users as $u) {
-                                    $this->db->insert('esm_relatorios_envios', array('relatorio_id' => $rid, 'email' => $u->email, 'data' => date("Y-m-d H:i:s", time()), 'uid' => md5($rid.$u->email)));
+                                    $this->db->table('esm_relatorios_envios')->insert(array('relatorio_id' => $rid, 'email' => $u->secret, 'data' => date("Y-m-d H:i:s", time()), 'uid' => md5($rid.$u->secret)));
                                     //TODO: send email
 
-                                    $config['protocol']     = 'smtp';
-                                    $config['smtp_host']    = 'email-ssl.com.br';
-                                    $config['smtp_port']    = '587';
-                                    $config['smtp_timeout'] = '60';
-                                    $config['smtp_user']    = 'contato@easymeter.com.br';
-                                    $config['smtp_pass']    = 'index#1996';
-                                    $config['charset']      = 'utf-8';
-                                    $config['newline']      = "\r\n";
-                                    $config['mailtype']     = "html";
-                                    $config['smtp_crypto']  = 'tls';
-
                                     $email = \Config\Services::email();
-                                    $email->initialize($config);
+                                   
 
                                     $email->attach('assets/img/logo_b.png');
                                     $email->attach('assets/img/convite.png');
 
-                                    $logo    = $email->attachment_cid('assets/img/logo_b.png');
-                                    $convite = $email->attachment_cid('assets/img/convite.png');
+                                    $logo    = $email->setAttachmentCID('assets/img/logo_b.png');
+                                    $convite = $email->setAttachmentCID('assets/img/convite.png');
 
-                                    $email->from('contato@easymeter.com.br');
+                                    $email->setFrom('contato@easymeter.com.br');
                                     //$email->to("gustavo@unorobotica.com.br");
-                                    $email->to($u->email);
-                                    $email->reply_to('');
-                                    $email->subject('Relatório de Consumo');
-                                    $email->message($this->load->view('painel/template/emails/report', array('uid' => md5($rid.$u->email), 'tipo' => $r->tipo, 'logo' => $logo, 'convite' => $convite), TRUE));
+                                    $email->to($u->secret);
+                                    $email->setReplyTo('');
+                                    $email->setSubject('Relatório de Consumo');
+                                    $email->setMessage(view('../Views/Email/report', array('uid' => md5($rid.$u->secret), 'tipo' => $r->tipo, 'logo' => $logo, 'convite' => $convite)));
 
                                     if ($email->send()) {
 
@@ -1344,7 +1333,7 @@ class Api_model extends Model {
                                 }
                             }
 
-                            if ($this->db->insert('esm_alertas', array(
+                            if ($this->db->table('esm_alertas')->insert( array(
                                 'tipo'          => 'relatorio',
                                 'titulo'        => 'Relatório de Consumo',
                                 'texto'         => $r->tipo == 1 ? "O Relatório Mensal de Consumo foi gerado e enviado." : "O Relatório Diário de Consumo foi gerado e enviado.",
@@ -1359,7 +1348,7 @@ class Api_model extends Model {
 
                                 $aid = $this->db->insertId();
 
-                                $this->db->insert('esm_alertas_envios', array(
+                                $this->db->table('esm_alertas_envios')->insert( array(
                                     'user_id' => $r->user_id,
                                     'alerta_id' => $aid
                                 ));
@@ -1367,7 +1356,7 @@ class Api_model extends Model {
                         }
                     }
 
-                    $this->db->update('esm_relatorios_config', array('ultimo' => $start), array('condo_id' => $r->condo_id, 'central' => $r->central, 'tipo' => $r->tipo));
+                    $this->db->table('esm_relatorios_config')->update(array('ultimo' => $start), array('condo_id' => $r->condo_id, 'central' => $r->central, 'tipo' => $r->tipo));
 
                     $this->db->transComplete();
                 }
@@ -1411,28 +1400,28 @@ class Api_model extends Model {
             $email = \Config\Services::email();
             
 
-            // $email->attach('../public/assets/img/logo_b.png');
-            // $email->attach('../public/assets/img/'.$alerta->tipo.'.png');
+            foreach($users as $u) {  
+                if ($alerta->tipo == 'tempo' || $alerta->tipo == 'captacao')
+                {
+                    $alerta->tipo = 'nivel';
+                }
 
+            $email->attach('../public/assets/img/logo_b.png');
+            $email->attach('../public/assets/img/'.$alerta->tipo.'.png');
             $logo = $email->setAttachmentCID('../public/assets/img/logo_b.png');
             $icon = $email->setAttachmentCID('../public/assets/img/'.$alerta->tipo.'.png');
             $bg   = $alerta->tipo == 'consumo' ? 'aviso' : 'orange';
             $tit  = $alerta->tipo == 'consumo' ? 'Alerta de Consumo' : 'Alerta de Nível';
 
             $email->setFrom('contato@easymeter.com.br');
-            // $email->to("gustavo@unorobotica.com.br");
-            $email->to($u->email);
+            $email->setTo($u->secret);
             $email->setReplyTo('');
             $email->setSubject($tit);
-
-            foreach($users as $u) {  
-
-                $email->setMessage(view('../Views/Email/alerta', array('logo' => $logo, 'icon' => $icon, 'bg' => $bg, 'titulo' => $tit, 'mensagem' => $mensagem)));
-
+            $email->setMessage(view('../Views/Email/alerta', array('logo' => $logo, 'icon' => $icon, 'bg' => $bg, 'titulo' => $tit, 'mensagem' => $mensagem)));
                 if (!$email->send()) {
 
                      $email->send(false);
-                print_r($email->printDebugger());
+                    print_r($email->printDebugger());
                 
                  }else{
                 
@@ -1559,7 +1548,6 @@ class Api_model extends Model {
             $titulo   = str_replace('%d', $result->nome, $alerta->titulo);
             $mensagem = str_replace(array('%d', '%v', '%i', '%a', '%t'), array($result->nome, number_format($result->value, 0, '', '.'), number_format($alerta->min, 0, '', '.'), number_format($alerta->max, 0, '', '.'), $data), $alerta->texto);
             $generate = false;    
-
             if (!is_null($alerta->max) && is_null($alerta->min)) {
                 // maior que
                 if ($result->value > $alerta->max) {
@@ -1582,7 +1570,6 @@ class Api_model extends Model {
             if ($generate && $monitoramento == 'agua') {
 
                 $this->db->transStart();
-                
                 $data = array(
 
                     'tipo'          => ($alerta->tipo == 'consumo') ? 1 : 2,

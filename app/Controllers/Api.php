@@ -685,7 +685,7 @@ class Api extends UNO_Controller {
     }
 
 
-    private function verifica_alertas($central = '14030D08')
+    private function verifica_alertas($central)
     {
         $alertas = $this->api_model->get_alertas_config($central);
 
@@ -694,11 +694,9 @@ class Api extends UNO_Controller {
             
             foreach($alertas as $a) {
                 if ($a->quando == 'dia' &&  $a->ultimo != date("Y-m-d 00:00:00")) {
-                    
                     $this->api_model->generate_alertas($a);
                 
                 } else if ($a->quando == 'hora') {
-
                     $this->api_model->generate_alertas($a);
 
                 }

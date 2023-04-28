@@ -10,26 +10,26 @@ class Api_model extends Model {
 
     public function inclui_leituras($data, $header)
     {
-        //$this->db->insert('post', array('text' => $data, 'header' => implode(",", $header), 'stamp' => date('Y-m-d H:i:s')));
-        $this->db->insert('post', array('text' => $data, 'header' => json_encode($header), 'stamp' => date('Y-m-d H:i:s')));
+        
+        $this->db->table('post')->insert(array('text' => $data, 'header' => json_encode($header), 'stamp' => date('Y-m-d H:i:s')));
 
-        return $this->db->insertId();
+        return $this->db->insertID();
     }
 
     public function atualiza_ultimo_envio($central, $timestamp, $tamanho)
     {
-        $this->db->update('esm_entidades_centrais', array('ultimo_envio' => $timestamp, 'tamanho' => $tamanho), array('nome' => $central));
+        $this->db->table('esm_entidades_centrais')->update(array('ultimo_envio' => $timestamp, 'tamanho' => $tamanho), array('nome' => $central));
     }
 
     public function atualiza_bateria($medidor, $battery, $timestamp)
     {
-        $this->db->update('esm_medidores', array('battery' => $battery), array('id' => $medidor));
-        $this->db->insert('esm_bateria', array('medidor_id' => $medidor, 'tensao' => $battery, 'timestamp' => $timestamp));
+        $this->db->table('esm_medidores')->update(array('battery' => $battery), array('id' => $medidor));
+        $this->db->table('esm_bateria')->insert(array('medidor_id' => $medidor, 'tensao' => $battery, 'timestamp' => $timestamp));
     }
 
     public function set_return($id, $text)
     {
-        $this->db->update('post', array('returned' => $text), array('id' => $id));
+        $this->db->table('post')->update(array('returned' => $text), array('id' => $id));
     }
 
     public function inclui_data($central, $headers_str, $timestamp)
@@ -47,10 +47,10 @@ class Api_model extends Model {
         }
 
         if ($x[0] < 200) {
-            $this->db->insert('esm_central_data', array('nome' => $central, 'fonte' => null, 'tensao' => null, 'hardware' => $x[0],
+            $this->db->table('esm_central_data',)->insert(array('nome' => $central, 'fonte' => null, 'tensao' => null, 'hardware' => $x[0],
                 'software' => $x[1], 'fraude_hi' => null, 'fraude_low' => null, 'timestamp' => $timestamp));
         } else {
-            $this->db->insert('esm_central_data', array('nome' => $central, 'fonte' => $x[4], 'tensao' => $x[5], 'hardware' => $x[0],
+            $this->db->table('esm_central_data')->insert(array('nome' => $central, 'fonte' => $x[4], 'tensao' => $x[5], 'hardware' => $x[0],
                 'software' => $x[1], 'fraude_hi' => $x[6], 'fraude_low' => $x[7], 'timestamp' => $timestamp));
         }
     }
@@ -59,7 +59,7 @@ class Api_model extends Model {
     {
         $this->db->select('*');
         $this->db->from('post');
-        $this->db->order_by('id', 'DESC');
+        $this->db->orderBy('id', 'DESC');
         $this->db->limit(50);
 
         $query = $this->db->get();
@@ -139,7 +139,7 @@ class Api_model extends Model {
     {
         $this->db->transStart();
 
-        $this->db->insert('esm_envios', array( 'central_id' => $id,'dados' => substr($data, 4) ));
+        $this->db->table('esm_envios')->insert(array( 'central_id' => $id,'dados' => substr($data, 4) ));
 
         $this->db->transComplete();
 
@@ -264,7 +264,7 @@ class Api_model extends Model {
 
     public function insere_leitura_gas($tabela, $mid, $leitura)
     {
-        $this->db->insert("esm_leituras_{$tabela}_gas", array('medidor_id' => $mid, "leitura" => $leitura, 'timestamp' => time()));
+        $this->db->table("esm_leituras_{$tabela}_gas")->insert(array('medidor_id' => $mid, "leitura" => $leitura, 'timestamp' => time()));
     }
 
     public function inclui_entrevistas($user_id, $data) {
@@ -273,7 +273,7 @@ class Api_model extends Model {
 
         // salva cada medidor de cada registro
         foreach ($data as $d) {
-            if (!$this->db->insert('index_entrevistas',
+            if (!$this->db->table('index_entrevistas')->insert(
                 array (
                     'user_id' => $d['user_id'],
                     'pesq_id' => $d['pesq_id'],
@@ -301,7 +301,7 @@ class Api_model extends Model {
     public function inclui_entrevista($user, $pesq, $entrevista, $local, $inicio, $stamp)
     {
 //        if ($this->db->insert('index_entrevistas', array('user_id' => $user, 'pesq_id' => $pesq, 'respostas' => $entrevista, 'local' => $local, 'inicio' => $inicio, 'timestamp' => $stamp))) {
-        if ($this->db->insert('index_entrevistas', array('user_id' => $user, 'pesq_id' => $pesq, 'respostas' => $entrevista, 'local' => $local, 'timestamp' => $stamp, 'cadastro' => time()))) {
+        if ($this->db->table('index_entrevistas')->insert(array('user_id' => $user, 'pesq_id' => $pesq, 'respostas' => $entrevista, 'local' => $local, 'timestamp' => $stamp, 'cadastro' => time()))) {
             return array("status"  => "success");
         } else {
             return array("status"  => "error");
@@ -394,7 +394,7 @@ class Api_model extends Model {
 
             if (is_null($v->alerta_id)) {
 
-                if ($this->db->insert('esm_alertas', array(
+                if ($this->db->table('esm_alertas')->insert(array(
                     'tipo' => 'vazamento',
                     'titulo' => "Vazamento Unidade ".(!is_null($v->bloco) ? $v->bloco.'/' : '').$v->unidade,
                     'texto' => "Foi detectado um vazamento na ".(($v->entrada == "Única") ? "" : "entrada ".$v->entrada." na ")."unidade ".(!is_null($v->bloco) ? $v->bloco.'/' : '').$v->unidade,
@@ -407,12 +407,12 @@ class Api_model extends Model {
                     'consumo_horas' => $v->consumo,
                 ))) {
 
-                    $id = $this->db->insertId();
+                    $id = $this->db->insertID();
 
                     // insere mensagem para o sindico
                     $sindico = $this->get_sindico_by_entrada($v->entrada_id);
                     if ($sindico) {
-                        $this->db->insert('esm_alertas_envios', array(
+                        $this->db->table('esm_alertas_envios')->insert(array(
                             'user_id' => $sindico,
                             'alerta_id' => $id
                         ));
@@ -421,7 +421,7 @@ class Api_model extends Model {
                     // insere mensagem para a administradora
                     $adm = $this->get_administrador_by_entrada($v->entrada_id);
                     if ($adm) {
-                        $this->db->insert('esm_alertas_envios', array(
+                        $this->db->table('esm_alertas_envios')->insert(array(
                             'user_id' => $adm,
                             'alerta_id' => $id
                         ));
@@ -430,7 +430,7 @@ class Api_model extends Model {
                     // insere para os usuários cadastrados na unidade
                     $users = $this->get_users_by_unidade($v->unidade_id);
                     foreach ($users as $u) {
-                        $this->db->insert('esm_alertas_envios', array(
+                        $this->db->table('esm_alertas_envios')->insert(array(
                             'user_id' => $u->user_id,
                             'alerta_id' => $id
                         ));
@@ -499,36 +499,36 @@ class Api_model extends Model {
                 'medidor_id' => $v->medidor_id,
                 'consumo_horas' => 0,
             ))) {
-                /*
-                                $id = $this->db->insertId();
+/*
+                $id = $this->db->insertID();
 
-                                // insere mensagem para o sindico
-                                $sindico = $this->get_sindico_by_entrada($v->entrada_id);
-                                if ($sindico) {
-                                    $this->db->insert('esm_alertas_envios', array(
-                                        'user_id' => $sindico,
-                                        'alerta_id' => $id
-                                    ));
-                                }
+                // insere mensagem para o sindico
+                $sindico = $this->get_sindico_by_entrada($v->entrada_id);
+                if ($sindico) {
+                    $this->db->insert('esm_alertas_envios', array(
+                        'user_id' => $sindico,
+                        'alerta_id' => $id
+                    ));
+                }
 
-                                // insere mensagem para a administradora
-                                $adm = $this->get_administrador_by_entrada($v->entrada_id);
-                                if ($adm) {
-                                    $this->db->insert('esm_alertas_envios', array(
-                                        'user_id' => $adm,
-                                        'alerta_id' => $id
-                                    ));
-                                }
+                // insere mensagem para a administradora
+                $adm = $this->get_administrador_by_entrada($v->entrada_id);
+                if ($adm) {
+                    $this->db->insert('esm_alertas_envios', array(
+                        'user_id' => $adm,
+                        'alerta_id' => $id
+                    ));
+                }
 
-                                // insere para os usuários cadastrados na unidade
-                                $users = $this->get_users_by_unidade($v->unidade_id);
-                                foreach ($users as $u) {
-                                    $this->db->insert('esm_alertas_envios', array(
-                                        'user_id' => $u->user_id,
-                                        'alerta_id' => $id
-                                    ));
-                                }
-                */
+                // insere para os usuários cadastrados na unidade
+                $users = $this->get_users_by_unidade($v->unidade_id);
+                foreach ($users as $u) {
+                    $this->db->insert('esm_alertas_envios', array(
+                        'user_id' => $u->user_id,
+                        'alerta_id' => $id
+                    ));
+                }
+*/
             }
         }
 
@@ -540,7 +540,7 @@ class Api_model extends Model {
     public function agrometer($data)
     {
         //return $this->db->insert('agrometer', array('an1' => $data->an1, 'an2' => $data->an2, 'an3' => $data->an3, 'an4' => $data->an4));
-        return $this->db->insert('agrometer', array('an1' => 0, 'an2' => 0, 'an3' => 0, 'an4' => $data));
+        return $this->db->table('agrometer')->insert(array('an1' => 0, 'an2' => 0, 'an3' => 0, 'an4' => $data));
     }
 
     public function inclui_clima($central)
@@ -598,8 +598,8 @@ class Api_model extends Model {
 
     public function insert_energy($data)
     {
-        if ($this->db->insert('esm_leituras_energia', $data)) {
-            return $this->db->insertId();
+        if ($this->db->table('esm_leituras_energia')->insert($data)) {
+            return $this->db->insertID();
         } else {
             return $this->db->error()['code'];
         }
@@ -607,8 +607,8 @@ class Api_model extends Model {
 
     public function insert_multilaser($data)
     {
-        if ($this->db->insert('esm_leituras_multilaser', $data)) {
-            return $this->db->insertId();
+        if ($this->db->table('esm_leituras_multilaser')->insert($data)) {
+            return $this->db->insertID();
         } else {
             return $this->db->error()['code'];
         }
@@ -616,8 +616,8 @@ class Api_model extends Model {
 
     public function insert_alive($data)
     {
-        if ($this->db->insert('esm_central_post', $data)) {
-            return $this->db->insertId();
+        if ($this->db->table('esm_central_post')->insert($data)) {
+            return $this->db->insertID();
         } else {
             return $this->db->error()['code'];
         }
@@ -625,8 +625,8 @@ class Api_model extends Model {
 
     public function insert_raw($device, $origin, $data, $headers)
     {
-        if ($this->db->insert('post_raw', array('device' => $device, 'origin' => $origin, 'payload' => $data, 'header' => json_encode($headers), 'stamp' => date('Y-m-d H:i:s')))) {
-            return $this->db->insertId();
+        if ($this->db->table('post_raw')->insert(array('device' => $device, 'origin' => $origin, 'payload' => $data, 'header' => json_encode($headers), 'stamp' => date('Y-m-d H:i:s')))) {
+            return $this->db->insertID();
         } else {
             return $this->db->error()['code'];
         }
@@ -634,21 +634,21 @@ class Api_model extends Model {
 
     public function inclui_ambev($data, $header)
     {
-        $this->db->insert('post_ambev', array('text' => $data, 'header' => json_encode($header), 'stamp' => date('Y-m-d H:i:s')));
+        $this->db->table('post_ambev')->insert(array('text' => $data, 'header' => json_encode($header), 'stamp' => date('Y-m-d H:i:s')));
 
-        return $this->db->insertId();
+        return $this->db->insertID();
     }
 
     public function inclui_bancada($data, $header)
     {
-        $this->db->insert('post_bancada', array('text' => $data, 'header' => json_encode($header), 'stamp' => date('Y-m-d H:i:s')));
+        $this->db->table('post_bancada')->insert(array('text' => $data, 'header' => json_encode($header), 'stamp' => date('Y-m-d H:i:s')));
 
-        return $this->db->insertId();
+        return $this->db->insertID();
     }
 
     public function inclui_log($data, $header, $tipo, $time, $devi, $mess)
     {
-        $this->db->insert('post_log', array(
+        $this->db->table('post_log')->insert(array(
             'text' => $data,
             'header' => json_encode($header),
             'device' => $devi,
@@ -658,13 +658,13 @@ class Api_model extends Model {
             'stamp' => date('Y-m-d H:i:s')
         ));
 
-        return $this->db->insertId();
+        return $this->db->insertID();
     }
 
     public function inclui_ambev_data($data)
     {
-        if ($this->db->insert('esm_leituras_ambev', $data)) {
-            return $this->db->insertId();
+        if ($this->db->table('esm_leituras_ambev')->insert($data)) {
+            return $this->db->insertID();
         } else {
             return $this->db->error()['code'] + 500;
         }
@@ -748,7 +748,7 @@ class Api_model extends Model {
 
     public function salva_leituras_detalhes($device)
     {
-        return $this->db->insert("esm_leituras_detalhes", array(
+        return $this->db->table("esm_leituras_detalhes")->insert(array(
             "device" => $device['device'],
             "timestamp" => $device['timestamp'],
             "bateria" => $device['battery'],
@@ -759,7 +759,7 @@ class Api_model extends Model {
 
     public function salva_central_detalhes($central, $versao)
     {
-        return $this->db->insert("esm_central_data", array(
+        return $this->db->table("esm_central_data")->insert(array(
             "nome" => $central[0],
             "imei" => $central[1],
             "sim" => $central[2],
@@ -783,7 +783,7 @@ class Api_model extends Model {
             for ($i = 0; $i < count($pulse); $i++) {
                 $m = $this->get_medidor_ambev($medidor, $keys[$i], "!=");
 
-                $this->db->insert("esm_leituras_".$m['tabela']."_".$m['tipo'], array("medidor_id" => $m['id'], "timestamp" => $timestamp, "leitura" => $pulse[$keys[$i]]));
+                $this->db->table("esm_leituras_".$m['tabela']."_".$m['tipo'])->insert(array("medidor_id" => $m['id'], "timestamp" => $timestamp, "leitura" => $pulse[$keys[$i]]));
                 //$this->db->insert("esm_leituras_".$m['tabela']."_agua", array("medidor_id" => $m['id'], "timestamp" => $timestamp, "leitura" => round($pulse[$keys[$i]] / $m['fator'], 3)));
             }
         }
@@ -796,13 +796,13 @@ class Api_model extends Model {
 
                 $m = $this->get_medidor_ambev($medidor, $keys[$i], "=");
 
-                $this->db->insert("esm_leituras_".$m['tabela']."_nivel", array("medidor_id" => $m['id'], "timestamp" => $timestamp, "leitura" => $level[$keys[$i]][1]));
+                $this->db->table("esm_leituras_".$m['tabela']."_nivel")->insert(array("medidor_id" => $m['id'], "timestamp" => $timestamp, "leitura" => $level[$keys[$i]][1]));
 
                 $ts = $timestamp - 600;
 
                 for ($j = 6; $j > 1; $j--) {
 //                    $m = $this->get_medidor_ambev($medidor, $keys[$i], "=");
-                    $this->db->insert("esm_leituras_".$m['tabela']."_nivel", array("medidor_id" => $m['id'], "timestamp" => $ts, "leitura" => $level[$keys[$i]][$j]));
+                    $this->db->table("esm_leituras_".$m['tabela']."_nivel")->insert(array("medidor_id" => $m['id'], "timestamp" => $ts, "leitura" => $level[$keys[$i]][$j]));
 
                     $ts -= 600;
                 }
@@ -830,7 +830,7 @@ class Api_model extends Model {
         if (count($pulse)) {
             $keys = array_keys($pulse);
             for ($i = 0; $i < count($pulse); $i++) {
-                $this->db->insert('esm_leituras_ambev_agua', array("medidor_id" => $medidor, "port" => $keys[$i], "timestamp" => $timestamp, "leitura" => $pulse[$keys[$i]]));
+                $this->db->table('esm_leituras_ambev_agua')->insert(array("medidor_id" => $medidor, "port" => $keys[$i], "timestamp" => $timestamp, "leitura" => $pulse[$keys[$i]]));
             }
         }
 
@@ -838,7 +838,7 @@ class Api_model extends Model {
         if (count($level)) {
             $j = 0;
             for ($i = 1; $i <= count($level); $i += 6) {
-                $this->db->insert('esm_leituras_ambev_nivel', array("medidor_id" => $medidor, "port" => $j, "timestamp" => $timestamp, "t0" => $level[$i], "t10" => $level[$i + 1], "t20" => $level[$i + 2], "t30" => $level[$i + 3], "t40" => $level[$i + 4], "t50" => $level[$i + 5]));
+                $this->db->table('esm_leituras_ambev_nivel')->insert(array("medidor_id" => $medidor, "port" => $j, "timestamp" => $timestamp, "t0" => $level[$i], "t10" => $level[$i + 1], "t20" => $level[$i + 2], "t30" => $level[$i + 3], "t40" => $level[$i + 4], "t50" => $level[$i + 5]));
                 $j++;
             }
         }
@@ -868,7 +868,7 @@ class Api_model extends Model {
 
     public function set_central_cfg($central, $cfg)
     {
-        $this->db->update('esm_entidades_centrais', array('config' => $cfg, 'device' => NULL), array('nome' => $central));
+        $this->db->table('esm_entidades_centrais')->update(array('config' => $cfg, 'device' => NULL), array('nome' => $central));
     }
 
     public function get_central_device_cfg($central)
@@ -901,8 +901,8 @@ class Api_model extends Model {
 
     public function insert_config($data)
     {
-        if ($this->db->insert('esm_central_config', $data)) {
-            return $this->db->insertId();
+        if ($this->db->table('esm_central_config')->insert($data)) {
+            return $this->db->insertID();
         } else {
             return $this->db->error()['code'];
         }
@@ -920,7 +920,7 @@ class Api_model extends Model {
                 $m = $this->get_device($device, $ports[$i], "agua");
 
                 if ($m)
-                    $this->db->insert("esm_leituras_".$m['tabela']."_".$m['tipo'], array("medidor_id" => $m['id'], "timestamp" => $timestamp, "leitura" => round($pulse[$ports[$i]] / $m['fator'], 3)));
+                    $this->db->table("esm_leituras_".$m['tabela']."_".$m['tipo'])->insert(array("medidor_id" => $m['id'], "timestamp" => $timestamp, "leitura" => round($pulse[$ports[$i]] / $m['fator'], 3)));
             }
         }
 
@@ -932,13 +932,13 @@ class Api_model extends Model {
 
                 $m = $this->get_medidor_ambev($device, $ports[$i], "=");
 
-                $this->db->insert("esm_leituras_".$m['tabela']."_nivel", array("medidor_id" => $m['id'], "timestamp" => $timestamp, "leitura" => $level[$ports[$i]][1]));
+                $this->db->table("esm_leituras_".$m['tabela']."_nivel")->insert(array("medidor_id" => $m['id'], "timestamp" => $timestamp, "leitura" => $level[$ports[$i]][1]));
 
                 $ts = $timestamp - 600;
 
                 for ($j = 6; $j > 1; $j--) {
 
-                    $this->db->insert("esm_leituras_".$m['tabela']."_nivel", array("medidor_id" => $m['id'], "timestamp" => $ts, "leitura" => $level[$ports[$i]][$j]));
+                    $this->db->table("esm_leituras_".$m['tabela']."_nivel")->insert(array("medidor_id" => $m['id'], "timestamp" => $ts, "leitura" => $level[$ports[$i]][$j]));
 
                     $ts -= 600;
                 }
@@ -981,7 +981,7 @@ class Api_model extends Model {
 
     public function save_energy_data($data)
     {
-        $this->db->insert("esm_leituras_ancar_energia", $data);
+        $this->db->table("esm_leituras_ancar_energia")->insert($data);
     }
 
     public function get_devices($central)
@@ -1203,7 +1203,7 @@ class Api_model extends Model {
             // insere alerta
             $this->db->table('esm_alertas_energia')->insert($d);
 
-            $id = $this->db->insertId();
+            $id = $this->db->insertID();
 
             // envia para ancar
             $this->db->table('esm_alertas_energia_envios')->insert(array("user_id" => 538, "alerta_id" => $id));
@@ -1258,9 +1258,9 @@ class Api_model extends Model {
 
                     $this->db->transStart();
 
-                    $this->db->insert('esm_relatorios', array('condo_id' => $r->condo_id, 'tipo' => $r->tipo, 'competencia' => date($r->tipo == 1 ? "m/Y" : "d/m/Y", strtotime($start))));
+                    $this->db->table('esm_relatorios')->insert(array('condo_id' => $r->condo_id, 'tipo' => $r->tipo, 'competencia' => date($r->tipo == 1 ? "m/Y" : "d/m/Y", strtotime($start))));
 
-                    $rid = $this->db->insertId();
+                    $rid = $this->db->insertID();
 
                     $result = $this->db->query("
                         SELECT 
@@ -1291,7 +1291,7 @@ class Api_model extends Model {
 
                         $this->db->table('esm_relatorios')->update(array('consumo' => $total), array('id' => $rid));
 
-                        if ($this->db->insertBatch('esm_relatorios_dados', $data)) {
+                        if ($this->db->table('esm_relatorios_dados')->insertBatch($data)) {
                             // insert envios
                             $result = $this->db->query("
                                 SELECT email
@@ -1345,7 +1345,7 @@ class Api_model extends Model {
                                 'consumo_horas' => 0
                             ))) {
 
-                                $aid = $this->db->insertId();
+                                $aid = $this->db->insertID();
 
                                 $this->db->table('esm_alertas_envios')->insert( array(
                                     'user_id' => $r->user_id,
@@ -1484,7 +1484,7 @@ class Api_model extends Model {
                         
                         if ($result->value >= $alerta->min) {
                             
-                            $this->db->update('esm_alertas_config', array('ultimo' => null), array('id' => $this->get_user_id_by_name($alerta->tabela)));
+                            $this->db->table('esm_alertas_config')->update(array('ultimo' => null), array('id' => $this->get_user_id_by_name($alerta->tabela)));
 
                             // resolve os vazamentos finalizados
                             $query = $this->db->query("
@@ -1611,7 +1611,7 @@ class Api_model extends Model {
                         'device'        => $this->get_device_by_medidor_id($alerta->medidor_id),
                     ))) {
             
-                    $id = $this->db->insertId();
+                    $id = $this->db->insertID();
                     $this->db->table('esm_alertas_nivel_envios')->insert(array(
                         'user_id' => $this->get_user_id_by_name($alerta->tabela),
                         'alerta_id' => $id
@@ -2849,13 +2849,13 @@ class Api_model extends Model {
         $this->db->transStart();
 
         // insere novo registro
-        if (!$this->db->insert('esm_fechamentos_agua', $data)) {
+        if (!$this->db->table('esm_fechamentos_agua')->insert($data)) {
             // se erro, salva info do erro
             $failure[] = $this->db->error();
         }
 
         // retorna fechamento id
-        $data['id'] = $this->db->insertId();
+        $data['id'] = $this->db->insertID();
 
         $query = $this->CalculateQuery($data, $inicio, $fim, 1, $config);
 
@@ -2884,15 +2884,15 @@ class Api_model extends Model {
         }
 
         // inclui dados na tabela esm_fechamentos_entradas
-        if (!$this->db->insertBatch('esm_fechamentos_agua_entradas', $comum)) {
+        if (!$this->db->table('esm_fechamentos_agua_entradas')->insertBatch($comum)) {
             $failure[] = $this->db->error();
         }
 
-        if (!$this->db->insertBatch('esm_fechamentos_agua_entradas', $unidades)) {
+        if (!$this->db->table('esm_fechamentos_agua_entradas')->insertBatch($unidades)) {
             $failure[] = $this->db->error();
         }
 
-        if (!$this->db->update('esm_fechamentos_agua', array(
+        if (!$this->db->table('esm_fechamentos_agua')->update(array(
             'consumo_c'        => $consumo_c,
             'consumo_u'        => $consumo_u,
             'consumo_c_c'      => $consumo_c_c,
@@ -2926,13 +2926,13 @@ class Api_model extends Model {
         $this->db->transStart();
 
         // insere novo registro
-        if (!$this->db->insert('esm_fechamentos_energia', $data)) {
+        if (!$this->db->table('esm_fechamentos_energia')->insert($data)) {
             // se erro, salva info do erro
             $failure[] = $this->db->error();
         }
 
         // retorna fechamento id
-        $data['id'] = $this->db->insertId();
+        $data['id'] = $this->db->insertID();
 
         $query = $this->calculate_query_energy($data, $inicio, $fim, $config, 1);
 
@@ -2969,11 +2969,11 @@ class Api_model extends Model {
         }
 
         // inclui dados na tabela esm_fechamentos_entradas
-        if (!$this->db->insertBatch('esm_fechamentos_energia_entradas', $comum)) {
+        if (!$this->db->table('esm_fechamentos_energia_entradas')->insertBatch($comum)) {
             $failure[] = $this->db->error();
         }
 
-        if (!$this->db->insertBatch('esm_fechamentos_energia_entradas', $unidades)) {
+        if (!$this->db->table('esm_fechamentos_energia_entradas')->insertBatch($unidades)) {
             $failure[] = $this->db->error();
         }
 

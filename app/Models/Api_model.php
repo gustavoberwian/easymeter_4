@@ -1321,8 +1321,7 @@ class Api_model extends Model {
                                     $convite = $email->setAttachmentCID('assets/img/convite.png');
 
                                     $email->setFrom('contato@easymeter.com.br');
-                                    //$email->to("gustavo@unorobotica.com.br");
-                                    $email->to($u->secret);
+                                    $email->setTo($u->secret);
                                     $email->setReplyTo('');
                                     $email->setSubject('Relatório de Consumo');
                                     $email->setMessage(view('../Views/Email/report', array('uid' => md5($rid.$u->secret), 'tipo' => $r->tipo, 'logo' => $logo, 'convite' => $convite)));

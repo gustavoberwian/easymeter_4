@@ -45,6 +45,12 @@ $routes->get('/ford/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/ford/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/ford/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 
+// Routes da Magalu para shopping
+$routes->get('/magalu', 'Shopping::index',['filter'=>'checkApiAuth']);
+$routes->get('/magalu/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+$routes->get('/magalu/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/magalu/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+
 // Routes da Fras-le para shopping
 $routes->get('/frasle', 'Shopping::index',['filter'=>'checkApiAuth']);
 $routes->get('/frasle/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);

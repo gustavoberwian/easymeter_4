@@ -190,7 +190,7 @@ class Condominio extends UNO_Controller
         $data['vizinhos'] = ($unidades_count == 0) ? 0 : number_format($vizinhos->consumo / $unidades_count, 0, '', '.');
         // calcular valor consumo brasil: consumo médio x numero de dias do período
         //TODO: como definir o valor médio?
-        $data['brasil'] = number_format(2.66 * 110 * (strtotime('now') - $data_desde) / 86400, 0, '', '.'); // 2.66 moradores médios Metrop. Porto Alegre fipe, 110 l/dia ONU
+        $data['brasil'] = number_format(2.66 * 150.7 * (strtotime('now') - $data_desde) / 86400, 0, '', '.'); // 2.66 moradores médios Metrop. Porto Alegre fipe, 150.7 l/dia ONU -> valor atualizado 28/04/23
 
         // previsão
         $data['previsao']['mostra'] = false;
@@ -293,7 +293,7 @@ class Condominio extends UNO_Controller
             $data['voce'] = number_format($this->condominio_model->get_consumo_desde($this->user->unidade->id, $this->user->entity->tabela, 'gas', strtotime(date('Y-m-d', $data_desde) . ' 23:59')) * 2.3, 0, '', '.');
             $vizinhos = $this->condominio_model->get_consumo_vizinhos_desde($this->user->unidade->id, $this->user->entity->tabela, 'gas', strtotime(date('Y-m-d', $data_desde) . ' 23:59'));
             $data['vizinhos'] = ($vizinhos->medidores == 0) ? 0 : number_format($vizinhos->consumo / $vizinhos->medidores * 2.3, 0, '', '.');
-            $data['brasil'] = number_format(130000, 0, '', '.'); //TODO: como definir esse valor?
+            $data['brasil'] = number_format(2.66 * 0,45 * (strtotime('now') - $data_desde) / 86400, 0, '', '.'); //TODO: como definir esse valor?  -> média de consumo de gas diaria per capita = 16cf -> 0,45m³
             $data['max'] = max($data['voce'], $data['vizinhos'], $data['brasil']) * 1.1; // aumenta em 10% para fins visuais da progress
 
             // rederiza página

@@ -121,7 +121,7 @@ class Shopping extends UNO_Controller
         }
     }
 
-    // TODO: Finalizar página  profile
+    
     public function profile()
     {
         $data['validation'] = \Config\Services::validation();
@@ -240,6 +240,7 @@ class Shopping extends UNO_Controller
             }
         }
         $data['avatar'] = $this->user->avatar;
+       
         echo $this->render('profile', $data);
     }
 
@@ -1160,6 +1161,6 @@ class Shopping extends UNO_Controller
     public function md_profile_image_edit()
     {
 
-        return view('modals/shopping/md_profile_image_edit');
+        return view('shopping/modals/md_profile_image_edit');
     }
 }

@@ -17,30 +17,7 @@ class Water_model extends Base_model
                     RAND() * 10000 AS prevision
                     RAND() * 10000 AS average";
         }
-
-        echo "
-            SELECT
-                esm_unidades.agrupamento_id,
-                $value 
-            FROM
-                esm_leituras_".$entity->tabela."_agua 
-            JOIN 
-                esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
-            JOIN 
-                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id 
-            WHERE
-                TIMESTAMP > DATE_FORMAT( CURDATE(), '%Y-%m-01' ) 
-                AND esm_leituras_".$entity->tabela."_agua.medidor_id IN (
-                    SELECT
-                        esm_medidores.id 
-                    FROM
-                        esm_unidades_config
-                        JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades_config.unidade_id
-                        JOIN esm_unidades ON esm_unidades.id = esm_unidades_config.unidade_id 
-                    WHERE esm_unidades.agrupamento_id = $grp AND esm_unidades_config.type = $type
-                )
-        ";
-
+        
         $result = $this->db->query("
             SELECT
                 esm_unidades.agrupamento_id,

@@ -43,10 +43,10 @@ class Energy_model extends Base_model
 
         if ($result->getNumRows()) {
             return array (
-                "bloco"    => number_format(round($result->getRow()->agrupamento_id, 0), 0, ",", "."),
-                "consum"    => number_format(round($result->getRow()->value, 0), 0, ",", "."),
-                "prevision" => number_format(round($result->getRow()->prevision, 0), 0, ",", "."),
-                "average"   => number_format(round($result->getRow()->average, 0), 0, ",", ".")
+                "bloco"    => number_format(round($result->getRow()->agrupamento_id, 0), 0, ",", ".") . "  <small>kWh</small>",
+                "consum"    => number_format(round($result->getRow()->value, 0), 0, ",", ".") . "  <small>kWh</small>",
+                "prevision" => number_format(round($result->getRow()->prevision, 0), 0, ",", ".") . "  <small>kWh</small>",
+                "average"   => number_format(round($result->getRow()->average, 0), 0, ",", ".") . "  <small>kWh</small>"
             );
         }
 

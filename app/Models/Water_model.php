@@ -18,6 +18,29 @@ class Water_model extends Base_model
                     RAND() * 10000 AS average";
         }
 
+        echo "
+            SELECT
+                esm_unidades.agrupamento_id,
+                $value 
+            FROM
+                esm_leituras_".$entity->tabela."_agua 
+            JOIN 
+                esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+            JOIN 
+                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id 
+            WHERE
+                TIMESTAMP > DATE_FORMAT( CURDATE(), '%Y-%m-01' ) 
+                AND esm_leituras_".$entity->tabela."_agua.medidor_id IN (
+                    SELECT
+                        esm_medidores.id 
+                    FROM
+                        esm_unidades_config
+                        JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades_config.unidade_id
+                        JOIN esm_unidades ON esm_unidades.id = esm_unidades_config.unidade_id 
+                    WHERE esm_unidades.agrupamento_id = $grp AND esm_unidades_config.type = $type
+                )
+        ";
+
         $result = $this->db->query("
             SELECT
                 esm_unidades.agrupamento_id,
@@ -43,10 +66,10 @@ class Water_model extends Base_model
 
         if ($result->getNumRows()) {
             return array (
-                "bloco"    => number_format(round($result->getRow()->agrupamento_id, 0), 0, ",", "."),
-                "consum"    => number_format(round($result->getRow()->value, 0), 0, ",", "."),
-                "prevision" => number_format(round($result->getRow()->prevision, 0), 0, ",", "."),
-                "average"   => number_format(round($result->getRow()->average, 0), 0, ",", ".")
+                "bloco"    => number_format(round($result->getRow()->agrupamento_id, 0), 0, ",", ".") . "  <small>L</small>",
+                "consum"    => number_format(round($result->getRow()->value, 0), 0, ",", ".") . "  <small>L</small>",
+                "prevision" => number_format(round($result->getRow()->prevision, 0), 0, ",", ".") . "  <small>L</small>",
+                "average"   => number_format(round($result->getRow()->average, 0), 0, ",", ".") . "  <small>L</small>"
             );
         }
 

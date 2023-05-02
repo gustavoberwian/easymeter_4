@@ -124,7 +124,7 @@
                                             </div>
                                             <?php endif; ?>
                                             <div class="form-row">
-                                                <div class="col-md-12 text-right mt-3">
+                                                <div class="col-md-12 mt-3">
                                                     <button class="d-none" type="reset">Clear</button>
                                                     <button class="btn btn-primary modal-confirm" <?= ($user->inGroup('demo')) ? "disabled" : ""; ?>>Salvar</button>
                                                 </div>

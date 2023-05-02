@@ -1309,7 +1309,6 @@ class Api_model extends Model {
 
                                 foreach($users as $u) {
                                     $this->db->table('esm_relatorios_envios')->insert(array('relatorio_id' => $rid, 'email' => $u->secret, 'data' => date("Y-m-d H:i:s", time()), 'uid' => md5($rid.$u->secret)));
-                                    //TODO: send email
 
                                     $email = \Config\Services::email();
                                    

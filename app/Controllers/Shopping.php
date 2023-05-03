@@ -371,6 +371,8 @@ class Shopping extends UNO_Controller
     public function lancamento($type, $group_id, $id)
     {
         $data['url'] = $this->url;
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+        date_default_timezone_set('America/Sao_Paulo');
         if ($type == "energia") {
 
             $data['group_id'] = $group_id;
@@ -393,6 +395,8 @@ class Shopping extends UNO_Controller
 
     public function relatorio($type, $group_id, $fechamento_id, $relatorio_id)
     {
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+
         $data['url'] = $this->url;
         $data['group_id'] = $group_id;
         $data['shopping'] = $this->shopping_model->GetGroup($group_id);

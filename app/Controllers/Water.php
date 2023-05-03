@@ -133,8 +133,8 @@ class Water extends UNO_Controller
 
 	public function GetLancamentosAgua()
 	{
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
         $gid = $this->input->getGet('gid') ?? $this->input->getPost('gid');
-
 		if (is_null($gid)) 
             $gid = $this->user->group;
 
@@ -142,9 +142,9 @@ class Water extends UNO_Controller
 		$dt = $this->datatables->query("
             SELECT
                 esm_fechamentos_agua.id,
-                competencia,
-                FROM_UNIXTIME(inicio, '%d/%m/%Y') AS inicio,
-                FROM_UNIXTIME(fim, '%d/%m/%Y') AS fim,
+                competencia AS competencia,
+                DATE_FORMAT(inicio, '%d/%m/%Y') AS inicio,
+                DATE_FORMAT(fim, '%d/%m/%Y') AS fim,
                 FORMAT(consumo_c + consumo_u, 1, 'de_DE') AS consumo,
                 FORMAT(consumo_c_o + consumo_u_o, 1, 'de_DE') AS consumo_o,
                 FORMAT(consumo_c_c + consumo_u_c, 1, 'de_DE') AS consumo_c,
@@ -155,10 +155,9 @@ class Water extends UNO_Controller
                 esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_agua.agrupamento_id AND esm_agrupamentos.id = $gid
             ORDER BY cadastro DESC
         ");
-
 		$dt->edit('competencia', function ($data) {
-			return competencia_nice($data['competencia']);
-		});
+            return strftime('%b/%Y', strtotime($data['competencia']));
+        });
 
 		// inclui actions
 		$dt->add('action', function ($data) {
@@ -536,12 +535,12 @@ class Water extends UNO_Controller
 			return;
 		}
         
-        if (date_create_from_format('d/m/Y', $data["inicio"])->format('U') == date_create_from_format('d/m/Y', $data["fim"])->format('U')) {
+        if (date_create_from_format('d/m/Y', $data["inicio"]) == date_create_from_format('d/m/Y', $data["fim"])) {
 			echo '{ "status": "message", "field": "tar-water-data-fim", "message" : "Data final igual a inicial"}';
 			return;
 		}
 
-		if (date_create_from_format('d/m/Y', $data["inicio"])->format('U') > date_create_from_format('d/m/Y', $data["fim"])->format('U')) {
+		if (date_create_from_format('d/m/Y', $data["inicio"]) > date_create_from_format('d/m/Y', $data["fim"])) {
 			echo '{ "status": "message", "field": "tar-water-data-fim", "message" : "Data final menor que a inicial"}';
 			return;
 		}
@@ -552,6 +551,8 @@ class Water extends UNO_Controller
     public function GetLancamentoUnidades($type = 0)
     {
         $fid = $this->input->getPost('fid');
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+
 
         $where = "";
         if ($type)
@@ -564,8 +565,6 @@ class Water extends UNO_Controller
                 leitura_anterior,
                 leitura_atual,
                 consumo,
-                consumo_o,
-                consumo_c,
                 esm_fechamentos_agua_entradas.id AS DT_RowId
             FROM 
                 esm_fechamentos_agua_entradas
@@ -588,17 +587,12 @@ class Water extends UNO_Controller
             return str_pad(round($data["leitura_atual"]), 6 , '0' , STR_PAD_LEFT);
         });
 
+
+
         $dt->edit('consumo', function ($data) {
             return number_format($data['consumo'], 0, ",", ".");
         });
 
-        $dt->edit('consumo_o', function ($data) {
-            return number_format($data['consumo_o'], 0, ",", ".");
-        });
-
-        $dt->edit('consumo_c', function ($data) {
-            return number_format($data['consumo_c'], 0, ",", ".");
-        });
 
         echo $dt->generate();
     }
@@ -622,16 +616,16 @@ class Water extends UNO_Controller
         $spreadsheet = new Spreadsheet();
 
 		$titulos = [
-			['Unidade', 'LUC', 'Leitura Anterior', 'Leitura Atual', 'Consumo - L' ]
+			['Unidade', 'Leitura Anterior', 'Leitura Atual', 'Consumo - L' ]
 		];
 
         $spreadsheet->getProperties()
 			->setCreator('Easymeter')
 			->setLastModifiedBy('Easymeter')
 			->setTitle('Relatório de Consumo')
-			->setSubject(competencia_nice($fechamento->competencia))
+			->setSubject(strftime('%B/%Y', strtotime($fechamento->competencia)))
 			->setDescription('Relatório de Consumo - '.$fechamento->nome.' - '.$fechamento->competencia)
-			->setKeywords($fechamento->nome.' '.competencia_nice($fechamento->competencia))
+			->setKeywords($fechamento->nome.' '.strftime('%B/%Y', strtotime($fechamento->competencia)))
 			->setCategory('Relatório')->setCompany('Easymeter');
 
         $split = 0;
@@ -640,16 +634,16 @@ class Water extends UNO_Controller
 
             $spreadsheet->setActiveSheetIndex($i);
 
-            $spreadsheet->getActiveSheet()->getStyle('A1:E2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getActiveSheet()->getStyle('A1:D2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($fechamento->nome));
-            $spreadsheet->getActiveSheet()->mergeCells('A1:E1');
-            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Consumo de Água - '.date("d/m/Y", $fechamento->inicio).' a '.date("d/m/Y", $fechamento->fim));
-            $spreadsheet->getActiveSheet()->mergeCells('A2:E2');
+            $spreadsheet->getActiveSheet()->mergeCells('A1:D1');
+            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Consumo de Água - '.date("d/m/Y", strtotime($fechamento->inicio)).' a '.date("d/m/Y", strtotime($fechamento->fim)));
+            $spreadsheet->getActiveSheet()->mergeCells('A2:D2');
 
             $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'A4');
 
-            $spreadsheet->getActiveSheet()->getStyle('A1:E4')->getFont()->setBold(true);
-            $spreadsheet->getActiveSheet()->getStyle('A4:E4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getActiveSheet()->getStyle('A1:D4')->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('A4:D4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             $linhas = $this->water_model->GetLancamentoUnidades($fechamento_id, $this->user->config, $i + 1);
             $spreadsheet->getActiveSheet()->fromArray($linhas, NULL, 'A5');
@@ -658,9 +652,9 @@ class Water extends UNO_Controller
             $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
             $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
             $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
-            $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
+            
 
-            $spreadsheet->getActiveSheet()->getStyle('B5:E'.(count($linhas) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $spreadsheet->getActiveSheet()->getStyle('B5:D'.(count($linhas) + 5))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
 
             $spreadsheet->getActiveSheet()->setCellValue('A'.(count($linhas) + 7), 'Gerado em '.date("d/m/Y H:i"));
@@ -672,8 +666,9 @@ class Water extends UNO_Controller
         $spreadsheet->setActiveSheetIndex(0);
 
         $writer = new Xlsx($spreadsheet);
+
  
-        $filename = $fechamento->nome.' Água - '.competencia_nice($fechamento->competencia, ' ');
+        $filename = $fechamento->nome.' Água - '. strftime('%B/%Y', strtotime($fechamento->competencia)); 
 
         ob_start();
         $writer->save("php://output");
@@ -705,9 +700,9 @@ class Water extends UNO_Controller
             echo json_encode(array("status"  => "error", "message" => "Nenhum lançamento encontrado"));
             return;
         }
-
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
         foreach($fechamentos as &$f) {
-            $f['competencia'] = competencia_nice($f['competencia']);
+            $f['competencia'] = strftime('%B/%Y', strtotime($f['competencia']));
         }
 
         $spreadsheet = new Spreadsheet();

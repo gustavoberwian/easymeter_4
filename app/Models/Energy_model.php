@@ -1104,7 +1104,7 @@ class Energy_model extends Base_model
             FROM 
                 esm_fechamentos_energia
             WHERE
-                entrada_id = $entrada_id AND competencia = '$competencia'
+                entrada_id = $entrada_id AND DATE_FORMAT(competencia, '%m/%Y') = '$competencia'
             LIMIT 1
         ");
 
@@ -1195,7 +1195,6 @@ class Energy_model extends Base_model
         $result = $this->db->query("
             SELECT 
                 esm_unidades.nome,
-                esm_unidades_config.luc as luc,
                 LPAD(ROUND(leitura_anterior), 6, '0') AS leitura_anterior,
                 LPAD(ROUND(leitura_atual), 6, '0') AS leitura_atual,
                 FORMAT(consumo, 3, 'de_DE') AS consumo,
@@ -1528,8 +1527,7 @@ class Energy_model extends Base_model
 
         $values = "LPAD(ROUND(esm_medidores.ultima_leitura, 0), 6, '0') AS value_read,
                 FORMAT(m.value, 3, 'de_DE') AS value_month,
-                FORMAT(h.value, 3, 'de_DE') AS value_month_open,
-                FORMAT(m.value - h.value, 3, 'de_DE') AS value_month_closed,
+                FORMAT(c.value, 3, 'de_DE') AS value_last_month,
                 FORMAT(p.value, 3, 'de_DE') AS value_ponta,
                 FORMAT(m.value - p.value, 3, 'de_DE') AS value_fora,
                 FORMAT(l.value, 3, 'de_DE') AS value_last,
@@ -1538,8 +1536,7 @@ class Energy_model extends Base_model
         if ($demo) {
             $values = "RAND() * 10000 AS value_read,
                 RAND() * 10000 AS value_month,
-                RAND() * 10000 AS value_month_open,
-                RAND() * 10000 AS value_month_closed,
+                RAND() * 10000 AS value_last_month,
                 RAND() * 10000 AS value_ponta,
                 RAND() * 10000 AS value_fora,
                 RAND() * 10000 AS value_last,
@@ -1549,7 +1546,6 @@ class Energy_model extends Base_model
         $result = $this->db->query("
             SELECT 
                 esm_medidores.nome AS device, 
-                esm_unidades_config.luc AS luc, 
                 esm_unidades.nome AS name, 
                 $values
             FROM esm_medidores

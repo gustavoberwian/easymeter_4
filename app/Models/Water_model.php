@@ -493,7 +493,6 @@ class Water_model extends Base_model
         $result = $this->db->query("
             SELECT 
                 esm_unidades.nome,
-                esm_unidades_config.luc as luc,
                 LPAD(ROUND(leitura_anterior), 6, '0') AS leitura_anterior,
                 LPAD(ROUND(leitura_atual), 6, '0') AS leitura_atual,
                 FORMAT(consumo, 1, 'de_DE') AS consumo

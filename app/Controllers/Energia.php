@@ -2310,13 +2310,10 @@ class Energia extends UNO_Controller
         $dt = $this->datatables->query("
             SELECT 
                 esm_medidores.nome AS device, 
-                esm_unidades_config.luc AS luc, 
                 esm_unidades.nome AS name, 
                 esm_unidades_config.type AS type,
                 esm_medidores.ultima_leitura AS value_read,
                 m.value AS value_month,
-                h.value AS value_month_open,
-                m.value - h.value AS value_month_closed,
                 p.value AS value_ponta,
                 m.value - p.value AS value_fora,
                 l.value AS value_last,
@@ -2418,12 +2415,8 @@ class Energia extends UNO_Controller
             return number_format($data["value_ponta"], 3, ",", ".");
         });
 
-        $dt->edit('value_month_open', function ($data) {
-            return number_format($data["value_month_open"], 3, ",", ".");
-        });
-
-        $dt->edit('value_month_closed', function ($data) {
-            return number_format($data["value_month_closed"], 3, ",", ".");
+        $dt->edit('value_last_month', function ($data) {
+            return number_format($data["value_last_month"], 3, ",", ".");
         });
 
         $dt->edit('value_future', function ($data) {
@@ -2686,13 +2679,14 @@ class Energia extends UNO_Controller
     public function GetFaturamentos()
     {
         $group = $this->input->getPost('gid');
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
 
         $dt = $this->datatables->query("
             SELECT
                 esm_fechamentos_energia.id,
-                competencia,
-                FROM_UNIXTIME(inicio, '%d/%m/%Y') AS inicio,
-                FROM_UNIXTIME(fim, '%d/%m/%Y') AS fim,
+                competencia AS competencia,
+                DATE_FORMAT(inicio, '%d/%m/%Y') AS inicio,
+                DATE_FORMAT(fim, '%d/%m/%Y') AS fim,
                 FORMAT(consumo, 3, 'de_DE') AS consumo,
                 FORMAT(consumo_p, 3, 'de_DE') AS consumo_p,
                 FORMAT(consumo_f, 3, 'de_DE') AS consumo_f,
@@ -2713,7 +2707,7 @@ class Energia extends UNO_Controller
         ");
 
         $dt->edit('competencia', function ($data) {
-            return competencia_nice($data['competencia']);
+            return strftime('%b/%Y', strtotime($data['competencia']));
         });
 
         // inclui actions
@@ -2818,12 +2812,12 @@ class Energia extends UNO_Controller
 			return;
 		}
 
-        if (date_create_from_format('d/m/Y', $data["inicio"])->format('U') == date_create_from_format('d/m/Y', $data["fim"])->format('U')) {
+        if (date_create_from_format('d/m/Y', $data["inicio"]) == date_create_from_format('d/m/Y', $data["fim"])) {
 			echo '{ "status": "message", "field": "tar-data-fim", "message" : "Data final igual a inicial"}';
 			return;
 		}
 
-		if (date_create_from_format('d/m/Y', $data["inicio"])->format('U') > date_create_from_format('d/m/Y', $data["fim"])->format('U')) {
+		if (date_create_from_format('d/m/Y', $data["inicio"]) > date_create_from_format('d/m/Y', $data["fim"])) {
 			echo '{ "status": "message", "field": "tar-data-fim", "message" : "Data final menor que a inicial"}';
 			return;
 		}
@@ -2860,9 +2854,9 @@ class Energia extends UNO_Controller
 			->setCreator('Easymeter')
 			->setLastModifiedBy('Easymeter')
 			->setTitle('Relatório de Consumo')
-			->setSubject(competencia_nice($fechamento->competencia))
+			->setSubject(strftime('%B/%Y', strtotime($fechamento->competencia)))
 			->setDescription('Relatório de Consumo - '.$fechamento->nome.' - '.$fechamento->competencia)
-			->setKeywords($fechamento->nome.' '.competencia_nice($fechamento->competencia))
+			->setKeywords($fechamento->nome.' '.(strftime('%B/%Y', strtotime($fechamento->competencia))))
 			->setCategory('Relatório')->setCompany('Easymeter');
 
         $split = 0;
@@ -2885,7 +2879,7 @@ class Energia extends UNO_Controller
             $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($fechamento->nome));
             $spreadsheet->getActiveSheet()->mergeCells('A1:I1');
             if ($this->user->config->split_report) {
-                $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Consumo de Energia - '.($i == 0 ? $this->user->config->area_comum : "Unidades").' - '. date("d/m/Y", $fechamento->inicio).' a '.date("d/m/Y", $fechamento->fim));
+                $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Consumo de Energia - '.($i == 0 ? $this->user->config->area_comum : "Unidades").' - '. date("d/m/Y", strtotime($fechamento->inicio)).' a '.date("d/m/Y", strtotime($fechamento->fim)));
             } else {
                 $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Consumo de Energia - '.date("d/m/Y", $fechamento->inicio).' a '.date("d/m/Y", $fechamento->fim));
             }
@@ -2893,10 +2887,9 @@ class Energia extends UNO_Controller
             $spreadsheet->getActiveSheet()->mergeCells('A2:I2');
 
             $spreadsheet->getActiveSheet()->setCellValue('A4', 'Unidade')->mergeCells('A4:A5');
-            $spreadsheet->getActiveSheet()->setCellValue('B4', 'LUC')->mergeCells('B4:B5');
-            $spreadsheet->getActiveSheet()->setCellValue('C4', 'Leitura')->mergeCells('C4:D4');
-            $spreadsheet->getActiveSheet()->setCellValue('E4', 'Consumo - kWh')->mergeCells('E4:G4');
-            $spreadsheet->getActiveSheet()->setCellValue('H4', 'Demanda - kW')->mergeCells('H4:J4');
+            $spreadsheet->getActiveSheet()->setCellValue('B4', 'Leitura')->mergeCells('B4:C4');
+            $spreadsheet->getActiveSheet()->setCellValue('D4', 'Consumo - kWh')->mergeCells('D4:E4');
+            $spreadsheet->getActiveSheet()->setCellValue('F4', 'Demanda - kW')->mergeCells('F4:G4');
 
             $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'B5');
 
@@ -2928,7 +2921,7 @@ class Energia extends UNO_Controller
 
         $writer = new Xlsx($spreadsheet);
 
-        $filename = $fechamento->nome.' Energia - '.competencia_nice($fechamento->competencia, ' ');
+        $filename = $fechamento->nome.' Energia - '.(strftime('%B/%Y', strtotime($fechamento->competencia)));
 
         ob_start();
         $writer->save("php://output");
@@ -2961,9 +2954,9 @@ class Energia extends UNO_Controller
             echo json_encode(array("status"  => "error", "message" => "Nenhum lançamento encontrado"));
             return;
         }
-
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
         foreach($fechamentos as &$f) {
-            $f['competencia'] = competencia_nice($f['competencia']);
+            $f['competencia'] = strftime('%B/%Y', strtotime($f['competencia']));
         }
 
         $spreadsheet = new Spreadsheet();
@@ -3063,7 +3056,7 @@ class Energia extends UNO_Controller
         $spreadsheet = new Spreadsheet();
 
 		$titulos = [
-			['Mês', 'Aberto', 'Fechado', 'Ponta', 'Fora Ponta', 'Últimas 24h', "Previsão Mês" ]
+			['Mês', 'Últimos 30 dias', 'Ponta', 'Fora Ponta', 'Últimas 24h', "Previsão Mês" ]
 		];
 
         $spreadsheet->getProperties()
@@ -3099,10 +3092,9 @@ class Energia extends UNO_Controller
             $spreadsheet->getActiveSheet()->mergeCells('A2:J2');
 
             $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
-            $spreadsheet->getActiveSheet()->setCellValue('B4', 'LUC')->mergeCells('B4:B5');
-            $spreadsheet->getActiveSheet()->setCellValue('C4', 'Nome')->mergeCells('C4:C5');
-            $spreadsheet->getActiveSheet()->setCellValue('D4', 'Leitura')->mergeCells('D4:D5');
-            $spreadsheet->getActiveSheet()->setCellValue('E4', 'Consumo - kWh')->mergeCells('E4:E4');
+            $spreadsheet->getActiveSheet()->setCellValue('B4', 'Nome')->mergeCells('B4:B5');
+            $spreadsheet->getActiveSheet()->setCellValue('C4', 'Leitura')->mergeCells('C4:C5');
+            $spreadsheet->getActiveSheet()->setCellValue('D4', 'Consumo - kWh')->mergeCells('D4:I4');
 
             $spreadsheet->getActiveSheet()->getStyle('A1:J5')->getFont()->setBold(true);
             $spreadsheet->getActiveSheet()->getStyle('A4:J5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -3124,7 +3116,7 @@ class Energia extends UNO_Controller
 
             $spreadsheet->getActiveSheet()->getStyle('A6:A'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->getStyle('B6:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $spreadsheet->getActiveSheet()->getStyle('D6:J'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $spreadsheet->getActiveSheet()->getStyle('C6:J'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
             $spreadsheet->getActiveSheet()->setCellValue('A'.(count($resume) + 7), 'Gerado em '.date("d/m/Y H:i"));
 

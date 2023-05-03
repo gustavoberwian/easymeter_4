@@ -206,16 +206,14 @@
                             <thead>
                             <tr role="row">
                                 <th rowspan="2">Medidor</th>
-                                <th rowspan="2">LUC</th>
                                 <th rowspan="2">Nome</th>
                                 <th rowspan="2">Tipo</th>
                                 <th rowspan="2">Leitura - kWh</th>
                                 <th colspan="7" class="text-center">Consumo - kWh</th>
                             </tr>
                             <tr role="row">
-                                <th>Mês</th>
-                                <th>Aberto</th>
-                                <th>Fechado</th>
+                                <th>Mês Atual</th>
+                                <th>Últimos 30 dias</th>
                                 <th>Ponta</th>
                                 <th>Fora Ponta</th>
                                 <th>Últimas 24h</th>

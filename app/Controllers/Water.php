@@ -310,13 +310,10 @@ class Water extends UNO_Controller
         $dt = $this->datatables->query("
             SELECT 
                 esm_medidores.nome AS device, 
-                esm_unidades_config.luc AS luc, 
                 esm_unidades.nome AS name, 
                 esm_unidades_config.type AS type,
                 esm_medidores.ultima_leitura AS value_read,
                 m.value AS value_month,
-                h.value AS value_month_open,
-                m.value - h.value AS value_month_closed,
                 l.value AS value_last,
                 m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())) AS value_future,
                 c.value AS value_last_month
@@ -387,12 +384,8 @@ class Water extends UNO_Controller
             return number_format($data["value_month"], 0, ",", ".");
         });
 
-        $dt->edit('value_month_open', function ($data) {
-            return number_format($data["value_month_open"], 0, ",", ".");
-        });
-
-        $dt->edit('value_month_closed', function ($data) {
-            return number_format($data["value_month_closed"], 0, ",", ".");
+        $dt->edit('value_last_month', function ($data) {
+            return number_format($data["value_last_month"], 0, ",", ".");
         });
 
         $dt->edit('value_future', function ($data) {

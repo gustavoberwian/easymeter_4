@@ -188,17 +188,15 @@
                         <thead>
                         <tr role="row">
                             <th rowspan="2">Medidor</th>
-                            <th rowspan="2">LUC</th>
                             <th rowspan="2">Nome</th>
                             <th rowspan="2">Tipo</th>
                             <th rowspan="2">Leitura - M³</th>
                             <th colspan="5" class="text-center">Consumo - L</th>
                         </tr>
                         <tr role="row">
-                            <th>Mês</th>
-                            <th>Aberto</th>
-                            <th>Fechado</th>
+                            <th>Mês Atual</th>
                             <th>Últimas 24h</th>
+                            <th>Últimos 30 dias</th>
                             <th>Previsão Mês</th>
                         </tr>
                         </thead>

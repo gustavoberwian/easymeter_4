@@ -572,6 +572,8 @@
 <?php
 echo view('Admin/modals/gestor');
 echo view('Admin/modals/administradora');
+echo view('Admin/modals/administradora');
+echo view('Admin/modals/ramal');
 
 $data['modal_id'] = 'modalBlocoRemove';
 $data['modal_title'] = 'Você tem certeza?';

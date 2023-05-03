@@ -172,7 +172,7 @@
 
     let poco = function(el) {
         el.waterTank({
-            width: 100,
+            width: 170,
             height: 350,
             color: "skyblue",
             level: el.data('volume'),

@@ -374,7 +374,7 @@
     <section id="destaques">
         <div class="container ">
             <div class="destaques-box">
-                <h3 class="text-left text-uppercase">Alguns destaques interessantes</h3>
+                <h3 class="text-left text-uppercase">Resultados Easymeter</h3>
                 <div class="box mb-3">
                     <b class="subtitle-bold">
                         O Easymeter está trabalhando 24 horas por dia, 7 dias por semana para
@@ -477,7 +477,7 @@
                         </div>
                     </div>
                     <div class="col-4 box-card ">
-                        <p class="subtitle-card">monitoramento<br><b class="strong_card">industrial</b></p>
+                        <p class="subtitle-card">monitoramento<br><b class="strong_card"> industrial</b></p>
                         <div class="content photo-background ">
                             <span class="detail"></span>
                             <p class="text-card">O monitoramento do uso de água na indústria é crucial para garantir um uso eficiente
@@ -549,7 +549,7 @@ a eficiência na irrigação e a preservação dos recursos hídricos. </p>
 		                            <h3>Por telefone</h3>
 		                        </div>
                                 <a href="tel:+5508005916181" class="number_footer"><h4 class="color-orange"><b> 0800 591 6181</b></h4></a>
-                                <h4>De segunda a sexta<br/> das 9:00 as 17:00</h4>
+                                <h4>De segunda à sexta<br/> das 9:00 às 17:00</h4>
 		                    </div>
 		                </div>
 		                <div class="col-sm-4 contats-item">
@@ -558,7 +558,7 @@ a eficiência na irrigação e a preservação dos recursos hídricos. </p>
 		                            <a href="mailto:contato@easymeter.com.br"><i class="pe-7s-mail icon-sm"></i></a>
 		                            <h3>Por E-mail</h3>
 		                        </div>
-		                        <a href="mailto:contato@easymeter.com.br"><h4 class="color-orange text-center"><b>suporte@easymeter.com.br<br></b></h4></a>
+		                        <a href="mailto:contato@easymeter.com.br"><h4 class="color-orange open-chat"><b>suporte@easymeter.com.br<br></b></h4></a>
                                 <h4>Um membro da equipe de suporte responderá o mais rápido possível.</h4>
 		                    </div>
 		                </div>

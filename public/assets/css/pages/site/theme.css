@@ -309,7 +309,7 @@ hr.short-thick {
 /*!---------- 3. TYPOGRAPHY ----------*/
 @media all and (max-width: 767px) {
   .text-center-xs {
-    text-align: center !important;
+    text-align: left !important;
   }
 }
 
@@ -645,7 +645,6 @@ blockquote .author {
   br {
     display: none;
   }
-
   blockquote {
     font-size: 16px;
     line-height: 32px;
@@ -659,11 +658,13 @@ blockquote .author {
 
 .text-left {
   text-align: left !important;
+  margin: auto;
 }
 
 @media all and (max-width: 767px) {
   .text-left-xs {
     text-align: left !important;
+    
   }
 }
 
@@ -2066,7 +2067,7 @@ nav.nav-centered.outOfSight .logo {
   }
 
   .icon-sm {
-    font-size: 18px;
+    font-size: 50px;
   }
 
   .icon-xs {
@@ -7295,6 +7296,7 @@ p {
 @media only screen and (max-width: 800px) {
   .padding-swiper {
     padding: 50px 10px 80px;
+    text-align: left;
   }
 
   .plataforma-icones {

@@ -219,6 +219,7 @@ button.modal-button.send {
   to {
     opacity: 1;
   }
+  
 }
 .msg_contact_title {
   display: flex;
@@ -281,6 +282,7 @@ button.modal-button.send {
 .subtitle-banners {
   font-size: 22px;
   font-family: "Square-Roman";
+  text-align: left;
 }
 
 .banner01 {
@@ -854,6 +856,31 @@ button.modal-button.send {
 @media (max-width: 1280px) {
   p.text {
     margin: 0 !important;
+    text-align: left;
+  }
+
+  h1,
+  h3,
+  h2 {
+    font-family:  "Arial", "sans-serif";
+    font-weight: bold;
+    color: #2D343F;
+    text-align: left;
+  }
+
+  h4,
+  h5 {
+    font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    text-align: left;
+  }
+
+  p.subtitle {
+    font-size: 20px;
+    margin: 0px;
+    color: #3E4554;
+    font-weight: 900;
+    text-align: left;
   }
   .stats {
     margin-top: 3rem;
@@ -950,6 +977,14 @@ button.modal-button.send {
   hr.separator-plataforma {
     width: 90%;
   }
+  .number_footer {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+  }
+  .destaques-box {
+    padding-top: 150px;
+  }
   div.box {
     margin-right: 0;
   }
@@ -970,6 +1005,7 @@ button.modal-button.send {
   }
   .title-banner {
     line-height: 2rem;
+    text-align: left;
   }
   .group-stats {
     flex-direction: column;
@@ -1017,17 +1053,17 @@ button.modal-button.send {
     flex-direction: column;
   }
   #individualizacao > div > div > div > div.col-7.right-side,
-#individualizacao > div > div > div > div.col-5.left-side {
+  #individualizacao > div > div > div > div.col-5.left-side {
     max-width: 100%;
   }
   #individualizacao > div > div > div > div.col-7.right-side > div > div {
-    padding-left: 0px;
+    padding-left: 18px;
   }
   #individualizacao > div > div > div > div.col-7.right-side > div > div > p.text {
     margin: 0;
   }
   #aplicacao > div > div > div > div.col-4.right-side.review,
-#aplicacao > div > div > div > div.col-4.left-side.review {
+  #aplicacao > div > div > div > div.col-4.left-side.review {
     flex: none;
     max-width: none;
   }

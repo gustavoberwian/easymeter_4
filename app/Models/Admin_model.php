@@ -39,6 +39,29 @@ class Admin_model extends Base_model
         return $query->getRow();
     }
 
+    public function get_entity_for_select($q = 0)
+    {
+        
+        $query = $this->db->table('esm_entidades')->select('*');
+
+        // se termo de busca
+        if ($q) {
+            // configura fitros
+            $query->groupStart()
+                ->like('nome', $q)
+                ->groupEnd();
+        }
+
+         // ordena por nome
+         $query->orderBy('nome');
+
+         // realiza a consulta
+         $result = $query->get();
+ 
+         // retorna os resultados
+         return $result->getResult();
+    }
+
     public function get_groups($entidade)
     {
         $query = $this->db->table('esm_agrupamentos')
@@ -231,6 +254,15 @@ class Admin_model extends Base_model
         return json_encode(array("status" => "success", "message" => "Gestor criado com sucesso.", "id" => $this->db->insertID()));
     }
 
+    public function add_ramal($dados)
+    {
+        if (!$this->db->table('esm_ramais')->set($dados)->insert()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        return json_encode(array("status" => "success", "message" => "Ramal criado   com sucesso.", "id" => $this->db->insertID()));
+    }
+
     public function add_entity($dados)
     {
         if (!$this->db->table('esm_entidades')->set($dados)->insert()) {
@@ -318,13 +350,13 @@ class Admin_model extends Base_model
         return $result->getResultArray();
     }
 
-    public function update_bloco($bid, $nome, $rid)
+    public function update_agrupamento($bid, $nome, $rid)
     {
         // atualiza bloco
         if (!$this->db->table('esm_agrupamentos')->where('id', $bid)->set(array('nome' => $nome, 'ramal_id' => $rid))->update())
             return json_encode(array("status"  => "error", "message" => $this->db->error()));
         else
-            return json_encode(array("status"  => "success", "message" => "Bloco atualizado com sucesso!", "text" => $nome));
+            return json_encode(array("status"  => "success", "message" => "Bloco atualizado com sucesso!", "text" => $nome, "value" => $bid));
     }
 
     public function get_medidor($id)
@@ -348,7 +380,7 @@ class Admin_model extends Base_model
         return json_encode(array("status"  => "success", "message" => "Bloco excluído com sucesso"));
     }
 
-    public function add_bloco($cid, $nome, $rid)
+    public function add_agrupamento($cid, $nome, $rid)
     {
         // insere bloco
         if (!$this->db->table('esm_agrupamentos')->set(array('entidade_id' => $cid, 'nome' => $nome, 'ramal_id' => $rid))->insert()) {
@@ -522,6 +554,15 @@ class Admin_model extends Base_model
             return false;
 
         return $query->getRow()->id;
+    }
+
+    public function group_ramais($data)
+    {
+        if (!$this->db->table('esm_agrupamentos_ramais')->set($data)->insert()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        return json_encode(array("status" => "success", "message" => "Agrupamento de ramais criado com sucesso.", "id" => $this->db->insertID()));
     }
 }    
     

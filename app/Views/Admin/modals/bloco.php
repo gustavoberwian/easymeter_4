@@ -24,13 +24,13 @@
 					<label class="col-lg-3 control-label text-lg-right pt-2">Ramal <span class="required">*</span></label>
 					<div class="col-lg-9">
 						<div class="select-wrap">
-							<select id="sel-ramal" name="sel-ramal" class="form-control" required>
+							<select id="sel-ramal" name="sel-ramal" class="form-control populate" multiple size=undefined required >
                                 <?php $ramal = 0; if (isset($bloco->ramal_id)) $ramal = $bloco->ramal_id; ?>
-								<option disabled <?php if (count($ramais) > 0 ) echo 'selected '; ?> value="">Número do Ramal de Água</option>
                                 <?php foreach ($ramais as $r) : ?>
 									<option <?php if ($r->id == $ramal || count($ramais) == 1) echo 'selected '; ?> value="<?= $r->id; ?>"><?= $r->nome; ?></option>
                                 <?php endforeach; ?>
 							</select>
+							<a class="ramal_modal">Adicionar Ramal</a>
 						</div>
 					</div>
                 </div>
@@ -47,3 +47,25 @@
 	    </section>
     </form>
 </div>
+
+<script>
+
+	var $entity_ramal = $('#sel-entity').select2( {
+		ajax: {
+			url: $('#sel-entity').data('url'),
+			dataType: 'json',
+			delay: 250,
+			data: function (params) {
+				return {
+					page: params.page
+				};
+			}
+		},
+		theme: 'bootstrap', language: 'pt-BR', placeholder: "Selecione a entidade",
+		width: '',
+		escapeMarkup: function (markup) { return markup; },
+		templateResult: function (data) { return data.nome || data.text; },
+		templateSelection: function (data) { return data.nome || data.text; }
+	})
+
+</script>

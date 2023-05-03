@@ -366,6 +366,10 @@ var unidade_validator;
 				if (json.status == 'success') {
 					//TODO Pergunta se quer cadastrar os blocos
 					notifySuccess(json.message)
+					// redirect
+					setTimeout(() => {'timeout'},3000);
+					window.location = (json.id + '/editar')
+
 					
 				} else if(json.message.code == 1062) {
 					// cnpj jé existe...avisa
@@ -768,13 +772,23 @@ var unidade_validator;
 			$btn.trigger('loading-overlay:show');
 			// desabilita botões
 			var $btn_d = $('.form-bloco .btn:enabled').prop('disabled', true);
-			// captura dados
+			// captura dados	
 			var data = $('.form-bloco').serializeArray();
-			data.push({'name': 'id-condo', 'value': $('.form-entity #id-entity').val()});
+			var arr = [];
+			var result = [];
+			jQuery.each(data, function(i, field) {
+				if(field.name == 'sel-ramal'){
+					result.push(field);	
+				} else if (field.name == 'id-bloco'){
+					arr.push(field);
+				}
+			});
+			arr.push({'name': 'sel-ramal', 'value': JSON.stringify(result)});
+			arr.push({'name': 'id-condo', 'value': $('.form-entity #id-entity').val()});
 			// referencia para area de notificações
 			var $msg = $('.form-bloco .notification').html('').hide();
 			// envia os dados
-			$.post('/admin/edit_bloco', data, function(json) {
+			$.post('/admin/edit_agrupamento', arr, function(json) {
 				if (json.status == 'success') {
                     // esconde alerta
                     $('.alert.alert-warning.unidades').hide();
@@ -1841,5 +1855,61 @@ var unidade_validator;
         // redireciona para o fechamento
         window.location = "/admin/gas/" + data.DT_RowId;
     });
+
+	$(document).on('click', '.ramal_modal', function() {
+	$.magnificPopup.close();
+	$.magnificPopup.open( {
+		items: {src: '#modalRamal'}, 
+		callbacks: {
+			close: function() {
+				// limpa campos do modal
+				$('.form-ramal').trigger("reset");
+				$('.form-ramal .notification').html('').hide();
+			}
+		}
+	});
+				
+	});
+
+	$(document).on('click', '.modal-ramal-confirm', function ()
+	{
+		// verifica se campos do modal são válidos
+		if ( $(".form-ramal").valid() ) {
+			// mostra indicador
+			var $btn = $(this);
+			$btn.trigger('loading-overlay:show');
+			// desabilita botões
+			var $btn_d = $('.form-ramal .btn:enabled').prop('disabled', true);
+			// envia os dados
+			$.post('/admin/add_ramal', $('.form-ramal').serialize(), function(json) {
+				if (json.status == 'success') {
+					// seleciona o novo item
+					var sel = $('#sel-ramal');
+					var option = new Option(json.message.nome, json.message.id, true, true);
+					sel.append(option).trigger('change');
+					sel.trigger({ type: 'select2:select', params: { data: json.message } });					
+					// fecha a modal
+					$.magnificPopup.close();
+					// notifica do sucesso
+					notifySuccess('Novo ramal inserido com sucesso!');
+					
+				} else {
+					// notifica erro
+					$('.form-ramal .notification').html(json.message.message).show();
+				}
+			}, 'json')
+			.fail(function(xhr, status, error) {
+				// falha no ajax: notifica
+				$('.form-ramal .notification').html('<strong>Ajax Error:</strong> ' + error).show();
+			})
+			.always(function() {
+				// oculta indicador
+				$btn.trigger('loading-overlay:hide');
+				// habilita botões
+				$btn_d.prop('disabled', false);
+			});
+		}
+	});
+
 
 }).apply(this, [jQuery]);

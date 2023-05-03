@@ -452,6 +452,25 @@ class Admin extends UNO_Controller
         echo '{ "results" : ' . json_encode($p) . '}';
     }
 
+    public function get_ramais()
+    {
+        //realiza consulta
+        $uriSegments = explode("/", parse_url($_SERVER['HTTP_REFERER'], PHP_URL_PATH));
+        $p = $this->admin_model->get_ramais($uriSegments[3]);
+        // retorna dados formatados
+        echo '{ "results" : ' . json_encode($p) . '}';
+    }
+
+    public function get_entity()
+    {
+        $q = $this->input->getGet('q');
+        //realiza consulta
+        $p = $this->admin_model->get_entity_for_select($q);
+
+        // retorna dados formatados
+        echo '{ "results" : ' . json_encode($p) . '}';
+    }
+
     public function add_adm()
     {
         $dados['nome']          = $this->input->getPost('nome-adm') ?? '';
@@ -485,6 +504,15 @@ class Admin extends UNO_Controller
         $dados['tel_4']         = $this->input->getPost('celular2-gestor') ?? '';
 
         echo $this->admin_model->add_gestor($dados);
+    }
+
+    public function add_ramal()
+    {
+        $dados['nome']          = $this->input->getPost('nome-ramal') ?? '';
+        $dados['tipo']          = $this->input->getPost('tipo-ramal') ?? ''; 
+        $dados['entidade_id']   = $this->input->getPost('sel-entity') ?? '';
+
+        echo $this->admin_model->add_ramal($dados);
     }
 
     public function add_entity()
@@ -790,20 +818,45 @@ class Admin extends UNO_Controller
         echo $this->admin_model->delete_bloco($id);
     }
 
-    public function edit_bloco()
+    public function edit_agrupamento()
     {
-        $id = $this->input->getPost('id');
-        $cid = $this->input->getPost('id-condo');
-        $nome = $this->input->getPost('id-bloco');
-        $rid = $this->input->getPost('sel-ramal');
-
-        if ($id) {
-            // atualiza bloco na tabela blocos
-            echo $this->admin_model->update_bloco($id, $nome, $rid);
-        } else {
-            // insere bloco
-            echo $this->admin_model->add_bloco($cid, $nome, $rid);
+        $id         = $this->input->getPost('id');
+        $cid        = $this->input->getPost('id-condo');
+        $nome       = $this->input->getPost('id-bloco');
+        $rid        = json_decode($this->input->getPost('sel-ramal'));
+        $message    = [];
+        
+        if (is_array($rid)) {  
+            if ($id) {
+                // atualiza bloco na tabela blocos
+                if (!$this->admin_model->update_agrupamento($id, $nome, 0)) {
+                    return false;
+                } else {
+                    foreach ($rid as $r) {            
+                        $data['agrupamento_id'] = $id->data->value;
+                        $data['ramal_id'] = $r->value;
+                        $message = $this->admin_model->group_ramais($data);
+                    }
+                } 
+            } else {
+                // insere bloco
+                $return = json_decode($this->admin_model->add_agrupamento($cid, $nome, 0));
+                foreach ($rid as $r) {            
+                    $data['agrupamento_id'] = $return->data->value;
+                    $data['ramal_id'] = $r->value;
+                    $message = $this->admin_model->group_ramais($data);
+                } 
+            }
+        } else {  
+            if ($id) {
+                // atualiza bloco na tabela blocos
+                $message = $this->admin_model->update_agrupamento($id, $nome, $rid->value);
+            } else {
+                // insere bloco
+                $message = $this->admin_model->add_agrupamento($cid, $nome, $rid->value);
+            }
         }
+        echo $message;
     }
 
     public function delete_unidade()

@@ -61,14 +61,14 @@ class Shopping extends UNO_Controller
         }
         if(!$this->user->inGroup('superadmin'))
         {
-          if ($this->user->entity->m_energia)
-            $this->monitoria = 'energy';
-        elseif ($this->user->entity->m_agua)
-            $this->monitoria = 'water';
-        elseif ($this->user->entity->m_gas)
-            $this->monitoria = 'gas';
-        elseif ($this->user->entity->m_nivel)
-            $this->monitoria = 'nivel';  
+          if ($this->user->inGroup('energia'))
+            $this->user->monitoria = 'energy';
+        elseif ($this->user->inGroup('agua'))
+            $this->user->monitoria = 'water';
+        elseif ($this->user->inGroup('gas'))
+            $this->user->monitoria = 'gas';
+        elseif ($this->user->inGroup('nivel'))
+            $this->user->monitoria = 'nivel';  
         }
         
     }
@@ -79,7 +79,7 @@ class Shopping extends UNO_Controller
 
         $data['user'] = $this->user;
         $data['url'] = $this->url;
-        $data['monitoria'] = $this->monitoria;
+        $data['monitoria'] = $this->user->monitoria;
 
         if ($this->user->inGroup('shopping', 'admin')) {
 
@@ -148,7 +148,7 @@ class Shopping extends UNO_Controller
 
 
 
-        if ($this->input->getMethod() == 'post') {
+        if ($this->input->getPost()) {
             $image = $this->input->getPost('crop-image');
             $senha = $this->input->getPost('password');
         
@@ -359,7 +359,7 @@ class Shopping extends UNO_Controller
     {
         $data['url'] = $this->url;
         $data['user'] = $this->user;
-        $data['monitoria'] = $this->monitoria;
+        $data['monitoria'] = $this->user->monitoria;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
         $data['unidades'] = $this->shopping_model->get_unidades($group_id);
@@ -432,7 +432,7 @@ class Shopping extends UNO_Controller
     {
         $data['url'] = $this->url;
         $data['user'] = $this->user;
-        $data['monitoria'] = $this->monitoria;
+        $data['monitoria'] = $this->user->monitoria;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
         $data['unidades'] = $this->shopping_model->get_units($group_id);
@@ -445,7 +445,7 @@ class Shopping extends UNO_Controller
         $data['url'] = $this->url;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
-        $data['monitoria'] = $this->monitoria;
+        $data['monitoria'] = $this->user->monitoria;
 
         return $this->render('insights', $data);
     }
@@ -454,7 +454,7 @@ class Shopping extends UNO_Controller
     {
         $data['url'] = $this->url;
         $data['user'] = $this->user;
-        $data['monitoria'] = $this->monitoria;
+        $data['monitoria'] = $this->user->monitoria;
         $data['group_id'] = $group_id;
         $data['group'] = $this->shopping_model->get_group_info($group_id);
         $data['unidades'] = $this->shopping_model->get_units($group_id);

@@ -20,7 +20,7 @@
 }
 :root {
   --primary-color: #27b1e5;
-  --secundary-color: #3D4452;
+  --secundary-color: #2e6995;
   --third-color: #252C37;
 }
 
@@ -36,6 +36,16 @@ h4,
 h5 {
   font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: normal;
+  text-align: left;
+}
+
+h6 {
+  font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  color: #ffffff;
+  text-align: left;
+  font-size: 32px;
+  line-height: 40px;
 }
 
 p.subtitle {
@@ -72,7 +82,7 @@ footer {
 
 .copywrite,
 footer {
-  background: var(--secundary-color);
+  background: #04242f;
 }
 
 footer span.sub,
@@ -80,7 +90,12 @@ footer address,
 .copywrite,
 footer a,
 p {
-  color: #fff;
+  color: #ffffff;
+}
+
+footer span.sub1{
+  color: #ffffff;
+  text-align: center;
 }
 
 div.stats {
@@ -93,7 +108,7 @@ body > footer > div > div.row.d-flex.justify-content-center.review {
 }
 
 footer {
-  padding: 6rem 30px;
+  padding: 70px;
 }
 
 footer .footer-widgets {
@@ -104,6 +119,11 @@ footer .footer-list {
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
+}
+
+footer .footer-list1 {
+  display: flex;
+
 }
 
 footer .footer-card {
@@ -408,6 +428,11 @@ button.modal-button.send {
 
 .gray-wallpaper {
   background: #EBECED;
+  background: linear-gradient(180deg, #EBECED 0%, #EBECED 43%, rgb(255, 255, 255) 100%);
+}
+
+.blue-wallpaper {
+  background: #08a308;
   background: linear-gradient(180deg, #EBECED 0%, #EBECED 43%, rgb(255, 255, 255) 100%);
 }
 
@@ -862,7 +887,7 @@ button.modal-button.send {
   h1,
   h3,
   h2 {
-    font-family:  "Arial", "sans-serif";
+    font-family:  "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: bold;
     color: #2D343F;
     text-align: left;
@@ -873,6 +898,15 @@ button.modal-button.send {
     font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: normal;
     text-align: left;
+  }
+
+  h6 {
+    font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: left;
+    font-size: 32px;
+    line-height: 40px;
   }
 
   p.subtitle {
@@ -1089,3 +1123,4 @@ button.modal-button.send {
 .color-primary {
   color: #0095E5 !important;
 }
+

@@ -169,6 +169,46 @@ class Water extends UNO_Controller
 		echo $dt->generate();
 	}
 
+    public function get_lancamento_unity($entity_id)
+	{
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+        $dt = $this->datatables->query("
+        SELECT
+            competencia AS competencia, 
+            esm_fechamentos_agua.id AS fid, 
+            esm_unidades.nome, 
+            FORMAT(esm_fechamentos_agua.consumo_c + consumo_u, 1, 'de_DE') AS consumo, 
+            FORMAT(esm_fechamentos_agua.consumo_c_o + consumo_u_o, 1, 'de_DE') AS consumo_o, 
+            FORMAT(esm_fechamentos_agua.consumo_c_c + consumo_u_c, 1, 'de_DE') AS consumo_c, 
+            DATE_FORMAT(cadastro, '%d/%m/%Y') AS emissao, 
+            esm_fechamentos_agua_entradas.id AS entrada_id, 
+            esm_unidades.id AS uid
+        FROM
+                esm_fechamentos_agua_entradas
+        JOIN
+                esm_medidores ON esm_medidores.nome = esm_fechamentos_agua_entradas.device
+        JOIN 
+                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+        JOIN
+                esm_fechamentos_agua ON esm_fechamentos_agua.id = esm_fechamentos_agua_entradas.fechamento_id
+        LEFT JOIN 
+                esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+        WHERE
+                esm_unidades.id = $entity_id
+        ");
+
+        $dt->edit('competencia', function ($data) {
+            return strftime('%b/%Y', strtotime($data['competencia']));
+        });
+
+        // inclui actions
+		$dt->add('action', function ($data) {
+			return '<a href="#" class="action-download-unity text-primary me-2" data-fid="' . $data['fid'] . '" data-uid="' . $data['uid'] . '" data-eid="' . $data['entrada_id'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
+		});
+        
+        echo $dt->generate();
+	}
+
     public function DeleteLancamento()
 	{
 		$id = $this->input->getPost('id');

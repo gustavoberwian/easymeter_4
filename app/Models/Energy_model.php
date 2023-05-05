@@ -1791,4 +1791,72 @@ class Energy_model extends Base_model
 
         return false;
     }
+
+    public function get_faturamentos_unidade($entity_id)
+    {
+        $result = $this->db->query("
+        SELECT 
+            esm_fechamentos_energia.competencia AS competencia,
+            esm_unidades.nome,
+            FORMAT(esm_fechamentos_energia_entradas.consumo, 3, 'de_DE') AS consumo,
+            FORMAT(esm_fechamentos_energia_entradas.consumo_p, 3, 'de_DE') AS consumo_p,
+            FORMAT(esm_fechamentos_energia_entradas.consumo_f, 3, 'de_DE') AS consumo_f,
+            FORMAT(esm_fechamentos_energia_entradas.demanda_p, 3, 'de_DE') AS demanda,
+            DATE_FORMAT(cadastro, '%d/%m/%Y') AS emissao
+        FROM 
+            esm_fechamentos_energia_entradas
+        JOIN
+            esm_medidores ON esm_medidores.nome = esm_fechamentos_energia_entradas.device
+        JOIN 
+            esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+        JOIN
+            esm_fechamentos_energia ON esm_fechamentos_energia.id = esm_fechamentos_energia_entradas.fechamento_id
+        LEFT JOIN 
+            esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+        WHERE
+            esm_unidades.id = $entity_id
+            ");
+
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
+        }
+
+        return false;
+
+    }
+
+    public function get_faturamento_unidade($entity_id, $fid)
+    {
+        $result = $this->db->query("
+        SELECT 
+            esm_fechamentos_energia.competencia AS competencia,
+            esm_unidades.nome,
+            FORMAT(esm_fechamentos_energia_entradas.consumo, 3, 'de_DE') AS consumo,
+            FORMAT(esm_fechamentos_energia_entradas.consumo_p, 3, 'de_DE') AS consumo_p,
+            FORMAT(esm_fechamentos_energia_entradas.consumo_f, 3, 'de_DE') AS consumo_f,
+            FORMAT(esm_fechamentos_energia_entradas.demanda_p, 3, 'de_DE') AS demanda,
+            DATE_FORMAT(cadastro, '%d/%m/%Y') AS emissao
+        FROM 
+            esm_fechamentos_energia_entradas
+        JOIN
+            esm_medidores ON esm_medidores.nome = esm_fechamentos_energia_entradas.device
+        JOIN 
+            esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+        JOIN
+            esm_fechamentos_energia ON esm_fechamentos_energia.id = esm_fechamentos_energia_entradas.fechamento_id
+        LEFT JOIN 
+            esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+        WHERE
+            esm_unidades.id = $entity_id AND
+            esm_fechamentos_energia_entradas.id = $fid
+            ");
+
+        if ($result->getNumRows()) {
+            return $result->getRowArray();
+        }
+
+        return false;
+
+    }
+
 }

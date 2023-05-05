@@ -2719,6 +2719,48 @@ class Energia extends UNO_Controller
         echo $dt->generate();
     }
 
+    public function get_faturamento_unidade($entity_id)
+    {
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+        $dt = $this->datatables->query("
+        SELECT 
+            esm_fechamentos_energia.competencia AS competencia,
+            esm_unidades.nome,
+            esm_fechamentos_energia.id AS fid,
+            FORMAT(esm_fechamentos_energia_entradas.consumo, 3, 'de_DE') AS consumo,
+            FORMAT(esm_fechamentos_energia_entradas.consumo_p, 3, 'de_DE') AS consumo_p,
+            FORMAT(esm_fechamentos_energia_entradas.consumo_f, 3, 'de_DE') AS consumo_f,
+            FORMAT(esm_fechamentos_energia_entradas.demanda_p, 3, 'de_DE') AS demanda,
+            DATE_FORMAT(cadastro, '%d/%m/%Y') AS emissao,
+            esm_fechamentos_energia_entradas.id AS entrada_id,
+            esm_unidades.id AS uid
+        FROM 
+            esm_fechamentos_energia_entradas
+        JOIN
+            esm_medidores ON esm_medidores.nome = esm_fechamentos_energia_entradas.device
+        JOIN 
+            esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+        JOIN
+            esm_fechamentos_energia ON esm_fechamentos_energia.id = esm_fechamentos_energia_entradas.fechamento_id
+        LEFT JOIN 
+            esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+        WHERE
+            esm_unidades.id = $entity_id
+        ");
+
+        $dt->edit('competencia', function ($data) {
+            return strftime('%b/%Y', strtotime($data['competencia']));
+        });
+
+        // inclui actions
+		$dt->add('action', function ($data) {
+			return '<a href="#" class="action-download-unity text-primary me-2" data-fid="' . $data['fid'] . '" data-uid="' . $data['uid'] . '" data-eid="' . $data['entrada_id'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
+		});
+        
+        echo $dt->generate();
+        
+    }
+
     public function GetFechamentoUnidades($type)
     {
         $fid = $this->input->getPost('fid');
@@ -3021,6 +3063,177 @@ class Energia extends UNO_Controller
         $writer = new Xlsx($spreadsheet);
 
         $filename = "Lançamentos Energia ".$group->group_name;
+
+        ob_start();
+        $writer->save("php://output");
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        $response =  array(
+            'status' => "success",
+            'name'   => $filename,
+            'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
+        );
+
+        echo json_encode($response);
+    }
+
+    public function download_unity()
+    {
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+        $uid = $this->input->getPost('id');
+        $eid = $this->input->getPost('fid');
+        // busca fechamento
+        $fechamento = $this->energy_model->get_faturamento_unidade($uid, $eid);
+        $fechamento['competencia'] = strftime('%B/%Y', strtotime($fechamento['competencia']));
+
+      
+        //TODO verificar se usuário tem acesso a esse fechamento
+
+        // verifica retorno
+        
+
+        $spreadsheet = new Spreadsheet();
+
+		$titulos = [
+			['Total', 'Ponta', 'Fora Ponta']
+		];
+
+        $spreadsheet->getProperties()
+        ->setCreator('Easymeter')
+        ->setLastModifiedBy('Easymeter')
+        ->setTitle('Relatório de Lançamentos - Energia')
+        ->setSubject($fechamento['nome'])
+        ->setDescription('Relatório de Lançamentos - Energia - '.$fechamento['nome'])
+        ->setKeywords($fechamento['nome'].' Lançamentos Energia')
+        ->setCategory('Relatório')->setCompany('Easymeter');
+
+    $spreadsheet->getActiveSheet()->getStyle('A1:G2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+    $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($fechamento['nome']));
+    $spreadsheet->getActiveSheet()->mergeCells('A1:G1');
+    $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Lançamentos - Energia');
+    $spreadsheet->getActiveSheet()->mergeCells('A2:G2');
+
+    $spreadsheet->getActiveSheet()->setCellValue('A4', 'Competência')->mergeCells('A4:A5');
+    $spreadsheet->getActiveSheet()->setCellValue('B4', 'Loja')->mergeCells('B4:B5');
+    $spreadsheet->getActiveSheet()->setCellValue('G4', 'Emissão')->mergeCells('G4:G5');
+
+    $spreadsheet->getActiveSheet()->setCellValue('C4', 'Consumo - kWh')->mergeCells('C4:E4');
+    $spreadsheet->getActiveSheet()->setCellValue('F4', 'Demanda - kW')->mergeCells('F4:F5');
+
+    $spreadsheet->getActiveSheet()->getStyle('A1:G5')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A4:G5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+    $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'C5');
+
+    $spreadsheet->getActiveSheet()->fromArray($fechamento, NULL, 'A6');
+
+    $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+    $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+    $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
+    $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
+    $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
+    $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
+    $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+
+
+    $spreadsheet->getActiveSheet()->getStyle('A7:L'.(count($fechamento) + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+    $spreadsheet->getActiveSheet()->setCellValue('A'.(count($fechamento) + 4), 'Gerado em '.date("d/m/Y H:i"));
+
+    $spreadsheet->getActiveSheet()->setSelectedCell('A1');
+
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = $fechamento['nome'].' Energia - '.(strftime('%B/%Y', strtotime($fechamento['competencia'])));
+
+        ob_start();
+        $writer->save("php://output");
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        $response =  array(
+            'status' => "success",
+            'name'   => $filename,
+            'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
+        );
+        
+        echo json_encode($response);
+    }
+
+    public function download_lancamento_unity()
+    {
+        $id = $this->input->getPost('id');
+        
+        // busca fechamento
+        $fechamentos = $this->energy_model->get_faturamentos_unidade($id);
+
+        //TODO verificar se usuário tem acesso a esse fechamento
+
+        // verifica retorno
+        if(!$fechamentos) {
+            // mostra erro
+            echo json_encode(array("status"  => "error", "message" => "Nenhum lançamento encontrado"));
+            return;
+        }
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+        foreach($fechamentos as &$f) {
+            $f['competencia'] = strftime('%B/%Y', strtotime($f['competencia']));
+        }
+
+        $spreadsheet = new Spreadsheet();
+
+		$titulos = [
+			['Total', 'Ponta', 'Fora Ponta']
+		];
+
+        $spreadsheet->getProperties()
+        ->setCreator('Easymeter')
+        ->setLastModifiedBy('Easymeter')
+        ->setTitle('Relatório de Lançamentos - Energia')
+        ->setSubject($fechamentos[0]['nome'])
+        ->setDescription('Relatório de Lançamentos - Energia - '.$fechamentos[0]['nome'])
+        ->setKeywords($fechamentos[0]['nome'].' Lançamentos Energia')
+        ->setCategory('Relatório')->setCompany('Easymeter');
+
+        $spreadsheet->getActiveSheet()->getStyle('A1:L2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($fechamentos[0]['nome']));
+        $spreadsheet->getActiveSheet()->mergeCells('A1:L1');
+        $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Lançamentos - Energia');
+        $spreadsheet->getActiveSheet()->mergeCells('A2:L2');
+
+        $spreadsheet->getActiveSheet()->setCellValue('A4', 'Competência')->mergeCells('A4:A5');
+        $spreadsheet->getActiveSheet()->setCellValue('B4', 'Loja')->mergeCells('B4:B5');
+        $spreadsheet->getActiveSheet()->setCellValue('G4', 'Emissão')->mergeCells('G4:G5');
+
+        $spreadsheet->getActiveSheet()->setCellValue('C4', 'Consumo - kWh')->mergeCells('C4:E4');
+        $spreadsheet->getActiveSheet()->setCellValue('F4', 'Demanda - kW')->mergeCells('F4:F5');
+
+        $spreadsheet->getActiveSheet()->getStyle('A1:G5')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A4:G5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'C5');
+
+		$spreadsheet->getActiveSheet()->fromArray($fechamentos, NULL, 'A6');
+
+		$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+		$spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
+		$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
+		$spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
+		$spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
+		$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+
+
+        $spreadsheet->getActiveSheet()->getStyle('A6:G'.(count($fechamentos) + 7))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->setCellValue('A'.(count($fechamentos) + 8), 'Gerado em '.date("d/m/Y H:i"));
+
+		$spreadsheet->getActiveSheet()->setSelectedCell('A1');
+
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = "Lançamentos Energia ".$fechamentos[0]['nome'];
 
         ob_start();
         $writer->save("php://output");

@@ -405,8 +405,10 @@ class Shopping extends UNO_Controller
         if ($type == "energia") {
 
             $data['unidade'] = $this->shopping_model->GetFechamentoUnidade("energia", $relatorio_id);
+            $data['unidade_id'] =  $this->shopping_model->get_unidade_id($data['unidade']->nome);
             $data['fechamento'] = $this->shopping_model->GetFechamento("energia", $fechamento_id);
             $data['historico'] = $this->shopping_model->GetFechamentoHistoricoUnidade("energia", $data['unidade']->device, $data['fechamento']->cadastro);
+            $data['permission'] = $this->user;
 
             return $this->render('relatorio_energy', $data);
 

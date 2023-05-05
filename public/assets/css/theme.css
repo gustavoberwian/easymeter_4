@@ -10540,10 +10540,10 @@ select.select-style-1:focus {
 	height: 0
 }
 
-.form-group+.form-group {
+/* .form-group+.form-group {
 	padding-top: 16px;
 	padding-top: 1rem
-}
+} */
 
 .form-control {
 	height: auto

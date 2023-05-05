@@ -865,4 +865,86 @@ class Admin extends UNO_Controller
 
         echo $this->admin_model->delete_unidade($id);
     }
+
+    public function get_users()
+    {
+        $m = "";
+        if ($this->input->getPost("mode"))
+            $m = "JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = '$m'";
+
+        $dt = $this->datatables->query("
+            SELECT 
+                auth_users.id AS id,
+                auth_users.avatar AS avatar,
+                auth_users.username AS nome,
+                auth_identities.secret AS email,
+                auth_users.page AS page,
+                auth_users.active AS status
+            FROM auth_users
+            JOIN auth_identities ON auth_identities.user_id = auth_users.id AND auth_identities.type = 'email_password'
+            $m
+        ");
+
+        $dt->edit("avatar", function ($data) {
+            if ($data['avatar']) {
+                return '<img alt src="' . base_url('assets/img/uploads/avatars/') . $data['avatar'] . ' " style="width: 32px" class="rounded-circle" />';
+            }
+
+            return '<img alt src="' . base_url('assets/img/user.png') . ' " style="width: 32px" class="rounded-circle" />';
+        });
+
+        $dt->edit("status", function ($data) {
+            $checked = "";
+            if ($data['status']) {
+                $checked = "checked";
+            }
+
+            return '
+                <div class="switch switch-sm switch-primary">
+                    <input type="checkbox" class="switch-input" name="switch" data-plugin-ios-switch ' . $checked . ' />
+                </div>
+            ';
+        });
+
+        $dt->add("monitora", function ($data) {
+            $user = auth()->getProvider()->findById($data['id']);
+
+            $res = "";
+
+            if ($user->inGroup('agua')) {
+                $res .= '<i class="fas fa-tint text-primary me-1"></i>';
+            }
+            if ($user->inGroup('energia')) {
+                $res .= '<i class="fas fa-bolt text-warning me-1"></i>';
+            }
+            if ($user->inGroup('gas')) {
+                $res .= '<i class="fas fa-fire text-success me-1"></i>';
+            }
+            if ($user->inGroup('nivel')) {
+                $res .= '<i class="fas fa-database text-info me-1"></i>';
+            }
+
+            return $res;
+        });
+
+        $dt->add("groups", function ($data) {
+            $groups = $this->admin_model->get_groups_by_user($data['id']);
+            $res = "";
+
+            foreach ($groups as $g) {
+                $res .= '<span class="badge badge-info me-1">' . $g->group . '</span>';
+            }
+
+            return $res;
+        });
+
+        $dt->add('actions', function ($data) {
+            return '
+                <a href="' . site_url('admin/users/') . $data['id'] . '/editar" class="action-edit" data-id="' . $data['id'] . '"><i class="fas fa-pencil-alt text-primary" title="Editar"></i></a>
+				<a href="#" class="action-delete" data-id="' . $data['id'] . '" data-toggle="confirmation" data-title="Certeza?"><i class="fas fa-trash text-danger" title="Excluir"></i></a>
+            ';
+        });
+
+        echo $dt->generate();
+    }
 }

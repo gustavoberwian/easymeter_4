@@ -564,5 +564,12 @@ class Admin_model extends Base_model
 
         return json_encode(array("status" => "success", "message" => "Agrupamento de ramais criado com sucesso.", "id" => $this->db->insertID()));
     }
+
+    public function get_groups_by_user($user_id)
+    {
+        $query = $this->db->query("SELECT auth_groups_users.group FROM auth_groups_users WHERE auth_groups_users.user_id = $user_id");
+
+        return $query->getResult();
+    }
 }    
     

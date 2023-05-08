@@ -128,12 +128,6 @@ class Admin_model extends Base_model
 
     public function get_central_leituras($central, $tabela)
     {
-        return "
-            SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
-            FROM esm_leituras_{$tabela}_agua
-            WHERE timestamp >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY)) AND medidor_id = (SELECT id FROM esm_medidores WHERE central = '$central' LIMIT 1)
-            GROUP BY year(FROM_UNIXTIME(`timestamp`)), month(FROM_UNIXTIME(`timestamp`)), day(FROM_UNIXTIME(`timestamp`))
-        ";
         $query = $this->db->query("
             SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
             FROM esm_leituras_{$tabela}_agua
@@ -305,7 +299,7 @@ class Admin_model extends Base_model
         return $result->getRow();
     }
 
-    public function get_fracoes_entidademinio($cid)
+    public function get_fracoes_entidade($cid)
     {
         $query = $this->db->query("
             SELECT DISTINCT fracao 

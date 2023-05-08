@@ -643,7 +643,7 @@ class Admin extends UNO_Controller
                 esm_fechamentos.id AS DT_RowId
             FROM esm_fechamentos
             LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
-            LEFT JOIN esm_entidades ON esm_ramais.condo_id = esm_entidades.id
+            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
             WHERE esm_entidades.id = $condo_id AND esm_ramais.nome LIKE \"G%\" ORDER BY esm_fechamentos.id DESC
         ");
 
@@ -707,7 +707,7 @@ class Admin extends UNO_Controller
         // centrais do condominio
         $data['centrais'] = $this->admin_model->get_centrais($cid);
         // fraçoes já cadastradas no condominio
-        $data['fracoes'] = $this->admin_model->get_fracoes_condominio($cid);
+        $data['fracoes'] = $this->admin_model->get_fracoes_entidade($cid);
         // modo
         $data['modo'] = $modo;
         // edição ou inclusão?
@@ -866,11 +866,30 @@ class Admin extends UNO_Controller
         echo $this->admin_model->delete_unidade($id);
     }
 
+    public function delete_user()
+    {
+        $id = $this->input->getPost('uid');
+
+        $users = auth()->getProvider();
+
+        $users->delete($id, true);
+        return json_encode(array(
+            'status' => 'success',
+            'message' => 'Seus dados foram atualizados com sucesso.'
+        ));
+    }
+
     public function get_users()
     {
-        $m = "";
-        if ($this->input->getPost("mode"))
-            $m = "JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = '$m'";
+        
+        if ($this->input->getGet("mode") == 0) $m = "";
+        if ($this->input->getGet('mode') == 1) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'agua'"; 
+        if ($this->input->getGet('mode') == 2) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'gas'"; 
+        if ($this->input->getGet('mode') == 3) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'energia'"; 
+        if ($this->input->getGet('mode') == 4) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'nivel'"; 
+
+
+     
 
         $dt = $this->datatables->query("
             SELECT 
@@ -882,8 +901,8 @@ class Admin extends UNO_Controller
                 auth_users.active AS status
             FROM auth_users
             JOIN auth_identities ON auth_identities.user_id = auth_users.id AND auth_identities.type = 'email_password'
-            $m
-        ");
+           " . $m
+        );
 
         $dt->edit("avatar", function ($data) {
             if ($data['avatar']) {
@@ -932,7 +951,7 @@ class Admin extends UNO_Controller
             $res = "";
 
             foreach ($groups as $g) {
-                $res .= '<span class="badge badge-info me-1">' . $g->group . '</span>';
+                $res .= '<span class="badge badge-info me-1 monitor">' . $g->group . '</span>';
             }
 
             return $res;
@@ -941,7 +960,7 @@ class Admin extends UNO_Controller
         $dt->add('actions', function ($data) {
             return '
                 <a href="' . site_url('admin/users/') . $data['id'] . '/editar" class="action-edit" data-id="' . $data['id'] . '"><i class="fas fa-pencil-alt text-primary" title="Editar"></i></a>
-				<a href="#" class="action-delete" data-id="' . $data['id'] . '" data-toggle="confirmation" data-title="Certeza?"><i class="fas fa-trash text-danger" title="Excluir"></i></a>
+				<a href="#" class="action-delete-user" data-id="' . $data['id'] . '" data-toggle="confirmation" data-title="Certeza?"><i class="fas fa-trash text-danger" title="Excluir"></i></a>
             ';
         });
 

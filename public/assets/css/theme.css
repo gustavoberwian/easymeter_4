@@ -11714,6 +11714,11 @@ h1.text-shadow,h2.text-shadow,h3.text-shadow,h4.text-shadow,h5.text-shadow,h6.te
 	background: #171717
 }
 
+.switch.switch-white .ios-switch .on-background {
+	background: #fff;
+	border: 2px solid #E5E5E5;
+}
+
 .switch.switch-lg .ios-switch {
 	height: 45px;
 	width: 75px

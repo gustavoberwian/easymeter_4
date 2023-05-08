@@ -4,44 +4,10 @@ namespace App\Models;
 
 class Gas_model extends Base_model
 {
-    public function GetConsumption($device, $group_id, $start, $end, $st = array(), $group = true, $interval = null, $demo = false)
+    public function GetConsumption($device, $start, $end, $st = array(), $group = true, $interval = null)
     {
-        $entity = $this->get_entity_by_group($group_id);
-
-        $dvc = "";
-        $dvc1 = "";
-        if (is_numeric($device)) {
-
-            $dvc = "LEFT JOIN esm_medidores on esm_medidores.id = esm_leituras_" . $entity->tabela . "_gas.medidor_id AND esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
-
-        } else if ($device == "C") {
-
-            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_gas.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id
-                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1 AND esm_unidades.agrupamento_id = $group_id";
-
-        } else if ($device == "U") {
-
-            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_gas.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id
-                    LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2 AND esm_unidades.agrupamento_id = $group_id";
-
-        } else if ($device == "T") {
-
-            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_gas.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id";
-
-        } else if ($device == "ALL") {
-
-            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_gas.medidor_id
-                    LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group_id";
-
-        } else {
-
-            $dvc1 = "LEFT JOIN esm_medidores ON esm_medidores.nome = '$device'";
-            $dvc = "AND medidor_id = esm_medidores.id";
-
-        }
+        $dvc1 = "LEFT JOIN esm_medidores ON esm_medidores.id = '$device'";
+        $dvc = "AND medidor_id = esm_medidores.id";
 
         $station = "";
         if (count($st)) {
@@ -52,12 +18,7 @@ class Gas_model extends Base_model
             }
         }
 
-        $value = "SUM(consumo) AS value";
-
         if ($interval === 'h') {
-
-            if ($demo)
-                $value = "RAND() * 10 AS value";
 
             $group_by = "";
             if ($group)
@@ -67,10 +28,10 @@ class Gas_model extends Base_model
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    $value
+                    SUM(consumo) AS value
                 FROM esm_hours
                 $dvc1
-                LEFT JOIN esm_leituras_" . $entity->tabela . "_gas ON 
+                LEFT JOIN esm_leituras_consigaz_gas ON 
                     HOUR(FROM_UNIXTIME(timestamp - 3600)) = esm_hours.num AND 
                     timestamp > $start AND 
                     timestamp <= $end + 600
@@ -82,9 +43,6 @@ class Gas_model extends Base_model
 
         } elseif ($start == $end) {
 
-            if ($demo)
-                $value = "RAND() * 10 AS value";
-
             $group_by = "";
             if ($group)
                 $group_by = "GROUP BY esm_hours.num";
@@ -93,10 +51,10 @@ class Gas_model extends Base_model
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    $value
+                    SUM(consumo) AS value
                 FROM esm_hours
                 $dvc1
-                LEFT JOIN esm_leituras_" . $entity->tabela . "_gas ON 
+                LEFT JOIN esm_leituras_consigaz_gas ON 
                     HOUR(FROM_UNIXTIME(timestamp - 3600)) = esm_hours.num AND 
                     timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     timestamp <= UNIX_TIMESTAMP('$end 23:59:59') + 600
@@ -108,9 +66,6 @@ class Gas_model extends Base_model
 
         } else {
 
-            if ($demo)
-                $value = "RAND() * 100 AS value";
-
             $group_by = "";
             if ($group)
                 $group_by = "GROUP BY esm_calendar.dt";
@@ -120,10 +75,10 @@ class Gas_model extends Base_model
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
                     esm_calendar.dw AS dw,
-                    $value
+                    SUM(consumo) AS value
                 FROM esm_calendar
                 $dvc1
-                LEFT JOIN esm_leituras_" . $entity->tabela . "_gas ON 
+                LEFT JOIN esm_leituras_consigaz_gas ON 
                     timestamp > esm_calendar.ts_start AND 
                     timestamp <= (esm_calendar.ts_end + 600)
                     $station
@@ -190,7 +145,7 @@ class Gas_model extends Base_model
     {
         $entity = $this->get_entity_by_group($group);
 
-        $tabela = "esm_leituras_" . $entity->tabela . "_gas";
+        $tabela = "esm_leituras_consigaz_gas";
 
         $values = "LPAD(ROUND(esm_medidores.ultima_leitura, 0), 6, '0') AS value_read,
                 FORMAT(m.value, 0, 'de_DE') AS value_month,
@@ -201,7 +156,7 @@ class Gas_model extends Base_model
 
         if ($demo) {
 
-            $tabela = "esm_leituras_" . $entity->tabela . "_gas_demo";
+            $tabela = "esm_leituras_consigaz_gas_demo";
 
             $values = "RAND() * 10000 AS value_read,
                 RAND() * 10000 AS value_month,
@@ -268,5 +223,186 @@ class Gas_model extends Base_model
         }
 
         return false;
+    }
+
+    public function delete_fechamento($id)
+    {
+        if (!$this->db->table('esm_fechamentos')->where(array('id' => $id))->delete()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        } else {
+            return json_encode(array("status" => "success", "message" => "Lançamento excluído com sucesso"));
+        }
+    }
+
+    public function get_fechamento($fid)
+    {
+        $result = $this->db->query("
+            SELECT
+                esm_entidades.nome,
+                esm_fechamentos.*
+            FROM esm_fechamentos
+            JOIN esm_entidades ON esm_entidades.id = esm_fechamentos.entidade_id
+            JOIN esm_agrupamentos ON esm_entidades.id = esm_agrupamentos.entidade_id
+            JOIN esm_unidades ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+            WHERE esm_fechamentos.id = $fid
+        ");
+
+        if ($result->getNumRows()) {
+            return $result->getRow();
+        }
+
+        return 0;
+    }
+
+    public function get_fechamento_unidades($fid, $split)
+    {
+        $type = "";
+
+        $result = $this->db->query("
+            SELECT 
+                esm_unidades.nome,
+                esm_medidores.nome as medidor,
+                LPAD(ROUND(esm_fechamentos_entradas.leitura_anterior), 6, '0') AS leitura_anterior,
+                LPAD(ROUND(esm_fechamentos_entradas.leitura_atual), 6, '0') AS leitura_atual,
+                FORMAT(esm_fechamentos_entradas.leitura_atual - esm_fechamentos_entradas.leitura_anterior, 1, 'de_DE') AS consumo
+            FROM 
+                esm_fechamentos_entradas
+            JOIN 
+                esm_medidores ON esm_medidores.id = esm_fechamentos_entradas.medidor_id
+            JOIN 
+                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            WHERE 
+                esm_fechamentos_entradas.fechamento_id = $fid 
+                $type   
+            ORDER BY esm_unidades.nome
+        ");
+
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
+        }
+
+        return false;
+    }
+
+    public function get_fechamentos($entidade_id)
+    {
+        $result = $this->db->query("
+            SELECT
+                competencia,
+                FROM_UNIXTIME(data_inicio, '%d/%m/%Y') AS inicio,
+                FROM_UNIXTIME(data_fim, '%d/%m/%Y') AS fim,
+                FORMAT(leitura_atual - leitura_anterior, 1, 'de_DE') AS consumo,
+                DATE_FORMAT(cadastro, '%d/%m/%Y') AS emissao
+            FROM 
+                esm_fechamentos
+            WHERE
+                entidade_id = $entidade_id
+            ORDER BY cadastro DESC
+        ");
+
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
+        }
+
+        return false;
+    }
+
+    public function verify_competencia($entidade_id, $ramal_id, $competencia)
+    {
+        $result = $this->db->query("
+            SELECT
+                id
+            FROM 
+                esm_fechamentos
+            WHERE
+                entidade_id = $entidade_id AND ramal_id = $ramal_id AND competencia = '$competencia'
+            LIMIT 1
+        ");
+
+        return ($result->getNumRows());
+    }
+
+    public function calculate($data, $entidade_id)
+    {
+        $inicio = date_create_from_format('d/m/Y', $data["inicio"])->format('Y-m-d');
+        $fim = date_create_from_format('d/m/Y', $data["fim"])->format('Y-m-d');
+
+        $data["inicio"] = date_create_from_format('d/m/Y H:i', $data["inicio"] . ' 00:00')->format('U');
+        $data["fim"] = date_create_from_format('d/m/Y H:i', $data["fim"] . ' 00:00')->format('U');
+
+        // inicia transação
+        $failure = array();
+        $this->db->transStart();
+
+        if (!$this->db->table('esm_fechamentos_gas')->set($data)->insert()) {
+            // insere novo registro
+            $failure[] = $this->db->error();
+        }
+
+        // retorna fechamento id
+        $data['id'] = $this->db->insertID();
+
+        $query = $this->calculate_query($data, $entidade_id, $inicio, $fim);
+
+        $unidades = $query->getResult();
+        $leitura_anterior = 0;
+        $leitura_atual = 0;
+
+        foreach ($unidades as $c) {
+            $leitura_anterior += $c->leitura_anterior;
+            $leitura_atual += $c->leitura_atual;
+        }
+
+        if (!$this->db->table('esm_fechamentos_gas_entradas')->insertBatch($unidades)) {
+            $failure[] = $this->db->error();
+        }
+
+        if (!$this->db->table('esm_fechamentos_gas')->set(array(
+            'leitura_anterior' => $leitura_anterior,
+            'leitura_atual' => $leitura_atual,
+            'consumo' => $leitura_atual - $leitura_anterior,
+        ))->where(array('id' => $data['id']))->update()) {
+            $failure[] = $this->db->error();
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === FALSE) {
+            return json_encode(array("status" => "error", "message" => $failure[0]));
+        } else {
+            return json_encode(array("status" => "success", "message" => "Lançamento calculado com sucesso!", "id" => $data['id']));
+        }
+    }
+
+    private function calculate_query($data, $entidade_id, $inicio, $fim)
+    {
+        $entity = $this->get_entidade($entidade_id);
+
+        $query = "
+            SELECT
+                {$data['id']} AS fechamento_id,
+                esm_medidores.nome AS device,
+                esm_medidores.id AS medidor_id,
+                a.leitura_anterior,
+                a.leitura_atual,
+                a.consumo
+            FROM esm_medidores
+            LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            LEFT JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+            LEFT JOIN (
+                SELECT 
+                    medidor_id,
+                    MIN(leitura) AS leitura_anterior,
+                    MAX(leitura) AS leitura_atual,
+                    MAX(leitura) - MIN(leitura) AS consumo
+                FROM esm_leituras_" . $entity->tabela . "_gas
+                WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
+                GROUP BY medidor_id
+            ) a ON a.medidor_id = esm_medidores.id
+            WHERE 
+                esm_agrupamentos.entidade_id = {$data['entidade_id']}
+        ";
+
+        return $this->db->query($query);
     }
 }

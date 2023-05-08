@@ -44,6 +44,26 @@ class Database extends Config
         'port'     => 3306,
     ];
 
+    public array $easy_com_br = [
+        'DSN'      => '',
+        'hostname' => 'easy_principal.mysql.dbaas.com.br',
+        'username' => 'easy_principal',
+        'password' => 'w7m52H0d#*x$vH',
+        'database' => 'easy_principal',
+        'DBDriver' => 'mysqli',
+        'DBPrefix' => '',
+        'pConnect' => false,
+        'DBDebug'  => false,
+        'charset'  => 'utf8',
+        'DBCollat' => 'utf8_general_ci',
+        'swapPre'  => '',
+        'encrypt'  => false,
+        'compress' => false,
+        'strictOn' => false,
+        'failover' => [],
+        'port'     => 3306,
+    ];
+
     /**
      * This database connection is used when
      * running PHPUnit database tests.

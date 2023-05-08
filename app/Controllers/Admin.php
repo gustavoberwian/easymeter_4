@@ -6,6 +6,8 @@ use App\Models\Admin_model;
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\Codeigniter4Adapter;
 use Viacep;
+use CodeIgniter\Shield\Entities\User;
+
 
 class Admin extends UNO_Controller
 {
@@ -150,9 +152,16 @@ class Admin extends UNO_Controller
     //     }
     // }
 
-    public function users()
+    public function users($param = null)
     {
-        return $this->render("users");
+        if($param == 'incluir')
+        {
+            return $this->render('add_user');
+        } else 
+        {
+            return $this->render("users");
+        }
+        
     }
 
     public function profile()
@@ -920,7 +929,7 @@ class Admin extends UNO_Controller
 
             return '
                 <div class="switch switch-sm switch-primary">
-                    <input type="checkbox" class="switch-input" name="switch" data-plugin-ios-switch ' . $checked . ' />
+                    <input type="checkbox" class="switch-input" data-id="' . $data['id'] . '" name="switch" data-plugin-ios-switch ' . $checked . ' />
                 </div>
             ';
         });
@@ -965,5 +974,100 @@ class Admin extends UNO_Controller
         });
 
         echo $dt->generate();
+    }
+
+    public function add_user()
+    {
+        $users = auth()->getProvider();
+        
+        $user = new User([
+            'username' => $this->input->getPost('nome-user') ?? '',
+            'email'    => $this->input->getPost('email-user') ?? '',
+            'password' => $this->input->getPost('senha-user') ?? '',
+            'active'   => $this->input->getPost('switch') === 'on' ? 1 : 0
+        ]);
+
+        $users->save($user);
+
+        if ($this->input->getPost('user-agua') === 'on')
+        {
+            $dados['group-agua'] = 'agua';
+        } else 
+        {
+            $dados['group-agua'] = '';
+        }
+
+        if ($this->input->getPost('user-gas') === 'on')
+        {
+            $dados['group-gas'] = 'gas';
+        } else 
+        {
+            $dados['group-gas'] = '';
+
+        }
+
+        if ($this->input->getPost('user-energia') === 'on')
+        {
+            $dados['group-energia'] = 'energia';
+        } else 
+        {
+            $dados['group-energia'] = '';
+
+        }
+
+        if ($this->input->getPost('user-nivel') === 'on')
+        {
+            $dados['group-nivel'] = 'nivel';
+        } else 
+        {
+            $dados['group-nivel'] = '';
+
+        }
+        
+        $dados['user_id']               = $users->getInsertID();
+        $dados['classificacao']         = $this->input->getPost('classificacao-user');   
+        $dados['page']                  = $this->input->getPost('page-user') ?? '';
+        $dados['entity_user']           = $this->input->getPost('entity-user') ?? '';
+        $dados['unity_user']            = $this->input->getPost('unity-user') ?? '';
+        $dados['group_user']            = $this->input->getPost('group-user') ?? '';
+
+        echo $this->admin_model->add_user($dados);
+    }
+
+    public function get_entity_for_select()
+    {
+        //realiza consulta
+        $p = $this->admin_model->get_entities();
+    
+        $result = '';
+        foreach($p as $option) {
+            $result .= "<option>$option</option>";
+            }
+            print_r($result);
+        echo $result;
+                    
+    }
+
+    public function get_groups_for_select()
+    {
+        //realiza consulta
+        $p = $this->admin_model->get_groups_for_select();
+    
+        $result = '';
+        foreach($p as $option) {
+            $result .= "<option>$option</option>";
+            }
+            print_r($result);
+        echo $result;
+                    
+    }
+
+    public function edit_active_stats()
+    {
+        if(!$this->admin_model->update_active($this->input->getPost('id')))
+        {
+            return false;
+        }
+           
     }
 }

@@ -61,13 +61,13 @@ class Shopping extends UNO_Controller
         }
         if(!$this->user->inGroup('superadmin'))
         {
-          if ($this->user->entity->m_energia)
+          if ($this->user->inGroup('energia'))
             $this->monitoria = 'energy';
-        elseif ($this->user->entity->m_agua)
+        elseif ($this->user->inGroup('agua'))
             $this->monitoria = 'water';
-        elseif ($this->user->entity->m_gas)
+        elseif ($this->user->inGroup('gas'))
             $this->monitoria = 'gas';
-        elseif ($this->user->entity->m_nivel)
+        elseif ($this->user->inGroup('nivel'))
             $this->monitoria = 'nivel';  
         }
         

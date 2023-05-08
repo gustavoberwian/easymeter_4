@@ -114,6 +114,200 @@
 			$('#modalExclui .id').val('').data('uid', null);
 		});
     });
+
+	$(document).on('click', '.btn-incluir', function(e){
+		e.preventDefault()
+		console.log('test');
+		window.location = "/admin/users/incluir";
+	})
+
+	// **
+    // * Handler Switch
+    // **
+
+	$(document).on('click', '.ios-switch', function () {
+        let _self = $(this)
+		var id = _self.parent().children().last().data("id");
+
+        $.ajax({
+            method: 'POST',
+            url: '/admin/edit_active_stats',
+            data: {id: id},
+            dataType: 'json',
+            success: function (json) {
+                if (json.status === "success") {
+                    // altera status do botão
+                } else {
+                    // notifica erro
+                    notifyError(json.message);
+
+                    // altera status do botão para valor anterior
+                    if ($(_self).hasClass('on')) {
+                        $(_self).removeClass('on');
+                        $(_self).addClass('off');
+                    } else {
+                        $(_self).removeClass('off');
+                        $(_self).addClass('on');
+                    }
+                }
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function () {
+            }
+        });
+    });
+
+
+	// **
+    // * Inclusão de Usuário
+    // **
+	
+    // **
+    // * Inicializa validação do form principal
+    // **
+    var chk_names = $.map($('input[type=checkbox].require-one'), function (el, i) {
+        return $(el).prop("name");
+    }).join(" ");
+
+	var valid = $(".form-user").validate({
+		ignore: '.no-validate hidden',
+		highlight: function( label ) { $(label).closest('.form-user').removeClass('has-success').addClass('has-error'); },
+        success: function( label ) { $(label).closest('.form-user').removeClass('has-error'); label.remove(); },
+        groups: {
+            checks: chk_names
+        },        
+		errorPlacement: function( error, element ) {
+            if (element.attr('id') == 'agua-condo') {
+                var placement = element.closest('.row');
+            } else {
+                var placement = element.closest('.input-group');
+                if (!placement.get(0)) { placement = element; }
+                if (placement.next('span').length) { placement = placement.next('span'); }
+            }            
+			if (error.text() !== '') { placement.after(error); }
+		}
+	});
+
+	$.post("/admin/get_entity_for_select", function(result) {
+		$('#entity-user').html(result);
+	})
+	$.post("/admin/get_groups_for_select", function(result) {
+		$('#group-user').html(result);
+	})
+	
+
+	$(document).change('#classificacao-user', function(){
+		$('.relation-user-entity').removeAttr('hidden');
+		if ($('#classificacao-user').val() === 'entidade')
+		{
+			$('.relation-user-unity').attr('hidden', true);
+			$('.relation-user-unity').attr('disable', true);
+
+			$('.relation-user-group').attr('hidden', true);
+			$('.relation-user-group').attr('disable', true);
+
+			$('.relation-user-entity').removeAttr('hidden');
+			$('.relation-user-entity').removeAttr('disable');
+			
+
+		} else if ($('#classificacao-user').val() === 'agrupamento')
+		{			
+			$('.relation-user-entity').attr('hidden', true);
+			$('.relation-user-entity').attr('disable', true);
+
+			$('.relation-user-unity').attr('hidden', true);
+			$('.relation-user-unity').attr('disabled', true);
+
+			$('.relation-user-group').removeAttr('hidden');
+			$('.relation-user-group').removeAttr('disabled');
+
+			
+		} else 
+		{
+			$('.relation-user-entity').attr('hidden', true);
+			$('.relation-user-entity').attr('disabled', true);
+
+			$('.relation-user-group').attr('hidden', true);
+			$('.relation-user-group').attr('disabled', true);
+
+			$('.relation-user-unity').removeAttr('hidden');
+			$('.relation-user-unity').removeAttr('disabled');
+
+
+		}
+		
+	})
+
+
+	
+    // **
+    // * Adiciona validadores especificos
+    // **
+	$.validator.addClassRules("vnome", { twostring : true });
+	$.validator.addClassRules("vemail", {email: true, required: true})
+	$.validator.addClassRules("vsenha", { minlength: 5, required: true});
+	$.validator.addClassRules("vconfirma", { minlength: 5,
+		equalTo: "#senha-user"});
+		$.validator.addClassRules("vpage", { required: true});
+
+	
+		
+    // **
+    // * Handler para limpar o form principal
+    // **
+	$(document).on("click", ".form-entity .btn-reset-user", function()
+	{
+		// limpa campos
+		$('.form-user').trigger("reset");
+		valid.resetForm();
+    });
+
+	// **
+    // * Handler para salvar novo condominio
+    // **
+	$(document).on("click", ".form-user .btn-salvar-user", function()
+	{
+		// verifica se campos do modal são válidos
+		if ( $(".form-user").valid() ) {
+			// mostra indicador
+			
+			var $btn = $(this);
+			$btn.trigger('loading-overlay:show');
+			// desabilita botões
+			var $btn_d = $('.form-user .btn:enabled').prop('disabled', true);
+			// envia os dados
+			$.post('/admin/add_user', $('.form-user').serialize(), function(json) {
+				if (json.status == 'success') {
+					//TODO Pergunta se quer cadastrar os blocos
+					notifySuccess(json.message)
+					// redirect
+					setTimeout(() => {'timeout'},3000);
+					window.location = ( 'admin/users')
+
+					
+				} else if(json.message.code == 1062) {
+					// cnpj jé existe...avisa
+					notifyError('Já existe um Condomínio cadastrado com o CNPJ informado!');
+				} else {
+					// notifica erro
+					notifyError(json.message.message);
+				}
+			}, 'json')
+			.fail(function(xhr, status, error) {
+				// falha no ajax: notifica
+				notifyError(error);
+			})
+			.always(function() {
+				// oculta indicador
+				$btn.trigger('loading-overlay:hide');
+				// habilita botões
+				$btn_d.prop('disabled', false);
+			});
+		}
+    });
+	
+ 	
     
 
 }).apply(this, [jQuery]);

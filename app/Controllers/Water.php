@@ -523,7 +523,6 @@ class Water extends UNO_Controller
     {
         $data = array(
             "agrupamento_id"    => $this->input->getPost('tar-water-group'),
-            "entrada_id"  => 73,
             "competencia" => $this->input->getPost('tar-water-competencia'),
             "inicio"      => $this->input->getPost('tar-water-data-ini'),
             "fim"         => $this->input->getPost('tar-water-data-fim'),
@@ -539,7 +538,7 @@ class Water extends UNO_Controller
             ));
         }
 
-        if ($this->water_model->VerifyCompetencia($data["entrada_id"], $data["competencia"])) {
+        if ($this->water_model->VerifyCompetencia($data["agrupamento_id"], $data["competencia"])) {
 			echo '{ "status": "message", "field": "tar-water-competencia", "message" : "Competência já possui lançamento"}';
 			return;
 		}

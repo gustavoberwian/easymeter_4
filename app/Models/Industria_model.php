@@ -123,7 +123,7 @@ class Industria_model extends Base_model
     public function get_leituras($mid, $start, $end, $monitoramento, $array = false)
     {
         if ($monitoramento == "nivel") {
-            $query = $this->db->query("
+            $query = "
                 SELECT 
                     IF(MOD(timestamp, 3600) = 0, DATE_FORMAT(FROM_UNIXTIME(timestamp), '%H:%i'), '') AS label,
                     DATE_FORMAT(FROM_UNIXTIME(timestamp), '%H:%i') AS tooltip,
@@ -136,13 +136,13 @@ class Industria_model extends Base_model
                     AND timestamp >= UNIX_TIMESTAMP('$end 00:00:00') AND 
                     timestamp <= IF(DATE_FORMAT(NOW(), '%Y-%m-%d') = '$end', UNIX_TIMESTAMP(NOW()), UNIX_TIMESTAMP('$end 23:59:59'))
                 ORDER BY timestamp
-            ");
+            ";
 
         } else {
 
             if ($start == $end) {
 
-                $query = $this->db->query("
+                $query = "
                     SELECT 
                         CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                         CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
@@ -155,11 +155,11 @@ class Industria_model extends Base_model
                         d.medidor_id = $mid
                     GROUP BY esm_hours.num
                     ORDER BY esm_hours.num
-                ");
+                ";
 
             } else {
 
-                $query = $this->db->query("
+                $query = "
                     SELECT 
                         CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                         esm_calendar.dt AS date,
@@ -175,9 +175,11 @@ class Industria_model extends Base_model
                         esm_calendar.dt <= '$end' 
                     GROUP BY esm_calendar.dt
                     ORDER BY esm_calendar.dt
-                ");
+                ";
             }
         }
+
+        return $query;
 
         if ($query->getNumRows() == 0)
             return false;

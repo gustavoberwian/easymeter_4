@@ -333,4 +333,34 @@ class Consigaz extends UNO_Controller
     {
         echo $this->consigaz_model->read_all_alert(auth()->user()->id);
     }
+
+    public function get_unidades_config()
+    {
+        $entidade = $this->input->getPost("entidade");
+
+        $db = \Config\Database::connect('easy_com_br');
+
+        $builder = $db->table('esm_medidores');
+        $builder->join('esm_unidades', 'esm_unidades.id = esm_medidores.unidade_id');
+        $builder->join('esm_agrupamentos', 'esm_agrupamentos.id = esm_unidades.agrupamento_id');
+        $builder->join('esm_valves_stats', 'esm_valves_stats.medidor_id = esm_medidores.id');
+        $builder->select('esm_medidores.id as m_id, esm_unidades.id as u_id, esm_medidores.nome AS medidor, esm_unidades.nome as unidade, esm_agrupamentos.nome as bloco, esm_valves_stats.state, esm_valves_stats.status');
+        $builder->where('esm_agrupamentos.entidade_id', $entidade);
+
+        // Datatables Php Library
+        $dt = new Datatables(new Codeigniter4Adapter);
+
+        // using CI4 Builder
+        $dt->query($builder);
+
+        $dt->add("actions", function ($data) {
+            return '
+                <a class="text-primary reload-table-modal cur-pointer me-1"><i class="fas fa-rotate" title="Atualizar"></i>
+                <a href="' . base_url($this->url . '/unidade/' . $data['u_id'] . '/consumo') . '" class="text-primary me-1"><i class="fas fa-eye" title="Consumo"></i></a>
+                <a class="text-primary sync-leitura-modal cur-pointer" data-mid="' . $data['m_id'] . '"><i class="fas fa-gear" title="Sincronizar"></i>
+            ';
+        });
+
+        echo $dt->generate();
+    }
 }

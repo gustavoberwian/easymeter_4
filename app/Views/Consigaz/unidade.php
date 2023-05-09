@@ -69,6 +69,36 @@
 
     </div>
 
+    <div class="row pt-0">
+
+        <div class="col-md-6 mb-4">
+            <section class="card card-easymeter h-100 mb-4">
+                <header class="card-header">
+                    <h2 class="card-title">Nível de Bateria</h2>
+                </header>
+                <div class="card-body chart_battery-body" data-loading-overlay data-loading-overlay-options='{ "css": { "backgroundColor": "#00000080" } }'>
+                    <div class="chart-container">
+                        <div class="chart-main" data-field="battery"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-md-6 mb-4">
+            <section class="card card-easymeter h-100 mb-4">
+                <header class="card-header">
+                    <h2 class="card-title">Sensor</h2>
+                </header>
+                <div class="card-body chart_sensor-body" data-loading-overlay data-loading-overlay-options='{ "css": { "backgroundColor": "#00000080" } }'>
+                    <div class="chart-container">
+                        <div class="chart-main" data-field="sensor"></div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+
     <div>
 
         <table class="text-dark w-100">

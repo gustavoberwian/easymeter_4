@@ -229,7 +229,7 @@
             $.post('/gas/add_fechamento', data, function(json) {
                 if (json.status === 'success') {
                     // vai para a pagina do fechamento
-                    window.location = "/" + $(".page-header").data("url") + "/fechamento/" + $(".content-body").data("entidade") + "/" + json.id;
+                    window.location = "/" + $(".content-body").data("url") + "/fechamentos/" + $(".content-body").data("entidade") + "/" + json.id;
 
                     // fecha a modal
                     $.magnificPopup.close();

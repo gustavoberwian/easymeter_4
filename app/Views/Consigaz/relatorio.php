@@ -8,16 +8,7 @@
 
                 <table class="text-dark w-100">
                     <tr>
-                        <td>
-                            <h4 class="font-weight-bold mt-0"><?= $entidade->nome; ?></h4>
-                            <?php echo $entidade->logradouro; ?>, <?php echo $entidade->numero; ?><br />
-                            <?php echo $entidade->bairro; ?><br />
-                            <?php echo $entidade->cidade; ?>/<?php echo $entidade->uf; ?><br />
-                            CEP <?php echo $entidade->cep; ?>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2" class="text-center"><span class="mt-3 h5 font-weight-bold text-uppercase">Relatório de Consumo de Água</span>
+                        <td colspan="2" class="text-center"><span class="mt-3 h5 font-weight-bold text-uppercase">Relatório de Consumo de Gás</span>
                     </tr>
                 </table>
 
@@ -36,16 +27,16 @@
 
                         <td width="10%" class="text-dark">
                             <p class="text-1 text-muted mb-0">Medidor</p>
-                            <div class="text-4 font-weight-bold mb-0 text-center"><?= $unidade->device ?></div>
+                            <div class="text-4 font-weight-bold mb-0 text-center"><?= $unidade->medidor ?></div>
                         </td>
 
                         <td width="20%" class="text-dark">
                             <p class="text-1 text-muted mb-0">Ciclo</p>
-                            <div class="text-4 font-weight-bold mb-0 text-center"><?php echo date('d/m/Y', $fechamento->data_inicio).' a '.date('d/m/Y', $fechamento->data_fim); ?></div>
+                            <div class="text-4 font-weight-bold mb-0 text-center"><?php echo date('d/m/Y', $fechamento->inicio).' a '.date('d/m/Y', $fechamento->fim); ?></div>
                         </td>
                         <td width="10%" class="text-dark">
                             <p class="text-1 text-muted mb-0">Dias</p>
-                            <div class="text-4 font-weight-bold mb-0 text-center"><?php echo round(($fechamento->data_fim - $fechamento->data_inicio) / 86400) + 1; ?></div>
+                            <div class="text-4 font-weight-bold mb-0 text-center"><?php echo round(($fechamento->fim - $fechamento->inicio) / 86400) + 1; ?></div>
                         </td>
                         <td width="10%" class="text-dark">
                             <p class="text-1 text-muted mb-0">Fechamento</p>
@@ -87,6 +78,14 @@
                         <tr>
                             <td colspan="2" class="bg-gray">
                                 <p class="text-muted font-weight-bold text-uppercase text-center mb-0">Consumo</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td width="50%" class="bg-gray">
+                                <p class="text-muted font-weight-bold mb-0">Consumo m³</p>
+                            </td>
+                            <td width="50%">
+                                <div class="text-4 text-dark font-weight-bold mb-0 text-center"><?= number_format($fechamento->leitura_atual - $fechamento->leitura_anterior, 0, ",", ".")." L"; ?></div>
                             </td>
                         </tr>
                         </tbody>
@@ -172,50 +171,6 @@
                         </tbody>
                     </table>
                 </div>
-
-                <?php if (array_sum($equivalencia)) : ?>
-                    <div class="mt-3" style="page-break-inside: avoid;">
-                        <table class="relatorio comum w-100 table-bordered">
-                            <tbody>
-                            <tr>
-                                <td class="bg-gray">
-                                    <p class="text-muted font-weight-bold text-uppercase text-center mb-0">O CONSUMO DA UNIDADE ESTE MÊS EQUIVALE A</p>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="text-dark text-center font-weight-semibold align-middle bg-w">
-                                    <div class="row">
-                                        <?php if ($equivalencia[0]) : ?>
-                                            <div class="col">
-                                                <img class="comp-img-fluid" src="<?= base_url( 'assets/img/c0_'.$equivalencia[0]); ?>.png">
-                                                <p class="text-1 text-muted my-0"><?= $equivalencia[0]; ?> <?= ($equivalencia[0] == 1) ? 'CAMINHÃO' : 'CAMINHÕES'; ?> DE 10.000 L</p>
-                                            </div>
-                                        <?php endif; ?>
-                                        <?php if ($equivalencia[1]) : ?>
-                                            <div class="col">
-                                                <img class="comp-img-fluid" src="<?= base_url( 'assets/img/c1_'.$equivalencia[1]); ?>.png">
-                                                <p class="text-1 text-muted my-0"><?= $equivalencia[1]; ?> PISCINAS DE 1.000 L</p>
-                                            </div>
-                                        <?php endif; ?>
-                                        <?php if ($equivalencia[2]) : ?>
-                                            <div class="col">
-                                                <img class="comp-img-fluid" src="<?= base_url( 'assets/img/c2_'.$equivalencia[2]); ?>.png">
-                                                <p class="text-1 text-muted my-0"><?= $equivalencia[2]; ?> BANHEIRAS DE 100 L</p>
-                                            </div>
-                                        <?php endif; ?>
-                                        <?php if ($equivalencia[3]) : ?>
-                                            <div class="col">
-                                                <img class="comp-img-fluid" src="<?= base_url( 'assets/img/c3_'.$equivalencia[3]); ?>.png">
-                                                <p class="text-1 text-muted my-0"><?= $equivalencia[3]; ?> <?= ($equivalencia[3] == 1) ? 'GALÃO' : 'GALÕES'; ?> DE 10 L</p>
-                                            </div>
-                                        <?php endif; ?>
-                                    </div>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php endif; ?>
 
                 <div class="mt-3">
                     <table class="text-dark w-100">

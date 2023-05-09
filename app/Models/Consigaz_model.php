@@ -81,21 +81,21 @@ class Consigaz_model extends Base_model
 
     public function get_fechamento($fechamento_id)
     {
-        $result = $this->db->query("SELECT * FROM esm_fechamentos WHERE id = $fechamento_id");
+        $result = $this->db->query("SELECT * FROM esm_fechamentos_gas WHERE id = $fechamento_id");
 
         return $result->getRow();
     }
 
     public function get_fechamento_entrada($id)
     {
-        $result = $this->db->query("SELECT * FROM esm_fechamentos_entradas WHERE id = $id");
+        $result = $this->db->query("SELECT * FROM esm_fechamentos_gas_entradas WHERE id = $id");
 
         return $result->getRow();
     }
 
     public function get_unidade_by_medidor($medidor)
     {
-        $result = $this->db->query("SELECT * FROM esm_unidades JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades.id AND esm_medidores.id = $medidor");
+        $result = $this->db->query("SELECT esm_unidades.*, esm_medidores.nome as medidor, esm_medidores.tipo FROM esm_unidades JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades.id AND esm_medidores.id = $medidor");
 
         return $result->getRow();
     }
@@ -159,5 +159,31 @@ class Consigaz_model extends Base_model
         }
 
         return $ret;
+    }
+
+    public function GetFechamentoHistoricoUnidade($type, $device, $date)
+    {
+        $result = $this->db->query("
+            SELECT 
+                esm_unidades.nome, 
+                esm_fechamentos_{$type}_entradas.*,
+                esm_fechamentos_{$type}.competencia
+            FROM 
+                esm_fechamentos_{$type}_entradas
+            JOIN 
+                esm_fechamentos_{$type} ON esm_fechamentos_{$type}.id = esm_fechamentos_{$type}_entradas.fechamento_id
+            JOIN
+                esm_medidores ON esm_medidores.id = esm_fechamentos_{$type}_entradas.medidor_id
+            JOIN 
+                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            WHERE 
+                esm_fechamentos_{$type}_entradas.medidor_id = '$device' AND esm_fechamentos_{$type}.cadastro < '$date'
+        ");
+
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
+        }
+
+        return false;
     }
 }

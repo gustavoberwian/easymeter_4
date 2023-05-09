@@ -125,19 +125,10 @@ class Consigaz extends UNO_Controller
         $data['relatorio'] = $this->consigaz_model->get_fechamento_entrada($relatorio_id);
 
         $data['fechamento'] = $this->consigaz_model->get_fechamento($data['relatorio']->fechamento_id);
-        $data['fechamento']->mensagem = "";
 
         $data['unidade'] = $this->consigaz_model->get_unidade_by_medidor($data['relatorio']->medidor_id);
 
-        $data['historico'] = false;
-
-        $data['equivalencia'][0] = floor($data['fechamento']->leitura_atual - $data['fechamento']->leitura_anterior / 10000);
-        $resto = $data['equivalencia'][0] * 10000;
-        $data['equivalencia'][1] = floor(($data['fechamento']->leitura_atual - $data['fechamento']->leitura_anterior - $resto) / 1000);
-        $resto += $data['equivalencia'][1] * 1000;
-        $data['equivalencia'][2] = floor(($data['fechamento']->leitura_atual - $data['fechamento']->leitura_anterior - $resto) / 100);
-        $resto += $data['equivalencia'][2] * 100;
-        $data['equivalencia'][3] = floor(($data['fechamento']->leitura_atual - $data['fechamento']->leitura_anterior - $resto) / 10);
+        $data['historico'] = $this->consigaz_model->GetFechamentoHistoricoUnidade("gas", $data['relatorio']->medidor_id, $data['fechamento']->cadastro);
 
         return $this->render("relatorio", $data);
     }
@@ -239,7 +230,7 @@ class Consigaz extends UNO_Controller
         $dt->add("actions", function ($data) {
             return '
                 <a class="text-primary reload-table-modal cur-pointer me-1"><i class="fas fa-rotate" title="Atualizar"></i>
-                <a href="' . base_url($this->url . '/unidade/' . $data['u_id'] . '/consumo') . '" class="text-primary me-1"><i class="fas fa-eye" title="Ver"></i></a>
+                <a href="' . base_url($this->url . '/unidade/' . $data['u_id'] . '/consumo') . '" class="text-primary me-1"><i class="fas fa-eye" title="Consumo"></i></a>
                 <a class="text-primary sync-leitura-modal cur-pointer" data-mid="' . $data['m_id'] . '"><i class="fas fa-gear" title="Sincronizar"></i>
             ';
         });

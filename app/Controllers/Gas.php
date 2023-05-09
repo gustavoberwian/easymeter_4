@@ -13,6 +13,7 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\Codeigniter4Adapter;
+use CodeIgniter\Database\RawSql;
 
 class Gas extends UNO_Controller
 {
@@ -74,8 +75,6 @@ class Gas extends UNO_Controller
             ),
             "tooltip" => array(
                 "enabled"   => true,
-//				"intersect" => false,
-//				"shared"    => true,
                 "x" => array(
                     "formatter" => "function",
                     "show"      => true
@@ -88,7 +87,7 @@ class Gas extends UNO_Controller
             "extra" => array(
                 "tooltip" => array(
                     "title" => $titles,
-                    "decimals" => 0,
+                    "decimals" => $decimals,
                 ),
                 "unit"     => $unit,
                 "decimals" => $decimals,
@@ -132,6 +131,53 @@ class Gas extends UNO_Controller
         return $html;
     }
 
+    public function chart_battery($device, $compare, $start, $end)
+    {
+        $period = $this->gas_model->get_battery_consumption($device, $start, $end, true);
+
+        $values  = array();
+        $labels  = array();
+        $titles  = array();
+        $dates   = array();
+
+        $max = -1;
+        $min = 999999999;
+
+        $series = array();
+
+        if ($period) {
+            foreach ($period as $v) {
+                $values[] = $v->value;
+                $labels[] = $v->label;
+
+                if ($start == $end) {
+                    $titles[] = $v->label." - ".$v->next;
+                } else {
+                    $titles[] = $v->label." - ".weekDayName($v->dw);
+                    $dates[]  = $v->date;
+                }
+                if ($max < floatval($v->value) && !is_null($v->value)) $max = floatval($v->value);
+                if ($min > floatval($v->value) && !is_null($v->value)) $min = floatval($v->value);
+            }
+
+            $series[] = array(
+                "name"  => "Bateria",
+                "data"  => $values,
+                "color" => "#007AB8",
+            );
+        }
+
+        $extra = array();
+
+        $data = array();
+
+        $footer = $this->chartFooter($data);
+
+        $config = $this->chartConfig("area", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
+
+        echo json_encode($config);
+    }
+
     public function chart()
     {
         $field    = $this->input->getPost('field');
@@ -145,6 +191,15 @@ class Gas extends UNO_Controller
         $compare  = $this->input->getPost('compare');
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
+
+        if ($field === "battery") {
+            $this->chart_battery($device, $compare, $start, $end);
+            return;
+        } elseif ($field === "sensor") {
+            $this->chart_battery($device, $compare, $start, $end);
+            //$this->chart_sensor($device, $compare, $start, $end);
+            return;
+        }
 
         $period   = $this->gas_model->GetConsumption($device, $start, $end, array(), true, null);
         $period_s = $this->gas_model->GetConsumption($device, $start, $end, array(), false, null)[0]->value;
@@ -229,14 +284,14 @@ class Gas extends UNO_Controller
 
         // realiza a query via dt
         $dt = $this->datatables->query("SELECT
-                esm_fechamentos.id,
-                esm_fechamentos.competencia,
-                FROM_UNIXTIME(esm_fechamentos.data_inicio, '%d/%m/%Y') AS inicio,
-                FROM_UNIXTIME(esm_fechamentos.data_fim, '%d/%m/%Y') AS fim,
-                FORMAT(esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior, 1, 'de_DE') AS consumo,
-                DATE_FORMAT(esm_fechamentos.cadastro, '%d/%m/%Y') AS emissao
-            FROM esm_fechamentos
-            JOIN esm_entidades ON esm_entidades.id = esm_fechamentos.entidade_id AND esm_entidades.id = $entidade
+                esm_fechamentos_gas.id,
+                esm_fechamentos_gas.competencia,
+                FROM_UNIXTIME(esm_fechamentos_gas.inicio, '%d/%m/%Y') AS inicio,
+                FROM_UNIXTIME(esm_fechamentos_gas.fim, '%d/%m/%Y') AS fim,
+                FORMAT(esm_fechamentos_gas.leitura_atual - esm_fechamentos_gas.leitura_anterior, 1, 'de_DE') AS consumo,
+                DATE_FORMAT(esm_fechamentos_gas.cadastro, '%d/%m/%Y') AS emissao
+            FROM esm_fechamentos_gas
+            JOIN esm_entidades ON esm_entidades.id = esm_fechamentos_gas.entidade_id AND esm_entidades.id = $entidade
             ORDER BY emissao DESC");
 
         $dt->edit('competencia', function ($data) {
@@ -300,7 +355,7 @@ class Gas extends UNO_Controller
             $spreadsheet->getActiveSheet()->getStyle('A1:E2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($fechamento->nome));
             $spreadsheet->getActiveSheet()->mergeCells('A1:E1');
-            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Consumo de Gás - '.date("d/m/Y", $fechamento->data_inicio).' a '.date("d/m/Y", $fechamento->data_fim));
+            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Consumo de Gás - '.date("d/m/Y", $fechamento->inicio).' a '.date("d/m/Y", $fechamento->fim));
             $spreadsheet->getActiveSheet()->mergeCells('A2:E2');
 
             $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'A4');
@@ -440,8 +495,8 @@ class Gas extends UNO_Controller
             "entidade_id" => $this->input->getPost('tar-gas-entidade'),
             "ramal_id"    => $this->input->getPost('tar-gas-ramal'),
             "competencia" => $this->input->getPost('tar-gas-competencia'),
-            "inicio" => $this->input->getPost('tar-gas-data-ini'),
-            "fim"    => $this->input->getPost('tar-gas-data-fim'),
+            "inicio"      => $this->input->getPost('tar-gas-data-ini'),
+            "fim"         => $this->input->getPost('tar-gas-data-fim'),
             "mensagem"    => $this->input->getPost('tar-gas-msg'),
         );
 
@@ -473,15 +528,15 @@ class Gas extends UNO_Controller
                 leitura_anterior,
                 leitura_atual,
                 leitura_atual - leitura_anterior AS consumo,
-                esm_fechamentos_entradas.id AS DT_RowId
+                esm_fechamentos_gas_entradas.id AS DT_RowId
             FROM 
-                esm_fechamentos_entradas
+                esm_fechamentos_gas_entradas
             JOIN 
-                esm_medidores ON esm_medidores.id = esm_fechamentos_entradas.medidor_id
+                esm_medidores ON esm_medidores.id = esm_fechamentos_gas_entradas.medidor_id
             JOIN 
                 esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             WHERE 
-                esm_fechamentos_entradas.fechamento_id = $fid
+                esm_fechamentos_gas_entradas.fechamento_id = $fid
         ");
 
         $dt->edit('leitura_anterior', function ($data) {

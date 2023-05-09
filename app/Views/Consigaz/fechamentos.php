@@ -1,4 +1,4 @@
-<section role="main" class="content-body" data-entidade="<?= $entidade->id ?>" data-ramal="<?= $ramal->id ?>">
+<section role="main" class="content-body" data-entidade="<?= $entidade->id ?>" data-ramal="<?= $ramal->id ?>" data-url="<?= $url ?>">
     <!-- start: page -->
     <header class="page-header">
         <h2><?= $entidade->nome ?> - Fechamentos</h2>

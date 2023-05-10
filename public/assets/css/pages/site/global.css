@@ -20,7 +20,7 @@
 }
 :root {
   --primary-color: #27b1e5;
-  --secundary-color: #3D4452;
+  --secundary-color: #2e6995;
   --third-color: #252C37;
 }
 
@@ -36,6 +36,16 @@ h4,
 h5 {
   font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: normal;
+  text-align: left;
+}
+
+h6 {
+  font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: bold;
+  color: #ffffff;
+  text-align: left;
+  font-size: 32px;
+  line-height: 40px;
 }
 
 p.subtitle {
@@ -72,7 +82,7 @@ footer {
 
 .copywrite,
 footer {
-  background: var(--secundary-color);
+  background: #04242f;
 }
 
 footer span.sub,
@@ -80,7 +90,12 @@ footer address,
 .copywrite,
 footer a,
 p {
-  color: #fff;
+  color: #ffffff;
+}
+
+footer span.sub1{
+  color: #ffffff;
+  text-align: center;
 }
 
 div.stats {
@@ -93,7 +108,7 @@ body > footer > div > div.row.d-flex.justify-content-center.review {
 }
 
 footer {
-  padding: 6rem 30px;
+  padding: 70px;
 }
 
 footer .footer-widgets {
@@ -104,6 +119,11 @@ footer .footer-list {
   display: flex;
   gap: 10px;
   margin-bottom: 15px;
+}
+
+footer .footer-list1 {
+  display: flex;
+
 }
 
 footer .footer-card {
@@ -219,6 +239,7 @@ button.modal-button.send {
   to {
     opacity: 1;
   }
+  
 }
 .msg_contact_title {
   display: flex;
@@ -281,6 +302,7 @@ button.modal-button.send {
 .subtitle-banners {
   font-size: 22px;
   font-family: "Square-Roman";
+  text-align: left;
 }
 
 .banner01 {
@@ -406,6 +428,11 @@ button.modal-button.send {
 
 .gray-wallpaper {
   background: #EBECED;
+  background: linear-gradient(180deg, #EBECED 0%, #EBECED 43%, rgb(255, 255, 255) 100%);
+}
+
+.blue-wallpaper {
+  background: #08a308;
   background: linear-gradient(180deg, #EBECED 0%, #EBECED 43%, rgb(255, 255, 255) 100%);
 }
 
@@ -854,6 +881,40 @@ button.modal-button.send {
 @media (max-width: 1280px) {
   p.text {
     margin: 0 !important;
+    text-align: left;
+  }
+
+  h1,
+  h3,
+  h2 {
+    font-family:  "Roboto", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    color: #2D343F;
+    text-align: left;
+  }
+
+  h4,
+  h5 {
+    font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    text-align: left;
+  }
+
+  h6 {
+    font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-weight: bold;
+    color: #ffffff;
+    text-align: left;
+    font-size: 32px;
+    line-height: 40px;
+  }
+
+  p.subtitle {
+    font-size: 20px;
+    margin: 0px;
+    color: #3E4554;
+    font-weight: 900;
+    text-align: left;
   }
   .stats {
     margin-top: 3rem;
@@ -950,6 +1011,14 @@ button.modal-button.send {
   hr.separator-plataforma {
     width: 90%;
   }
+  .number_footer {
+    display: flex;
+    justify-content: left;
+    align-items: center;
+  }
+  .destaques-box {
+    padding-top: 150px;
+  }
   div.box {
     margin-right: 0;
   }
@@ -970,6 +1039,7 @@ button.modal-button.send {
   }
   .title-banner {
     line-height: 2rem;
+    text-align: left;
   }
   .group-stats {
     flex-direction: column;
@@ -1017,17 +1087,17 @@ button.modal-button.send {
     flex-direction: column;
   }
   #individualizacao > div > div > div > div.col-7.right-side,
-#individualizacao > div > div > div > div.col-5.left-side {
+  #individualizacao > div > div > div > div.col-5.left-side {
     max-width: 100%;
   }
   #individualizacao > div > div > div > div.col-7.right-side > div > div {
-    padding-left: 0px;
+    padding-left: 18px;
   }
   #individualizacao > div > div > div > div.col-7.right-side > div > div > p.text {
     margin: 0;
   }
   #aplicacao > div > div > div > div.col-4.right-side.review,
-#aplicacao > div > div > div > div.col-4.left-side.review {
+  #aplicacao > div > div > div > div.col-4.left-side.review {
     flex: none;
     max-width: none;
   }
@@ -1053,3 +1123,4 @@ button.modal-button.send {
 .color-primary {
   color: #0095E5 !important;
 }
+

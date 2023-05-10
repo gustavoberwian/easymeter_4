@@ -65,6 +65,7 @@ class Industria extends UNO_Controller
 
         $this->user->unidade = (object)[];
         $this->user->entity = (object)[];
+        
 
         if ($this->user->inGroup('superadmin')) {
             $this->user->entity->classificacao = $this->user->page;
@@ -79,14 +80,14 @@ class Industria extends UNO_Controller
 
         if(!$this->user->inGroup('superadmin'))
         {
-          if ($this->user->entity->m_energia)
-            $this->monitoria = 'energy';
-        elseif ($this->user->entity->m_agua)
-            $this->monitoria = 'water';
-        elseif ($this->user->entity->m_gas)
-            $this->monitoria = 'gas';
-        elseif ($this->user->entity->m_nivel)
-            $this->monitoria = 'nivel';  
+            if ($this->user->inGroup('energia'))
+            $this->user->monitoria = 'energy';
+        elseif ($this->user->inGroup('agua'))
+            $this->user->monitoria = 'water';
+        elseif ($this->user->inGroup('gas'))
+            $this->user->monitoria = 'gas';
+        elseif ($this->user->inGroup('nivel'))
+            $this->user->monitoria = 'nivel';
         }
     }
 
@@ -99,7 +100,7 @@ class Industria extends UNO_Controller
         $data['pocos'] = $this->industria_model->get_medidores_geral($this->user->entity->id, "nivel", true);
 
         for($i = 0; $i < count($data['pocos']); $i++) {
-            $m = $this->industria_model->get_last_nivel($data['pocos'][$i]['id']);
+            $m = $this->industria_model->get_last_nivel($data['pocos'][$i]['id'], $this->user->entity->tabela);
 
             $data['pocos'][$i]['dinamico'] = number_format($m->profundidade_total - round(($m->leitura - 1162) * $m->mca / 4649), 0, ",", ".");
             $data['pocos'][$i]['minimo']   = number_format($m->profundidade_total - round(($m->minimo - 1162) * $m->mca / 4649), 0, ",", ".");
@@ -144,7 +145,7 @@ class Industria extends UNO_Controller
     {
         $data['user'] = $this->user;
         $data['url'] = $this->url;
-        $data['monitoria'] = $this->monitoria;
+        $data['monitoria'] = $this->user->monitoria;
         echo $this->render('alerts', $data);
     }
 
@@ -330,9 +331,9 @@ class Industria extends UNO_Controller
         $footer = "";
         if ($monitoramento == "agua") {
             $footer = $this->chart_footer(array(
-                array("label" => "Total",  "value" => number_format(round($total), 0, ",", ".")." <span style='font-size:10px;'>m³</span>",                    "color" => "#0088cc"),
-                array("label" => "Médio",  "value" => number_format(round($total / count($leituras)), 0, ",", ".")." <span style='font-size:10px;'>m³</span>", "color" => "#0088cc"),
-                array("label" => "Máximo", "value" => number_format(round($max), 0, ",", ".")." <span style='font-size:10px;'>m³</span>",                      "color" => "#0088cc"),
+                array("label" => "Total",  "value" => number_format(round($total), 0, ",", ".")." <span style='font-size:10px;'>m³</span>",                                              "color" => "#0088cc"),
+                array("label" => "Médio",  "value" => number_format(round($total / count($leituras)), 0, ",", ".")." <span style='font-size:10px;'>m³</span>",                           "color" => "#0088cc"),
+                array("label" => "Máximo", "value" => number_format(round($max), 0, ",", ".")." <span style='font-size:10px;'>m³</span>",                                                "color" => "#0088cc"),
                 array("label" => "Mínimo", "value" => number_format(round(($min == 999999999) ? 0 : $min), 0, ",", ".")." <span style='font-size:10px;'>m³</span>",                      "color" => "#0088cc"),
             ));
 

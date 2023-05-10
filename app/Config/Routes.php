@@ -57,12 +57,6 @@ $routes->get('/frasle/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/frasle/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/frasle/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 
-// Routes da Ambev para shopping
-$routes->get('/ambev', 'Shopping::index',['filter'=>'checkApiAuth']);
-$routes->get('/ambev/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
-$routes->get('/ambev/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
-$routes->post('/ambev/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
-
 // Routes da Consigaz para shopping
 $routes->get('/consigaz', 'Shopping::index',['filter'=>'checkApiAuth']);
 $routes->get('/consigaz/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
@@ -125,6 +119,12 @@ $routes->get('/bauducco', 'Industria::index',['filter'=>'checkApiAuth']);
 $routes->get('/bauducco/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
 $routes->get('/bauducco/(:any)/(:num)', 'Industria::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/bauducco/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
+
+// Routes da Ambev para indústria
+$routes->get('/ambev', 'Industria::index',['filter'=>'checkApiAuth']);
+$routes->get('/ambev/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
+$routes->get('/ambev/(:any)/(:num)', 'Industria::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/ambev/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
 
 service('auth')->routes($routes);
 

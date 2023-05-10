@@ -43,41 +43,29 @@
             <div class="row pt-0">
                 <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
                     <header class="card-header">
+                        <?php if ($user->baixar_planilhas == "1") :?>
                         <div class="card-actions buttons">
-                            <button id="baixarenergy" class="btn btn-primary btn-download" data-group="<?= $group_id; ?>" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
+                            <button id="baixarenergy" class="btn btn-primary btn-download-unity" data-group="<?= $group_id; ?>" data-id="<?= $user->entity->id; ?>" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
                         </div>
+                        <?php endif; ?>
                         <h2 class="card-title">Lançamentos</h2>
                     </header>
 
                     <div class="card-body">
-                        <?php if (!$user->demo) : ?>
-                            <div class="d-flex justify-content-end">
-                                <button class="ml-3 btn btn-success btn-incluir mb-3">Incluir</button>
-                            </div>
-                        <?php endif; ?>
                         <div class="tab-form faturamento">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-faturamentos" data-url="/energia/GetFaturamentos" data-group="<?=$group_id ?>">
+                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-faturamentos" data-url=<?="/energia/get_faturamento_unidade/".$user->entity->id ?> >
                                     <thead>
                                         <tr role="row">
-                                            <th rowspan="3">Competência</th>
-                                            <th rowspan="3">Data inicial</th>
-                                            <th rowspan="3">Data final</th>
-                                            <th colspan="4" class="text-center"><?= $area_comum; ?></th>
-                                            <th colspan="4" class="text-center">Unidades</th>
-                                        </tr>
-                                        <tr role="row">
+                                            <th rowspan="2" class="text-center">Competência</th>
+                                            <th rowspan="2" class="text-center">Unidade</th>
+                                            <th rowspan="2" class="text-center">Id</th>
                                             <th colspan="3" class="text-center">Consumo - kWh</th>
                                             <th rowspan="2" class="text-center">Demanda - Kw</th>
-                                            <th colspan="3" class="text-center">Consumo - kWh</th>
-                                            <th rowspan="2" class="text-center">Demanda - Kw</th>
-                                            <th rowspan="2">Emissão</th>
-                                            <th rowspan="2">Ações</th>
+                                            <th rowspan="2" class="text-center">Emissão</th>
+                                            <th rowspan="2" class="text-center">Ações</th>
                                         </tr>
                                         <tr role="row">
-                                            <th>Total</th>
-                                            <th>Ponta</th>
-                                            <th>Fora Ponta</th>
                                             <th>Total</th>
                                             <th>Ponta</th>
                                             <th>Fora Ponta</th>
@@ -112,7 +100,7 @@
                         <?php endif; ?>
                         <div class="tab-form faturamento">
                             <div class="table-responsive">
-                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-water" data-url="/water/GetLancamentosAgua" data-group="<?=$group_id ?>">
+                                <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-water"data-url=<?="/water/get_lancamento_unity/".$user->entity->id ?> data-group="<?=$group_id ?>">
                                     <thead>
                                         <tr role="row">
                                             <th rowspan="2">Competência</th>

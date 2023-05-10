@@ -38,6 +38,11 @@ class Industria_model extends Base_model
 
     public function get_medidores_geral($id, $monitoramento = 'agua', $array = false)
     {
+     $subtipo = " AND esm_medidores.sub_tipo = 'geral'";
+
+     if ($monitoramento === 'nivel')
+        $subtipo = '';
+     
         $query = $this->db->query("
             SELECT 
                 esm_medidores.*, 
@@ -47,8 +52,7 @@ class Industria_model extends Base_model
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             WHERE 
                 esm_entidades_centrais.entidade_id = $id AND 
-                esm_medidores.tipo = '$monitoramento' AND
-                esm_medidores.sub_tipo = 'geral'
+                esm_medidores.tipo = '$monitoramento' $subtipo
         ");
 
         // verifica se retornou algo
@@ -61,17 +65,18 @@ class Industria_model extends Base_model
             return $query->getResult();
     }
 
-    public function get_last_nivel($id, $array = false)
+    public function get_last_nivel($id, $tabela, $array = false)
     {
+
         $query = $this->db->query("
-            SELECT esm_sensores_nivel.*, esm_leituras_bauducco_nivel.leitura, esm_leituras_bauducco_nivel.timestamp, d.*
-            FROM esm_leituras_bauducco_nivel
-            JOIN esm_sensores_nivel ON esm_sensores_nivel.medidor_id = esm_leituras_bauducco_nivel.medidor_id
+            SELECT esm_sensores_nivel.*, esm_leituras_" . $tabela . "_nivel.leitura, esm_leituras_" . $tabela . "_nivel.timestamp, d.*
+            FROM esm_leituras_" . $tabela . "_nivel
+            JOIN esm_sensores_nivel ON esm_sensores_nivel.medidor_id = esm_leituras_" . $tabela . "_nivel.medidor_id
             JOIN (
-                SELECT $id AS id, MAX(leitura) AS estatico, MIN(leitura) AS minimo FROM esm_leituras_bauducco_nivel WHERE medidor_id = $id AND leitura > 0
-                ) d ON d.id = esm_leituras_bauducco_nivel.medidor_id
+                SELECT $id AS id, MAX(leitura) AS estatico, MIN(leitura) AS minimo FROM esm_leituras_" . $tabela . "_nivel WHERE medidor_id = $id AND leitura > 0
+                ) d ON d.id = esm_leituras_" . $tabela . "_nivel.medidor_id
             WHERE 
-                esm_leituras_bauducco_nivel.medidor_id = $id AND
+                esm_leituras_" . $tabela . "_nivel.medidor_id = $id AND
                 timestamp <= UNIX_TIMESTAMP(NOW())
             ORDER BY timestamp DESC
             LIMIT 1                

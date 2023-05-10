@@ -1022,6 +1022,7 @@ class Admin extends UNO_Controller
     {
         $users = auth()->getProvider();
         
+        // Cria novo usuário
         $user = new User([
             'username' => $this->input->getPost('nome-user') ?? '',
             'email'    => $this->input->getPost('email-user') ?? '',
@@ -1031,6 +1032,7 @@ class Admin extends UNO_Controller
 
         $users->save($user);
 
+        // Recebe dados para a inserção
         $dados['group'] = [];
 
         if ($this->input->getPost('user-agua') === 'on')
@@ -1061,7 +1063,7 @@ class Admin extends UNO_Controller
         $dados['group-user']            = $this->input->getPost('group-user') ?? '';
         $dados['groups-user']           = array_map('trim',explode(",", $this->input->getPost('groups-user') ?? ''));
 
-        
+        //Chamada da função de inserção
         echo $this->admin_model->add_user($dados);
     }
 
@@ -1109,6 +1111,7 @@ class Admin extends UNO_Controller
 
         $user = $users->findById($dados['user_id']);
 
+        //Edita usuário
         $user->fill([
             'username' => $this->input->getPost('nome-user') ?? '',
             'email'    => $this->input->getPost('email-user') ?? '',
@@ -1117,6 +1120,9 @@ class Admin extends UNO_Controller
         ]);
 
         $users->save($user);
+
+        
+        // Recebe dados para a edição
 
         if ($this->input->getPost('user-agua') === 'on')
         {
@@ -1152,6 +1158,7 @@ class Admin extends UNO_Controller
         $dados['page'] = $this->input->getPost('page-user') ?? '';
         $dados['groups-user'] =  array_map('trim',explode(",", $this->input->getPost('groups-user') ?? ''));
        
+        //Chamada da função de inserção
         echo $this->admin_model->edit_user($dados);
     }
 }   

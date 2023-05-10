@@ -607,12 +607,14 @@ class Admin_model extends Base_model
 
     public function add_user($dados)
     {
+        // Insere grupos de monitoramento
         foreach ($dados['group'] as $m) {
             if (!$this->db->table('auth_groups_users')->set(array('group' => $m, 'user_id' => $dados['user-id']))->insert()) {
                 return json_encode(array("status" => "error", "message" => $this->db->error()));
             }
         }
 
+        // Insere infos nas tabelas de usuario
         if (!$this->db->table('auth_users')->where('id', $dados['user-id'])->set(array('page' => $dados['page']))->update()) {
             return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
@@ -630,15 +632,19 @@ class Admin_model extends Base_model
             }
         } else {
 
-            if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user-id'], 'entidade_id' => $this->get_table_by_name($dados['classificacao'], $dados['entity-user'])->id))->insert()) {
-                return json_encode(array("status" => "error", "message" => $this->db->error()));
-            }
-
             if ($dados['classificacao'] === 'entidades') {
+                if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user-id'], 'entidade_id' => $this->get_table_by_name($dados['classificacao'], $dados['entity-user'])->id))->insert()) {
+                    return json_encode(array("status" => "error", "message" => $this->db->error()));
+                }
+    
                 if (!$this->db->table('auth_groups_users')->set(array('group' => 'admin', 'user_id' => $dados['user-id']))->insert()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
             } else {
+                if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user-id'], 'agrupamento_id' => $this->get_table_by_name($dados['classificacao'], $dados['group-user'])->id))->insert()) {
+                    return json_encode(array("status" => "error", "message" => $this->db->error()));
+                }
+    
                 if (!$this->db->table('auth_groups_users')->set(array('group' => 'group', 'user_id' => $dados['user-id']))->insert()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
@@ -696,7 +702,7 @@ class Admin_model extends Base_model
         if ($query->getNumRows() == 0)
             return false;
 
-
+        //edita coluna active do usuario
         if ($query->getRow()->active == 0) {
             if (!$this->db->table('auth_users')->where('id', $uid)->set(array('active' => 1))->update()) {
                 return json_encode(array("status" => "error", "message" => $this->db->error()));
@@ -712,9 +718,11 @@ class Admin_model extends Base_model
     {
         $users = model('UserModel');
 
+        // Seleciona usuário
         $user = $users->findById($user_id);
         $data = [];
 
+        //set da informação
         if ($user->inGroup("admin")) {
             $data['classificacao'] = 'entidades';
 
@@ -745,7 +753,11 @@ class Admin_model extends Base_model
     public function edit_user($dados)
     {
         $user_id = $dados['user_id'];
+
+        //Edição das informações de usuário
         $filter = '';
+
+        //Edita infos dos grupos de monitoramento
         foreach ($dados['group'] as $key => $m) {
             if ($m == '') {
                 if (!$this->db->table('auth_groups_users')->where('user_id', $dados['user_id'])->where('group', $key)->delete()) {
@@ -767,6 +779,7 @@ class Admin_model extends Base_model
                     }
                 }
             }
+            //filtro para a exibição de grupos adicionais
             $filter .= "AND auth_groups_users.group != '$m' ";
         }
 
@@ -800,6 +813,7 @@ class Admin_model extends Base_model
 
             $filter .= "AND auth_groups_users.group != '$groups' ";
         }
+        //realiza edição grupos adicionais
         $query = $this->db->query(
             "
             SELECT
@@ -818,15 +832,15 @@ class Admin_model extends Base_model
                 auth_groups_users.group != 'admin' " . $filter
         );
 
-        if ($query->getNumRows() == 0) {
+        if ($query->getNumRows() == 0) 
+        {
             return json_encode(array("status" => "success", "message" => "Usuário editado com sucesso."));
-        } else {
+        } else 
+        {
             foreach ($query->getResultArray() as $q) {
-
                 if (!$this->db->table('auth_groups_users')->where('user_id', $dados['user_id'])->where('group', $q)->delete()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
-
             }
         }
 
@@ -885,6 +899,7 @@ class Admin_model extends Base_model
 
     public function get_groups_for_user($user_id)
     {
+        //Query de grupos adicionais
         $query = $this->db->query("
         SELECT
             auth_groups_users.group 

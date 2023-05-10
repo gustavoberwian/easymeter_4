@@ -201,16 +201,14 @@ class Water_model extends Base_model
 
         $values = "LPAD(ROUND(esm_medidores.ultima_leitura, 0), 6, '0') AS value_read,
                 FORMAT(m.value, 0, 'de_DE') AS value_month,
-                FORMAT(h.value, 0, 'de_DE') AS value_month_open,
-                FORMAT(m.value - h.value, 0, 'de_DE') AS value_month_closed,
                 FORMAT(l.value, 0, 'de_DE') AS value_last,
+                FORMAT(c.value, 0, 'de-DE') AS value_last_month,
                 FORMAT(m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())), 0, 'de_DE') AS value_future";
 
         if ($demo) {
             $values = "RAND() * 10000 AS value_read,
                 RAND() * 10000 AS value_month,
-                RAND() * 10000 AS value_month_open,
-                RAND() * 10000 AS value_month_closed,
+                RAND() * 10000 AS value_last_month,
                 RAND() * 10000 AS value_last,
                 RAND() * 10000 AS value_future";
         }
@@ -218,7 +216,6 @@ class Water_model extends Base_model
         $result = $this->db->query("
             SELECT 
                 esm_medidores.nome AS device, 
-                esm_unidades_config.luc AS luc, 
                 esm_unidades.nome AS name, 
                 $values
             FROM esm_medidores
@@ -496,7 +493,6 @@ class Water_model extends Base_model
         $result = $this->db->query("
             SELECT 
                 esm_unidades.nome,
-                esm_unidades_config.luc as luc,
                 LPAD(ROUND(leitura_anterior), 6, '0') AS leitura_anterior,
                 LPAD(ROUND(leitura_atual), 6, '0') AS leitura_atual,
                 FORMAT(consumo, 1, 'de_DE') AS consumo

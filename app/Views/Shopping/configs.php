@@ -59,7 +59,7 @@
                                     <?php endif; ?>
                                     <div class="col-md-4 mb-3">
                                         <label for="area-comum" class="form-label">Identificador da Área Comum</label>
-                                        <input id="area-comum" value="<?= $client_config->area_comum ?? ''; ?>" name="area_comum" type="text" class="form-control" placeholder="">
+                                        <input id="area-comum" value="<?= $client_config->area_comum ?? ''; ?>" name="area_comum" type="text" class="form-control" placeholder="Área Comum">
                                     </div>
                                     <div class="col-md-4 mb-3">
                                         <label for="open" class="form-label">Horário Abertura <?= ucfirst($url) ?></label>
@@ -169,8 +169,8 @@
                                                     <thead>
                                                     <tr role="row">
                                                         <th class="d-none">id</th>
+                                                        <th class="text-center">Nome</th>
                                                         <th class="text-center">Medidor</th>
-                                                        <th class="text-center">LUC</th>
                                                         <th class="text-center">Subtipo</th>
                                                         <th class="text-center">Tipo</th>
                                                         <th class="text-center">Identificador</th>
@@ -197,8 +197,8 @@
                                                     <thead>
                                                     <tr role="row">
                                                         <th class="d-none">id</th>
+                                                        <th class="text-center">Nome</th>
                                                         <th class="text-center">Medidor</th>
-                                                        <th class="text-center">LUC</th>
                                                         <th class="text-center">Subtipo</th>
                                                         <th class="text-center">Identificador</th>
                                                         <th class="text-center">Localizador</th>
@@ -224,8 +224,8 @@
                                                     <thead>
                                                     <tr role="row">
                                                         <th class="d-none">id</th>
+                                                        <th class="text-center">Nome</th>
                                                         <th class="text-center">Medidor</th>
-                                                        <th class="text-center">LUC</th>
                                                         <th class="text-center">Subtipo</th>
                                                         <th class="text-center">Tipo</th>
                                                         <th class="text-center">Identificador</th>
@@ -252,8 +252,8 @@
                                                     <thead>
                                                     <tr role="row">
                                                         <th class="d-none">id</th>
+                                                        <th class="text-center">Nome</th>
                                                         <th class="text-center">Medidor</th>
-                                                        <th class="text-center">LUC</th>
                                                         <th class="text-center">Subtipo</th>
                                                         <th class="text-center">Tipo</th>
                                                         <th class="text-center">Identificador</th>

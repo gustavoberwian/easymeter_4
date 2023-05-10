@@ -83,36 +83,10 @@
             <div class="col-md-4 mb-4">
                 <section class="card card-comparativo h-100">
                     <div class="card-body">
-                        <h6 class="card-body-title mb-3 mt-0 text-primary">Média Diária Nos últimos 30 dias</h6>
+                        <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo</h6>
                         <div class="row">
                             <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='day'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0">Consumo</p>
-                            </div>
-                            <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='day-o'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0"><?= ucfirst($url) ?> Aberto</p>
-                            </div>
-                            <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='day-c'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0"><?= ucfirst($url) ?> Fechado</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-            
-        </div>
-
-        <div class="row pt-0 consumption">
-
-            <div class="col-md-4 mb-4">
-                <section class="card card-comparativo h-100">
-                    <div class="card-body">
-                        <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo Total</h6>
-                        <div class="row">
-                            <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='period'>-</span>" ?></div>
+                            <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='period'>-</span>" ?></div>
                                 <p class="text-3 text-muted mb-0">Período selecionado</p>
                             </div>
                             <div class="col-lg-4 pl-1">
@@ -126,53 +100,9 @@
                         </div>
                     </div>
                 </section>
-            </div>
-
-            <div class="col-md-4 mb-4">
-                <section class="card card-comparativo h-100">
-                    <div class="card-body">
-                        <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo <?= ucfirst($url) ?> Aberto</h6>
-                        <div class="row">
-                            <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='period-o'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0">Período selecionado</p>
-                            </div>
-                            <div class="col-lg-4 pl-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='month-o'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0">No mês atual</p>
-                            </div>
-                            <div class="col-lg-4 pl-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='prevision-o'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0">Previsão no mês</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
-            <div class="col-md-4 mb-4">
-                <section class="card card-comparativo h-100">
-                    <div class="card-body">
-                        <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo <?= ucfirst($url) ?> Fechado</h6>
-                        <div class="row">
-                            <div class="col-lg-4 pr-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='period-c'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0">Período selecionado</p>
-                            </div>
-                            <div class="col-lg-4 pl-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='month-c'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0">No mês atual</p>
-                            </div>
-                            <div class="col-lg-4 pl-1">
-                                <div class="h5 mb-0 mt-1"><?= ($user->demo) ? number_format(mt_rand(1000, 10000), 0, ',', '.') . " <span style='font-size:12px;'>L</span>" : "<span class='prevision-c'>-</span>" ?></div>
-                                <p class="text-3 text-muted mb-0">Previsão no mês</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-            </div>
-
+            </div>    
         </div>
+
 
         <div class="tab-pane fade show active" id="resume">
 
@@ -188,17 +118,15 @@
                         <thead>
                         <tr role="row">
                             <th rowspan="2">Medidor</th>
-                            <th rowspan="2">LUC</th>
                             <th rowspan="2">Nome</th>
                             <th rowspan="2">Tipo</th>
                             <th rowspan="2">Leitura - M³</th>
                             <th colspan="5" class="text-center">Consumo - L</th>
                         </tr>
                         <tr role="row">
-                            <th>Mês</th>
-                            <th>Aberto</th>
-                            <th>Fechado</th>
+                            <th>Mês Atual</th>
                             <th>Últimas 24h</th>
+                            <th>Últimos 30 dias</th>
                             <th>Previsão Mês</th>
                         </tr>
                         </thead>

@@ -55,7 +55,7 @@
                                 </a>
                             </li>
                         <?php else: ?>
-                            <?php if ($group->m_energia) : ?>
+                            <?php if ($user->inGroup('energia')) : ?>
                                 <li class="<?php if (in_array($method, array('energy'))) echo 'nav-active'; ?>">
                                     <a class="nav-link" href="<?= site_url($url . '/energy/' . $group_id); ?>">
                                         <i class="fas fa-bolt" aria-hidden="true"></i>
@@ -63,7 +63,7 @@
                                     </a>
                                 </li>
                             <?php endif; ?>
-                            <?php if ($group->m_agua) : ?>
+                            <?php if ($user->inGroup('agua')) : ?>
                                 <li class="<?php if (in_array($method, array('water'))) echo 'nav-active'; ?>">
                                     <a class="nav-link" href="<?= site_url($url . '/water/' . $group_id); ?>">
                                         <i class="fas fa-tint" aria-hidden="true"></i>
@@ -71,7 +71,7 @@
                                     </a>
                                 </li>
                             <?php endif; ?>
-                            <?php if ($group->m_gas) : ?>
+                            <?php if ($user->inGroup('gas')) : ?>
                                 <li class="<?php if (in_array($method, array('gas'))) echo 'nav-active'; ?>">
                                     <a class="nav-link" href="<?= site_url($url . '/gas/' . $group_id); ?>">
                                         <i class="fas fa-fire-alt" aria-hidden="true"></i>
@@ -79,7 +79,7 @@
                                     </a>
                                 </li>
                             <?php endif; ?>
-                            <?php if ($group->m_nivel) : ?>
+                            <?php if ($user->inGroup('nivel')) : ?>
                                 <li class="<?php if (in_array($method, array('level'))) echo 'nav-active'; ?>">
                                     <a class="nav-link" href="<?= site_url( $url . '/level/' . $group_id); ?>">
                                         <i class="fas fa-database" aria-hidden="true"></i>

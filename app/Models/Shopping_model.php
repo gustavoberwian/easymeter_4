@@ -1015,4 +1015,24 @@ class Shopping_model extends Base_model
 
         return trim($emails, ',');
     }
+
+    public function get_unidade_id($unidade)
+    {
+        $query = "
+            SELECT
+                esm_unidades.id 
+            FROM
+                esm_unidades
+            WHERE
+                esm_unidades.nome = '$unidade'
+        ";
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0) {
+
+            return false;
+        }
+
+        return $result->getRow()->id;
+    }
 }

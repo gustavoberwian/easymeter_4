@@ -65,6 +65,7 @@ class Industria extends UNO_Controller
 
         $this->user->unidade = (object)[];
         $this->user->entity = (object)[];
+        
 
         if ($this->user->inGroup('superadmin')) {
             $this->user->entity->classificacao = $this->user->page;
@@ -79,14 +80,14 @@ class Industria extends UNO_Controller
 
         if(!$this->user->inGroup('superadmin'))
         {
-          if ($this->user->entity->m_energia)
-            $this->monitoria = 'energy';
-        elseif ($this->user->entity->m_agua)
-            $this->monitoria = 'water';
-        elseif ($this->user->entity->m_gas)
-            $this->monitoria = 'gas';
-        elseif ($this->user->entity->m_nivel)
-            $this->monitoria = 'nivel';  
+            if ($this->user->inGroup('energia'))
+            $this->user->monitoria = 'energy';
+        elseif ($this->user->inGroup('agua'))
+            $this->user->monitoria = 'water';
+        elseif ($this->user->inGroup('gas'))
+            $this->user->monitoria = 'gas';
+        elseif ($this->user->inGroup('nivel'))
+            $this->user->monitoria = 'nivel';
         }
     }
 
@@ -144,7 +145,7 @@ class Industria extends UNO_Controller
     {
         $data['user'] = $this->user;
         $data['url'] = $this->url;
-        $data['monitoria'] = $this->monitoria;
+        $data['monitoria'] = $this->user->monitoria;
         echo $this->render('alerts', $data);
     }
 

@@ -9,6 +9,12 @@
             paging     : true,
             columns    : [
                 {data: "nome", className: "dt-body-center"},
+                {data: "endereco", className: "dt-body-center"},
+                {data: "opened", className: "dt-body-center"},
+                {data: "closed", className: "dt-body-center"},
+                {data: "ultimo_mes", className: "dt-body-center"},
+                {data: "mes_atual", className: "dt-body-center"},
+                {data: "previsao", className: "dt-body-center"},
                 {data: "actions", className: "dt-body-center"},
             ],
             serverSide : true,

@@ -20381,3 +20381,9 @@ html.dark .mailbox-compose .bootstrap-tagsinput {
 html.dark .mailbox-compose .bootstrap-tagsinput>input {
 	color: #fff
 }
+
+td .table-one-line, tr .table-one-line{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}

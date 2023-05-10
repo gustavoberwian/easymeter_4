@@ -2,9 +2,9 @@
 
 namespace App\Controllers;
 
+use Config\Database;
 use App\Models\Consigaz_model;
-use App\Models\Energy_model;
-use App\Models\Water_model;
+use App\Models\Gas_model;
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\Codeigniter4Adapter;
 
@@ -19,14 +19,9 @@ class Consigaz extends UNO_Controller
     private Consigaz_model $consigaz_model;
 
     /**
-     * @var Energy_model
+     * @var Gas_model
      */
-    private Energy_model $energy_model;
-
-    /**
-     * @var Water_model
-     */
-    private Water_model $water_model;
+    private Gas_model $gas_model;
 
     public $url;
 
@@ -39,8 +34,7 @@ class Consigaz extends UNO_Controller
 
         // load models
         $this->consigaz_model = new Consigaz_model();
-        $this->energy_model = new Energy_model();
-        $this->water_model = new Water_model();
+        $this->gas_model = new Gas_model();
 
         // load libraries
         $this->datatables = new Datatables(new Codeigniter4Adapter);
@@ -163,11 +157,12 @@ class Consigaz extends UNO_Controller
 
     public function get_entidades()
     {
-        $db = \Config\Database::connect('easy_com_br');
+        $db = Database::connect('easy_com_br');
 
         $builder = $db->table('auth_user_relation');
         $builder->join('esm_entidades', 'esm_entidades.id = auth_user_relation.entidade_id');
-        $builder->select('esm_entidades.id, esm_entidades.nome');
+        $builder->select('esm_entidades.id, esm_entidades.nome,
+            CONCAT(esm_entidades.logradouro, ", ", esm_entidades.numero, " - ", esm_entidades.bairro, ", ", esm_entidades.cidade, " - ", esm_entidades.uf, ", ", esm_entidades.cep) as endereco');
         $builder->where('auth_user_relation.user_id', $this->user->id);
 
         // Datatables Php Library
@@ -175,6 +170,75 @@ class Consigaz extends UNO_Controller
 
         // using CI4 Builder
         $dt->query($builder);
+
+        $dt->add("opened", function ($data) {
+            $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
+
+            $opened = 0;
+            foreach ($medidores as $medidor) {
+                $opened = $this->consigaz_model->get_valvulas('open', 'count');
+            }
+
+            return $opened;
+        });
+
+        $dt->add("closed", function ($data) {
+            $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
+
+            $closed = 0;
+            foreach ($medidores as $medidor) {
+                $closed = $this->consigaz_model->get_valvulas('close', 'count');
+            }
+
+            return $closed;
+        });
+
+        $dt->add("ultimo_mes", function ($data) {
+            $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
+            $total = 0;
+
+            foreach ($medidores as $medidor) {
+                $consumo = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of last month')), date('Y-m-d H:i:s', strtotime('last day of last month')), array(), false);
+                foreach ($consumo as $c) {
+                    $total += $c->value;
+                }
+            }
+
+            return $total . ' <small>m³</small>';
+        });
+
+        $dt->add("mes_atual", function ($data) {
+            $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
+            $total = 0;
+
+            foreach ($medidores as $medidor) {
+                $consumo = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
+                foreach ($consumo as $c) {
+                    $total += $c->value;
+                }
+            }
+
+            return $total . ' <small>m³</small>';
+        });
+
+        $dt->add("previsao", function ($data) {
+            $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
+            $total = 0;
+
+            foreach ($medidores as $medidor) {
+                $consumo = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
+                foreach ($consumo as $c) {
+                    $total += $c->value;
+                }
+            }
+
+            $days = (strtotime(date('Y-m-d')) - strtotime(date('Y-m-01'))) / 86400 + 1;
+            $days_month = date('t', strtotime('this month'));
+
+            $total = $total / ($days * $days_month);
+
+            return $total . ' <small>m³</small>';
+        });
 
         $dt->add("actions", function ($data) {
             return '
@@ -242,9 +306,6 @@ class Consigaz extends UNO_Controller
     {
         $state = $this->input->getPost("state") ? 1 : 0;
         $medidor = $this->input->getPost("m_id");
-
-        //TODO -> Chamar função api que aciona a válvula
-        //TODO -> retornar só quando a válvula retornar status ok ou algo assim
 
         echo $this->consigaz_model->edit_valve_stats($medidor, $state);
     }

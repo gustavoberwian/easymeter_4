@@ -186,4 +186,43 @@ class Consigaz_model extends Base_model
 
         return false;
     }
+
+    public function get_medidores_by_entidade($entidade_id, $monitoramento = null)
+    {
+        $m = "";
+        if (!is_null($monitoramento))
+            $m = " AND esm_medidores.tipo = '$monitoramento' ";
+
+        $query = "SELECT esm_medidores.* FROM esm_medidores
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id 
+            WHERE esm_agrupamentos.entidade_id = $entidade_id $m";
+
+        return $this->db->query($query)->getResult();
+    }
+
+    public function get_valvulas($status = null, $op = null)
+    {
+        $s = "";
+        if (!is_null($status)) {
+            if ($status === 'open')
+                $s = " AND esm_valves_stats.state = 1 ";
+            elseif ($status === 'close')
+                $s = " AND esm_valves_stats.state = 0 ";
+        }
+
+        $query = "SELECT esm_valves_stats.* FROM esm_valves_stats WHERE 1 $s";
+
+        if ($op === 'count')
+            return $this->db->query($query)->getNumRows();
+
+        return $this->db->query($query)->getResult();
+    }
+
+    public function get_last_fechamento($entidade_id)
+    {
+        $query = "SELECT * FROM esm_fechamentos_gas WHERE entidade_id = $entidade_id ORDER BY cadastro DESC LIMIT 1";
+
+        return $this->db->query($query)->getRow();
+    }
 }

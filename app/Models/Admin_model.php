@@ -623,6 +623,7 @@ class Admin_model extends Base_model
             return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
 
+        //Inserção com base na classificação do usuário
         if ($dados['classificacao'] === 'unidade') {
             if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user-id'], 'unidade_id' => $this->get_unity_by_code($dados['unity-user'])->id))->insert()) {
                 return json_encode(array("status" => "error", "message" => $this->db->error()));
@@ -650,7 +651,7 @@ class Admin_model extends Base_model
                 }
             }
         }
-
+        //Insere grupos adicionais
         foreach ($dados['groups-user'] as $groups) {
             if (!$this->db->table('auth_groups_users')->set(array('group' => $groups, 'user_id' => $dados['user-id']))->insert()) {
                 return json_encode(array("status" => "error", "message" => $this->db->error()));
@@ -735,7 +736,7 @@ class Admin_model extends Base_model
         } else {
             $data['classificacao'] = '';
         }
-
+        //Recebe email do usuário
         $query = $this->db->table('auth_identities')
             ->select('auth_identities.secret')
             ->where('auth_identities.user_id', $user_id)
@@ -782,7 +783,7 @@ class Admin_model extends Base_model
             //filtro para a exibição de grupos adicionais
             $filter .= "AND auth_groups_users.group != '$m' ";
         }
-
+        //Edição de infos de usuário
         if (!$this->db->table('auth_users')->where('id', $dados['user_id'])->set('page', $dados['page'])->update()) {
             return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
@@ -791,8 +792,7 @@ class Admin_model extends Base_model
             return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
 
-
-
+        //Set infos grupos adicionais
         foreach ($dados['groups-user'] as $groups) {
 
             $query = $this->db->query("
@@ -810,7 +810,7 @@ class Admin_model extends Base_model
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
             }
-
+            //atualiza o filtro
             $filter .= "AND auth_groups_users.group != '$groups' ";
         }
         //realiza edição grupos adicionais

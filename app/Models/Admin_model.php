@@ -41,7 +41,7 @@ class Admin_model extends Base_model
 
     public function get_entity_for_select($q = 0)
     {
-        
+
         $query = $this->db->table('esm_entidades')->select('*');
 
         // se termo de busca
@@ -52,14 +52,14 @@ class Admin_model extends Base_model
                 ->groupEnd();
         }
 
-         // ordena por nome
-         $query->orderBy('nome');
+        // ordena por nome
+        $query->orderBy('nome');
 
-         // realiza a consulta
-         $result = $query->get();
- 
-         // retorna os resultados
-         return $result->getResult();
+        // realiza a consulta
+        $result = $query->get();
+
+        // retorna os resultados
+        return $result->getResult();
     }
 
     public function get_groups($entidade)
@@ -201,13 +201,14 @@ class Admin_model extends Base_model
     public function delete_entity($id)
     {
         $v = 'delbyuser';
-        if (auth()->user()->inGroup('superadmin')) $v = 'delbyadmin';
+        if (auth()->user()->inGroup('superadmin'))
+            $v = 'delbyadmin';
 
         if (!$this->db->table('esm_entidades')->where('id', $id)->set(array('visibility' => $v))->update()) {
-            echo json_encode(array("status"  => "error", "message" => $this->db->error()));
+            echo json_encode(array("status" => "error", "message" => $this->db->error()));
             return;
         }
-        echo json_encode(array("status"  => "success", "message" => ""));
+        echo json_encode(array("status" => "success", "message" => ""));
     }
 
     public function get_administradoras($q = 0)
@@ -386,9 +387,9 @@ class Admin_model extends Base_model
     {
         // atualiza bloco
         if (!$this->db->table('esm_agrupamentos')->where('id', $bid)->set(array('nome' => $nome, 'ramal_id' => $rid))->update())
-            return json_encode(array("status"  => "error", "message" => $this->db->error()));
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
         else
-            return json_encode(array("status"  => "success", "message" => "Bloco atualizado com sucesso!", "text" => $nome, "value" => $bid));
+            return json_encode(array("status" => "success", "message" => "Bloco atualizado com sucesso!", "text" => $nome, "value" => $bid));
     }
 
     public function get_medidor($id)
@@ -407,22 +408,22 @@ class Admin_model extends Base_model
     public function delete_bloco($id)
     {
         if (!$this->db->table('esm_agrupamentos')->where('id', $id)->delete()) {
-            return json_encode(array("status"  => "error", "message" => ($this->db->error()['code'] == 1451) ? 'Não é possível excluir o bloco pois ele já possui unidades cadastradas.' : $this->db->error()['message']));
+            return json_encode(array("status" => "error", "message" => ($this->db->error()['code'] == 1451) ? 'Não é possível excluir o bloco pois ele já possui unidades cadastradas.' : $this->db->error()['message']));
         }
-        return json_encode(array("status"  => "success", "message" => "Bloco excluído com sucesso"));
+        return json_encode(array("status" => "success", "message" => "Bloco excluído com sucesso"));
     }
 
     public function add_agrupamento($cid, $nome, $rid)
     {
         // insere bloco
         if (!$this->db->table('esm_agrupamentos')->set(array('entidade_id' => $cid, 'nome' => $nome, 'ramal_id' => $rid))->insert()) {
-            return json_encode(array("status"  => "error", "message" => $this->db->error()));
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
 
         // pega id da nova unidade
         $bid = $this->db->insertID();
 
-        return json_encode(array("status"  => "success", "message" => "Bloco inserido com sucesso!", "data" => array("value"  => $bid, "text" => $nome)));
+        return json_encode(array("status" => "success", "message" => "Bloco inserido com sucesso!", "data" => array("value" => $bid, "text" => $nome)));
     }
 
     public function add_unidade($unidade, $dados)
@@ -450,20 +451,20 @@ class Admin_model extends Base_model
         // verifica status e retorna de acordo
         if ($this->db->transStatus() === FALSE) {
             if ($failure[0]['code'] == 1062)
-                return json_encode(array("status"  => "error", "message" => 'Já existe uma unidade cadastrada com este identificador!'));
+                return json_encode(array("status" => "error", "message" => 'Já existe uma unidade cadastrada com este identificador!'));
             else
-                return json_encode(array("status"  => "error", "message" => $failure[0]['message']));
+                return json_encode(array("status" => "error", "message" => $failure[0]['message']));
         } else {
-            return json_encode(array("status"  => "success", "message" => "Unidade inserida com sucesso!"));
+            return json_encode(array("status" => "success", "message" => "Unidade inserida com sucesso!"));
         }
     }
 
     public function delete_unidade($id)
     {
         if (!$this->db->table('esm_unidades')->where('id', $id)->delete()) {
-            return json_encode(array("status"  => "error", "message" => $this->db->error()));
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
-        return json_encode(array("status"  => "success", "message" => "Unidade excluída com sucesso"));
+        return json_encode(array("status" => "success", "message" => "Unidade excluída com sucesso"));
     }
 
     public function get_user_emails($user_id)
@@ -538,7 +539,7 @@ class Admin_model extends Base_model
         return $result->getRow();
     }
 
-     public function update_avatar($user_id, $img) 
+    public function update_avatar($user_id, $img)
     {
         $query = $this->db->query("
             SELECT
@@ -548,9 +549,9 @@ class Admin_model extends Base_model
         ");
 
         $this->db->table('auth_users')
-        ->where('id', $user_id)
-        ->set('avatar', $img)
-        ->update();   
+            ->where('id', $user_id)
+            ->set('avatar', $img)
+            ->update();
     }
 
     public function get_id_by_name($name)
@@ -568,8 +569,8 @@ class Admin_model extends Base_model
             return false;
 
         return $query->getRow()->id;
-        }
-    
+    }
+
 
     public function get_id_by_adm_name($name)
     {
@@ -606,98 +607,63 @@ class Admin_model extends Base_model
 
     public function add_user($dados)
     {
-        if ($dados['group-agua'])
-        {
-            if (!$this->db->table('auth_groups_users')->set(array('group' => $dados['group-agua'], 'user_id' => $dados['user_id']))->insert()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
+        foreach ($dados['group'] as $m) {
+            if (!$this->db->table('auth_groups_users')->set(array('group' => $m, 'user_id' => $dados['user-id']))->insert()) {
+                return json_encode(array("status" => "error", "message" => $this->db->error()));
             }
         }
 
-        if ($dados['group-gas'])
-        {
-            if (!$this->db->table('auth_groups_users')->set(array('group' => $dados['group-gas'], 'user_id' => $dados['user_id']))->insert()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
+        if (!$this->db->table('auth_users')->where('id', $dados['user-id'])->set(array('page' => $dados['page']))->update()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        if (!$this->db->table('auth_groups_users')->set(array('group' => $dados['page'], 'user_id' => $dados['user-id']))->insert()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        if ($dados['classificacao'] === 'unidade') {
+            if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user-id'], 'unidade_id' => $this->get_unity_by_code($dados['unity-user'])->id))->insert()) {
+                return json_encode(array("status" => "error", "message" => $this->db->error()));
+            }
+            if (!$this->db->table('auth_groups_users')->set(array('group' => 'unity', 'user_id' => $dados['user-id']))->insert()) {
+                return json_encode(array("status" => "error", "message" => $this->db->error()));
+            }
+        } else {
+
+            if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user-id'], 'entidade_id' => $this->get_table_by_name($dados['classificacao'], $dados['entity-user'])->id))->insert()) {
+                return json_encode(array("status" => "error", "message" => $this->db->error()));
+            }
+
+            if ($dados['classificacao'] === 'entidades') {
+                if (!$this->db->table('auth_groups_users')->set(array('group' => 'admin', 'user_id' => $dados['user-id']))->insert()) {
+                    return json_encode(array("status" => "error", "message" => $this->db->error()));
+                }
+            } else {
+                if (!$this->db->table('auth_groups_users')->set(array('group' => 'group', 'user_id' => $dados['user-id']))->insert()) {
+                    return json_encode(array("status" => "error", "message" => $this->db->error()));
+                }
             }
         }
 
-        if ($dados['group-energia'])
-        {
-            if (!$this->db->table('auth_groups_users')->set(array('group' => $dados['group-energia'], 'user_id' => $dados['user_id']))->insert()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
-            }
-        }
-
-        if ($dados['group-nivel'])
-        {
-            if (!$this->db->table('auth_groups_users')->set(array('group' => $dados['group-nivel'], 'user_id' => $dados['user_id']))->insert()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
-            }
-        }
-
-        if (!$this->db->table('auth_users')->where('id', $dados['user_id'])->set(array('page' => $dados['page']))->update()) {
-            return json_encode(array("status"  => "error", "message" => $this->db->error()));
-        }
-
-        if (!$this->db->table('auth_groups_users')->set(array('group' => $dados['page'], 'user_id' => $dados['user_id']))->insert()) {
-            return json_encode(array("status"  => "error", "message" => $this->db->error()));
-        }
-
-        if($dados['classificacao'] === 'entidade')
-        {
-           if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user_id'], 'entidade_id' => $this->get_entity_by_name($dados['entity_user'])->id))->insert()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
-            }
-
-             if (!$this->db->table('auth_groups_users')->set(array('group' => 'admin', 'user_id' => $dados['user_id']))->insert()) {
-            return json_encode(array("status"  => "error", "message" => $this->db->error()));
-             }
-        }
-        
-        if($dados['classificacao'] === 'agrupamento')
-        {
-            if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user_id'], 'agrupamento_id' => $this->get_group_by_name($dados['group_user'])->id))->insert()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
-            }
-            if (!$this->db->table('auth_groups_users')->set(array('group' => 'group', 'user_id' => $dados['user_id']))->insert()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
-            }
-        }
-
-        if($dados['classificacao'] === 'unidade')
-        {
-            if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user_id'], 'unidade_id' => $this->get_unity_by_code($dados['unity_user'])->id))->insert()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
-            }
-            if (!$this->db->table('auth_groups_users')->set(array('group' => 'unity', 'user_id' => $dados['user_id']))->insert()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
+        foreach ($dados['groups-user'] as $groups) {
+            if (!$this->db->table('auth_groups_users')->set(array('group' => $groups, 'user_id' => $dados['user-id']))->insert()) {
+                return json_encode(array("status" => "error", "message" => $this->db->error()));
             }
         }
         return json_encode(array("status" => "success", "message" => "Usuário criado com sucesso."));
     }
 
-    public function get_entity_by_name($entity)
+    public function get_table_by_name($type, $name)
     {
         // seleciona todos os campos
-        $query = $this->db->table('esm_entidades')
-            ->select('esm_entidades.id')
-            ->where('esm_entidades.nome', $entity)
-            ->get();
-
-        // verifica se retornou algo
-        if ($query->getNumRows() == 0)
-            return false;
-
-        return $query->getRow();
-    }
-
-    public function get_group_by_name($group)
-    {
-        // seleciona todos os campos
-        $query = $this->db->table('esm_agrupamentos')
-            ->select('esm_agrupamentos.id')
-            ->where('esm_agrupamentos.nome', $group)
-            ->get();
-
+        $query = $this->db->query("
+        SELECT
+            esm_{$type}.id
+        FROM
+            esm_{$type}
+        WHERE
+            esm_{$type}.nome = '$name'
+        ");
         // verifica se retornou algo
         if ($query->getNumRows() == 0)
             return false;
@@ -727,20 +693,231 @@ class Admin_model extends Base_model
             ->where('auth_users.id', $uid)
             ->get();
 
-            if ($query->getNumRows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
-            
 
-        if ($query->getRow()->active == 0)
-        {
+
+        if ($query->getRow()->active == 0) {
             if (!$this->db->table('auth_users')->where('id', $uid)->set(array('active' => 1))->update()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
+                return json_encode(array("status" => "error", "message" => $this->db->error()));
             }
-        } else
-        {
+        } else {
             if (!$this->db->table('auth_users')->where('id', $uid)->set(array('active' => 0))->update()) {
-                return json_encode(array("status"  => "error", "message" => $this->db->error()));
+                return json_encode(array("status" => "error", "message" => $this->db->error()));
             }
         }
     }
+
+    public function get_user_info($user_id)
+    {
+        $users = model('UserModel');
+
+        $user = $users->findById($user_id);
+        $data = [];
+
+        if ($user->inGroup("admin")) {
+            $data['classificacao'] = 'entidades';
+
+        } elseif ($user->inGroup("group")) {
+            $data['classificacao'] = 'agrupamentos';
+
+        } elseif ($user->inGroup("unity")) {
+            $data['classificacao'] = 'unidade';
+
+        } else {
+            $data['classificacao'] = '';
+        }
+
+        $query = $this->db->table('auth_identities')
+            ->select('auth_identities.secret')
+            ->where('auth_identities.user_id', $user_id)
+            ->where('auth_identities.type', 'email_password')
+            ->get();
+
+        if ($query->getNumRows() == 0)
+            return false;
+
+        $data['email'] = $query->getRow()->secret;
+
+        return $data;
+    }
+
+    public function edit_user($dados)
+    {
+        $user_id = $dados['user_id'];
+        $filter = '';
+        foreach ($dados['group'] as $key => $m) {
+            if ($m == '') {
+                if (!$this->db->table('auth_groups_users')->where('user_id', $dados['user_id'])->where('group', $key)->delete()) {
+                    return json_encode(array("status" => "error", "message" => $this->db->error()));
+                }
+            } else {
+                $query = $this->db->query("
+                SELECT
+                    auth_groups_users.group
+                FROM
+                    auth_groups_users
+                WHERE
+                    auth_groups_users.user_id = $user_id AND
+                    auth_groups_users.group = '$key'
+            ");
+                if ($query->getNumRows() == 0) {
+                    if (!$this->db->table('auth_groups_users')->set(array('group' => $m, 'user_id' => $dados['user_id']))->insert()) {
+                        return json_encode(array("status" => "error", "message" => $this->db->error()));
+                    }
+                }
+            }
+            $filter .= "AND auth_groups_users.group != '$m' ";
+        }
+
+        if (!$this->db->table('auth_users')->where('id', $dados['user_id'])->set('page', $dados['page'])->update()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        if (!$this->db->table('auth_groups_users')->where('user_id', $dados['user_id'])->where('group', 'shopping')->orWhere('group', 'condominio')->orWhere('group', 'unity')->set('group', $dados['page'])->update()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+
+
+        foreach ($dados['groups-user'] as $groups) {
+
+            $query = $this->db->query("
+            SELECT
+                auth_groups_users.group
+            FROM
+                auth_groups_users
+            WHERE
+                auth_groups_users.user_id = $user_id AND
+                auth_groups_users.group = '$groups'
+            ");
+
+            if ($query->getNumRows() == 0) {
+                if (!$this->db->table('auth_groups_users')->set(array('group' => $groups, 'user_id' => $dados['user_id']))->insert()) {
+                    return json_encode(array("status" => "error", "message" => $this->db->error()));
+                }
+            }
+
+            $filter .= "AND auth_groups_users.group != '$groups' ";
+        }
+        $query = $this->db->query(
+            "
+            SELECT
+                auth_groups_users.group
+            FROM
+                auth_groups_users
+            WHERE
+                auth_groups_users.user_id = $user_id
+            AND 
+                auth_groups_users.group != 'shopping'
+            AND 
+                auth_groups_users.group != 'condominio'
+            AND 
+                auth_groups_users.group != 'unity'
+            AND 
+                auth_groups_users.group != 'admin' " . $filter
+        );
+
+        if ($query->getNumRows() == 0) {
+            return json_encode(array("status" => "success", "message" => "Usuário editado com sucesso."));
+        } else {
+            foreach ($query->getResultArray() as $q) {
+
+                if (!$this->db->table('auth_groups_users')->where('user_id', $dados['user_id'])->where('group', $q)->delete()) {
+                    return json_encode(array("status" => "error", "message" => $this->db->error()));
+                }
+
+            }
+        }
+
+        return json_encode(array("status" => "success", "message" => "Usuário editado com sucesso."));
+    }
+
+    public function get_name_by_id($type, $id)
+    {
+        // seleciona todos os campos
+        $query = $this->db->query("
+        SELECT
+            esm_{$type}.nome
+        FROM
+            esm_{$type}
+        WHERE
+            esm_{$type}.id = $id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow()->nome;
+    }
+
+    public function get_code_by_unity_id($unity_id)
+    {
+        // seleciona todos os campos
+        $query = $this->db->table('esm_unidades')
+            ->select('esm_unidades.codigo')
+            ->where('esm_unidades.id', $unity_id)
+            ->get();
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow()->codigo;
+    }
+
+    public function get_user_relations($user_id, $type)
+    {
+
+        $query = $this->db->query("
+            SELECT
+                auth_user_relation.{$type}_id
+            FROM
+                auth_user_relation
+            WHERE
+                auth_user_relation.user_id = $user_id
+            ");
+
+        return $query->getRowArray()[$type . '_id'];
+
+    }
+
+    public function get_groups_for_user($user_id)
+    {
+        $query = $this->db->query("
+        SELECT
+            auth_groups_users.group 
+        FROM
+            auth_groups_users 
+        WHERE
+            auth_groups_users.user_id = $user_id 
+        AND 
+            auth_groups_users.group != 'agua' 
+        AND 
+            auth_groups_users.group != 'energia'
+        AND 
+            auth_groups_users.group != 'gas'
+        AND 
+            auth_groups_users.group != 'nivel'
+        AND 
+            auth_groups_users.group != 'shopping'
+        AND 
+            auth_groups_users.group != 'condominio'
+        AND 
+            auth_groups_users.group != 'unity'
+        AND 
+            auth_groups_users.group != 'admin'
+        ");
+
+        if ($query->getNumRows() == 0)
+            return false;
+
+        foreach ($query->getResult() as $q) {
+            $values[] = $q->group;
+        }
+
+        return $values;
+    }
+
 }

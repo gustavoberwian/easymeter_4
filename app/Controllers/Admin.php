@@ -9,6 +9,7 @@ use Viacep;
 use CodeIgniter\Shield\Entities\User;
 
 
+
 class Admin extends UNO_Controller
 {
     private Admin_model $admin_model;
@@ -42,6 +43,7 @@ class Admin extends UNO_Controller
 
     public function index(): string
     {
+
         return $this->render("index");
     }
 
@@ -152,17 +154,57 @@ class Admin extends UNO_Controller
     //     }
     // }
 
-    public function users($param = null)
-    {
-        if($param == 'incluir')
-        {
-            return $this->render('add_user');
-        } else 
-        {
-            return $this->render("users");
-        }
-        
+    public function users($param1 = null, $param2 = null)
+    {   
+
+        if ( intval($param1) > 0 ) {
+            $users = auth()->getProvider();
+            $user = $users->findById($param1);
+            $groups = $this->admin_model->get_user_info($param1);
+
+            $data['usuario']           = $user;
+            $data['id']             = $param1;
+            $data['email']          = $groups['email'];
+            $data['classificacao']  = $groups['classificacao'];
+            $data['groups']         = $this->admin_model->get_groups_for_user($param1);
+
+
+           
+            if ($data['classificacao'] == 'entidades')
+            {
+                $data['val'] = $this->admin_model->get_name_by_id($data['classificacao'], $this->admin_model->get_user_relations($param1, 'entidade'));
+
+            } elseif ($data['classificacao'] == 'agrupamentos')
+            {   
+                $data['val'] = $this->admin_model->get_name_by_id($data['classificacao'], $this->admin_model->get_user_relations($param1, 'agrupamento'));
+
+            } elseif ($data['classificacao'] == 'unidade')
+            {
+                $data['val'] = $this->admin_model->get_code_by_unity_id($this->admin_model->get_user_relations($param1, $data['classificacao']));
+
+            } else {
+                $data['val'] = '';
+            }
+
+
+            if ($param2 == 'editar')
+            {
+                $data['readonly'] = '';
+                return $this->render('edit_user', $data);
+
+            }  else {
+
+                $data['readonly'] = 'readonly disabled'; 
+                return $this->render('edit_user', $data);
+            }
+                
+            } elseif ($param1 === 'incluir')
+            {
+                return $this->render("add_user");
+            }
+            return $this->render('users');
     }
+        
 
     public function profile()
     {
@@ -989,48 +1031,37 @@ class Admin extends UNO_Controller
 
         $users->save($user);
 
+        $dados['group'] = [];
+
         if ($this->input->getPost('user-agua') === 'on')
         {
-            $dados['group-agua'] = 'agua';
-        } else 
-        {
-            $dados['group-agua'] = '';
-        }
+            $dados['group']['agua'] = 'agua';
+        } 
 
         if ($this->input->getPost('user-gas') === 'on')
         {
-            $dados['group-gas'] = 'gas';
-        } else 
-        {
-            $dados['group-gas'] = '';
-
-        }
+            $dados['group']['gas'] = 'gas';
+        } 
 
         if ($this->input->getPost('user-energia') === 'on')
         {
-            $dados['group-energia'] = 'energia';
-        } else 
-        {
-            $dados['group-energia'] = '';
-
+            $dados['group']['energia'] = 'energia';
         }
 
         if ($this->input->getPost('user-nivel') === 'on')
         {
-            $dados['group-nivel'] = 'nivel';
-        } else 
-        {
-            $dados['group-nivel'] = '';
-
-        }
+            $dados['group']['nivel'] = 'nivel';
+        } 
         
-        $dados['user_id']               = $users->getInsertID();
+        $dados['user-id']               = $users->getInsertID();
         $dados['classificacao']         = $this->input->getPost('classificacao-user');   
         $dados['page']                  = $this->input->getPost('page-user') ?? '';
-        $dados['entity_user']           = $this->input->getPost('entity-user') ?? '';
-        $dados['unity_user']            = $this->input->getPost('unity-user') ?? '';
-        $dados['group_user']            = $this->input->getPost('group-user') ?? '';
+        $dados['entity-user']           = $this->input->getPost('entity-user') ?? '';
+        $dados['unity-user']            = $this->input->getPost('unity-user') ?? '';
+        $dados['group-user']            = $this->input->getPost('group-user') ?? '';
+        $dados['groups-user']           = array_map('trim',explode(",", $this->input->getPost('groups-user') ?? ''));
 
+        
         echo $this->admin_model->add_user($dados);
     }
 
@@ -1070,4 +1101,57 @@ class Admin extends UNO_Controller
         }
            
     }
-}
+
+    public function edit_user()
+    {
+        $users = auth()->getProvider();
+        $dados['user_id']  = $this->input->getPost('id-user');
+
+        $user = $users->findById($dados['user_id']);
+
+        $user->fill([
+            'username' => $this->input->getPost('nome-user') ?? '',
+            'email'    => $this->input->getPost('email-user') ?? '',
+            'password' => $this->input->getPost('senha-user') ?? '',
+            'active'   => $this->input->getPost('switch') === 'on' ? 1 : 0
+        ]);
+
+        $users->save($user);
+
+        if ($this->input->getPost('user-agua') === 'on')
+        {
+            $dados['group']['agua'] = 'agua';
+        } else {
+           $dados['group']['agua'] = ''; 
+        }
+
+        if ($this->input->getPost('user-gas') === 'on')
+        {
+            $dados['group']['gas'] = 'gas';
+        } else {
+            $dados['group']['gas'] = ''; 
+         }
+ 
+
+        if ($this->input->getPost('user-energia') === 'on')
+        {
+            $dados['group']['energia'] = 'energia';
+        } else {
+            $dados['group']['energia'] = ''; 
+         }
+ 
+
+        if ($this->input->getPost('user-nivel') === 'on')
+        {
+            $dados['group']['nivel'] = 'nivel';
+        } else {
+            $dados['group']['nivel'] = ''; 
+         }
+ 
+        
+        $dados['page'] = $this->input->getPost('page-user') ?? '';
+        $dados['groups-user'] =  array_map('trim',explode(",", $this->input->getPost('groups-user') ?? ''));
+       
+        echo $this->admin_model->edit_user($dados);
+    }
+}   

@@ -121,7 +121,7 @@
                             <th rowspan="2">Nome</th>
                             <th rowspan="2">Tipo</th>
                             <th rowspan="2">Leitura - M³</th>
-                            <th colspan="5" class="text-center">Consumo - L</th>
+                            <th colspan="5" class="text-center">Consumo</th>
                         </tr>
                         <tr role="row">
                             <th>Mês Atual</th>

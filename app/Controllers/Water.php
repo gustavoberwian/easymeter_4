@@ -424,20 +424,49 @@ class Water extends UNO_Controller
             }
         });
 
+
+
         $dt->edit('value_read', function ($data) {
-            return str_pad(round($data["value_read"]), 6, '0', STR_PAD_LEFT);
+            return str_pad(round($data["value_read"] ), 6, '0', STR_PAD_LEFT);
         });
 
         $dt->edit('value_last', function ($data) {
-            return number_format($data["value_last"], 0, ",", ".");
+            if($data["value_last"] > 999)
+            {
+                $divisor = 1000;
+                $uni_med = ' m³';
+            } else
+            {
+                $divisor = 1;
+                $uni_med = ' L';
+            }
+            return number_format(($data["value_last"] / $divisor), 0, ",", ".") . $uni_med;
         });
 
         $dt->edit('value_month', function ($data) {
-            return number_format($data["value_month"], 0, ",", ".");
+            if($data["value_month"] > 999)
+            {
+                $divisor = 1000;
+                $uni_med = ' m³';
+            } else
+            {
+                $divisor = 1;
+                $uni_med = ' L';
+            }
+            return number_format(($data["value_month"] / $divisor), 0, ",", ".") . $uni_med;
         });
 
         $dt->edit('value_last_month', function ($data) {
-            return number_format($data["value_last_month"], 0, ",", ".");
+            if($data["value_last_month"] > 999)
+            {
+                $divisor = 1000;
+                $uni_med = ' m³';
+            } else
+            {
+                $divisor = 1;
+                $uni_med = ' L';
+            }
+            return number_format(($data["value_last_month"] / $divisor), 0, ",", ".") . $uni_med;
         });
 
         $dt->edit('value_future', function ($data) {
@@ -447,7 +476,17 @@ class Water extends UNO_Controller
             else if ($data["value_future"] > $data["value_last_month"])
                 $icon = "<i class=\"fa fa-level-down-alt text-success ms-2\"></i>";
 
-            return number_format($data["value_future"], 0, ",", ".") . $icon;
+            if($data["value_future"] > 999)
+            {
+                $divisor = 1000;
+                $uni_med = ' m³';
+            } else
+            {
+                $divisor = 1;
+                $uni_med = ' L';
+            }
+
+            return number_format(($data["value_future"] / $divisor), 0, ",", ".") . $uni_med . $icon;
         });
 
         // gera resultados
@@ -509,19 +548,19 @@ class Water extends UNO_Controller
 
             $resume = $this->water_model->GetResume($group_id, $this->user->config, $i + 1, $this->user->demo);
 
-            $spreadsheet->getActiveSheet()->getStyle('A1:H2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getActiveSheet()->getStyle('A1:G2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
-            $spreadsheet->getActiveSheet()->mergeCells('A1:H1');
+            $spreadsheet->getActiveSheet()->mergeCells('A1:G1');
             $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - ' . date("01/m/Y") . ' a ' . date("d/m/Y"));
-            $spreadsheet->getActiveSheet()->mergeCells('A2:H2');
+            $spreadsheet->getActiveSheet()->mergeCells('A2:G2');
 
             $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
             $spreadsheet->getActiveSheet()->setCellValue('B4', 'Nome')->mergeCells('B4:B5');
             $spreadsheet->getActiveSheet()->setCellValue('C4', 'Leitura - m³')->mergeCells('C4:C5');
-            $spreadsheet->getActiveSheet()->setCellValue('D4', 'Consumo - L')->mergeCells('D4:J4');
+            $spreadsheet->getActiveSheet()->setCellValue('D4', 'Consumo')->mergeCells('D4:G4');
 
             $spreadsheet->getActiveSheet()->getStyle('A1:J5')->getFont()->setBold(true);
-            $spreadsheet->getActiveSheet()->getStyle('A4:H5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getActiveSheet()->getStyle('A4:G5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'D5');
 

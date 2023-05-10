@@ -643,7 +643,7 @@ class Admin extends UNO_Controller
                 esm_fechamentos.id AS DT_RowId
             FROM esm_fechamentos
             LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
-            LEFT JOIN esm_entidades ON esm_ramais.condo_id = esm_entidades.id
+            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
             WHERE esm_entidades.id = $condo_id AND esm_ramais.nome LIKE \"G%\" ORDER BY esm_fechamentos.id DESC
         ");
 

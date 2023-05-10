@@ -25,10 +25,10 @@
                 </thead>
                 <tbody>
                 <tr role="row">
-                    <td><?= competencia_nice($fechamento->competencia); ?></td>
-                    <td><?= date('d/m/Y', $fechamento->inicio); ?></td>
-                    <td><?= date('d/m/Y', $fechamento->fim); ?></td>
-                    <td><?= round(($fechamento->fim - $fechamento->inicio) / 86400, 0); ?></td>
+                    <td><?= strftime('%B/%Y', strtotime($fechamento->competencia)); ?></td>
+                    <td><?= date('d/m/Y', strtotime($fechamento->inicio)); ?></td>
+                    <td><?= date('d/m/Y', strtotime($fechamento->fim)); ?></td>
+                    <td><?= round((strtotime($fechamento->fim) - strtotime($fechamento->inicio)) / 86400, 0); ?></td>
                     <td><?= date('d/m/Y', strtotime($fechamento->cadastro)); ?></td>
                 </tr>
                 </tbody>
@@ -98,7 +98,6 @@
                     <thead>
                     <tr role="row">
                         <th rowspan="2">Unidade</th>
-                        <th rowspan="2" class="text-center">LUC</th>
                         <th colspan="2" class="text-center">Leitura</th>
                         <th colspan="3" class="text-center">Consumo - kWh</th>
                         <th colspan="3" class="text-center">Demanda - kW</th>
@@ -123,7 +122,6 @@
                     <thead>
                     <tr role="row">
                         <th rowspan="2">Unidade</th>
-                        <th rowspan="2" class="text-center">LUC</th>
                         <th colspan="2" class="text-center">Leitura</th>
                         <th colspan="3" class="text-center">Consumo - kWh</th>
                         <th colspan="3" class="text-center">Demanda - kW</th>

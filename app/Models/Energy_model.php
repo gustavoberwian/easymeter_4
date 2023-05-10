@@ -1104,7 +1104,7 @@ class Energy_model extends Base_model
             FROM 
                 esm_fechamentos_energia
             WHERE
-                entrada_id = $entrada_id AND competencia = '$competencia'
+                entrada_id = $entrada_id AND DATE_FORMAT(competencia, '%m/%Y') = '$competencia'
             LIMIT 1
         ");
 
@@ -1195,7 +1195,6 @@ class Energy_model extends Base_model
         $result = $this->db->query("
             SELECT 
                 esm_unidades.nome,
-                esm_unidades_config.luc as luc,
                 LPAD(ROUND(leitura_anterior), 6, '0') AS leitura_anterior,
                 LPAD(ROUND(leitura_atual), 6, '0') AS leitura_atual,
                 FORMAT(consumo, 3, 'de_DE') AS consumo,
@@ -1528,8 +1527,7 @@ class Energy_model extends Base_model
 
         $values = "LPAD(ROUND(esm_medidores.ultima_leitura, 0), 6, '0') AS value_read,
                 FORMAT(m.value, 3, 'de_DE') AS value_month,
-                FORMAT(h.value, 3, 'de_DE') AS value_month_open,
-                FORMAT(m.value - h.value, 3, 'de_DE') AS value_month_closed,
+                FORMAT(c.value, 3, 'de_DE') AS value_last_month,
                 FORMAT(p.value, 3, 'de_DE') AS value_ponta,
                 FORMAT(m.value - p.value, 3, 'de_DE') AS value_fora,
                 FORMAT(l.value, 3, 'de_DE') AS value_last,
@@ -1538,8 +1536,7 @@ class Energy_model extends Base_model
         if ($demo) {
             $values = "RAND() * 10000 AS value_read,
                 RAND() * 10000 AS value_month,
-                RAND() * 10000 AS value_month_open,
-                RAND() * 10000 AS value_month_closed,
+                RAND() * 10000 AS value_last_month,
                 RAND() * 10000 AS value_ponta,
                 RAND() * 10000 AS value_fora,
                 RAND() * 10000 AS value_last,
@@ -1549,7 +1546,6 @@ class Energy_model extends Base_model
         $result = $this->db->query("
             SELECT 
                 esm_medidores.nome AS device, 
-                esm_unidades_config.luc AS luc, 
                 esm_unidades.nome AS name, 
                 $values
             FROM esm_medidores
@@ -1795,4 +1791,72 @@ class Energy_model extends Base_model
 
         return false;
     }
+
+    public function get_faturamentos_unidade($entity_id)
+    {
+        $result = $this->db->query("
+        SELECT 
+            esm_fechamentos_energia.competencia AS competencia,
+            esm_unidades.nome,
+            FORMAT(esm_fechamentos_energia_entradas.consumo, 3, 'de_DE') AS consumo,
+            FORMAT(esm_fechamentos_energia_entradas.consumo_p, 3, 'de_DE') AS consumo_p,
+            FORMAT(esm_fechamentos_energia_entradas.consumo_f, 3, 'de_DE') AS consumo_f,
+            FORMAT(esm_fechamentos_energia_entradas.demanda_p, 3, 'de_DE') AS demanda,
+            DATE_FORMAT(cadastro, '%d/%m/%Y') AS emissao
+        FROM 
+            esm_fechamentos_energia_entradas
+        JOIN
+            esm_medidores ON esm_medidores.nome = esm_fechamentos_energia_entradas.device
+        JOIN 
+            esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+        JOIN
+            esm_fechamentos_energia ON esm_fechamentos_energia.id = esm_fechamentos_energia_entradas.fechamento_id
+        LEFT JOIN 
+            esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+        WHERE
+            esm_unidades.id = $entity_id
+            ");
+
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
+        }
+
+        return false;
+
+    }
+
+    public function get_faturamento_unidade($entity_id, $fid)
+    {
+        $result = $this->db->query("
+        SELECT 
+            esm_fechamentos_energia.competencia AS competencia,
+            esm_unidades.nome,
+            FORMAT(esm_fechamentos_energia_entradas.consumo, 3, 'de_DE') AS consumo,
+            FORMAT(esm_fechamentos_energia_entradas.consumo_p, 3, 'de_DE') AS consumo_p,
+            FORMAT(esm_fechamentos_energia_entradas.consumo_f, 3, 'de_DE') AS consumo_f,
+            FORMAT(esm_fechamentos_energia_entradas.demanda_p, 3, 'de_DE') AS demanda,
+            DATE_FORMAT(cadastro, '%d/%m/%Y') AS emissao
+        FROM 
+            esm_fechamentos_energia_entradas
+        JOIN
+            esm_medidores ON esm_medidores.nome = esm_fechamentos_energia_entradas.device
+        JOIN 
+            esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+        JOIN
+            esm_fechamentos_energia ON esm_fechamentos_energia.id = esm_fechamentos_energia_entradas.fechamento_id
+        LEFT JOIN 
+            esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+        WHERE
+            esm_unidades.id = $entity_id AND
+            esm_fechamentos_energia_entradas.id = $fid
+            ");
+
+        if ($result->getNumRows()) {
+            return $result->getRowArray();
+        }
+
+        return false;
+
+    }
+
 }

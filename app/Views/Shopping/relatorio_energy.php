@@ -45,11 +45,11 @@
 
                             <td width="20%" class="text-dark">
                                 <p class="text-1 text-muted mb-0">Ciclo</p>
-                                <div class="text-4 font-weight-bold mb-0 text-center"><?php echo date('d/m/Y', $fechamento->inicio).' a '.date('d/m/Y', $fechamento->fim); ?></div>
+                                <div class="text-4 font-weight-bold mb-0 text-center"><?php echo date('d/m/Y', strtotime($fechamento->inicio)).' a '.date('d/m/Y', strtotime($fechamento->fim)); ?></div>
                             </td>
                             <td width="10%" class="text-dark">
                                 <p class="text-1 text-muted mb-0">Dias</p>
-                                <div class="text-4 font-weight-bold mb-0 text-center"><?php echo round(($fechamento->fim - $fechamento->inicio) / 86400) + 1; ?></div>
+                                <div class="text-4 font-weight-bold mb-0 text-center"><?php echo round((strtotime($fechamento->fim) - strtotime($fechamento->inicio)) / 86400) + 1; ?></div>
                             </td>
                             <td width="10%" class="text-dark">
                                 <p class="text-1 text-muted mb-0">Emissão</p>
@@ -57,7 +57,7 @@
                             </td>
                             <td width="10%" class="text-dark">
                                 <p class="text-1 text-muted mb-0">Competência</p>
-                                <div class="text-4 font-weight-bold mb-0 text-center"><?php echo competencia_nice($fechamento->competencia); ?></div>
+                                <div class="text-4 font-weight-bold mb-0 text-center"><?php echo strftime('%b/%Y', strtotime($fechamento->competencia)); ?></div>
                             </td>
                         </tr>
                     </tbody>
@@ -159,7 +159,7 @@
                                             </tr>
                                             <?php for ($i = 0; $i < 6, $i < count($historico); $i++) { ?>
                                                 <tr>
-                                                    <td><?php echo competencia_nice($historico[$i]["competencia"]); ?></td>
+                                                    <td><?php echo strftime('%b/%Y', strtotime($historico[$i]["competencia"])); ?></td>
                                                     <td><?= number_format($historico[$i]["consumo"], 3, ",", ".")." kWh"; ?></td>
                                                     <td><?= number_format($historico[$i]["consumo_p"], 3, ",", ".")." kWh"; ?></td>
                                                     <td><?= number_format($historico[$i]["consumo_f"], 3, ",", ".")." kWh"; ?></td>
@@ -179,7 +179,7 @@
                                                 </tr>
                                                 <?php for ($i = 6; $i < 12, $i < count($historico); $i++) { ?>
                                                     <tr>
-                                                        <td><?php echo competencia_nice($historico[$i]["competencia"]); ?></td>
+                                                        <td><?php echo strftime('%b/%Y', strtotime($historico[$i]["competencia"])); ?></td>
                                                         <td><?= number_format($historico[$i]["consumo"], 3, ",", ".")." kWh"; ?></td>
                                                         <td><?= number_format($historico[$i]["consumo_p"], 3, ",", ".")." kWh"; ?></td>
                                                         <td><?= number_format($historico[$i]["consumo_f"], 3, ",", ".")." kWh"; ?></td>

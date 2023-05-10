@@ -48,6 +48,7 @@ class Shopping extends UNO_Controller
 
         // set variables
         $this->url = service('uri')->getSegment(1);
+        
 
         if ($this->user->inGroup('superadmin')) {
             $this->user->entity = (object)[];
@@ -62,13 +63,13 @@ class Shopping extends UNO_Controller
         if(!$this->user->inGroup('superadmin'))
         {
           if ($this->user->inGroup('energia'))
-            $this->monitoria = 'energy';
+            $this->user->monitoria = 'energy';
         elseif ($this->user->inGroup('agua'))
-            $this->monitoria = 'water';
+            $this->user->monitoria = 'water';
         elseif ($this->user->inGroup('gas'))
-            $this->monitoria = 'gas';
+            $this->user->monitoria = 'gas';
         elseif ($this->user->inGroup('nivel'))
-            $this->monitoria = 'nivel';  
+            $this->user->monitoria = 'nivel';  
         }
         
     }
@@ -79,7 +80,7 @@ class Shopping extends UNO_Controller
 
         $data['user'] = $this->user;
         $data['url'] = $this->url;
-        $data['monitoria'] = $this->monitoria;
+        $data['monitoria'] = $this->user->monitoria;
 
         if ($this->user->inGroup('shopping', 'admin')) {
 

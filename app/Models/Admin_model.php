@@ -908,6 +908,8 @@ class Admin_model extends Base_model
             auth_groups_users.group != 'unity'
         AND 
             auth_groups_users.group != 'admin'
+        AND 
+            auth_groups_users.group != 'group'
         ");
 
         if ($query->getNumRows() == 0)

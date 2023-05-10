@@ -40,18 +40,18 @@ class Water extends UNO_Controller
     {
         $config = array(
             "chart" => array(
-                "type"      => $type,
-                "width"     => "100%",
-                "height"    => 380,
+                "type" => $type,
+                "width" => "100%",
+                "height" => 380,
                 "foreColor" => "#777",
-                "stacked"   => $stacked,
-                "toolbar"   => array(
+                "stacked" => $stacked,
+                "toolbar" => array(
                     "show" => false
                 ),
-                "zoom"      => array(
+                "zoom" => array(
                     "enabled" => false
                 ),
-                "events"    => array(
+                "events" => array(
                     "click" => true
                 )
             ),
@@ -69,19 +69,19 @@ class Water extends UNO_Controller
             ),
             "legend" => array(
                 "showForSingleSeries" => true,
-                "position"            => "bottom"
+                "position" => "bottom"
             ),
             "tooltip" => array(
-                "enabled"   => true,
-//				"intersect" => false,
+                "enabled" => true,
+                //				"intersect" => false,
 //				"shared"    => true,
                 "x" => array(
                     "formatter" => "function",
-                    "show"      => true
+                    "show" => true
                 ),
                 "y" => array(
                     "formatter" => "function",
-                    "show"      => true
+                    "show" => true
                 )
             ),
             "extra" => array(
@@ -89,11 +89,11 @@ class Water extends UNO_Controller
                     "title" => $titles,
                     "decimals" => 0,
                 ),
-                "unit"     => $unit,
+                "unit" => $unit,
                 "decimals" => $decimals,
-                "custom"   => $extra,
-                "footer"   => $footer,
-                "dates"    => $dates
+                "custom" => $extra,
+                "footer" => $footer,
+                "dates" => $dates
             ),
         );
 
@@ -106,7 +106,7 @@ class Water extends UNO_Controller
 
         return $config;
     }
-    
+
     private function chartFooter($data, $colorize = false)
     {
         $html = '<div class="card-footer total text-right d-none d-sm-block" data-loading-overlay="" data-loading-overlay-options="{ \"css\": { \"backgroundColor\": \"#00000080\" } }" style="">
@@ -117,10 +117,10 @@ class Water extends UNO_Controller
             $html .= '<div class="col text-center">
                         <div class="row">
                             <div class="col-6 col-lg-12">
-                                <p class="text-3 mb-0" style="color: '.$d[2].';">'.$d[0].'</p>
+                                <p class="text-3 mb-0" style="color: ' . $d[2] . ';">' . $d[0] . '</p>
                             </div>
                             <div class="col-6 col-lg-12">
-                                <p class="text-3 mb-0" style="color: '.$d[2].';">'.$d[1].'</p>
+                                <p class="text-3 mb-0" style="color: ' . $d[2] . ';">' . $d[1] . '</p>
                             </div>
                         </div>
                     </div>';
@@ -138,8 +138,8 @@ class Water extends UNO_Controller
 		if (is_null($gid)) 
             $gid = $this->user->group;
 
-		// realiza a query via dt
-		$dt = $this->datatables->query("
+        // realiza a query via dt
+        $dt = $this->datatables->query("
             SELECT
                 esm_fechamentos_agua.id,
                 competencia AS competencia,
@@ -159,15 +159,15 @@ class Water extends UNO_Controller
             return strftime('%b/%Y', strtotime($data['competencia']));
         });
 
-		// inclui actions
-		$dt->add('action', function ($data) {
-			return '<a href="#" class="action-water-download text-primary me-2" data-id="' . $data['id'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>
+        // inclui actions
+        $dt->add('action', function ($data) {
+            return '<a href="#" class="action-water-download text-primary me-2" data-id="' . $data['id'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>
 				<a href="#" class="action-water-delete text-danger" data-id="' . $data['id'] . '"><i class="fas fa-trash" title="Excluir"></i></a>';
-		});
+        });
 
-		// gera resultados
-		echo $dt->generate();
-	}
+        // gera resultados
+        echo $dt->generate();
+    }
 
     public function get_lancamento_unity($entity_id)
 	{
@@ -210,75 +210,86 @@ class Water extends UNO_Controller
 	}
 
     public function DeleteLancamento()
-	{
-		$id = $this->input->getPost('id');
+    {
+        $id = $this->input->getPost('id');
 
-		echo $this->water_model->DeleteLancamento($id);
-	}
+        echo $this->water_model->DeleteLancamento($id);
+    }
 
     public function chart()
     {
-        $field    = $this->input->getPost('field');
-        $shopping_id    = $this->input->getPost('shopping_id');
+        $field = $this->input->getPost('field');
+        $shopping_id = $this->input->getPost('shopping_id');
 
         $this->user->config = $this->shopping_model->get_client_config($shopping_id);
 
         if (!$this->user->config) {
-            return json_encode(array(
-                "status" => "error",
-                "message" => "Dados não foram carregados corretamente. Configurações gerais não fornecidas."
-            ));
+            return json_encode(
+                array(
+                    "status" => "error",
+                    "message" => "Dados não foram carregados corretamente. Configurações gerais não fornecidas."
+                )
+            );
         }
 
-        $divisor  = 1;
+        $divisor = 1;
         $decimals = 0;
-        $unidade  = "";
-        $type     = "line";
+        $unidade = "";
+        $type = "line";
 
-        $device   = $this->input->getPost('device');
-        $compare  = $this->input->getPost('compare');
-        $start    = $this->input->getPost('start');
-        $end      = $this->input->getPost('end');
+        $device = $this->input->getPost('device');
+        $compare = $this->input->getPost('compare');
+        $start = $this->input->getPost('start');
+        $end = $this->input->getPost('end');
 
-        $period   = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
+        $period = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
 
         $period_o = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
         $period_c = $this->water_model->GetConsumption($device, $shopping_id, $start, $end, array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
-        $main     = $this->water_model->GetDeviceLastRead($device, $shopping_id);
-        $month_o  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
-        $month_c  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
+        $main = $this->water_model->GetDeviceLastRead($device, $shopping_id);
+        $month_o = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
+        $month_c = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
 
-        $day_o  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
-        $day_c  = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
+        $day_o = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
+        $day_c = $this->water_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
 
-        $values  = array();
-        $labels  = array();
-        $titles  = array();
-        $dates   = array();
+        $values = array();
+        $labels = array();
+        $titles = array();
+        $dates = array();
 
         $max = -1;
         $min = 999999999;
+        if ($period_o + $period_c > 999) {
+            $unidade_medida = 'm³';
+            $divisor = 1000;
+        } else {
+            $unidade_medida = 'L';
+            $divisor = 1;
+        }
 
         $series = array();
 
         if ($period) {
             foreach ($period as $v) {
-                $values[] = $v->value;
+                $values[] = $v->value / $divisor;
                 $labels[] = $v->label;
-                
+
                 if ($start == $end) {
-                    $titles[] = $v->label." - ".$v->next;
+                    $titles[] = $v->label . " - " . $v->next;
                 } else {
-                    $titles[] = $v->label." - ".weekDayName($v->dw);
-                    $dates[]  = $v->date;
+                    $titles[] = $v->label . " - " . weekDayName($v->dw);
+                    $dates[] = $v->date;
                 }
-                if ($max < floatval($v->value) && !is_null($v->value)) $max = floatval($v->value);
-                if ($min > floatval($v->value) && !is_null($v->value)) $min = floatval($v->value);
+                if ($max < floatval($v->value) && !is_null($v->value))
+                    $max = floatval($v->value);
+                if ($min > floatval($v->value) && !is_null($v->value))
+                    $min = floatval($v->value);
             }
- 
+
             $series[] = array(
-                "name"  => "Consumo",
-                "data"  => $values,
+                "name" => "Consumo",
+                "data" => $values,
                 "color" => "#007AB8",
             );
         }
@@ -290,45 +301,45 @@ class Water extends UNO_Controller
                 foreach ($comp as $v) {
                     $values_c[] = $v->value;
                 }
-     
+
                 $series[] = array(
-                    "name"  => "Comparado",//$this->shopping_model->GetUnidadeByDevice($compare)->nome,
-                    "data"  => $values_c,
+                    "name" => "Comparado", //$this->shopping_model->GetUnidadeByDevice($compare)->nome,
+                    "data" => $values_c,
                     "color" => "#87c1de",
                 );
             }
         }
 
-        $dias   = ((strtotime(date("Y-m-d")) - strtotime(date("Y-m-01"))) / 86400) + 1; 
+        $dias = ((strtotime(date("Y-m-d")) - strtotime(date("Y-m-01"))) / 86400) + 1;
         $dias_t = date('d', mktime(0, 0, 0, date("m") + 1, 0, date("Y")));
         $dias_m = (strtotime(date("Y-m-d")) - strtotime("-1 months")) / 86400;
 
         $extra = array(
-            "main"        => ($main ? str_pad(round($main), 6 , '0' , STR_PAD_LEFT) : "- - - - - -"). " <span style='font-size:12px;'>L</span>",
-            "period"      => number_format(round($period_o + $period_c, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "period_o"    => number_format(round($period_o, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "period_c"    => number_format(round($period_c, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "month"       => number_format(round($month_o + $month_c, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "month_o"     => number_format(round($month_o, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "month_c"     => number_format(round($month_c, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "prevision"   => number_format(round(($month_o + $month_c) / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "prevision_o" => number_format(round($month_o / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "prevision_c" => number_format(round($month_c / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "day"         => number_format(round(($day_o + $day_c) / $dias_m, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "day_o"       => number_format(round($day_o / $dias_m, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
-            "day_c"       => number_format(round($day_c / $dias_m, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>L</span>",
+            "main" => ($main ? str_pad(round($main), 6, '0', STR_PAD_LEFT) : "- - - - - -") . " <span style='font-size:12px;'>L</span>",
+            "period" => number_format(round(($period_o + $period_c) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "period_o" => number_format(round($period_o / $divisor , $decimals ), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "period_c" => number_format(round($period_c / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "month" => number_format(round(($month_o + $month_c) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "month_o" => number_format(round($month_o / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "month_c" => number_format(round($month_c / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "prevision" => number_format(round((($month_o + $month_c) / $dias * $dias_t) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "prevision_o" => number_format(round(($month_o / $dias * $dias_t) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "prevision_c" => number_format(round(($month_c / $dias * $dias_t) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "day" => number_format(round((($day_o + $day_c) / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "day_o" => number_format(round(($day_o / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "day_c" => number_format(round(($day_c / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
         );
 
         $data = array(
-            array("Máximo", ($max == -1) ? "-" : number_format(round($max), 0, ",", ".") . " <span style='font-size:12px;'>L</span>", "#268ec3"),
-            array("Mínimo", ($min == 999999999) ? "-" : number_format(round($min), 0, ",", ".") . " <span style='font-size:12px;'>L</span>", "#268ec3"),
-            array("Médio",  ($min == 999999999) ? "-" : number_format(round(($period_o + $period_c) / count($period)), 0, ",", ".") . " <span style='font-size:12px;'>L</span>", "#268ec3"),
+            array("Máximo", ($max == -1) ? "-" : number_format(round($max / $divisor), 0, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#268ec3"),
+            array("Mínimo", ($min == 999999999) ? "-" : number_format(round($min / $divisor), 0, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#268ec3"),
+            array("Médio", ($min == 999999999) ? "-" : number_format(round((($period_o + $period_c) / $divisor) / count($period)), 0, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#268ec3"),
         );
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "L", 0, $extra, $footer, $dates);
-        
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, 0, $extra, $footer, $dates);
+
         echo json_encode($config);
     }
 
@@ -337,10 +348,12 @@ class Water extends UNO_Controller
         $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
 
         if (!$this->user->config) {
-            return json_encode(array(
-                "status" => "error",
-                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
-            ));
+            return json_encode(
+                array(
+                    "status" => "error",
+                    "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+                )
+            );
         }
 
         $entity = $this->shopping_model->get_entity_by_group($this->input->getPost('group'));
@@ -361,15 +374,15 @@ class Water extends UNO_Controller
             LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
             LEFT JOIN (  
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_".$entity->tabela."_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+                FROM esm_leituras_" . $entity->tabela . "_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
                 WHERE timestamp > UNIX_TIMESTAMP() - 86400
                 GROUP BY medidor_id
             ) l ON l.device = esm_medidores.nome
             LEFT JOIN (
                 SELECT esm_medidores.nome as device, SUM(consumo) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_".$entity->tabela."_agua d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_agua d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                 JOIN esm_medidores ON esm_medidores.id = d.medidor_id
@@ -380,15 +393,15 @@ class Water extends UNO_Controller
             ) m ON m.device = esm_medidores.nome
             LEFT JOIN (
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_".$entity->tabela."_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+                FROM esm_leituras_" . $entity->tabela . "_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
                 WHERE MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
                 GROUP BY medidor_id
             ) c ON c.device = esm_medidores.nome
             LEFT JOIN (
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_".$entity->tabela."_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+                FROM esm_leituras_" . $entity->tabela . "_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
                 WHERE 
                     MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND 
                     YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now()) AND 
@@ -397,7 +410,7 @@ class Water extends UNO_Controller
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                esm_unidades.agrupamento_id = ".$this->input->getPost("group")." AND
+                esm_unidades.agrupamento_id = " . $this->input->getPost("group") . " AND
                 esm_medidores.tipo = 'agua'
             ORDER BY 
             esm_unidades_config.type, esm_unidades.nome
@@ -405,14 +418,14 @@ class Water extends UNO_Controller
 
         $dt->edit('type', function ($data) {
             if ($data["type"] == 1) {
-                return "<span class=\"badge badge-warning\">".$this->user->config->area_comum."</span>";
+                return "<span class=\"badge badge-warning\">" . $this->user->config->area_comum . "</span>";
             } else if ($data["type"] == 2) {
                 return "<span class=\"badge badge-info\">Unidades</span>";
             }
         });
 
         $dt->edit('value_read', function ($data) {
-             return str_pad(round($data["value_read"]), 6 , '0' , STR_PAD_LEFT);
+            return str_pad(round($data["value_read"]), 6, '0', STR_PAD_LEFT);
         });
 
         $dt->edit('value_last', function ($data) {
@@ -434,7 +447,7 @@ class Water extends UNO_Controller
             else if ($data["value_future"] > $data["value_last_month"])
                 $icon = "<i class=\"fa fa-level-down-alt text-success ms-2\"></i>";
 
-            return number_format($data["value_future"], 0, ",", ".").$icon;
+            return number_format($data["value_future"], 0, ",", ".") . $icon;
         });
 
         // gera resultados
@@ -446,15 +459,17 @@ class Water extends UNO_Controller
         $group_id = $this->input->getPost('id');
 
         // busca fechamento
-        $group  = $this->shopping_model->get_group_info($group_id);
+        $group = $this->shopping_model->get_group_info($group_id);
 
         $this->user->config = $this->shopping_model->get_client_config($group_id);
 
         if (!$this->user->config) {
-            return json_encode(array(
-                "status" => "error",
-                "message" => "Dados não foram carregados corretamente. Configurações gerais não fornecidas."
-            ));
+            return json_encode(
+                array(
+                    "status" => "error",
+                    "message" => "Dados não foram carregados corretamente. Configurações gerais não fornecidas."
+                )
+            );
         }
 
         //TODO verificar se usuário tem acesso a esse fechamento
@@ -474,13 +489,13 @@ class Water extends UNO_Controller
 		];
 
         $spreadsheet->getProperties()
-			->setCreator('Easymeter')
-			->setLastModifiedBy('Easymeter')
-			->setTitle('Relatório Resumo')
-			->setSubject(MonthName(date("m"))."/".date("Y"))
-			->setDescription('Relatório Resumo - '.date("01/m/Y").' - '.date("d/m/Y"))
-			->setKeywords($group->group_name.' Resumo '.MonthName(date("m"))."/".date("Y"))
-			->setCategory('Relatório')->setCompany('Easymeter');
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório Resumo')
+            ->setSubject(MonthName(date("m")) . "/" . date("Y"))
+            ->setDescription('Relatório Resumo - ' . date("01/m/Y") . ' - ' . date("d/m/Y"))
+            ->setKeywords($group->group_name . ' Resumo ' . MonthName(date("m")) . "/" . date("Y"))
+            ->setCategory('Relatório')->setCompany('Easymeter');
 
 
         $spreadsheet->getActiveSheet()->setTitle($this->user->config->area_comum);
@@ -491,13 +506,13 @@ class Water extends UNO_Controller
         for ($i = 0; $i < 2; $i++) {
 
             $spreadsheet->setActiveSheetIndex($i);
-    
+
             $resume = $this->water_model->GetResume($group_id, $this->user->config, $i + 1, $this->user->demo);
 
             $spreadsheet->getActiveSheet()->getStyle('A1:H2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
             $spreadsheet->getActiveSheet()->mergeCells('A1:H1');
-            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - '. date("01/m/Y").' a '.date("d/m/Y"));
+            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - ' . date("01/m/Y") . ' a ' . date("d/m/Y"));
             $spreadsheet->getActiveSheet()->mergeCells('A2:H2');
 
             $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
@@ -525,7 +540,7 @@ class Water extends UNO_Controller
             $spreadsheet->getActiveSheet()->getStyle('B6:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->getStyle('C6:J'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-            $spreadsheet->getActiveSheet()->setCellValue('A'.(count($resume) + 7), 'Gerado em '.date("d/m/Y H:i"));
+            $spreadsheet->getActiveSheet()->setCellValue('A' . (count($resume) + 7), 'Gerado em ' . date("d/m/Y H:i"));
 
             $spreadsheet->getActiveSheet()->setSelectedCell('A1');
         }
@@ -533,41 +548,43 @@ class Water extends UNO_Controller
         $spreadsheet->setActiveSheetIndex(0);
 
         $writer = new Xlsx($spreadsheet);
- 
-        $filename = "Resumo Água ".$group->group_name;
+
+        $filename = "Resumo Água " . $group->group_name;
 
         ob_start();
         $writer->save("php://output");
         $xlsData = ob_get_contents();
         ob_end_clean();
 
-        $response =  array(
+        $response = array(
             'status' => "success",
-            'name'   => $filename,
-            'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
+            'name' => $filename,
+            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
         );
 
         echo json_encode($response);
     }
-    
+
     public function lancamento()
     {
         $data = array(
-            "agrupamento_id"    => $this->input->getPost('tar-water-group'),
-            "entrada_id"  => 73,
+            "agrupamento_id" => $this->input->getPost('tar-water-group'),
+            "entrada_id" => 73,
             "competencia" => $this->input->getPost('tar-water-competencia'),
-            "inicio"      => $this->input->getPost('tar-water-data-ini'),
-            "fim"         => $this->input->getPost('tar-water-data-fim'),
-            "mensagem"    => $this->input->getPost('tar-water-msg'),
+            "inicio" => $this->input->getPost('tar-water-data-ini'),
+            "fim" => $this->input->getPost('tar-water-data-fim'),
+            "mensagem" => $this->input->getPost('tar-water-msg'),
         );
 
         $this->user->config = $this->shopping_model->get_client_config($data['agrupamento_id']);
 
         if (!$this->user->config) {
-            return json_encode(array(
-                "status" => "error",
-                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
-            ));
+            return json_encode(
+                array(
+                    "status" => "error",
+                    "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+                )
+            );
         }
 
         if ($this->water_model->VerifyCompetencia($data["entrada_id"], $data["competencia"])) {
@@ -620,11 +637,11 @@ class Water extends UNO_Controller
         ");
 
         $dt->edit('leitura_anterior', function ($data) {
-            return str_pad(round($data["leitura_anterior"]), 6 , '0' , STR_PAD_LEFT);
+            return str_pad(round($data["leitura_anterior"]), 6, '0', STR_PAD_LEFT);
         });
 
         $dt->edit('leitura_atual', function ($data) {
-            return str_pad(round($data["leitura_atual"]), 6 , '0' , STR_PAD_LEFT);
+            return str_pad(round($data["leitura_atual"]), 6, '0', STR_PAD_LEFT);
         });
 
 
@@ -647,9 +664,9 @@ class Water extends UNO_Controller
         //TODO verificar se usuário tem acesso a esse fechamento
 
         // verifica retorno
-        if(!$fechamento || is_null($fechamento->id)) {
+        if (!$fechamento || is_null($fechamento->id)) {
             // mostra erro
-            echo json_encode(array("status"  => "error", "message" => "Lançamento não encontrado"));
+            echo json_encode(array("status" => "error", "message" => "Lançamento não encontrado"));
             return;
         }
 
@@ -693,12 +710,9 @@ class Water extends UNO_Controller
             $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
             $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
             
-
             $spreadsheet->getActiveSheet()->getStyle('B5:D'.(count($linhas) + 5))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-
-            $spreadsheet->getActiveSheet()->setCellValue('A'.(count($linhas) + 7), 'Gerado em '.date("d/m/Y H:i"));
-
+            $spreadsheet->getActiveSheet()->setCellValue('A' . (count($linhas) + 7), 'Gerado em ' . date("d/m/Y H:i"));
 
             $spreadsheet->getActiveSheet()->setSelectedCell('A1');
         }
@@ -707,7 +721,6 @@ class Water extends UNO_Controller
 
         $writer = new Xlsx($spreadsheet);
 
- 
         $filename = $fechamento->nome.' Água - '. strftime('%B/%Y', strtotime($fechamento->competencia)); 
 
         ob_start();
@@ -715,14 +728,14 @@ class Water extends UNO_Controller
         $xlsData = ob_get_contents();
         ob_end_clean();
 
-        $response =  array(
+        $response = array(
             'status' => "success",
-            'name'   => $filename,
-            'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
+            'name' => $filename,
+            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
         );
 
         echo json_encode($response);
-    }    
+    }
 
     public function DownloadLancamentos()
     {
@@ -730,14 +743,14 @@ class Water extends UNO_Controller
 
         // busca fechamento
         $fechamentos = $this->water_model->GetLancamentos($group_id);
-        $group       = $this->shopping_model->get_group_info($group_id);
+        $group = $this->shopping_model->get_group_info($group_id);
 
         //TODO verificar se usuário tem acesso a esse fechamento
 
         // verifica retorno
-        if(!$fechamentos) {
+        if (!$fechamentos) {
             // mostra erro
-            echo json_encode(array("status"  => "error", "message" => "Nenhum lançamento encontrado"));
+            echo json_encode(array("status" => "error", "message" => "Nenhum lançamento encontrado"));
             return;
         }
         setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
@@ -747,18 +760,18 @@ class Water extends UNO_Controller
 
         $spreadsheet = new Spreadsheet();
 
-		$titulos = [
-			['Total', 'Aberto', 'Fechado' ]
-		];
+        $titulos = [
+            ['Total', 'Aberto', 'Fechado']
+        ];
 
         $spreadsheet->getProperties()
-			->setCreator('Easymeter')
-			->setLastModifiedBy('Easymeter')
-			->setTitle('Relatório de Lançamentos - Água')
-			->setSubject($group->group_name)
-			->setDescription('Relatório de Lançamentos - Água - '.$group->group_name)
-			->setKeywords($group->group_name.' Lançamentos Água')
-			->setCategory('Relatório')->setCompany('Easymeter');
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório de Lançamentos - Água')
+            ->setSubject($group->group_name)
+            ->setDescription('Relatório de Lançamentos - Água - ' . $group->group_name)
+            ->setKeywords($group->group_name . ' Lançamentos Água')
+            ->setCategory('Relatório')->setCompany('Easymeter');
 
         $spreadsheet->getActiveSheet()->getStyle('A1:G2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
@@ -777,35 +790,35 @@ class Water extends UNO_Controller
 
         $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'D5');
 
-		$spreadsheet->getActiveSheet()->fromArray($fechamentos, NULL, 'A6');
+        $spreadsheet->getActiveSheet()->fromArray($fechamentos, NULL, 'A6');
 
-		$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
 
-        $spreadsheet->getActiveSheet()->getStyle('A6:G'.(count($fechamentos) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('A6:G' . (count($fechamentos) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-        $spreadsheet->getActiveSheet()->setCellValue('A'.(count($fechamentos) + 7), 'Gerado em '.date("d/m/Y H:i"));
+        $spreadsheet->getActiveSheet()->setCellValue('A' . (count($fechamentos) + 7), 'Gerado em ' . date("d/m/Y H:i"));
 
-		$spreadsheet->getActiveSheet()->setSelectedCell('A1');
+        $spreadsheet->getActiveSheet()->setSelectedCell('A1');
 
         $writer = new Xlsx($spreadsheet);
- 
-        $filename = "Lançamentos Água ".$group->group_name;
+
+        $filename = "Lançamentos Água " . $group->group_name;
 
         ob_start();
         $writer->save("php://output");
         $xlsData = ob_get_contents();
         ob_end_clean();
 
-        $response =  array(
+        $response = array(
             'status' => "success",
-            'name'   => $filename,
-            'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
+            'name' => $filename,
+            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
         );
 
         echo json_encode($response);
@@ -816,10 +829,12 @@ class Water extends UNO_Controller
         $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
 
         if (!$this->user->config) {
-            return json_encode(array(
-                "status" => "error",
-                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
-            ));
+            return json_encode(
+                array(
+                    "status" => "error",
+                    "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+                )
+            );
         }
 
         $entity = $this->shopping_model->get_entity_by_group($this->input->getPost('group'));
@@ -859,15 +874,15 @@ class Water extends UNO_Controller
             JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
             LEFT JOIN (  
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_".$entity->tabela."_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+                FROM esm_leituras_" . $entity->tabela . "_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
                 WHERE timestamp > UNIX_TIMESTAMP() - 86400
                 GROUP BY medidor_id
             ) l ON l.device = esm_medidores.nome
             LEFT JOIN (
                 SELECT esm_medidores.nome as device, SUM(consumo) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_".$entity->tabela."_agua d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_agua d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                 JOIN esm_medidores ON esm_medidores.id = d.medidor_id
@@ -878,15 +893,15 @@ class Water extends UNO_Controller
             ) m ON m.device = esm_medidores.nome
             LEFT JOIN (
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_".$entity->tabela."_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+                FROM esm_leituras_" . $entity->tabela . "_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
                 WHERE MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
                 GROUP BY medidor_id
             ) c ON c.device = esm_medidores.nome
             LEFT JOIN (
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_".$entity->tabela."_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_".$entity->tabela."_agua.medidor_id
+                FROM esm_leituras_" . $entity->tabela . "_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
                 WHERE 
                     MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND 
                     YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now()) AND 
@@ -895,7 +910,7 @@ class Water extends UNO_Controller
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                esm_unidades.agrupamento_id = ".$this->input->getPost("group")." AND
+                esm_unidades.agrupamento_id = " . $this->input->getPost("group") . " AND
                 esm_medidores.tipo = 'agua'
             ORDER BY 
             esm_unidades_config.type, esm_unidades.nome
@@ -903,14 +918,14 @@ class Water extends UNO_Controller
 
         $dt->edit('type', function ($data) {
             if ($data["type"] == 1) {
-                return "<span class=\"badge badge-warning\">".$this->user->config->area_comum."</span>";
+                return "<span class=\"badge badge-warning\">" . $this->user->config->area_comum . "</span>";
             } else if ($data["type"] == 2) {
                 return "<span class=\"badge badge-info\">Unidades</span>";
             }
         });
 
         $dt->edit('value_read', function ($data) {
-            return str_pad(round($data["value_read"]), 6 , '0' , STR_PAD_LEFT);
+            return str_pad(round($data["value_read"]), 6, '0', STR_PAD_LEFT);
         });
 
         $dt->edit('value_last', function ($data) {
@@ -936,7 +951,7 @@ class Water extends UNO_Controller
             else if ($data["value_future"] > $data["value_last_month"])
                 $icon = "<i class=\"fa fa-level-down-alt text-success ms-2\"></i>";
 
-            return number_format($data["value_future"], 0, ",", ".").$icon;
+            return number_format($data["value_future"], 0, ",", ".") . $icon;
         });
 
         // gera resultados
@@ -974,7 +989,7 @@ class Water extends UNO_Controller
         });
 
         $dt->edit('value', function ($data) use ($factor) {
-            return number_format($data["value"] * $factor, 3, ",", ".").($factor == 1000 ? " m³" : " L");
+            return number_format($data["value"] * $factor, 3, ",", ".") . ($factor == 1000 ? " m³" : " L");
         });
 
         $dt->add('percentage', function ($data) use ($total, $factor) {
@@ -998,13 +1013,13 @@ class Water extends UNO_Controller
         $entity = $this->shopping_model->get_entity_by_group($group);
 
         $value = "p.value AS value";
-        $tabela = "esm_leituras_".$entity->tabela."_agua";
+        $tabela = "esm_leituras_" . $entity->tabela . "_agua";
         if ($this->user->demo) {
             $value = "RAND() * 1 AS value";
-            $tabela = "esm_leituras_".$entity->tabela."_agua_demo";
+            $tabela = "esm_leituras_" . $entity->tabela . "_agua_demo";
             $group = 113;
         }
-        
+
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT 
@@ -1052,10 +1067,12 @@ class Water extends UNO_Controller
         $this->user->config = $this->shopping_model->get_client_config($group);
 
         if (!$this->user->config) {
-            return json_encode(array(
-                "status" => "error",
-                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
-            ));
+            return json_encode(
+                array(
+                    "status" => "error",
+                    "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+                )
+            );
         }
 
         // Query que calcula os valores totais e faz a participação em porcentagem
@@ -1076,12 +1093,12 @@ class Water extends UNO_Controller
             echo $this->GetVazamentoInsights($group);
             return;
         }
-    
+
         $value = "p.value AS value";
-        $tabela = "esm_leituras_".$entity->tabela."_agua";
+        $tabela = "esm_leituras_" . $entity->tabela . "_agua";
         if ($this->user->demo) {
             $value = "RAND() * 1000 AS value";
-            $tabela = "esm_leituras_".$entity->tabela."_agua_demo";
+            $tabela = "esm_leituras_" . $entity->tabela . "_agua_demo";
             $group = 113;
         }
 
@@ -1110,13 +1127,13 @@ class Water extends UNO_Controller
             WHERE 
                 esm_unidades.agrupamento_id = $group
             ORDER BY value DESC LIMIT 10");
-            
+
         $dt->add('id', function ($data) {
             return "-";
         });
 
         $dt->edit('value', function ($data) use ($factor) {
-            return number_format($data["value"] * $factor, 3, ",", ".").($factor == 1000 ? " m³" : " L");
+            return number_format($data["value"] * $factor, 3, ",", ".") . ($factor == 1000 ? " m³" : " L");
 
         });
 

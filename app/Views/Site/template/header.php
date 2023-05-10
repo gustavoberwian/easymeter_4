@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="pt-BR" xml:lang="pt-BR" xmlns="http://www.w3.org/1999/xhtml">
-    
+
 
 <head>
-    
+
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=UA-127828864-1"></script>
     <script>
@@ -39,6 +39,7 @@
     <link href="<?= base_url('vendor/flexslider/flexslider.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <link href="<?= base_url('assets/css/pages/site/theme-fonts.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <link href="<?= base_url('assets/css/pages/site/theme.css'); ?>" rel="stylesheet" type="text/css" media="all" />
+    <link href="<?= base_url('assets/css/pages/site/footer.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <link href="<?= base_url('vendor/swiper/swiper-bundle.min.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/pages/site/global.css'); ?>">
@@ -46,143 +47,143 @@
 </head>
 
 <body class="scroll-assist">
-<header id="navigation">
-    <div class="nav-container">
-        <nav>
-            <div class="nav-utility color-primary border-0 d-flex flex-row-reverse justify-content-sm-center justify-content-md-center justify-content-lg-start justify-content-xl-start">
+    <header id="navigation">
+        <div class="nav-container">
+            <nav>
+                <div class="nav-utility color-primary border-0 d-flex flex-row-reverse justify-content-sm-center justify-content-md-center justify-content-lg-start justify-content-xl-start">
 
-                <?php if (auth()->loggedIn()) : ?>
-                    <div class="module right">
-                        <a class="link_nav pr-3" href="<?= base_url($user->page); ?>">
-                            <i class="fas fa-sign-in-alt sub" style="top: 0"></i>
-                            <span class="sub bold">Painel</span>
-                        </a>
-                        <a class="link_nav" href="<?= base_url('/logged-out'); ?>">
-                            <i class="fas fa-sign-out-alt sub" style="top: 0"></i>
-                            <span class="sub bold">Sair</span>
-                        </a>
-                    </div>
-                <?php else : ?>
-                    <div class="module right">
-                        <a class="link_nav" href="<?= base_url('/login'); ?>">
-                            <i class="fas fa-user sub" style="top: 0"></i>
-                            <span class="sub bold">Entrar</span>
-                        </a>
-                    </div>
-                <?php endif; ?>
+                    <?php if (auth()->loggedIn()) : ?>
+                        <div class="module right">
+                            <a class="link_nav pr-3" href="<?= base_url($user->page); ?>">
+                                <i class="fas fa-sign-in-alt sub" style="top: 0"></i>
+                                <span class="sub bold">Painel</span>
+                            </a>
+                            <a class="link_nav" href="<?= base_url('/logged-out'); ?>">
+                                <i class="fas fa-sign-out-alt sub" style="top: 0"></i>
+                                <span class="sub bold">Sair</span>
+                            </a>
+                        </div>
+                    <?php else : ?>
+                        <div class="module right">
+                            <a class="link_nav" href="<?= base_url('/login'); ?>">
+                                <i class="fas fa-user sub" style="top: 0"></i>
+                                <span class="sub bold">Entrar</span>
+                            </a>
+                        </div>
+                    <?php endif; ?>
 
-                <div class="d-flex">
-                    <i class="ti-email d-flex align-self-center">&nbsp;</i>
-                    <span class="sub"><a class="link_nav" href="mailto:contato@easymeter.com.br">contato@easymeter.com.br</a></span>
-                </div>
+                    <div class="d-flex">
+                        <i class="ti-email d-flex align-self-center">&nbsp;</i>
+                        <span class="sub"><a class="link_nav" href="mailto:contato@easymeter.com.br">contato@easymeter.com.br</a></span>
+                    </div>
 
-                <div class="d-flex mr-4">
-                    <i class="ti ti-headphone-alt d-flex align-self-center">&nbsp;</i>
-                    <span class="sub d-flex align-self-center"><a class="link_nav" href="tel:+5508005916181">0800 591 6181</a></span>
-                </div>
-            </div>
-            <div class="nav-bar mb-4">
-                <div class="module">
-                    <a href="<?= base_url('/'); ?>">
-                        <img class="logo logo-dark p-1" alt="Easymeter" src="<?= base_url('assets/img/logo.png'); ?>">
-                    </a>
-                </div>
-                <div class="module mobile-toggle right d-block d-lg-none">
-                    <i class="ti-menu"></i>
-                </div>
-                <div class="module-group right">
-                    <div class="module language left">
-                        <ul class="menu bold square">
-                            <li>
-                                <a class="link_nav" href="#sobrenos">Sobre nós </a>
-                            </li>
-                            <li>
-                                <a class="link_nav" href="#plataforma">A Plataforma</a>
-                            </li>
-                            <li>
-                                <a class="link_nav" href="#diferenciais">Diferenciais</a>
-                            </li>
-                            <li>
-                                <a class="link_nav" href="#individualizacao">Individualização</a>
-                            </li>
-                            <li>
-                                <a class="link_nav" href="#aplicacao">Onde se aplica?</a>
-                            </li>
-                            <li>
-                                <a class="link_nav" href="#contato">Contato</a>
-                            </li>
-                        </ul>
+                    <div class="d-flex mr-4">
+                        <i class="ti ti-headphone-alt d-flex align-self-center">&nbsp;</i>
+                        <span class="sub d-flex align-self-center"><a class="link_nav" href="tel:+5508005916181">0800 591 6181</a></span>
                     </div>
                 </div>
-                <div class="module-group right d-none">
-                    <div class="module language left">
-                        <ul class="menu bold square">
-                            <li class="">
-                                <a href="<?= base_url('/'); ?>">Por que individualizar</a>
-                                <ul>
-                                    <li><a href="<?= base_url('/'); ?>#mitos" class="inner-link" target="_self">3 Mitos</a></li>
-                                    <li><a href="<?= base_url('/'); ?>#porque_medir" class="inner-link" target="_self">Porque Easymeter</a></li>
-                                    <li><a href="<?= base_url('/'); ?>#destaques" class="inner-link" target="_self">Fatos Importantes</a></li>
-                                    <li><a href="<?= base_url('/'); ?>#porque_easymeter" class="inner-link" target="_self">Porque nós</a></li>
-                                </ul>
-                            </li>
-                        </ul>
+                <div class="nav-bar mb-4">
+                    <div class="module">
+                        <a href="<?= base_url('/'); ?>">
+                            <img class="logo logo-dark p-1" alt="Easymeter" src="<?= base_url('assets/img/logo.png'); ?>">
+                        </a>
                     </div>
-                    <div class="module language left">
-                        <ul class="menu">
-                            <li class="">
-                                <a href="<?= base_url('site/solucoes'); ?>">Nossa Solução</a>
-                                <ul>
-                                    <li><a href="<?= base_url('site/solucoes'); ?>#tecnologia">Tecnologia</a></li>
-                                    <li><a href="<?= base_url('site/solucoes'); ?>#caracteristicas">Características</a></li>
-                                    <li><a href="<?= base_url('site/solucoes'); ?>#modelos">Modelos</a></li>
-                                    <li><a href="<?= base_url('site/solucoes'); ?>#orcamento">Orçamento</a></li>
-                                </ul>
-                            </li>
-                        </ul>
+                    <div class="module mobile-toggle right d-block d-lg-none">
+                        <i class="ti-menu"></i>
                     </div>
-                    <div class="module language left">
-                        <ul class="menu">
-                            <li class="">
-                                <a href="<?= base_url('site/tecnologia'); ?>">Tecnologia</a>
-                                <ul>
-                                    <li><a href="<?= base_url('site/tecnologia'); ?>#remoto">Sem Leitura</a></li>
-                                    <li><a href="<?= base_url('site/tecnologia'); ?>#cortar_colar">Instalação</a></li>
-                                    <li><a href="<?= base_url('site/tecnologia'); ?>#plataforma">Plataforma</a></li>
-                                    <li><a href="<?= base_url('site/tecnologia'); ?>#envolva">Envolvimento</a></li>
-                                    <li><a href="<?= base_url('site/tecnologia'); ?>#gamificacao">Futuro</a></li>
-                                </ul>
-                            </li>
-                        </ul>
+                    <div class="module-group right">
+                        <div class="module language left">
+                            <ul class="menu bold square">
+                                <li>
+                                    <a class="link_nav" href="#sobrenos">Sobre nós </a>
+                                </li>
+                                <li>
+                                    <a class="link_nav" href="#plataforma">A Plataforma</a>
+                                </li>
+                                <li>
+                                    <a class="link_nav" href="#diferenciais">Diferenciais</a>
+                                </li>
+                                <li>
+                                    <a class="link_nav" href="#individualizacao">Individualização</a>
+                                </li>
+                                <li>
+                                    <a class="link_nav" href="#aplicacao">Onde se aplica?</a>
+                                </li>
+                                <li>
+                                    <a class="link_nav" href="#contato">Contato</a>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
-                    <div class="module language left">
-                        <ul class="menu">
-                            <li class="">
-                                <a href="<?= base_url('site/sobre'); ?>">Sobre Nós</a>
-                                <ul>
-                                    <li><a href="<?= base_url('site/equipe'); ?>">Equipe</a></li>
-                                    <li><a href="<?= base_url('site/trabalhe'); ?>">Oportunidades</a></li>
-                                    <li><a href="<?= base_url('site/sobre'); ?>#parceiros">Parceiros</a></li>
-                                    <?php /*                                        <li><a href="<?= base_url('site/imprensa'); ?>">Na Imprensa</a></li> */ ?>
-                                    <li><a href="<?= base_url('site/sobre'); ?>#contato_header">Contato</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div>
-                    <div class="module language left">
-                        <ul class="menu">
-                            <li class="">
-                                <a href="<?= base_url('site/suporte'); ?>">Suporte</a>
-                                <ul>
-                                    <li><a href="<?= base_url('site/faq'); ?>#perguntas">FAQs </a></li>
-                                    <li><a href="<?= base_url('site/downloads'); ?>#downloads">Downloads</a></li>
-                                    <li><a href="<?= base_url('site/chamados'); ?>#chamados">Chamados </a></li>
-                                </ul>
-                            </li>
-                        </ul>
+                    <div class="module-group right d-none">
+                        <div class="module language left">
+                            <ul class="menu bold square">
+                                <li class="">
+                                    <a href="<?= base_url('/'); ?>">Por que individualizar</a>
+                                    <ul>
+                                        <li><a href="<?= base_url('/'); ?>#mitos" class="inner-link" target="_self">3 Mitos</a></li>
+                                        <li><a href="<?= base_url('/'); ?>#porque_medir" class="inner-link" target="_self">Porque Easymeter</a></li>
+                                        <li><a href="<?= base_url('/'); ?>#destaques" class="inner-link" target="_self">Fatos Importantes</a></li>
+                                        <li><a href="<?= base_url('/'); ?>#porque_easymeter" class="inner-link" target="_self">Porque nós</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="module language left">
+                            <ul class="menu">
+                                <li class="">
+                                    <a href="<?= base_url('site/solucoes'); ?>">Nossa Solução</a>
+                                    <ul>
+                                        <li><a href="<?= base_url('site/solucoes'); ?>#tecnologia">Tecnologia</a></li>
+                                        <li><a href="<?= base_url('site/solucoes'); ?>#caracteristicas">Características</a></li>
+                                        <li><a href="<?= base_url('site/solucoes'); ?>#modelos">Modelos</a></li>
+                                        <li><a href="<?= base_url('site/solucoes'); ?>#orcamento">Orçamento</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="module language left">
+                            <ul class="menu">
+                                <li class="">
+                                    <a href="<?= base_url('site/tecnologia'); ?>">Tecnologia</a>
+                                    <ul>
+                                        <li><a href="<?= base_url('site/tecnologia'); ?>#remoto">Sem Leitura</a></li>
+                                        <li><a href="<?= base_url('site/tecnologia'); ?>#cortar_colar">Instalação</a></li>
+                                        <li><a href="<?= base_url('site/tecnologia'); ?>#plataforma">Plataforma</a></li>
+                                        <li><a href="<?= base_url('site/tecnologia'); ?>#envolva">Envolvimento</a></li>
+                                        <li><a href="<?= base_url('site/tecnologia'); ?>#gamificacao">Futuro</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="module language left">
+                            <ul class="menu">
+                                <li class="">
+                                    <a href="<?= base_url('site/sobre'); ?>">Sobre Nós</a>
+                                    <ul>
+                                        <li><a href="<?= base_url('site/equipe'); ?>">Equipe</a></li>
+                                        <li><a href="<?= base_url('site/trabalhe'); ?>">Oportunidades</a></li>
+                                        <li><a href="<?= base_url('site/sobre'); ?>#parceiros">Parceiros</a></li>
+                                        <?php /*                                        <li><a href="<?= base_url('site/imprensa'); ?>">Na Imprensa</a></li> */ ?>
+                                        <li><a href="<?= base_url('site/sobre'); ?>#contato_header">Contato</a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="module language left">
+                            <ul class="menu">
+                                <li class="">
+                                    <a href="<?= base_url('site/suporte'); ?>">Suporte</a>
+                                    <ul>
+                                        <li><a href="<?= base_url('site/faq'); ?>#perguntas">FAQs </a></li>
+                                        <li><a href="<?= base_url('site/downloads'); ?>#downloads">Downloads</a></li>
+                                        <li><a href="<?= base_url('site/chamados'); ?>#chamados">Chamados </a></li>
+                                    </ul>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </nav>
-    </div>
-</header>
+            </nav>
+        </div>
+    </header>

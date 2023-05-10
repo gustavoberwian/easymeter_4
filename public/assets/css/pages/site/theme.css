@@ -309,7 +309,7 @@ hr.short-thick {
 /*!---------- 3. TYPOGRAPHY ----------*/
 @media all and (max-width: 767px) {
   .text-center-xs {
-    text-align: center !important;
+    text-align: left !important;
   }
 }
 
@@ -370,7 +370,7 @@ h4,
 h5,
 h6 {
   font-weight: 300;
-  color: #5C6B73;
+  color: #ffffff;
 }
 
 h1,
@@ -543,7 +543,7 @@ a:hover {
 
 a {
   font-weight: 500;
-  color: #0095E5;
+  color: #27b1e5;
   transition: all 0.3s ease;
   -webkit-transition: all 0.3s ease;
   -moz-transition: all 0.3s ease;
@@ -645,7 +645,6 @@ blockquote .author {
   br {
     display: none;
   }
-
   blockquote {
     font-size: 16px;
     line-height: 32px;
@@ -659,11 +658,13 @@ blockquote .author {
 
 .text-left {
   text-align: left !important;
+  margin: auto;
 }
 
 @media all and (max-width: 767px) {
   .text-left-xs {
     text-align: left !important;
+    
   }
 }
 
@@ -710,6 +711,10 @@ ul.lead li {
 }
 
 .bg-orange {
+  background: #27b1e5;
+}
+
+.bg-blue {
   background: #E53D00;
 }
 
@@ -739,6 +744,10 @@ ul.lead li {
 
 .color-orange {
   color: #E53D00;
+}
+
+.color-blue {
+  color: #27b1e5;
 }
 
 /*!---------- 5. SECTIONS ----------*/
@@ -803,6 +812,8 @@ footer.bg-dark li,
   section {
     padding: 80px 0;
   }
+
+  
 }
 
 .overlay:before {
@@ -2066,7 +2077,7 @@ nav.nav-centered.outOfSight .logo {
   }
 
   .icon-sm {
-    font-size: 18px;
+    font-size: 50px;
   }
 
   .icon-xs {
@@ -3992,6 +4003,15 @@ img {
   margin-bottom: 24px;
 }
 
+.row1 {
+    display: flex;
+    -ms-flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+    align-content: center;
+    justify-content: center;
+}
+
 .image-slider.height-70 .slides li {
   height: 70vh;
   min-height: 600px;
@@ -4009,6 +4029,8 @@ img {
     transform: none;
     -webkit-transform: none;
   }
+
+  
 }
 
 .flex-direction-nav a.flex-next {
@@ -4061,6 +4083,17 @@ img {
   .flex-direction-nav {
     display: none;
   }
+  .row1 {
+    display: flex;
+    -ms-flex-wrap: wrap;
+    margin-right: -15px;
+    margin-left: -15px;
+    align-content: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+  
 }
 
 .controls-inside .flex-control-nav {
@@ -6389,6 +6422,10 @@ footer.bg-dark a {
   margin-left: 20px;
 }
 
+.ml201 {
+  margin-right: 500px;
+}
+
 @media all and (max-width: 990px) {
   .mb-s-0 {
     margin-bottom: 0;
@@ -7021,6 +7058,15 @@ footer.bg-dark a {
   color: red;
 }
 
+.open-chat1 b {
+  cursor: pointer;
+}
+
+.open-chat1 b:hover {
+  color: #27b1e5;
+
+}
+
 .fs-30 {
   font-size: 30px;
 }
@@ -7295,9 +7341,11 @@ p {
 @media only screen and (max-width: 800px) {
   .padding-swiper {
     padding: 50px 10px 80px;
+    text-align: left;
   }
 
   .plataforma-icones {
     max-height: 150px;
   }
 }
+

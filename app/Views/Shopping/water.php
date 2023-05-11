@@ -143,13 +143,14 @@
                 <div class="col-md-12 mb-4">
                     <section class="card card-easymeter h-100 mb-4">
                         <header class="card-header">
-                            <div class="card-actions buttons">
+                            <div class="card-actions buttons d-flex">
                                 <select data-plugin-selectTwo class="form-control populate placeholder" id="compare" data-plugin-options='{ "placeholder": "Comparar", "allowClear": true }' style="width: 150px">
                                     <option></option>
                                     <?php foreach ($unidades as $u) { ?>
                                         <option value="<?= $u["medidor_id"] ?>"><?= $u["unidade_nome"]; ?></option>
                                     <?php } ?>
                                 </select>
+                                <button class="btn btn-primary btn-generate-resume" data-group="<?= $group_id; ?>"><i class="fas fa-file-download mr-3"></i> Gerar Planilha</button>
                             </div>
                             <h2 class="card-title">Consumo</h2>
                         </header>

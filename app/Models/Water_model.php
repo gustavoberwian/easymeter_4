@@ -272,6 +272,51 @@ class Water_model extends Base_model
         return false;
     }
 
+    public function generateResume($group, $config, $type, $start, $end, $demo = false)
+    {
+            $entity = $this->get_entity_by_group($group);
+            $values = " m.value AS value_month";
+        
+        
+
+        if ($demo) {
+            $values = "RAND() * 10000 AS value_month";
+        }
+
+        $result = $this->db->query("
+            SELECT 
+                esm_medidores.nome AS device, 
+                esm_unidades.nome AS name, 
+                $values
+            FROM esm_medidores
+            LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+            LEFT JOIN (
+                SELECT esm_medidores.nome as device, IF(SUM(consumo) > 999, CONCAT(FORMAT(SUM(consumo) /1000, 0, 'de_DE'), ' m³'), CONCAT(FORMAT(SUM(consumo), 0, 'de_DE'), ' L'))  AS value 
+                FROM esm_calendar
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_agua d ON 
+                    (d.timestamp) > (esm_calendar.ts_start) AND 
+                    (d.timestamp) <= (esm_calendar.ts_end + 600) 
+                JOIN esm_medidores ON esm_medidores.id = d.medidor_id
+                WHERE 
+                esm_calendar.dt >= DATE_FORMAT( FROM_UNIXTIME($start), '%Y-%m-%d' ) 
+                AND esm_calendar.dt <= DATE_FORMAT( FROM_UNIXTIME($end), '%Y-%m-%d' ) 
+                GROUP BY d.medidor_id
+            ) m ON m.device = esm_medidores.nome
+            WHERE 
+                esm_unidades.agrupamento_id = $group AND
+                esm_medidores.tipo = 'agua'
+            ORDER BY 
+                esm_unidades_config.type, esm_unidades.nome
+        ");
+
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
+        }
+
+        return false;
+    }
+
     public function GetDeviceLastRead($device, $gid = 0)
     {
         if ($device == "C") {

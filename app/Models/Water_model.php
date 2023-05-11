@@ -283,7 +283,6 @@ class Water_model extends Base_model
             $values = "RAND() * 10000 AS value_month";
         }
 
-
         $result = $this->db->query("
             SELECT 
                 esm_medidores.nome AS device, 

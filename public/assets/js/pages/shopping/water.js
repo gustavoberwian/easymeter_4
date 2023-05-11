@@ -7,6 +7,8 @@
     var chart = {};
     var start_last;
     var end_last;
+    var start_res;
+    var end_res;
     var device = 0;
 
     function apexchart(start = moment().subtract(6, 'days'), end = moment()) {
@@ -94,6 +96,8 @@
                     if (start.format("YYYY-MM-DD") === end.format("YYYY-MM-DD")) {
                         // Populando seletor de data e ícones
                         $('#daterange-main span').html(start.format('ddd, DD/MM/YYYY'));
+                        start_res = start;
+                        end_res = end;
                     } else {
                         // Populando seletor de data e ícones
                         $('#daterange-main span').html(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
@@ -102,6 +106,8 @@
                     if (start.format("YYYY-MM-DD") !== end.format("YYYY-MM-DD")) {
                         start_last = start;
                         end_last = end;
+                        start_res = start;
+                        end_res = end;
                     }
                 },
                 error: function (xhr, status, error) {
@@ -123,8 +129,8 @@
         e.preventDefault();
         var dados = {
             device  : device,
-            start   : start_last.format("YYYY-MM-DD"),
-            end     : end_last.format("YYYY-MM-DD"),
+            start   : start_res.format("YYYY-MM-DD"),
+            end     : end_res.format("YYYY-MM-DD"),
         };
 
         $.ajax({

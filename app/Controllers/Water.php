@@ -659,6 +659,7 @@ class Water extends UNO_Controller
 
             $resume = $this->water_model->generateResume($group_id, $this->user->config, $i + 1, strtotime($start.'00:00'), strtotime($end.'23:59'), $this->user->demo );
 
+
             $spreadsheet->getActiveSheet()->getStyle('A1:C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
             $spreadsheet->getActiveSheet()->mergeCells('A1:C1');

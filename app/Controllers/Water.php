@@ -663,7 +663,7 @@ class Water extends UNO_Controller
             $spreadsheet->getActiveSheet()->getStyle('A1:C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
             $spreadsheet->getActiveSheet()->mergeCells('A1:C1');
-            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - ' . date('Y/m/d', strtotime($start) ) . ' a ' . date('Y/m/d', strtotime($end)));
+            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - ' . date('d/m/Y', strtotime($start) ) . ' a ' . date('d/m/Y', strtotime($end)));
             $spreadsheet->getActiveSheet()->mergeCells('A2:C2');
 
             $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');

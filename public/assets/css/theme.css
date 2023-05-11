@@ -20376,3 +20376,8 @@ html.dark .mailbox-compose .bootstrap-tagsinput {
 html.dark .mailbox-compose .bootstrap-tagsinput>input {
 	color: #fff
 }
+
+.buttons .select2-container {
+	margin-right: 10px!important;
+	margin-top: 2px!important;
+}

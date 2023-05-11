@@ -1,5 +1,5 @@
 <!doctype html>
-<html class="fixed sidebar-left-big-icons">
+<html class="sidebar-left-big-icons">
 	<head>
 
 		<!-- Basic -->
@@ -21,18 +21,46 @@
 		<link href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700,800|Shadows+Into+Light" rel="stylesheet" type="text/css">
 
 		<!-- Vendor CSS -->
-		<link rel="stylesheet" href="<?= base_url('vendor/bootstrap/css/bootstrap.css'); ?>" />
-		<link rel="stylesheet" href="<?= base_url('vendor/animate/animate.compat.css'); ?>">
-		<link rel="stylesheet" href="<?= base_url('vendor/font-awesome/css/all.min.css'); ?>" />
-		<link rel="stylesheet" href="<?= base_url('vendor/boxicons/css/boxicons.min.css'); ?>" />
-        <link rel="stylesheet" href="<?= base_url('vendor/datatables/media/css/dataTables.bootstrap5.css'); ?>" />
+		<link rel="stylesheet" href="<?= base_url('vendor/datatables/media/css/dataTables.bootstrap5.css'); ?>" />
+		<link rel="stylesheet" href="<?php echo base_url("vendor/bootstrap/css/bootstrap.css"); ?>" />
+		<link rel="stylesheet" href="<?php echo base_url("vendor/animate/animate.compat.css"); ?>">
+		<link rel="stylesheet" href="<?php echo base_url("vendor/font-awesome/css/all.min.css"); ?>" />
+		<link rel="stylesheet" href="<?php echo base_url("vendor/font-awesome-6/css/all.min.css"); ?>" />
+		<link rel="stylesheet" href="<?php echo base_url("vendor/boxicons/css/boxicons.min.css"); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/magnific-popup/magnific-popup.css"); ?>" />
-        <link rel="stylesheet" href="<?= base_url('vendor/pnotify/pnotify.custom.css'); ?>" />
+		<link rel="stylesheet" href="<?php echo base_url("vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css"); ?>" />
+<!--		<link rel="stylesheet" href="<?php echo base_url("vendor/jquery-ui/jquery-ui.css"); ?>" /> -->
+<!--		<link rel="stylesheet" href="<?php echo base_url("vendor/jquery-ui/jquery-ui.theme.css"); ?>" /> -->
+		<link rel="stylesheet" href="<?php echo base_url("vendor/bootstrap-multiselect/css/bootstrap-multiselect.css"); ?>" />
+<!--		<link rel="stylesheet" href="<?php echo base_url("vendor/morris/morris.css"); ?>" /> -->
+        <link rel="stylesheet" href="<?php echo base_url("vendor/daterangepicker/daterangepicker.css"); ?>">
+        <!--<link rel="stylesheet" href="<?php echo base_url('vendor/datatables/DataTables-1.10.18/css/dataTables.bootstrap4.css'); ?>" /> -->
+
+        <link rel="stylesheet" href="<?php echo base_url('vendor/apexcharts/dist/apexcharts.css'); ?>" />
+        <link rel="stylesheet" href="<?php echo base_url('vendor/pnotify/pnotify.custom.css'); ?>" />
+		<link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-multiselect/css/bootstrap-multiselect.css'); ?>" />
+
+        <link rel="stylesheet" href="<?php echo base_url('vendor/croppie/croppie.css'); ?>" />
+        <link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-fileupload/bootstrap-fileupload.min.css'); ?>" />
 
         <!-- Specific Page Vendor -->
         <?php if(in_array($method, array('index'))) : ?>
             <link rel="stylesheet" href="<?php echo base_url('vendor/daterangepicker/daterangepicker.css'); ?>" />
             <link rel="stylesheet" href="<?php echo base_url('vendor/apexcharts/dist/apexcharts.css'); ?>" />
+        <?php endif; ?>
+
+		<?php if (service('uri')->getSegment(2) === 'profile') : ?>
+            <link rel="stylesheet" href="<?php echo base_url('vendor/croppie/croppie.css'); ?>" />
+            <link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-fileupload/bootstrap-fileupload.min.css'); ?>" />
+			<link rel="stylesheet" href="<?php echo base_url("assets/css/profile.css"); ?>">
+			<link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-tagsinput/bootstrap-tagsinput.css'); ?>" />
+			<link rel="stylesheet" href="<?php echo base_url("vendor/font-awesome-6/css/all.min.css"); ?>" />
+			<link rel="stylesheet" href="<?php echo base_url("vendor/bootstrap-datepicker/css/bootstrap-datepicker3.css"); ?>" />
+			<link rel="stylesheet" href="<?php echo base_url('vendor/apexcharts/dist/apexcharts.css'); ?>" />
+			<link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-multiselect/css/bootstrap-multiselect.css'); ?>" />
+			<link rel="stylesheet" href="<?php echo base_url('vendor/croppie/croppie.css'); ?>" />
+			<link rel="stylesheet" href="<?php echo base_url('vendor/bootstrap-fileupload/bootstrap-fileupload.min.css'); ?>" />
+
         <?php endif; ?>
 
 		<!-- Theme CSS -->
@@ -43,6 +71,8 @@
 
 		<!-- Theme Custom CSS -->
 		<link rel="stylesheet" href="<?= base_url('assets/css/custom.css'); ?>">
+		<link rel="stylesheet" href="<?php echo base_url("assets/css/energy.css"); ?>">
+
 
 		<!-- Head Libs -->
 		<script src="<?= base_url('vendor/modernizr/modernizr.js'); ?>"></script>
@@ -86,9 +116,9 @@
 						<div class="dropdown-menu">
 							<ul class="list-unstyled mb-2">
 								<li class="divider"></li>
-								<!--<li>
-									<a role="menuitem" tabindex="-1" href="<?/*= site_url('industria/profile'); */?>"><i class="bx bx-user-circle"></i> Minha Conta</a>
-								</li>-->
+								<li>
+									<a role="menuitem" tabindex="-1" href="<?= site_url('industria/profile'); ?>"><i class="bx bx-user-circle"></i> Minha Conta</a>
+								</li>
 								<li>
 									<a role="menuitem" tabindex="-1" href="<?= site_url('logout'); ?>"><i class="bx bx-power-off"></i> Sair</a>
 								</li>

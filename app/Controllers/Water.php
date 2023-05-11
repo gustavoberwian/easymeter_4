@@ -524,7 +524,7 @@ class Water extends UNO_Controller
         $spreadsheet = new Spreadsheet();
 
 		$titulos = [
-			['Mês Atual', 'Últimas 24h', 'Últimos 30 dias', "Previsão Mês" ]
+			['Mês Atual', 'Últimas 24h', 'Mês Anterior', "Previsão Mês" ]
 		];
 
         $spreadsheet->getProperties()
@@ -578,6 +578,113 @@ class Water extends UNO_Controller
             $spreadsheet->getActiveSheet()->getStyle('A6:A'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->getStyle('B6:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $spreadsheet->getActiveSheet()->getStyle('C6:J'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+            $spreadsheet->getActiveSheet()->setCellValue('A' . (count($resume) + 7), 'Gerado em ' . date("d/m/Y H:i"));
+
+            $spreadsheet->getActiveSheet()->setSelectedCell('A1');
+        }
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = "Resumo Água " . $group->group_name;
+
+        ob_start();
+        $writer->save("php://output");
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        $response = array(
+            'status' => "success",
+            'name' => $filename,
+            'file' => "data:application/vnd.ms-excel;base64," . base64_encode($xlsData)
+        );
+
+        echo json_encode($response);
+    }
+
+    public function generateResume()
+    {
+        $group_id = $this->input->getPost('group');
+        $start = $this->input->getPost('dados[start]');
+        $end = $this->input->getPost('dados[end]');
+        
+        // busca fechamento
+        $group = $this->shopping_model->get_group_info($group_id);
+
+        $this->user->config = $this->shopping_model->get_client_config($group_id);
+
+        if (!$this->user->config) {
+            return json_encode(
+                array(
+                    "status" => "error",
+                    "message" => "Dados não foram carregados corretamente. Configurações gerais não fornecidas."
+                )
+            );
+        }
+
+        //TODO verificar se usuário tem acesso a esse fechamento
+
+        // verifica retorno
+/*
+        if(!$resume) {
+            // mostra erro
+            echo json_encode(array("status"  => "error", "message" => "Resumo não encontrado"));
+            return;
+        }
+*/
+        $spreadsheet = new Spreadsheet();
+
+
+
+        $spreadsheet->getProperties()
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório Resumo')
+            ->setSubject(MonthName(date("m")) . "/" . date("Y"))
+            ->setDescription('Relatório Resumo - ' . date($start) . ' - ' . date($end))
+            ->setKeywords($group->group_name . ' Resumo ' . MonthName(date("m")) . "/" . date("Y"))
+            ->setCategory('Relatório')->setCompany('Easymeter');
+
+
+        $spreadsheet->getActiveSheet()->setTitle($this->user->config->area_comum);
+
+        $myWorkSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Unidades');
+        $spreadsheet->addSheet($myWorkSheet, 1);
+
+        for ($i = 0; $i < 2; $i++) {
+
+            $spreadsheet->setActiveSheetIndex($i);
+
+            $resume = $this->water_model->generateResume($group_id, $this->user->config, $i + 1, strtotime($start.'00:00'), strtotime($end.'23:59'), $this->user->demo );
+
+
+            $spreadsheet->getActiveSheet()->getStyle('A1:C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
+            $spreadsheet->getActiveSheet()->mergeCells('A1:C1');
+            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - ' . date('d/m/Y', strtotime($start) ) . ' a ' . date('d/m/Y', strtotime($end)));
+            $spreadsheet->getActiveSheet()->mergeCells('A2:C2');
+
+            $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
+            $spreadsheet->getActiveSheet()->setCellValue('B4', 'Nome')->mergeCells('B4:B5');
+            $spreadsheet->getActiveSheet()->setCellValue('C4', 'Consumo')->mergeCells('C4:C5');
+           
+
+            $spreadsheet->getActiveSheet()->getStyle('A1:C5')->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('A4:C5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+
+            $spreadsheet->getActiveSheet()->fromArray($resume, NULL, 'A6');
+
+            $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+            $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+            $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+
+
+            $spreadsheet->getActiveSheet()->getStyle('A6:A'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getActiveSheet()->getStyle('B6:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getActiveSheet()->getStyle('C6:C'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
             $spreadsheet->getActiveSheet()->setCellValue('A' . (count($resume) + 7), 'Gerado em ' . date("d/m/Y H:i"));
 

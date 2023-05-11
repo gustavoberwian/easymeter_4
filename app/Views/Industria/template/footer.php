@@ -22,6 +22,15 @@
     <script src="<?php echo base_url('vendor/water_tank/waterTank.js'); ?>"></script>
 <?php endif; ?>
 
+<?php if (in_array($method, array('profile'))) : ?>
+    <script src="<?php echo base_url('vendor/croppie/croppie.js'); ?>"></script>
+    <script src="<?php echo base_url('vendor/bootstrap-fileupload/bootstrap-fileupload.min.js'); ?>"></script>
+    <script src="<?php echo base_url('vendor/bootstrap-tagsinput/bootstrap-tagsinput.js'); ?>"></script>
+    <script src="<?php echo base_url('vendor/jquery-validation/jquery.validate.min.js'); ?>"></script>
+    <script src="<?php echo base_url('vendor/jquery-validation/localization/messages_pt_BR.min.js'); ?>"></script>
+    <script src="<?php echo base_url('vendor/jquery-mask-plugin/jquery.mask.min.js'); ?>"></script>
+<?php endif; ?>
+
 <!-- Theme Base, Components and Settings -->
 <script src="<?= base_url('assets/js/theme.js'); ?>"></script>
 

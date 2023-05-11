@@ -119,6 +119,33 @@
         });
     }
 
+    $('.btn-generate-resume').on('click', function(e){
+        e.preventDefault();
+        var dados = {
+            device  : device,
+            start   : start_last.format("YYYY-MM-DD"),
+            end     : end_last.format("YYYY-MM-DD"),
+        };
+
+        $.ajax({
+            method  : 'POST',
+            url     : "/water/generateResume",
+            data    : {
+                dados,
+                group: $('.content-body').data('group')},
+            dataType: 'json',
+            success : function (json) {
+                var $a = $("<a>");
+                $a.attr("href", json.file);
+                $("body").append($a);
+                $a.attr("download", json.name + ".xlsx");
+                $a[0].click();
+                $a.remove();
+            }
+        })
+    })
+    
+
     function daterange(start = moment().subtract(6, 'days'), end = moment()) {
         // Daterange picker
         $('#daterange-main').daterangepicker(
@@ -172,13 +199,12 @@
 
         apexchart(start_last, end_last);
         daterange(start_last, end_last);
+
         $('#daterange-main span').html(Math.round((end - start) / 86400000) == 1 ? moment(start).format('ddd, DD/MM/YYYY') : moment(start).format('DD/MM/YYYY') + ' - ' + moment(end).format('DD/MM/YYYY'));
         setTimeout(function() {
 //            $('#dt-data').DataTable().ajax.reload();
         }, 100);
     })
-
-    
 
     let dtResume = $("#dt-resume").DataTable({
         dom: '<"table-responsive"t>r<"row"<"col-md-6"><"col-md-6"p>>',

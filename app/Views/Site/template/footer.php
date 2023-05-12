@@ -81,7 +81,7 @@
                             </div>
                             <br>
                             <li class="footer-list1 ">
-                                <a href="">Dúvidas, sugestões ou reclamações:</a>
+                                <a class="classic" href="">Dúvidas, sugestões ou reclamações:</a>
                             </li>
                             <br>
                             <li class="footer-list1 ">

@@ -214,7 +214,7 @@ class Consigaz_model extends Base_model
         return $this->db->query($query)->getResult();
     }
 
-    public function get_valvulas($medidor_id, $status = null, $op = null)
+    public function get_valvulas($medidor_id = null, $status = null, $op = null)
     {
         $s = "";
         if (!is_null($status)) {
@@ -230,7 +230,12 @@ class Consigaz_model extends Base_model
                 $s = " AND esm_valves_stats.status = '$status' ";
         }
 
-        $query = "SELECT esm_valves_stats.* FROM esm_valves_stats WHERE medidor_id = $medidor_id $s";
+        $m = "";
+        if (!is_null($medidor_id)) {
+            $m = " AND medidor_id = $medidor_id ";
+        }
+
+        $query = "SELECT esm_valves_stats.* FROM esm_valves_stats WHERE 1 $m $s";
 
         if ($op === 'count')
             return ($this->db->query($query)->getNumRows());
@@ -319,5 +324,16 @@ class Consigaz_model extends Base_model
         }
 
         return $response;
+    }
+
+    public function get_medidores_by_user($user_id)
+    {
+        $q = "SELECT esm_medidores.* 
+            FROM esm_medidores
+            JOIN esm_entradas ON esm_entradas.id = esm_medidores.entrada_id
+            JOIN esm_entidades ON esm_entidades.id = esm_entradas.entidade_id
+            JOIN auth_user_relation ON auth_user_relation.entidade_id = esm_entidades.id AND auth_user_relation.user_id = $user_id";
+
+        return $this->db->query($q)->getResult();
     }
 }

@@ -61,6 +61,34 @@ class Consigaz extends UNO_Controller
         $data['url'] = $this->url;
         $data['monitoria'] = $this->monitoria;
 
+        $total_mes_atual = 0;
+        $total_mes_anterior = 0;
+
+        $medidores = $this->consigaz_model->get_medidores_by_user($this->user->id);
+
+        foreach ($medidores as $medidor) {
+            $consumo_mes_atual = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
+            foreach ($consumo_mes_atual as $c) {
+                $total_mes_atual += $c->value;
+            }
+
+            $consumo_mes_anterior = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of last month')), date('Y-m-d H:i:s', strtotime('last day of last month')), array(), false);
+            foreach ($consumo_mes_anterior as $c) {
+                $total_mes_anterior += $c->value;
+            }
+        }
+
+        $data['consumo']['mes_atual'] = number_format($total_mes_atual, 0, '', '.') . ' <small>m³</small>';
+        $data['consumo']['ultimo_mes'] = number_format($total_mes_anterior, 0, '', '.') . ' <small>m³</small>';
+
+        $data['valvulas']['abertas'] = $this->consigaz_model->get_valvulas(null, 'open', 'count');
+        $data['valvulas']['fechadas'] = $this->consigaz_model->get_valvulas(null, 'close', 'count');
+        $data['valvulas']['erros'] = $this->consigaz_model->get_valvulas(null, 'vermelho', 'count');
+
+        $data['alertas']['vazamentos'] = $this->gas_model->get_alertas_by_user($this->user->id, 'vazamento', 'count');
+        $data['alertas']['valvulas'] = $this->consigaz_model->get_valvulas(null, 'amarelo', 'count');
+        $data['alertas']['outros'] = $this->gas_model->get_alertas_by_user($this->user->id, null, 'count');
+
         return $this->render("index", $data);
     }
 

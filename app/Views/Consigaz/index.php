@@ -8,13 +8,13 @@
                 <div class="card-body">
                     <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo <i class="float-end fas fa-calendar"></i></h6>
                     <div class="row">
-                        <div class="col-lg-6 pr-1">
-                            <div class="h5 mb-0 mt-1"><?= "<span class='period'>0</span>" ?></div>
-                            <p class="text-3 text-muted mb-0">Último mês</p>
-                        </div>
                         <div class="col-lg-6 pl-1">
-                            <div class="h5 mb-0 mt-1"><?= "<span class='month'>0</span>" ?></div>
+                            <div class="h5 mb-0 mt-1"><?= $consumo['mes_atual']; ?></div>
                             <p class="text-3 text-muted mb-0">Mês atual</p>
+                        </div>
+                        <div class="col-lg-6 pr-1">
+                            <div class="h5 mb-0 mt-1"><?= $consumo['ultimo_mes']; ?></div>
+                            <p class="text-3 text-muted mb-0">Último mês</p>
                         </div>
                     </div>
                 </div>
@@ -26,13 +26,17 @@
                 <div class="card-body">
                     <h6 class="card-body-title mb-3 mt-0 text-success">Válvulas <i class="float-end fas fa-life-ring"></i></h6>
                     <div class="row">
-                        <div class="col-lg-6 pr-1">
-                            <div class="h5 mb-0 mt-1"><?= "<span class='period'>0</span>" ?></div>
+                        <div class="col-lg-4 pr-1">
+                            <div class="h5 mb-0 mt-1"><?= $valvulas['abertas']; ?></div>
                             <p class="text-3 text-muted mb-0">Abertas</p>
                         </div>
-                        <div class="col-lg-6 pl-1">
-                            <div class="h5 mb-0 mt-1"><?= "<span class='month'>0</span>" ?></div>
+                        <div class="col-lg-4 pl-1">
+                            <div class="h5 mb-0 mt-1"><?= $valvulas['fechadas']; ?></div>
                             <p class="text-3 text-muted mb-0">Fechadas</p>
+                        </div>
+                        <div class="col-lg-4 pl-1">
+                            <div class="h5 mb-0 mt-1"><?= $valvulas['erros']; ?></div>
+                            <p class="text-3 text-muted mb-0">Com erro</p>
                         </div>
                     </div>
                 </div>
@@ -44,11 +48,15 @@
                 <div class="card-body">
                     <h6 class="card-body-title mb-3 mt-0 text-warning">Alertas <i class="float-end fas fa-exclamation-triangle"></i></h6>
                     <div class="row">
-                        <div class="col-lg-6 pr-1">
+                        <div class="col-lg-4 pr-1">
                             <div class="h5 mb-0 mt-1"><?= "<span class='period'>0</span>" ?></div>
                             <p class="text-3 text-muted mb-0">Vazamentos</p>
                         </div>
-                        <div class="col-lg-6 pl-1">
+                        <div class="col-lg-4 pl-1">
+                            <div class="h5 mb-0 mt-1"><?= $alertas['valvulas'] ?></div>
+                            <p class="text-3 text-muted mb-0">Válvulas</p>
+                        </div>
+                        <div class="col-lg-4 pl-1">
                             <div class="h5 mb-0 mt-1"><?= "<span class='month'>0</span>" ?></div>
                             <p class="text-3 text-muted mb-0">Outros</p>
                         </div>

@@ -468,4 +468,24 @@ class Gas_model extends Base_model
 
         return false;
     }
+
+    public function get_alertas_by_user($user_id, $tipo = null, $op = null)
+    {
+        $t = "";
+        if (!is_null($tipo)) {
+            if ($tipo === 'vazamento')
+                $t = " AND esm_alertas.tipo = '$tipo' ";
+            elseif ($tipo === 'informativo')
+                $t = " AND esm_alertas.tipo = '$tipo' ";
+        }
+
+        $query = "SELECT * FROM esm_alertas 
+            JOIN esm_alertas_envios ON esm_alertas_envios.alerta_id = esm_alertas.id AND esm_alertas_envios.user_id = $user_id 
+            WHERE 1 $t";
+
+        if ($op === 'count')
+            return ($this->db->query($query)->getNumRows());
+
+        return $this->db->query($query)->getResult();
+    }
 }

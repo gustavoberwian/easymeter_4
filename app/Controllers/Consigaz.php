@@ -7,6 +7,9 @@ use App\Models\Consigaz_model;
 use App\Models\Gas_model;
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\Codeigniter4Adapter;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
 
 class Consigaz extends UNO_Controller
 {
@@ -171,26 +174,63 @@ class Consigaz extends UNO_Controller
         // using CI4 Builder
         $dt->query($builder);
 
+        $dt->add('ultima_competencia', function ($data) {
+            return '04/2023';
+        });
+
         $dt->add("opened", function ($data) {
             $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
 
-            $opened = 0;
+            $total = 0;
             foreach ($medidores as $medidor) {
-                $opened = $this->consigaz_model->get_valvulas('open', 'count');
+                $total += $this->consigaz_model->get_valvulas($medidor->id, 'open', 'count');
             }
 
-            return $opened;
+            return $total;
         });
 
         $dt->add("closed", function ($data) {
             $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
 
-            $closed = 0;
+            $total = 0;
             foreach ($medidores as $medidor) {
-                $closed = $this->consigaz_model->get_valvulas('close', 'count');
+                $total += $this->consigaz_model->get_valvulas($medidor->id, 'close', 'count');
             }
 
-            return $closed;
+            return $total;
+        });
+
+        $dt->add("vermelho", function ($data) {
+            $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
+
+            $total = 0;
+            foreach ($medidores as $medidor) {
+                $total += $this->consigaz_model->get_valvulas($medidor->id, 'vermelho', 'count');
+            }
+
+            return $total;
+        });
+
+        $dt->add("amarelo", function ($data) {
+            $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
+
+            $total = 0;
+            foreach ($medidores as $medidor) {
+                $total += $this->consigaz_model->get_valvulas($medidor->id, 'amarelo', 'count');
+            }
+
+            return $total;
+        });
+
+        $dt->add("verde", function ($data) {
+            $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
+
+            $total = 0;
+            foreach ($medidores as $medidor) {
+                $total += $this->consigaz_model->get_valvulas($medidor->id, 'verde', 'count');
+            }
+
+            return $total;
         });
 
         $dt->add("ultimo_mes", function ($data) {
@@ -235,14 +275,15 @@ class Consigaz extends UNO_Controller
             $days = (strtotime(date('Y-m-d')) - strtotime(date('Y-m-01'))) / 86400 + 1;
             $days_month = date('t', strtotime('this month'));
 
-            $total = $total / ($days * $days_month);
+            $total = $total / $days * $days_month;
 
-            return $total . ' <small>m³</small>';
+            return number_format($total, 0, '', '') . ' <small>m³</small>';
         });
 
         $dt->add("actions", function ($data) {
             return '
-                <a href="#" class="text-success" data-id="' . $data['id'] . '"><i class="fas fa-eye" title="Ver"></i></a>
+                <a class="text-success me-1" data-id="' . $data['id'] . '"><i class="fas fa-eye" title="Ver"></i></a>
+                <a class="text-primary" data-id="' . $data['id'] . '"><i class="fas fa-file-import" title="Faturar"></i></a>
             ';
         });
 
@@ -267,6 +308,44 @@ class Consigaz extends UNO_Controller
 
         // using CI4 Builder
         $dt->query($builder);
+
+        $dt->add("ultimo_mes", function ($data) {
+            $consumo = $this->gas_model->GetConsumption($data['m_id'], date('Y-m-d H:i:s', strtotime('first day of last month')), date('Y-m-d H:i:s', strtotime('last day of last month')), array(), false);
+            $total = 0;
+
+            foreach ($consumo as $c) {
+                $total += $c->value;
+            }
+
+            return $total . ' <small>m³</small>';
+        });
+
+        $dt->add("mes_atual", function ($data) {
+            $consumo = $this->gas_model->GetConsumption($data['m_id'], date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
+            $total = 0;
+
+            foreach ($consumo as $c) {
+                $total += $c->value;
+            }
+
+            return $total . ' <small>m³</small>';
+        });
+
+        $dt->add("previsao", function ($data) {
+            $consumo = $this->gas_model->GetConsumption($data['m_id'], date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
+            $total = 0;
+
+            foreach ($consumo as $c) {
+                $total += $c->value;
+            }
+
+            $days = (strtotime(date('Y-m-d')) - strtotime(date('Y-m-01'))) / 86400 + 1;
+            $days_month = date('t', strtotime('this month'));
+
+            $total = $total / $days * $days_month;
+
+            return number_format($total, 0, '', '') . ' <small>m³</small>';
+        });
 
         $dt->add("state", function ($data) {
             $checked = null;
@@ -423,5 +502,85 @@ class Consigaz extends UNO_Controller
         });
 
         echo $dt->generate();
+    }
+
+    public function download_clientes()
+    {
+        $resume = $this->consigaz_model->download_clientes($this->user->id);
+
+        $spreadsheet = new Spreadsheet();
+
+        $titulos = [
+            ['Nome', 'Leitura', 'Válvulas', 'Consumo']
+        ];
+
+        $spreadsheet->getProperties()
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório Clientes')
+            ->setSubject(MonthName(date("m"))."/".date("Y"))
+            ->setDescription('Relatório Clientes - '.date("01/m/Y").' - '.date("d/m/Y"))
+            ->setKeywords('Relatório Clientes')
+            ->setCategory('Relatório')->setCompany('Easymeter');
+
+        $spreadsheet->getActiveSheet()->getStyle('A1:H2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->mergeCells('A1:H1');
+        $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - '. date("01/m/Y").' a '.date("d/m/Y"));
+        $spreadsheet->getActiveSheet()->mergeCells('A2:H2');
+
+        $spreadsheet->getActiveSheet()->setCellValue('A4', 'Nome')->mergeCells('A4:A5');
+        $spreadsheet->getActiveSheet()->setCellValue('B4', 'Abertas')->mergeCells('B4:B5');
+        $spreadsheet->getActiveSheet()->setCellValue('C4', 'Fechadas')->mergeCells('C4:C5');
+        $spreadsheet->getActiveSheet()->setCellValue('D4', 'Erros')->mergeCells('D4:D5');
+        $spreadsheet->getActiveSheet()->setCellValue('E4', 'Alertas')->mergeCells('E4:E5');
+        $spreadsheet->getActiveSheet()->setCellValue('F4', 'Corretas')->mergeCells('F4:F5');
+        $spreadsheet->getActiveSheet()->setCellValue('G4', 'Último Mês')->mergeCells('G4:G5');
+        $spreadsheet->getActiveSheet()->setCellValue('H4', 'Mês Atual')->mergeCells('H4:H5');
+        $spreadsheet->getActiveSheet()->setCellValue('I4', 'Previsão')->mergeCells('I4:I5');
+
+        $spreadsheet->getActiveSheet()->getStyle('A1:J5')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A4:H5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'D5');
+
+        $spreadsheet->getActiveSheet()->fromArray($resume, NULL, 'A6');
+
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(18);
+
+        $spreadsheet->getActiveSheet()->getStyle('A6:A'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('B6:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('D6:J'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+        $spreadsheet->getActiveSheet()->getStyle('A6:G'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->setCellValue('A'.(count($resume) + 7), 'Gerado em '.date("d/m/Y H:i"));
+
+        $spreadsheet->getActiveSheet()->setSelectedCell('A1');
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = "Resumo Clientes";
+
+        ob_start();
+        $writer->save("php://output");
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        $response =  array(
+            'status' => "success",
+            'name'   => $filename,
+            'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
+        );
+
+        echo json_encode($response);
     }
 }

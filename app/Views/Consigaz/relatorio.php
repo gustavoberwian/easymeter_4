@@ -65,7 +65,7 @@
 
                         <td width="33%" class="text-dark">
                             <p class="text-1 text-muted mb-0">Consumo</p>
-                            <div class="text-4 font-weight-bold mb-0 text-center"><?= number_format($fechamento->leitura_atual - $fechamento->leitura_anterior, 0, ",", ".")." L"; ?></div>
+                            <div class="text-4 font-weight-bold mb-0 text-center"><?= number_format($fechamento->leitura_atual - $fechamento->leitura_anterior, 0, ",", ".")." m³"; ?></div>
                         </td>
                     </tr>
                     </tbody>
@@ -85,7 +85,7 @@
                                 <p class="text-muted font-weight-bold mb-0">Consumo m³</p>
                             </td>
                             <td width="50%">
-                                <div class="text-4 text-dark font-weight-bold mb-0 text-center"><?= number_format($fechamento->leitura_atual - $fechamento->leitura_anterior, 0, ",", ".")." L"; ?></div>
+                                <div class="text-4 text-dark font-weight-bold mb-0 text-center"><?= number_format($fechamento->leitura_atual - $fechamento->leitura_anterior, 0, ",", ".")." m³"; ?></div>
                             </td>
                         </tr>
                         </tbody>
@@ -117,7 +117,7 @@
                                                 <td><?php echo competencia_nice($historico[$i]["competencia"]); ?></td>
                                                 <td><?= str_pad(round($historico[$i]["leitura_anterior"]), 6 , '0' , STR_PAD_LEFT); ?></td>
                                                 <td><?= str_pad(round($historico[$i]["leitura_atual"]), 6 , '0' , STR_PAD_LEFT); ?></td>
-                                                <td><?= number_format($historico[$i]["consumo"], 0, ",", ".")." L"; ?></td>
+                                                <td><?= number_format($historico[$i]["consumo"], 0, ",", ".")." m³"; ?></td>
                                             </tr>
                                         <?php } ?>
                                     </table>
@@ -135,7 +135,7 @@
                                                     <td><?php echo competencia_nice($historico[$i]["competencia"]); ?></td>
                                                     <td><?= str_pad(round($historico[$i]["leitura_anterior"]), 6 , '0' , STR_PAD_LEFT); ?></td>
                                                     <td><?= str_pad(round($historico[$i]["leitura_atual"]), 6 , '0' , STR_PAD_LEFT); ?></td>
-                                                    <td><?= number_format($historico[$i]["consumo"], 0, ",", ".")." L"; ?></td>
+                                                    <td><?= number_format($historico[$i]["consumo"], 0, ",", ".")." m³"; ?></td>
                                                 </tr>
                                             <?php } ?>
                                         </table>

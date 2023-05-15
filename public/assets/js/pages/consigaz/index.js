@@ -8,10 +8,13 @@
             processing : true,
             paging     : true,
             columns    : [
-                {data: "nome", className: "dt-body-center"},
-                {data: "endereco", className: "dt-body-center"},
+                {data: "nome", className: "dt-body-center table-one-line"},
+                {data: "ultima_competencia", className: "dt-body-center"},
                 {data: "opened", className: "dt-body-center"},
                 {data: "closed", className: "dt-body-center"},
+                {data: "vermelho", className: "dt-body-center"},
+                {data: "amarelo", className: "dt-body-center"},
+                {data: "verde", className: "dt-body-center"},
                 {data: "ultimo_mes", className: "dt-body-center"},
                 {data: "mes_atual", className: "dt-body-center"},
                 {data: "previsao", className: "dt-body-center"},
@@ -46,6 +49,28 @@
             window.location = $(".content-body").data("class") + "/" + $(".content-body").data("monitoria") + "/" + $(this).data('group');
         });
     }
+
+    $(document).on('click', '.btn-sheet-condos', function () {
+        let _self = this;
+        $(_self).html('<i class="fas fa-spinner fa-spin"></i>');
+
+        $.ajax({
+            method: 'POST',
+            url: '/consigaz/download_clientes',
+            dataType: 'json',
+            success: function (json) {
+                if (json.status !== "success") {
+                    // notifica erro
+                    notifyError(json.message);
+                }
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function () {
+                $(_self).html('<i class="fas fa-file-download"></i> Baixar Planilha');
+            }
+        });
+    })
     
 
 }.apply(this, [jQuery]));

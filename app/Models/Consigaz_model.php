@@ -2,11 +2,24 @@
 
 namespace App\Models;
 
+use App\Models\Gas_model;
 use CodeIgniter\Database\ConnectionInterface;
 use CodeIgniter\Validation\ValidationInterface;
 
 class Consigaz_model extends Base_model
 {
+    /**
+     * @var Gas_model
+     */
+    private Gas_model $gas_model;
+
+    public function __construct(?ConnectionInterface $db = null, ?ValidationInterface $validation = null)
+    {
+        parent::__construct($db, $validation);
+
+        $this->gas_model = new Gas_model();
+    }
+
     public function edit_valve_stats($medidor, $state)
     {
         $status_valve = $this->db->table('esm_valves_stats')->where('medidor_id', $medidor)->select('status')->get();
@@ -201,7 +214,7 @@ class Consigaz_model extends Base_model
         return $this->db->query($query)->getResult();
     }
 
-    public function get_valvulas($status = null, $op = null)
+    public function get_valvulas($medidor_id, $status = null, $op = null)
     {
         $s = "";
         if (!is_null($status)) {
@@ -209,12 +222,18 @@ class Consigaz_model extends Base_model
                 $s = " AND esm_valves_stats.state = 1 ";
             elseif ($status === 'close')
                 $s = " AND esm_valves_stats.state = 0 ";
+            elseif ($status === 'vermelho')
+                $s = " AND esm_valves_stats.status = '$status' ";
+            elseif ($status === 'amarelo')
+                $s = " AND esm_valves_stats.status = '$status' ";
+            elseif ($status === 'verde')
+                $s = " AND esm_valves_stats.status = '$status' ";
         }
 
-        $query = "SELECT esm_valves_stats.* FROM esm_valves_stats WHERE 1 $s";
+        $query = "SELECT esm_valves_stats.* FROM esm_valves_stats WHERE medidor_id = $medidor_id $s";
 
         if ($op === 'count')
-            return $this->db->query($query)->getNumRows();
+            return ($this->db->query($query)->getNumRows());
 
         return $this->db->query($query)->getResult();
     }
@@ -224,5 +243,81 @@ class Consigaz_model extends Base_model
         $query = "SELECT * FROM esm_fechamentos_gas WHERE entidade_id = $entidade_id ORDER BY cadastro DESC LIMIT 1";
 
         return $this->db->query($query)->getRow();
+    }
+
+    public function download_clientes($user_id)
+    {
+        $response = array();
+
+        $entidades = $this->db->query("SELECT 
+                esm_entidades.id,
+                esm_entidades.nome
+            FROM auth_user_relation
+            JOIN esm_entidades ON esm_entidades.id = auth_user_relation.entidade_id
+            WHERE auth_user_relation.user_id = $user_id")->getResult();
+
+        foreach ($entidades as $i => $entidade) {
+            $response[$i]['nome'] = $entidade->nome;
+
+            $medidores = $this->get_medidores_by_entidade($entidade->id, 'gas');
+
+            $response[$i]['abertos'] = 0;
+            $response[$i]['fechados'] = 0;
+            $response[$i]['erros'] = 0;
+            $response[$i]['alertas'] = 0;
+            $response[$i]['corretas'] = 0;
+            $response[$i]['ultimo_mes'] = 0;
+            $response[$i]['mes_atual'] = 0;
+            $response[$i]['previsao'] = 0;
+            $t_ultimo_mes = 0;
+            $t_mes_atual = 0;
+            $t_previsao = 0;
+            foreach ($medidores as $medidor) {
+                $response[$i]['abertos'] += $this->get_valvulas($medidor->id, 'open', 'count');
+                $response[$i]['fechados'] += $this->get_valvulas($medidor->id, 'close', 'count');
+                $response[$i]['erros'] += $this->get_valvulas($medidor->id, 'vermelho', 'count');
+                $response[$i]['alertas'] += $this->get_valvulas($medidor->id, 'amarelo', 'count');
+                $response[$i]['corretas'] += $this->get_valvulas($medidor->id, 'verde', 'count');
+
+                $ultimo_mes = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of last month')), date('Y-m-d H:i:s', strtotime('last day of last month')), array(), false);
+
+                foreach ($ultimo_mes as $c) {
+                    if (!is_null($c->value)) {
+                        $t_ultimo_mes += $c->value;
+                    } else {
+                        $t_ultimo_mes += 0;
+                    }
+                }
+
+                $response[$i]['ultimo_mes'] = $t_ultimo_mes . ' <small>m³</small>';
+
+                $mes_atual = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
+                foreach ($mes_atual as $c) {
+                    if (!is_null($c->value)) {
+                        $t_mes_atual += $c->value;
+                    } else {
+                        $t_mes_atual += 0;
+                    }
+                }
+
+                $response[$i]['mes_atual'] = $t_mes_atual . ' <small>m³</small>';
+
+                $previsao = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
+                foreach ($previsao as $c) {
+                    if (!is_null($c->value)) {
+                        $t_previsao += $c->value;
+                    } else {
+                        $t_previsao += 0;
+                    }
+                }
+
+                $days = (strtotime(date('Y-m-d')) - strtotime(date('Y-m-01'))) / 86400 + 1;
+                $days_month = date('t', strtotime('this month'));
+
+                $response[$i]['previsao'] = number_format($t_previsao / $days * $days_month, 0, '', '') . ' <small>m³</small>';
+            };
+        }
+
+        return $response;
     }
 }

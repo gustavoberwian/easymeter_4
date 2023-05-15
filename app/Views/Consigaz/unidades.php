@@ -38,15 +38,32 @@
 
     <div class="row pt-0">
         <section class="card card-easymeter mb-4">
+            <header class="card-header">
+                <div class="card-actions buttons">
+                    <button type="button" class="btn btn-primary btn-sheet-unidades">Baixar Planilha</button>
+                </div>
+                <h2 class="card-title">Unidades</h2>
+            </header>
             <div class="card-body">
                 <table class="table table-bordered table-striped table-hover dataTable no-footer" id="dt-unidades" data-url="/consigaz/get_unidades">
                     <thead>
                     <tr role="row">
-                        <th width="25%" class="text-center">Medidor</th>
-                        <th width="25%" class="text-center">Bloco</th>
-                        <th width="25%" class="text-center">Apto</th>
-                        <th width="15%" class="text-center">Válvula</th>
-                        <th width="10%" class="text-center">Ações</th>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th colspan="3" class="text-center">Consumo</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                    <tr>
+                        <th class="text-center">Medidor</th>
+                        <th class="text-center">Bloco</th>
+                        <th class="text-center">Apto</th>
+                        <th class="text-center">Último mês</th>
+                        <th class="text-center">Mês atual</th>
+                        <th class="text-center">Previsão</th>
+                        <th class="text-center">Válvula</th>
+                        <th class="text-center">Ações</th>
                     </tr>
                     </thead>
                     <tbody>

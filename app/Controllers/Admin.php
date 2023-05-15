@@ -42,6 +42,7 @@ class Admin extends UNO_Controller
     {
         return $this->render("index");
     }
+    //
 
     public function entities($param1 = null, $param2 = null): string
     {

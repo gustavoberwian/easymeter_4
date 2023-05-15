@@ -23,7 +23,9 @@ class Site extends UNO_Controller
     public function assuntoforum()
     {
         $data['user'] = $this->user;
+        $data['assuntos'] = "teste";
+
         // echo "<pre>"; print_r(auth()->user()); echo "</pre>"; return;
-        return $this->render('assuntoforum', $data, 'forum');
+        return $this->render('assuntoforum', $data, 'forum', 'assuntos');
     }
 }

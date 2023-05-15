@@ -17,7 +17,6 @@
     <!-- CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/pages/site/for.css'); ?>">
 
-
 </head>
 
 <body>
@@ -58,55 +57,7 @@
 
                     <!-- INICIO TÓPICO -->
                     <div class="col-lg-4 col-sm-6 mb-4">
-                        <a class="px-4 py-5 bg-white shadow text-center d-block match-height">
-                            <i class="ti-package icon text-primary d-block mb-4"></i>
-                            <h3 class="mb-3 mt-0">Faturas</h3>
-                            <p class="mb-00">Como posso conseguir minha fatura?</p>
-                            <br>
-                            <button class="botaoabrirmodal">Saber mais</button>
-                            <!--  FIM TÓPICO -->
-                        </a>
-                    </div>
-
-                    <!-- INICIO TÓPICO -->
-                    <div class="col-lg-4 col-sm-6 mb-4">
-                        <a class="px-4 py-5 bg-white shadow text-center d-block match-height">
-                            <i class="ti-package icon text-primary d-block mb-4"></i>
-                            <h3 class="mb-3 mt-0">Faturas</h3>
-                            <p class="mb-00">Como posso conseguir minha fatura?</p>
-                            <br>
-                            <button class="botaoabrirmodal">Saber mais</button>
-                            <!--  FIM TÓPICO -->
-                        </a>
-                    </div>
-
-                    <!-- INICIO TÓPICO -->
-                    <div class="col-lg-4 col-sm-6 mb-4">
-                        <a class="px-4 py-5 bg-white shadow text-center d-block match-height">
-                            <i class="ti-package icon text-primary d-block mb-4"></i>
-                            <h3 class="mb-3 mt-0">Faturas</h3>
-                            <p class="mb-00">Como posso conseguir minha fatura?</p>
-                            <br>
-                            <button class="botaoabrirmodal">Saber mais</button>
-                            <!--  FIM TÓPICO -->
-                        </a>
-                    </div>
-
-                    <!-- INICIO TÓPICO -->
-                    <div class="col-lg-4 col-sm-6 mb-4">
-                        <a class="px-4 py-5 bg-white shadow text-center d-block match-height">
-                            <i class="ti-package icon text-primary d-block mb-4"></i>
-                            <h3 class="mb-3 mt-0">Faturas</h3>
-                            <p class="mb-00">Como posso conseguir minha fatura?</p>
-                            <br>
-                            <button class="botaoabrirmodal">Saber mais</button>
-                            <!--  FIM TÓPICO -->
-                        </a>
-                    </div>
-
-                    <!-- INICIO TÓPICO -->
-                    <div class="col-lg-4 col-sm-6 mb-4">
-                        <a class="px-4 py-5 bg-white shadow text-center d-block match-height">
+                        <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
                             <i class="ti-package icon text-primary d-block mb-4"></i>
                             <h3 class="mb-3 mt-0">Faturas</h3>
                             <p class="mb-00">Como posso conseguir minha fatura?</p>
@@ -120,8 +71,56 @@
                     <div class="col-lg-4 col-sm-6 mb-4">
                         <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
                             <i class="ti-package icon text-primary d-block mb-4"></i>
-                            <h3 class="mb-3 mt-0">Faturas</h3>
-                            <p class="mb-00">Como posso conseguir minha fatura?</p>
+                            <h3 class="mb-3 mt-0">Dúvidas gerais</h3>
+                            <p class="mb-00">Como posso tirar minhas dúvidas?</p>
+                            <br>
+                            <button class="botaoabrirmodal">Saber mais</button>
+                            <!--  FIM TÓPICO -->
+                        </a>
+                    </div>
+
+                    <!-- INICIO TÓPICO -->
+                    <div class="col-lg-4 col-sm-6 mb-4">
+                        <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
+                            <i class="ti-package icon text-primary d-block mb-4"></i>
+                            <h3 class="mb-3 mt-0">Trabalhe conosco</h3>
+                            <p class="mb-00">Como posso trabalhar com vocês?</p>
+                            <br>
+                            <button class="botaoabrirmodal">Saber mais</button>
+                            <!--  FIM TÓPICO -->
+                        </a>
+                    </div>
+
+                    <!-- INICIO TÓPICO -->
+                    <div class="col-lg-4 col-sm-6 mb-4">
+                        <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
+                            <i class="ti-package icon text-primary d-block mb-4"></i>
+                            <h3 class="mb-3 mt-0">Valores</h3>
+                            <p class="mb-00">Quais são os valores dos medidores</p>
+                            <br>
+                            <button class="botaoabrirmodal">Saber mais</button>
+                            <!--  FIM TÓPICO -->
+                        </a>
+                    </div>
+
+                    <!-- INICIO TÓPICO -->
+                    <div class="col-lg-4 col-sm-6 mb-4">
+                        <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
+                            <i class="ti-package icon text-primary d-block mb-4"></i>
+                            <h3 class="mb-3 mt-0">Instalação?</h3>
+                            <p class="mb-00">Como é feita a instalação dos medidores?</p>
+                            <br>
+                            <button class="botaoabrirmodal">Saber mais</button>
+                            <!--  FIM TÓPICO -->
+                        </a>
+                    </div>
+
+                    <!-- INICIO TÓPICO -->
+                    <div class="col-lg-4 col-sm-6 mb-4">
+                        <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
+                            <i class="ti-package icon text-primary d-block mb-4"></i>
+                            <h3 class="mb-3 mt-0">Uno/easymeter?</h3>
+                            <p class="mb-00">Você sabe quem somos nós?</p>
                             <br>
                             <button id="abrirmodal" class="botaoabrirmodal">Saber mais</button>
                             <!--  FIM TÓPICO -->

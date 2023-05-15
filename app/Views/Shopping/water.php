@@ -126,7 +126,7 @@
                         <tr role="row">
                             <th>Mês Atual</th>
                             <th>Últimas 24h</th>
-                            <th>Últimos 30 dias</th>
+                            <th>Mês anterior</th>
                             <th>Previsão Mês</th>
                         </tr>
                         </thead>

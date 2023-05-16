@@ -21,6 +21,34 @@ class Admin_model extends Base_model
         return $query->getResult();
     }
 
+    public function get_central_entidade($id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+        SELECT
+        esm_entidades.nome AS entidade_nome,
+        esm_entidades_centrais.nome AS DT_RowId,
+        esm_entidades_centrais.nome,
+        esm_entidades_centrais.modo,
+        esm_entidades_centrais.board,
+        esm_entidades_centrais.firmware,
+        esm_entidades_centrais.simcard,
+        esm_entidades.nome AS entidade,
+        esm_entidades.tabela,
+        esm_entidades_centrais.parent,
+        esm_entidades_centrais.auto_ok,
+        esm_entidades_centrais.ultimo_envio,
+        esm_entidades_centrais.localizador 
+    FROM
+        esm_entidades_centrais
+        JOIN esm_entidades ON esm_entidades.id = esm_entidades_centrais.entidade_id 
+    WHERE
+        esm_entidades_centrais.nome = '$id'
+        ");
+
+        return $query->getRow();
+    }
+
     public function get_entity($id)
     {
         // seleciona todos os campos
@@ -35,6 +63,44 @@ class Admin_model extends Base_model
         // verifica se retornou algo
         if ($query->getNumRows() == 0)
             return false;
+
+        return $query->getRow();
+    }
+
+    public function get_last_data($central, $stamp)
+    {
+        $query = $this->db->query("
+            SELECT *
+            FROM esm_central_data
+            WHERE nome = '$central' AND timestamp = $stamp
+        ");
+
+        // verifica se retornou algo
+        if (!$query)
+            return false;
+
+        return $query->getRow();
+    }
+
+    public function get_error_leitura($central, $tabela)
+    {
+        $medidor = $this->db->query("
+            SELECT id 
+            FROM esm_medidores
+            WHERE central = '$central'
+            LIMIT 1
+        ");
+
+        // verifica se retornou algo
+        if ($medidor->getNumRows() == 0)
+            return false;
+
+        // 604800 = ultimos 7 dias
+        $query = $this->db->query("
+            SELECT COUNT(timestamp) AS realizadas, ( UNIX_TIMESTAMP() - MOD(UNIX_TIMESTAMP(), 3600) - MIN(timestamp) ) / 3600 + 1 AS total
+            FROM esm_leituras_{$tabela}_agua 
+            WHERE medidor_id = {$medidor->getRow()->id}  AND timestamp > (UNIX_TIMESTAMP() - 604800)
+        ");
 
         return $query->getRow();
     }
@@ -114,6 +180,11 @@ class Admin_model extends Base_model
         }
     }
 
+    public function get_centrais_count()
+    {
+        return $this->db->query("SELECT COUNT(*) AS total FROM esm_condominios_centrais")->getRow()->total;
+    }
+
     public function get_entradas($entidade_id)
     {
         $query = $this->db->query("
@@ -128,12 +199,6 @@ class Admin_model extends Base_model
 
     public function get_central_leituras($central, $tabela)
     {
-        return "
-            SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
-            FROM esm_leituras_{$tabela}_agua
-            WHERE timestamp >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY)) AND medidor_id = (SELECT id FROM esm_medidores WHERE central = '$central' LIMIT 1)
-            GROUP BY year(FROM_UNIXTIME(`timestamp`)), month(FROM_UNIXTIME(`timestamp`)), day(FROM_UNIXTIME(`timestamp`))
-        ";
         $query = $this->db->query("
             SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
             FROM esm_leituras_{$tabela}_agua

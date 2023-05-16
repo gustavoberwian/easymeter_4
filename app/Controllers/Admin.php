@@ -40,9 +40,27 @@ class Admin extends UNO_Controller
 
     public function index(): string
     {
-        return $this->render("index");
+        $data['centrais'] = $this->admin_model->get_all_centrais();
+        return $this->render("index", $data);
     }
-    //
+
+    public function centrais($id = false)
+	{
+        if ($id) {
+            $data['central'] = $this->admin_model->get_central_entidade($id);
+            $data['data'] = $this->admin_model->get_last_data($data['central']->nome, $data['central']->ultimo_envio);
+            $data['erros'] = $this->admin_model->get_error_leitura($id, $data['central']->tabela);
+
+            $labels = array();
+            for($i = 0; $i < 40; $i++) {
+                $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
+            }
+            $data['leituras'] = $labels;
+
+             return $this->render('central', $data);
+        } else
+           return $this->render('centrais', array('count' => $this->admin_model->get_centrais_count()));
+	}
 
     public function entities($param1 = null, $param2 = null): string
     {
@@ -177,10 +195,6 @@ class Admin extends UNO_Controller
         } else {
             $data['condo'] = '';
         }
-
-        
-
-
 
         if ($this->input->getMethod() == 'post') {
             $image = $this->input->getPost('crop-image');

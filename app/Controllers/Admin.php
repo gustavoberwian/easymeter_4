@@ -291,6 +291,16 @@ class Admin extends UNO_Controller
         echo $this->render('profile', $data);
     }
 
+    public function grupos()
+	{
+		$this->render('grupos');
+	}
+
+    public function alertas()
+	{
+		$this->render('alerts');
+	}
+
 
     // POST PART FILE
 
@@ -438,6 +448,44 @@ class Admin extends UNO_Controller
 
         // gera resultados
         echo $dt->generate();
+    }
+
+    public function suporte($id = false)
+	{
+        if ($id) {
+            if ($this->input->getPost('fechar') == "fechar") {
+                $data['chamado_close'] = $this->admin_model->chamado_close($id, $this->user->id);
+            }
+            if ($this->input->getPost('reply') == "reply") {
+                $data['chamado_reply'] = $this->admin_model->new_reply($id, $this->input->getPost('message'), $this->user->id);
+                //TODO: enviar email pro usuário
+            }
+            $data['chamado'] = $this->admin_model->get_chamado($id);
+			if ($data['chamado']->status == 'aberto')
+                $data['status'] = "<span class=\"badge badge-danger\">Aberto</span>";
+            elseif ($data['chamado']->status == 'fechado')
+                $data['status'] = "<span class=\"badge badge-success\">Fechado</span>";
+			else
+                $data['status'] = "<span class=\"badge badge-warning\">".ucfirst($data['chamado']->status)."</span>";
+
+            $data['replys']  = $this->admin_model->get_chamado_reply($id);
+            $this->render('suporte_reply', $data);
+        } else {
+            $this->render('suporte');
+        }
+	}
+
+    public function relatorios($entity = "")
+    {
+        if ($entity == 'viver') {
+            $data['competencias'] = $this->admin_model->get_competencias(3, 3);
+            $this->render('reports_viver', $data);
+        } else if ($entity == 'baviera') {
+            $data['competencias'] = $this->admin_model->get_competencias(3, 3);
+            $this->render('reports_baviera', $data);
+        } else {
+            $this->render('reports');
+        }
     }
 
     public function delete_entity()
@@ -592,103 +640,6 @@ class Admin extends UNO_Controller
 
         // executa o curl e retorna os dados
         echo $this->viacep->busca_cep($cep);
-    }
-
-    public function get_fechamentos()
-    {
-        $condo_id = $this->input->getGet('condo');
-        $this->user = auth()->user();
-        if (is_null($condo_id)) $condo_id = $this->user->entity->id;
-        // realiza a query via dt
-        $dt = $this->datatables->query("
-            SELECT esm_fechamentos.id AS DT_RowId, esm_fechamentos.competencia,
-			DATE_FORMAT(FROM_UNIXTIME(esm_fechamentos.data_inicio),'%d/%m/%Y') AS data_inicio,
-			DATE_FORMAT(FROM_UNIXTIME(esm_fechamentos.data_fim),'%d/%m/%Y') AS data_fim, 
-            LPAD(esm_fechamentos.leitura_anterior, 6, '0') AS leitura_anterior, LPAD(esm_fechamentos.leitura_atual, 6, '0') AS leitura_atual, 
-            CONCAT(esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior, ' m<sup>3</sup>') AS consumo,
-            CONCAT('<span class=\"float-left\">R$</span> ', FORMAT(esm_fechamentos.v_concessionaria, 2, 'de_DE')) AS v_concessionaria, 
-            DATE_FORMAT(esm_fechamentos.cadastro,'%d/%m/%Y') AS cadastro, esm_ramais.nome AS ramal,
-            (SELECT IFNULL(GROUP_CONCAT(DATE_FORMAT(data, '%d/%m/%Y') SEPARATOR '<br/>'), 'Não Enviados') FROM esm_fechamentos_envios WHERE fechamento_id = esm_fechamentos.id) AS envios
-            FROM esm_fechamentos
-			LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
-            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
-            WHERE esm_entidades.id = $condo_id AND esm_ramais.tipo = 'agua' ORDER BY esm_fechamentos.id DESC
-        ");
-
-        $dt->edit('envios', function ($data) {
-            if ($data['envios'] == 'Não Enviados')
-                return '<span class="badge badge-warning">Não Enviados</span>';
-            else
-                return '<span class="badge badge-success" title="' . $data['envios'] . '" data-toggle="tooltip" data-html="true">Enviados</span>';
-        });
-
-        $dt->edit('competencia', function ($data) {
-            return competencia_nice($data['competencia']);
-        });
-
-        // inclui actions
-        $dt->add('action', function ($data) {
-            $dis = "";
-            if ($this->user->inGroup('demo')) {
-                $dis = " disabled";
-            }
-
-            return '<a href="#" class="action-download-agua ' . $dis . '" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>
-				<a href="#" class="action-delete ' . $dis . '" data-id="' . $data['DT_RowId'] . '"><i class="fas fa-trash" title="Excluir"></i></a>';
-        });
-
-        // gera resultados
-        echo $dt->generate();
-    }
-
-    public function get_leituras()
-    {
-        $condo_id = $this->input->getGet('condo');
-        $this->user = auth()->user();
-        if (is_null($condo_id)) $condo_id = $this->user->entity->id;
-
-        // realiza a query via dt
-        $dt = $this->datatables->query("
-            SELECT 
-                UNIX_TIMESTAMP(STR_TO_DATE(CONCAT('01/', competencia), '%d/%m/%Y')) AS competencia,
-                esm_fechamentos.data_inicio,
-                esm_fechamentos.data_fim, 
-                esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior AS consumo,
-                esm_fechamentos.cadastro AS leitura,
-                esm_fechamentos.id AS DT_RowId
-            FROM esm_fechamentos
-            LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
-            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
-            WHERE esm_entidades.id = $condo_id AND esm_ramais.nome LIKE \"G%\" ORDER BY esm_fechamentos.id DESC
-        ");
-
-        $dt->edit('competencia', function ($data) {
-            return competencia_nice(date("m/Y", $data['competencia']));
-        });
-
-        $dt->edit('data_inicio', function ($data) {
-            return date("d/m/Y", $data['data_inicio']);
-        });
-
-        $dt->edit('data_fim', function ($data) {
-            return date("d/m/Y", $data['data_fim']);
-        });
-
-        $dt->edit('leitura', function ($data) {
-            return date_format(date_create($data['leitura']), "d/m/Y");
-        });
-
-        $dt->edit('consumo', function ($data) {
-            return number_format($data['consumo'] / 1000, 3, ',', '.') . ' m<sup>3</sup>';
-        });
-
-        // inclui actions
-        $dt->add('action', function ($data) {
-            return '<a href="#" class="action-download-gas" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
-        });
-
-        // gera resultados
-        echo $dt->generate();
     }
 
     public function md_bloco()

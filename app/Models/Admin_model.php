@@ -107,7 +107,7 @@ class Admin_model extends Base_model
 
     public function get_entity_for_select($q = 0)
     {
-        
+
         $query = $this->db->table('esm_entidades')->select('*');
 
         // se termo de busca
@@ -118,14 +118,14 @@ class Admin_model extends Base_model
                 ->groupEnd();
         }
 
-         // ordena por nome
-         $query->orderBy('nome');
+        // ordena por nome
+        $query->orderBy('nome');
 
-         // realiza a consulta
-         $result = $query->get();
- 
-         // retorna os resultados
-         return $result->getResult();
+        // realiza a consulta
+        $result = $query->get();
+
+        // retorna os resultados
+        return $result->getResult();
     }
 
     public function get_groups($entidade)
@@ -217,6 +217,117 @@ class Admin_model extends Base_model
         return $values;
     }
 
+    public function get_competencias($entity_id, $ramal_id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+            SELECT *
+            FROM esm_fechamentos
+            WHERE entidade_id = $entity_id AND ramal_id = $ramal_id
+            ORDER BY id DESC
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getResult();
+    }
+
+    public function new_reply($id, $message, $user)
+    {
+        $this->db->transStart();
+
+        $this->db->insert('esm_tickets_reply', array('ticket_id' => $id, 'mensagem' => $message, 'user_id' => $user));
+        $this->db->update('esm_tickets', array('status' => 'respondido', 'fechado_em' => null, 'fechado_por' => null), array('id' => $id));
+
+        $this->db->transComplete();
+
+        return $this->db->transStatus();
+    }
+
+    // public function get_chamados($status = false, $limit = 0)
+    // {
+    //     // aplica filtro pelo status
+    //     if ($status)
+    //         $this->db->where('status', $status);
+
+    //     // aplica limite
+    //     if ($limit > 0)
+    //         $this->db->limit($limit);
+
+    //     // ordena por data
+    //     $this->db->orderBy('cadastro', 'DESC');
+
+    //     // realiza a consulta       
+    //     $query = $this->db->getPost('esm_tickets');
+
+    //     // verifica se retornou algo
+    //     if ($query->getNumRows() == 0)
+    //         return false;
+
+    //     return $query->getResult();
+    // }
+
+    public function get_chamado($id)
+    {
+        $query = $this->db->query("
+            SELECT esm_tickets.*, auth_users.nome AS user_name, esm_entidades.nome AS entidade, esm_agrupamentos.nome AS agrupamento, 
+                esm_unidades.nome AS unidade, user.telefone
+            FROM esm_tickets
+            LEFT JOIN auth_users ON auth_users.id = esm_tickets.fechado_por
+            LEFT JOIN auth_users user ON user.id = esm_tickets.user_id
+            LEFT JOIN esm_unidades ON esm_unidades.id = esm_tickets.unidade_id
+            LEFT JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+            LEFT JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
+            WHERE esm_tickets.id = $id        
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow();
+    }
+
+    public function get_chamado_reply($id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+            SELECT esm_tickets_reply.*, auth_users.nome 
+            FROM esm_tickets_reply
+            LEFT JOIN auth_users ON auth_users.id = esm_tickets_reply.user_id
+            WHERE esm_tickets_reply.ticket_id = $id        
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getResult();
+    }
+
+    public function count_chamados($status = false)
+    {
+        // aplica filtro pelo status
+        if ($status)
+            $this->db->where('status', $status);
+
+        // realiza a consulta
+        $query = $this->db->get('esm_tickets');
+
+        // verifica se retornou algo
+        return $query->getNumRows();
+    }
+
+    public function chamado_close($id, $user)
+    {
+        return $this->db->update('esm_tickets', array(
+            'status' => 'fechado',
+            'fechado_em' => date("Y/m/d H:i:s"), 'fechado_por' => $user
+        ), array('id' => $id));
+    }
+
     public function get_medidores_unidade($unidade_id)
     {
         $query = $this->db->query("
@@ -229,6 +340,103 @@ class Admin_model extends Base_model
         ");
 
         return $query->getResult();
+    }
+
+    public function get_fechamentos()
+    {
+        $entity_id = $this->input->getGet('entity');
+        $this->user = auth()->user();
+        if (is_null($entity_id)) $entity_id = $this->user->entity->id;
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT esm_fechamentos.id AS DT_RowId, esm_fechamentos.competencia,
+			DATE_FORMAT(FROM_UNIXTIME(esm_fechamentos.data_inicio),'%d/%m/%Y') AS data_inicio,
+			DATE_FORMAT(FROM_UNIXTIME(esm_fechamentos.data_fim),'%d/%m/%Y') AS data_fim, 
+            LPAD(esm_fechamentos.leitura_anterior, 6, '0') AS leitura_anterior, LPAD(esm_fechamentos.leitura_atual, 6, '0') AS leitura_atual, 
+            CONCAT(esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior, ' m<sup>3</sup>') AS consumo,
+            CONCAT('<span class=\"float-left\">R$</span> ', FORMAT(esm_fechamentos.v_concessionaria, 2, 'de_DE')) AS v_concessionaria, 
+            DATE_FORMAT(esm_fechamentos.cadastro,'%d/%m/%Y') AS cadastro, esm_ramais.nome AS ramal,
+            (SELECT IFNULL(GROUP_CONCAT(DATE_FORMAT(data, '%d/%m/%Y') SEPARATOR '<br/>'), 'Não Enviados') FROM esm_fechamentos_envios WHERE fechamento_id = esm_fechamentos.id) AS envios
+            FROM esm_fechamentos
+			LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
+            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
+            WHERE esm_entidades.id = $entity_id AND esm_ramais.tipo = 'agua' ORDER BY esm_fechamentos.id DESC
+        ");
+
+        $dt->edit('envios', function ($data) {
+            if ($data['envios'] == 'Não Enviados')
+                return '<span class="badge badge-warning">Não Enviados</span>';
+            else
+                return '<span class="badge badge-success" title="' . $data['envios'] . '" data-toggle="tooltip" data-html="true">Enviados</span>';
+        });
+
+        $dt->edit('competencia', function ($data) {
+            return competencia_nice($data['competencia']);
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            $dis = "";
+            if ($this->user->inGroup('demo')) {
+                $dis = " disabled";
+            }
+
+            return '<a href="#" class="action-download-agua ' . $dis . '" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>
+				<a href="#" class="action-delete ' . $dis . '" data-id="' . $data['DT_RowId'] . '"><i class="fas fa-trash" title="Excluir"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function get_leituras()
+    {
+        $entity_id = $this->input->getGet('condo');
+        $this->user = auth()->user();
+        if (is_null($entity_id)) $entity_id = $this->user->entity->id;
+
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT 
+                UNIX_TIMESTAMP(STR_TO_DATE(CONCAT('01/', competencia), '%d/%m/%Y')) AS competencia,
+                esm_fechamentos.data_inicio,
+                esm_fechamentos.data_fim, 
+                esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior AS consumo,
+                esm_fechamentos.cadastro AS leitura,
+                esm_fechamentos.id AS DT_RowId
+            FROM esm_fechamentos
+            LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
+            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
+            WHERE esm_entidades.id = $entity_id AND esm_ramais.nome LIKE \"G%\" ORDER BY esm_fechamentos.id DESC
+        ");
+
+        $dt->edit('competencia', function ($data) {
+            return competencia_nice(date("m/Y", $data['competencia']));
+        });
+
+        $dt->edit('data_inicio', function ($data) {
+            return date("d/m/Y", $data['data_inicio']);
+        });
+
+        $dt->edit('data_fim', function ($data) {
+            return date("d/m/Y", $data['data_fim']);
+        });
+
+        $dt->edit('leitura', function ($data) {
+            return date_format(date_create($data['leitura']), "d/m/Y");
+        });
+
+        $dt->edit('consumo', function ($data) {
+            return number_format($data['consumo'] / 1000, 3, ',', '.') . ' m<sup>3</sup>';
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            return '<a href="#" class="action-download-gas" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
     }
 
     public function delete_entity($id)
@@ -571,7 +779,7 @@ class Admin_model extends Base_model
         return $result->getRow();
     }
 
-     public function update_avatar($user_id, $img) 
+    public function update_avatar($user_id, $img)
     {
         $query = $this->db->query("
             SELECT
@@ -581,9 +789,9 @@ class Admin_model extends Base_model
         ");
 
         $this->db->table('auth_users')
-        ->where('id', $user_id)
-        ->set('avatar', $img)
-        ->update();   
+            ->where('id', $user_id)
+            ->set('avatar', $img)
+            ->update();
     }
 
     public function get_id_by_name($name)
@@ -601,8 +809,8 @@ class Admin_model extends Base_model
             return false;
 
         return $query->getRow()->id;
-        }
-    
+    }
+
 
     public function get_id_by_adm_name($name)
     {
@@ -629,5 +837,4 @@ class Admin_model extends Base_model
 
         return json_encode(array("status" => "success", "message" => "Agrupamento de ramais criado com sucesso.", "id" => $this->db->insertID()));
     }
-}    
-    
+}

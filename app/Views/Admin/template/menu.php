@@ -1,4 +1,3 @@
-
 <!-- start: sidebar -->
 <aside id="sidebar-left" class="sidebar-left">
     <div class="sidebar-header">
@@ -22,12 +21,29 @@
                             <span>Entidades</span>
                         </a>
                     </li>
+                    <li class="<?php if (in_array($method, array('centrais'))) echo 'nav-active'; ?>">
+                        <a class="nav-link" href="<?php echo site_url('admin/centrais'); ?>">
+                            <i class="fas fa-microchip"></i>
+                            <span>Centrais</span>
+                        </a>
+                    </li>
+
+                    <li class="nav-parent <?php if(in_array($method, array('relatorios'))) echo 'nav-expanded nav-active'; ?>">
+				                        <a class="nav-link" href="<?php echo site_url('admin/relatorios'); ?>">
+                                            <i class="fas fa-file-alt"></i>
+				                            <span>Relatórios</span>
+				                        </a>
+				                        
+				                    </li>
+
                     <li class="<?php if ($method == 'users') echo 'nav-active'; ?>">
                         <a class="nav-link" href="<?= base_url('admin/users'); ?>">
                             <i class="fas fa-users" aria-hidden="true"></i>
                             <span>Usuários</span>
                         </a>
                     </li>
+
+                    
                 </ul>
             </nav>
         </div>

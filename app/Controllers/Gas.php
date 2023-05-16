@@ -7,19 +7,20 @@
 namespace App\Controllers;
 
 use App\Models\Gas_model;
-use App\Models\Shopping_model;
+use App\Models\Consigaz_model;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\Codeigniter4Adapter;
+use CodeIgniter\Database\RawSql;
 
 class Gas extends UNO_Controller
 {
     protected $input;
     protected Datatables $datatables;
 
-    private Shopping_model $shopping_model;
+    private Consigaz_model $consigaz_model;
     private Gas_model $gas_model;
 
     public function __construct()
@@ -27,7 +28,7 @@ class Gas extends UNO_Controller
         parent::__construct();
 
         // load models
-        $this->shopping_model = new Shopping_model();
+        $this->consigaz_model = new Consigaz_model();
         $this->gas_model = new Gas_model();
 
         // load requests
@@ -74,8 +75,6 @@ class Gas extends UNO_Controller
             ),
             "tooltip" => array(
                 "enabled"   => true,
-//				"intersect" => false,
-//				"shared"    => true,
                 "x" => array(
                     "formatter" => "function",
                     "show"      => true
@@ -88,7 +87,7 @@ class Gas extends UNO_Controller
             "extra" => array(
                 "tooltip" => array(
                     "title" => $titles,
-                    "decimals" => 0,
+                    "decimals" => $decimals,
                 ),
                 "unit"     => $unit,
                 "decimals" => $decimals,
@@ -132,19 +131,56 @@ class Gas extends UNO_Controller
         return $html;
     }
 
+    public function chart_battery($device, $compare, $start, $end)
+    {
+        $period = $this->gas_model->get_battery_consumption($device, $start, $end, true);
+
+        $values  = array();
+        $labels  = array();
+        $titles  = array();
+        $dates   = array();
+
+        $max = -1;
+        $min = 999999999;
+
+        $series = array();
+
+        if ($period) {
+            foreach ($period as $v) {
+                $values[] = $v->value;
+                $labels[] = $v->label;
+
+                if ($start == $end) {
+                    $titles[] = $v->label." - ".$v->next;
+                } else {
+                    $titles[] = $v->label." - ".weekDayName($v->dw);
+                    $dates[]  = $v->date;
+                }
+                if ($max < floatval($v->value) && !is_null($v->value)) $max = floatval($v->value);
+                if ($min > floatval($v->value) && !is_null($v->value)) $min = floatval($v->value);
+            }
+
+            $series[] = array(
+                "name"  => "Bateria",
+                "data"  => $values,
+                "color" => "#007AB8",
+            );
+        }
+
+        $extra = array();
+
+        $data = array();
+
+        $footer = $this->chartFooter($data);
+
+        $config = $this->chartConfig("area", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
+
+        echo json_encode($config);
+    }
+
     public function chart()
     {
         $field    = $this->input->getPost('field');
-        $shopping_id    = $this->input->getPost('shopping_id');
-
-        $this->user->config = $this->shopping_model->get_client_config($shopping_id);
-
-        if (!$this->user->config) {
-            return json_encode(array(
-                "status" => "error",
-                "message" => "Dados não foram carregados corretamente. Configurações gerais não fornecidas."
-            ));
-        }
 
         $divisor  = 1;
         $decimals = 0;
@@ -156,16 +192,19 @@ class Gas extends UNO_Controller
         $start    = $this->input->getPost('start');
         $end      = $this->input->getPost('end');
 
-        $period   = $this->gas_model->GetConsumption($device, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
+        if ($field === "battery") {
+            $this->chart_battery($device, $compare, $start, $end);
+            return;
+        } elseif ($field === "sensor") {
+            $this->chart_battery($device, $compare, $start, $end);
+            //$this->chart_sensor($device, $compare, $start, $end);
+            return;
+        }
 
-        $period_o = $this->gas_model->GetConsumption($device, $shopping_id, $start, $end, array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
-        $period_c = $this->gas_model->GetConsumption($device, $shopping_id, $start, $end, array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
-        $main     = $this->gas_model->GetDeviceLastRead($device, $shopping_id);
-        $month_o  = $this->gas_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
-        $month_c  = $this->gas_model->GetConsumption($device, $shopping_id, date("Y-m-01"), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
-
-        $day_o  = $this->gas_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("opened", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
-        $day_c  = $this->gas_model->GetConsumption($device, $shopping_id, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array("closed", $this->user->config->open, $this->user->config->close), false, null, $this->user->demo)[0]->value;
+        $period   = $this->gas_model->GetConsumption($device, $start, $end, array(), true, null);
+        $period_s = $this->gas_model->GetConsumption($device, $start, $end, array(), false, null)[0]->value;
+        $month    = $this->gas_model->GetConsumption($device, date("Y-m-01"), date("Y-m-d"), array(), false, null)[0]->value;
+        $day      = $this->gas_model->GetConsumption($device, date("Y-m-d", strtotime("-1 months")), date("Y-m-d"), array(), false, null)[0]->value;
 
         $values  = array();
         $labels  = array();
@@ -201,14 +240,14 @@ class Gas extends UNO_Controller
 
         if ($compare != "") {
             $values_c  = array();
-            $comp = $this->gas_model->GetConsumption($compare, $shopping_id, $start, $end, array(), false,null, $this->user->demo);
+            $comp = $this->gas_model->GetConsumption($compare, $start, $end, array(), false,null);
             if ($comp) {
                 foreach ($comp as $v) {
                     $values_c[] = $v->value;
                 }
 
                 $series[] = array(
-                    "name"  => "Comparado",//$this->shopping_model->GetUnidadeByDevice($compare)->nome,
+                    "name"  => "Comparado",
                     "data"  => $values_c,
                     "color" => "#87c1de",
                 );
@@ -220,25 +259,16 @@ class Gas extends UNO_Controller
         $dias_m = (strtotime(date("Y-m-d")) - strtotime("-1 months")) / 86400;
 
         $extra = array(
-            "main"        => ($main ? str_pad(round($main), 6 , '0' , STR_PAD_LEFT) : "- - - - - -"). " <span style='font-size:12px;'>m³</span>",
-            "period"      => number_format(round($period_o + $period_c, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "period_o"    => number_format(round($period_o, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "period_c"    => number_format(round($period_c, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "month"       => number_format(round($month_o + $month_c, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "month_o"     => number_format(round($month_o, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "month_c"     => number_format(round($month_c, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "prevision"   => number_format(round(($month_o + $month_c) / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "prevision_o" => number_format(round($month_o / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "prevision_c" => number_format(round($month_c / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "day"         => number_format(round(($day_o + $day_c) / $dias_m, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "day_o"       => number_format(round($day_o / $dias_m, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
-            "day_c"       => number_format(round($day_c / $dias_m, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
+            "period"      => number_format(round($period_s, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
+            "month"       => number_format(round($month, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
+            "prevision"   => number_format(round(($month) / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
+            "day"         => number_format(round(($day) / $dias_m, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
         );
 
         $data = array(
             array("Máximo", ($max == -1) ? "-" : number_format(round($max), 0, ",", ".") . " <span style='font-size:12px;'>m³</span>", "#268ec3"),
             array("Mínimo", ($min == 999999999) ? "-" : number_format(round($min), 0, ",", ".") . " <span style='font-size:12px;'>m³</span>", "#268ec3"),
-            array("Médio",  ($min == 999999999) ? "-" : number_format(round(($period_o + $period_c) / count($period)), 0, ",", ".") . " <span style='font-size:12px;'>m³</span>", "#268ec3"),
+            array("Médio",  ($min == 999999999) ? "-" : number_format(round(($period_s) / count($period)), 0, ",", ".") . " <span style='font-size:12px;'>m³</span>", "#268ec3"),
         );
 
         $footer = $this->chartFooter($data);
@@ -248,219 +278,106 @@ class Gas extends UNO_Controller
         echo json_encode($config);
     }
 
-    public function resume()
+    public function get_fechamentos_gas()
     {
-        $this->user->config = $this->shopping_model->get_client_config($this->input->getPost('group'));
-
-        $entity = $this->shopping_model->get_entity_by_group($this->input->getPost('group'));
-
-        // retorna erro caso agrupamento não configurado corretamente
-        if (!$this->user->config) {
-            return json_encode(array(
-                "status" => "error",
-                "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
-            ));
-        }
-
-        $tabela = "esm_leituras_".$entity->tabela."_gas";
-
-        $select = "esm_medidores.nome AS device, 
-                esm_unidades_config.luc AS luc, 
-                esm_unidades.nome AS name, 
-                esm_unidades_config.type AS type,
-                esm_medidores.ultima_leitura AS value_read,
-                m.value AS value_month,
-                h.value AS value_month_open,
-                m.value - h.value AS value_month_closed,
-                l.value AS value_last,
-                m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())) AS value_future,
-                c.value AS value_last_month";
-
-        if ($this->user->demo) {
-
-            $tabela = "esm_leituras_".$entity->tabela."_gas_demo";
-
-            $select = "esm_medidores.nome AS device, 
-                esm_unidades_config.luc AS luc, 
-                esm_unidades.nome AS name, 
-                esm_unidades_config.type AS type,
-                RAND() * 10000 AS value_read,
-                RAND() * 10000 AS value_month,
-                RAND() * 10000 AS value_month_open,
-                RAND() * 10000 AS value_month_closed,
-                RAND() * 10000 AS value_last,
-                RAND() * 10000 AS value_future,
-                RAND() * 10000 AS value_last_month";
-        }
+        $entidade = $this->input->getPost('entidade');
 
         // realiza a query via dt
-        $dt = $this->datatables->query("
-            SELECT $select
-            FROM esm_medidores
-            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
-            LEFT JOIN (  
-                SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM $tabela
-                JOIN esm_medidores ON esm_medidores.id = $tabela.medidor_id
-                WHERE timestamp > UNIX_TIMESTAMP() - 86400
-                GROUP BY medidor_id
-            ) l ON l.device = esm_medidores.nome
-            LEFT JOIN (
-                SELECT esm_medidores.nome as device, SUM(consumo) AS value
-                FROM esm_calendar
-                LEFT JOIN $tabela d ON 
-                    (d.timestamp) > (esm_calendar.ts_start) AND 
-                    (d.timestamp) <= (esm_calendar.ts_end + 600) 
-                JOIN esm_medidores ON esm_medidores.id = d.medidor_id
-                WHERE 
-                    esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
-                    esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
-                GROUP BY d.medidor_id
-            ) m ON m.device = esm_medidores.nome
-            LEFT JOIN (
-                SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM $tabela
-                JOIN esm_medidores ON esm_medidores.id = $tabela.medidor_id
-                WHERE MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
-                GROUP BY medidor_id
-            ) c ON c.device = esm_medidores.nome
-            LEFT JOIN (
-                SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM $tabela
-                JOIN esm_medidores ON esm_medidores.id = $tabela.medidor_id
-                WHERE 
-                    MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND 
-                    YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now()) AND 
-                    HOUR(FROM_UNIXTIME(timestamp)) > HOUR(FROM_UNIXTIME({$this->user->config->open})) AND 
-                    HOUR(FROM_UNIXTIME(timestamp)) <= HOUR(FROM_UNIXTIME({$this->user->config->close}))
-                GROUP BY medidor_id
-            ) h ON h.device = esm_medidores.nome
-            WHERE 
-                esm_unidades.agrupamento_id = ".$this->input->getPost("group")." AND
-                esm_medidores.tipo = 'gas'
-            ORDER BY 
-            esm_unidades_config.type, esm_unidades.nome
-        ");
+        $dt = $this->datatables->query("SELECT
+                esm_fechamentos_gas.id,
+                esm_fechamentos_gas.competencia,
+                FROM_UNIXTIME(esm_fechamentos_gas.inicio, '%d/%m/%Y') AS inicio,
+                FROM_UNIXTIME(esm_fechamentos_gas.fim, '%d/%m/%Y') AS fim,
+                FORMAT(esm_fechamentos_gas.leitura_atual - esm_fechamentos_gas.leitura_anterior, 1, 'de_DE') AS consumo,
+                DATE_FORMAT(esm_fechamentos_gas.cadastro, '%d/%m/%Y') AS emissao
+            FROM esm_fechamentos_gas
+            JOIN esm_entidades ON esm_entidades.id = esm_fechamentos_gas.entidade_id AND esm_entidades.id = $entidade
+            ORDER BY emissao DESC");
 
-        $dt->edit('type', function ($data) {
-            if ($data["type"] == 1) {
-                return "<span class=\"badge badge-warning\">".$this->user->config->area_comum."</span>";
-            } else if ($data["type"] == 2) {
-                return "<span class=\"badge badge-info\">Unidades</span>";
-            }
+        $dt->edit('competencia', function ($data) {
+            return competencia_nice($data['competencia']);
         });
 
-        $dt->edit('value_read', function ($data) {
-            return str_pad(round($data["value_read"]), 6 , '0' , STR_PAD_LEFT);
-        });
-
-        $dt->edit('value_last', function ($data) {
-            return number_format($data["value_last"], 0, ",", ".");
-        });
-
-        $dt->edit('value_month', function ($data) {
-            return number_format($data["value_month"], 0, ",", ".");
-        });
-
-        $dt->edit('value_month_open', function ($data) {
-            return number_format($data["value_month_open"], 0, ",", ".");
-        });
-
-        $dt->edit('value_month_closed', function ($data) {
-            return number_format($data["value_month_closed"], 0, ",", ".");
-        });
-
-        $dt->edit('value_future', function ($data) {
-            $icon = "";
-            if ($data["value_future"] > $data["value_last_month"])
-                $icon = "<i class=\"fa fa-level-up-alt text-danger ms-2\"></i>";
-            else if ($data["value_future"] > $data["value_last_month"])
-                $icon = "<i class=\"fa fa-level-down-alt text-success ms-2\"></i>";
-
-            return number_format($data["value_future"], 0, ",", ".").$icon;
+        // inclui actions
+        $dt->add('action', function ($data) {
+            return '<a href="#" class="action-gas-download text-primary me-2" data-id="' . $data['id'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>
+				<a href="#" class="action-gas-delete text-danger" data-id="' . $data['id'] . '"><i class="fas fa-trash" title="Excluir"></i></a>';
         });
 
         // gera resultados
         echo $dt->generate();
     }
 
-    public function downloadResume()
+    public function delete_fechamento()
     {
-        $group_id = $this->input->getPost('id');
+        $id = $this->input->getPost('id');
+
+        echo $this->gas_model->delete_fechamento($id);
+    }
+
+    public function download()
+    {
+        $fechamento_id = $this->input->getPost('id');
 
         // busca fechamento
-        $group  = $this->shopping_model->get_group_info($group_id);
+        $fechamento = $this->gas_model->get_fechamento($fechamento_id);
 
-        $this->user->config = $this->shopping_model->get_client_config($group_id);
+        //TODO verificar se usuário tem acesso a esse fechamento
 
-        if (!$this->user->config) {
-            return json_encode(array(
-                "status" => "error",
-                "message" => "Dados não foram carregados corretamente. Configurações gerais não fornecidas."
-            ));
+        // verifica retorno
+        if(!$fechamento || is_null($fechamento->id)) {
+            // mostra erro
+            echo json_encode(array("status"  => "error", "message" => "Lançamento não encontrado"));
+            return;
         }
 
         $spreadsheet = new Spreadsheet();
 
         $titulos = [
-            ['Mês', 'Aberto', 'Fechado', 'Últimas 24h', "Previsão Mês" ]
+            ['Unidade', 'Medidor', 'Leitura Anterior', 'Leitura Atual', 'Consumo - L' ]
         ];
 
         $spreadsheet->getProperties()
             ->setCreator('Easymeter')
             ->setLastModifiedBy('Easymeter')
-            ->setTitle('Relatório Resumo')
-            ->setSubject(MonthName(date("m"))."/".date("Y"))
-            ->setDescription('Relatório Resumo - '.date("01/m/Y").' - '.date("d/m/Y"))
-            ->setKeywords($group->group_name.' Resumo '.MonthName(date("m"))."/".date("Y"))
+            ->setTitle('Relatório de Consumo')
+            ->setSubject(competencia_nice($fechamento->competencia))
+            ->setDescription('Relatório de Consumo - '.$fechamento->nome.' - '.$fechamento->competencia)
+            ->setKeywords($fechamento->nome.' '.competencia_nice($fechamento->competencia))
             ->setCategory('Relatório')->setCompany('Easymeter');
 
+        $split = 0;
 
-        $spreadsheet->getActiveSheet()->setTitle($this->user->config->area_comum);
-
-        $myWorkSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Unidades');
-        $spreadsheet->addSheet($myWorkSheet, 1);
-
-        for ($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i <= $split; $i++) {
 
             $spreadsheet->setActiveSheetIndex($i);
 
-            $resume = $this->gas_model->GetResume($group_id, $this->user->config, $i + 1, $this->user->demo);
+            $spreadsheet->getActiveSheet()->getStyle('A1:E2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($fechamento->nome));
+            $spreadsheet->getActiveSheet()->mergeCells('A1:E1');
+            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Consumo de Gás - '.date("d/m/Y", $fechamento->inicio).' a '.date("d/m/Y", $fechamento->fim));
+            $spreadsheet->getActiveSheet()->mergeCells('A2:E2');
 
-            $spreadsheet->getActiveSheet()->getStyle('A1:H2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
-            $spreadsheet->getActiveSheet()->mergeCells('A1:H1');
-            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - '. date("01/m/Y").' a '.date("d/m/Y"));
-            $spreadsheet->getActiveSheet()->mergeCells('A2:H2');
+            $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'A4');
 
-            $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
-            $spreadsheet->getActiveSheet()->setCellValue('B4', 'LUC')->mergeCells('B4:B5');
-            $spreadsheet->getActiveSheet()->setCellValue('C4', 'Nome')->mergeCells('B4:B5');
-            $spreadsheet->getActiveSheet()->setCellValue('D4', 'Leitura')->mergeCells('C4:C5');
-            $spreadsheet->getActiveSheet()->setCellValue('E4', 'Consumo - L')->mergeCells('D4:H4');
+            $spreadsheet->getActiveSheet()->getStyle('A1:E4')->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('A4:E4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-            $spreadsheet->getActiveSheet()->getStyle('A1:J5')->getFont()->setBold(true);
-            $spreadsheet->getActiveSheet()->getStyle('A4:H5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $linhas = $this->gas_model->get_fechamento_unidades($fechamento_id, $i + 1);
 
-            $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'D5');
+            $spreadsheet->getActiveSheet()->fromArray($linhas, NULL, 'A5');
 
-            $spreadsheet->getActiveSheet()->fromArray($resume, NULL, 'A6');
-
-            $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+            $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(30);
             $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
-            $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+            $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
             $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
             $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
-            $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
-            $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
-            $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(18);
 
-            $spreadsheet->getActiveSheet()->getStyle('A6:A'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $spreadsheet->getActiveSheet()->getStyle('B6:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $spreadsheet->getActiveSheet()->getStyle('D6:J'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $spreadsheet->getActiveSheet()->getStyle('B5:E'.(count($linhas) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
 
-            $spreadsheet->getActiveSheet()->setCellValue('A'.(count($resume) + 7), 'Gerado em '.date("d/m/Y H:i"));
+
+            $spreadsheet->getActiveSheet()->setCellValue('A'.(count($linhas) + 7), 'Gerado em '.date("d/m/Y H:i"));
+
 
             $spreadsheet->getActiveSheet()->setSelectedCell('A1');
         }
@@ -469,7 +386,7 @@ class Gas extends UNO_Controller
 
         $writer = new Xlsx($spreadsheet);
 
-        $filename = "Resumo Água ".$group->group_name;
+        $filename = $fechamento->nome.' Gás - '.competencia_nice($fechamento->competencia, ' ');
 
         ob_start();
         $writer->save("php://output");
@@ -483,5 +400,203 @@ class Gas extends UNO_Controller
         );
 
         echo json_encode($response);
+    }
+
+    public function download_fechamentos()
+    {
+        $entidade_id = $this->input->getPost('id');
+
+        // busca fechamento
+        $fechamentos = $this->gas_model->get_fechamentos($entidade_id);
+        $entidade    = $this->consigaz_model->get_entidade($entidade_id);
+
+        //TODO verificar se usuário tem acesso a esse fechamento
+
+        // verifica retorno
+        if(!$fechamentos) {
+            // mostra erro
+            echo json_encode(array("status"  => "error", "message" => "Nenhum lançamento encontrado"));
+            return;
+        }
+
+        foreach($fechamentos as &$f) {
+            $f['competencia'] = competencia_nice($f['competencia']);
+        }
+
+        $spreadsheet = new Spreadsheet();
+
+        $titulos = [
+            ['Total']
+        ];
+
+        $spreadsheet->getProperties()
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório de Lançamentos - Gás')
+            ->setSubject($entidade->nome)
+            ->setDescription('Relatório de Lançamentos - Gás - '.$entidade->nome)
+            ->setKeywords($entidade->nome.' Lançamentos Água')
+            ->setCategory('Relatório')->setCompany('Easymeter');
+
+        $spreadsheet->getActiveSheet()->getStyle('A1:E2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($entidade->nome));
+        $spreadsheet->getActiveSheet()->mergeCells('A1:E1');
+        $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Lançamentos - Gás');
+        $spreadsheet->getActiveSheet()->mergeCells('A2:E2');
+
+        $spreadsheet->getActiveSheet()->setCellValue('A4', 'Competência')->mergeCells('A4:A5');
+        $spreadsheet->getActiveSheet()->setCellValue('B4', 'Data Inicial')->mergeCells('B4:B5');
+        $spreadsheet->getActiveSheet()->setCellValue('C4', 'Data Final')->mergeCells('C4:C5');
+        $spreadsheet->getActiveSheet()->setCellValue('D4', 'Consumo - L')->mergeCells('D4:D5');
+        $spreadsheet->getActiveSheet()->setCellValue('E4', 'Emissão')->mergeCells('E4:E5');
+
+        $spreadsheet->getActiveSheet()->getStyle('A1:G5')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A4:G5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'D5');
+
+        $spreadsheet->getActiveSheet()->fromArray($fechamentos, NULL, 'A6');
+
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+
+        $spreadsheet->getActiveSheet()->getStyle('A6:G'.(count($fechamentos) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->setCellValue('A'.(count($fechamentos) + 7), 'Gerado em '.date("d/m/Y H:i"));
+
+        $spreadsheet->getActiveSheet()->setSelectedCell('A1');
+
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = "Lançamentos Gás ".$entidade->nome;
+
+        ob_start();
+        $writer->save("php://output");
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        $response =  array(
+            'status' => "success",
+            'name'   => $filename,
+            'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
+        );
+
+        echo json_encode($response);
+    }
+
+    public function add_fechamento_geral($data)
+    {
+        $entidades = $this->consigaz_model->get_entidades($this->user->id);
+        if (!$entidades) {
+            return '{ "status": "message", "message" : "Não há clientes cadastrados para esse usuário"}';
+        }
+
+        foreach ($entidades as $entidade) {
+            $entidade->ramal = $this->consigaz_model->get_ramal($entidade->id, 'gas');
+
+            if (!$entidade->ramal) {
+                return '{ "status": "message", "message" : "Não há ramal cadastrado para o cliente ' . $entidade->nome . '"}';
+            }
+
+            if ($this->gas_model->verify_competencia($entidade->id, $entidade->ramal->id, $data["competencia"])) {
+                return '{ "status": "message", "field": "tar-gas-competencia", "message" : "Cliente ' . $entidade->nome . ' já possui lançamento nessa competência"}';
+            }
+
+            if (date_create_from_format('d/m/Y', $data["inicio"])->format('U') == date_create_from_format('d/m/Y', $data["fim"])->format('U')) {
+                return '{ "status": "message", "field": "tar-gas-data-fim", "message" : "Data final igual a inicial"}';
+            }
+
+            if (date_create_from_format('d/m/Y', $data["inicio"])->format('U') > date_create_from_format('d/m/Y', $data["fim"])->format('U')) {
+                return '{ "status": "message", "field": "tar-gas-data-fim", "message" : "Data final menor que a inicial"}';
+            }
+        }
+
+        return $this->gas_model->calculateGeral($data, $entidades);
+    }
+
+    public function add_fechamento()
+    {
+        if (!$this->input->getPost('tar-gas-entidade')) {
+            echo $this->add_fechamento_geral(array(
+                "competencia" => $this->input->getPost('tar-gas-competencia'),
+                "inicio"      => $this->input->getPost('tar-gas-data-ini'),
+                "fim"         => $this->input->getPost('tar-gas-data-fim'),
+                "mensagem"    => $this->input->getPost('tar-gas-msg')
+            ));
+            return;
+        }
+
+        if (!$this->input->getPost('tar-gas-ramal')) {
+            sleep(2);
+            echo '{ "status": "message", "field": "", "message" : "Ramal não cadastrado, contate seu administrador"}';
+            return;
+        }
+
+        $data = array(
+            "entidade_id" => $this->input->getPost('tar-gas-entidade'),
+            "ramal_id"    => $this->input->getPost('tar-gas-ramal'),
+            "competencia" => $this->input->getPost('tar-gas-competencia'),
+            "inicio"      => $this->input->getPost('tar-gas-data-ini'),
+            "fim"         => $this->input->getPost('tar-gas-data-fim'),
+            "mensagem"    => $this->input->getPost('tar-gas-msg'),
+        );
+
+        if ($this->gas_model->verify_competencia($data["entidade_id"], $data["ramal_id"], $data["competencia"])) {
+            echo '{ "status": "message", "field": "tar-gas-competencia", "message" : "Competência já possui lançamento"}';
+            return;
+        }
+
+        if (date_create_from_format('d/m/Y', $data["inicio"])->format('U') == date_create_from_format('d/m/Y', $data["fim"])->format('U')) {
+            echo '{ "status": "message", "field": "tar-gas-data-fim", "message" : "Data final igual a inicial"}';
+            return;
+        }
+
+        if (date_create_from_format('d/m/Y', $data["inicio"])->format('U') > date_create_from_format('d/m/Y', $data["fim"])->format('U')) {
+            echo '{ "status": "message", "field": "tar-gas-data-fim", "message" : "Data final menor que a inicial"}';
+            return;
+        }
+
+        echo $this->gas_model->calculate($data, $data['entidade_id']);
+    }
+
+    public function get_fechamentos_unidades()
+    {
+        $fid = $this->input->getPost('fid');
+
+        $dt = $this->datatables->query("
+            SELECT 
+                esm_unidades.nome AS medidor,
+                leitura_anterior,
+                leitura_atual,
+                leitura_atual - leitura_anterior AS consumo,
+                esm_fechamentos_gas_entradas.id AS DT_RowId
+            FROM 
+                esm_fechamentos_gas_entradas
+            JOIN 
+                esm_medidores ON esm_medidores.id = esm_fechamentos_gas_entradas.medidor_id
+            JOIN 
+                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            WHERE 
+                esm_fechamentos_gas_entradas.fechamento_id = $fid
+        ");
+
+        $dt->edit('leitura_anterior', function ($data) {
+            return str_pad(round($data["leitura_anterior"]), 6 , '0' , STR_PAD_LEFT);
+        });
+
+        $dt->edit('leitura_atual', function ($data) {
+            return str_pad(round($data["leitura_atual"]), 6 , '0' , STR_PAD_LEFT);
+        });
+
+        $dt->edit('consumo', function ($data) {
+            return number_format($data['consumo'], 0, ",", ".");
+        });
+
+        echo $dt->generate();
     }
 }

@@ -9509,6 +9509,10 @@ h6.text-shadow {
 	background: #171717;
 }
 
+.switch.switch-white .ios-switch .on-background {
+	background: #fff;
+}
+
 .switch.switch-lg .ios-switch {
 	height: 45px;
 	width: 75px;

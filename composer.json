@@ -10,7 +10,8 @@
         "codeigniter4/framework": "^4.0",
         "codeigniter4/shield": "^1.0@beta",
         "ozdemir/datatables": "^2.3",
-        "phpoffice/phpspreadsheet": "^1.28"
+        "phpoffice/phpspreadsheet": "^1.28",
+      "ext-json": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9",

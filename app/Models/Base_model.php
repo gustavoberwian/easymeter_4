@@ -33,4 +33,14 @@ class Base_model extends Model
 
         return $this->db->query($query)->getRow();
     }
+
+    public function get_entidade($entidade_id)
+    {
+        $result = $this->db->table('esm_entidades')
+            ->where('esm_entidades.id', $entidade_id)
+            ->select('*')
+            ->get();
+
+        return $result->getRow();
+    }
 }

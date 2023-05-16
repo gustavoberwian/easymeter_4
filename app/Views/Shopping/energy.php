@@ -213,7 +213,7 @@
                             </tr>
                             <tr role="row">
                                 <th>Mês Atual</th>
-                                <th>Últimos 30 dias</th>
+                                <th>Mês Anterior</th>
                                 <th>Ponta</th>
                                 <th>Fora Ponta</th>
                                 <th>Últimas 24h</th>

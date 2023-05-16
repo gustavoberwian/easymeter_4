@@ -291,7 +291,6 @@ class Industria extends UNO_Controller
         $end             = $this->input->getPost('end');
 
         $leituras = $this->industria_model->get_leituras($mid, $start, $end, $monitoramento);
-        print_r($leituras);
         $series   = array();
         $values   = array();
         $labels   = array();

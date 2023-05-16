@@ -336,4 +336,13 @@ class Consigaz_model extends Base_model
 
         return $this->db->query($q)->getResult();
     }
+
+    public function get_entidades($user_id)
+    {
+        $query = "SELECT esm_entidades.* 
+            FROM esm_entidades
+            JOIN auth_user_relation ON auth_user_relation.entidade_id = esm_entidades.id AND auth_user_relation.user_id = $user_id";
+
+        return $this->db->query($query)->getResult();
+    }
 }

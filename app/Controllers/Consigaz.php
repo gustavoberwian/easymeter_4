@@ -203,7 +203,7 @@ class Consigaz extends UNO_Controller
         $dt->query($builder);
 
         $dt->add('ultima_competencia', function ($data) {
-            return '04/2023';
+            return $this->consigaz_model->get_last_fechamento($data['id'])->competencia ?? '';
         });
 
         $dt->add("opened", function ($data) {
@@ -214,7 +214,7 @@ class Consigaz extends UNO_Controller
                 $total += $this->consigaz_model->get_valvulas($medidor->id, 'open', 'count');
             }
 
-            return $total;
+            return number_format($total, 0, '', '.');
         });
 
         $dt->add("closed", function ($data) {
@@ -225,7 +225,7 @@ class Consigaz extends UNO_Controller
                 $total += $this->consigaz_model->get_valvulas($medidor->id, 'close', 'count');
             }
 
-            return $total;
+            return number_format($total, 0, '', '.');
         });
 
         $dt->add("vermelho", function ($data) {
@@ -236,7 +236,7 @@ class Consigaz extends UNO_Controller
                 $total += $this->consigaz_model->get_valvulas($medidor->id, 'vermelho', 'count');
             }
 
-            return $total;
+            return number_format($total, 0, '', '.');
         });
 
         $dt->add("amarelo", function ($data) {
@@ -247,7 +247,7 @@ class Consigaz extends UNO_Controller
                 $total += $this->consigaz_model->get_valvulas($medidor->id, 'amarelo', 'count');
             }
 
-            return $total;
+            return number_format($total, 0, '', '.');
         });
 
         $dt->add("verde", function ($data) {
@@ -258,7 +258,7 @@ class Consigaz extends UNO_Controller
                 $total += $this->consigaz_model->get_valvulas($medidor->id, 'verde', 'count');
             }
 
-            return $total;
+            return number_format($total, 0, '', '.');
         });
 
         $dt->add("ultimo_mes", function ($data) {
@@ -272,7 +272,7 @@ class Consigaz extends UNO_Controller
                 }
             }
 
-            return $total . ' <small>m³</small>';
+            return number_format($total, 0, '', '.') . ' <small>m³</small>';
         });
 
         $dt->add("mes_atual", function ($data) {
@@ -286,7 +286,7 @@ class Consigaz extends UNO_Controller
                 }
             }
 
-            return $total . ' <small>m³</small>';
+            return number_format($total, 0, '', '.') . ' <small>m³</small>';
         });
 
         $dt->add("previsao", function ($data) {
@@ -305,13 +305,13 @@ class Consigaz extends UNO_Controller
 
             $total = $total / $days * $days_month;
 
-            return number_format($total, 0, '', '') . ' <small>m³</small>';
+            return number_format($total, 0, '', '.') . ' <small>m³</small>';
         });
 
         $dt->add("actions", function ($data) {
             return '
                 <a class="text-success me-1" data-id="' . $data['id'] . '"><i class="fas fa-eye" title="Ver"></i></a>
-                <a class="text-primary" data-id="' . $data['id'] . '"><i class="fas fa-file-import" title="Faturar"></i></a>
+                <a class="action-inclui-fechamento text-primary" data-id="' . $data['id'] . '"><i class="fas fa-file-import" title="Faturar Individual"></i></a>
             ';
         });
 
@@ -345,7 +345,7 @@ class Consigaz extends UNO_Controller
                 $total += $c->value;
             }
 
-            return $total . ' <small>m³</small>';
+            return number_format($total, 0, '', '.') . ' <small>m³</small>';
         });
 
         $dt->add("mes_atual", function ($data) {
@@ -356,7 +356,7 @@ class Consigaz extends UNO_Controller
                 $total += $c->value;
             }
 
-            return $total . ' <small>m³</small>';
+            return number_format($total, 0, '', '.') . ' <small>m³</small>';
         });
 
         $dt->add("previsao", function ($data) {
@@ -372,7 +372,7 @@ class Consigaz extends UNO_Controller
 
             $total = $total / $days * $days_month;
 
-            return number_format($total, 0, '', '') . ' <small>m³</small>';
+            return number_format($total, 0, '', '.') . ' <small>m³</small>';
         });
 
         $dt->add("state", function ($data) {
@@ -610,5 +610,23 @@ class Consigaz extends UNO_Controller
         );
 
         echo json_encode($response);
+    }
+
+    public function md_fechamento_inclui()
+    {
+        $entidade_id = $this->input->getPost('entidade');
+
+        $data['entidade'] = (object) null;
+        $data['ramal'] = (object) null;
+
+        $data['entidade']->id = null;
+        $data['ramal']->id = null;
+
+        if ($entidade_id) {
+            $data['entidade'] = $this->consigaz_model->get_entidade($entidade_id);
+            $data['ramal'] = $this->consigaz_model->get_ramal($entidade_id, 'gas');
+        }
+
+        echo view('Consigaz/modals/md_incluir_fechamento', $data);
     }
 }

@@ -4,9 +4,12 @@
 
     if ($("#dt-entidades").length) {
         let dtEntidades = $("#dt-entidades").DataTable({
-            dom        : '<"table-responsive"t>r<"row"<"col-md-6"><"col-md-6"p>>',
+            dom        : '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>pr',
             processing : true,
             paging     : true,
+            language   : {
+                sSearch: ""
+            },
             columns    : [
                 {data: "nome", className: "dt-body-center table-one-line"},
                 {data: "ultima_competencia", className: "dt-body-center"},
@@ -21,6 +24,7 @@
                 {data: "actions", className: "dt-body-center"},
             ],
             serverSide : true,
+            ordering   : false,
             pagingType : "numbers",
             searching  : true,
             ajax       : {
@@ -42,11 +46,11 @@
 
             let data = dtEntidades.row(this).data();
 
-            window.location = "/" + $(".content-body").data("class") + "/unidades/" + data.id;
+            window.location = "/" + $(".content-body").data("url") + "/unidades/" + data.id;
         });
     } else {
         $(document).on('click', '.card-group', function () {
-            window.location = $(".content-body").data("class") + "/" + $(".content-body").data("monitoria") + "/" + $(this).data('group');
+            window.location = $(".content-body").data("url") + "/" + $(".content-body").data("monitoria") + "/" + $(this).data('group');
         });
     }
 
@@ -71,6 +75,90 @@
             }
         });
     })
-    
+
+    $(document).on('click', '.btn-inclui-all-fechamentos, .action-inclui-fechamento', function (e) {
+        // para propagação
+        e.preventDefault();
+
+        // abre modal
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_fechamento_inclui'},
+            type: 'ajax',
+            modal: true,
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: {
+                        entidade: $(this).data("id")
+                    }
+                }
+            },
+            callbacks: {
+                ajaxContentAdded: function () {
+                    $('#tar-gas-competencia').mask('00/0000');
+                    $('#tar-gas-data-ini').mask('00/00/0000');
+                    $('#tar-gas-data-fim').mask('00/00/0000');
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '.modal-dismiss', function (e) {
+        e.preventDefault();
+
+        $.magnificPopup.close();
+    });
+
+    $(document).on('click', '#md-fechamento-inclui .modal-confirm', function () {
+
+        if (!$(".form-gas-fechamento").valid())
+            return;
+
+        let $btn = $(this);
+        $btn.trigger("loading-overlay:show");
+        //$("#md-fechamento-inclui .btn").prop("disabled", true);
+
+        // valida formulário
+        if ( $(".form-gas-fechamento").valid() ) {
+            // captura dados
+            let data = $(".form-gas-fechamento").serializeArray();
+
+            $.ajax({
+                method: 'POST',
+                url: '/gas/add_fechamento',
+                dataType: 'json',
+                data: data,
+                success: function (json) {
+                    if (json.status === 'success') {
+                        if (json.id) {
+                            // vai para a pagina do fechamento
+                            window.location = "/" + $(".content-body").data("url") + "/fechamentos/" + json.entidade + "/" + json.id;
+                        } else {
+                            // mostra sucesso
+                            notifySuccess(json.message);
+                        }
+
+                        // fecha a modal
+                        $.magnificPopup.close();
+
+                    } else {
+                        $("#md-fechamento-inclui .alert").html(json.message).removeClass("d-none");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // mostra erro
+                    notifyError(error, 'Ajax Error');
+                },
+                complete: function () {
+                    $btn.trigger("loading-overlay:hide");
+                    $("#md-fechamento-inclui .btn").removeAttr("disabled");
+                }
+            });
+        }
+    });
+
+    $.validator.addClassRules("vdate", { dateBR : true });
+    $.validator.addClassRules("vcompetencia", { competencia : true });
+    $.validator.addClassRules("vnumber", { number : true });
 
 }.apply(this, [jQuery]));

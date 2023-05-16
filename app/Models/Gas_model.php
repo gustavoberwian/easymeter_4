@@ -409,7 +409,93 @@ class Gas_model extends Base_model
         if ($this->db->transStatus() === FALSE) {
             return json_encode(array("status" => "error", "message" => $failure));
         } else {
-            return json_encode(array("status" => "success", "message" => "Lançamento calculado com sucesso!", "id" => $data['id']));
+            return json_encode(array("status" => "success", "message" => "Lançamento calculado com sucesso!", "id" => $data['id'], "entidade" => $entidade_id),);
+        }
+    }
+
+    public function calculateGeral($data, $entidades)
+    {
+        $inicio = date_create_from_format('d/m/Y', $data["inicio"])->format('Y-m-d');
+        $fim = date_create_from_format('d/m/Y', $data["fim"])->format('Y-m-d');
+
+        $data["inicio"] = date_create_from_format('d/m/Y H:i', $data["inicio"] . ' 00:00')->format('U');
+        $data["fim"] = date_create_from_format('d/m/Y H:i', $data["fim"] . ' 00:00')->format('U');
+
+        // inicia transação
+        $failure = array();
+        $this->db->transStart();
+
+        foreach ($entidades as $entidade) {
+
+            $data['entidade_id'] = $entidade->id;
+            $data['ramal_id'] = $entidade->ramal->id;
+
+            if (!$this->db->table('esm_fechamentos_gas')->insert($data)) {
+                // insere novo registro
+                $failure[] = $this->db->error();
+            }
+
+            // retorna fechamento id
+            $data['id'] = $this->db->insertID();
+
+            $query = $this->db->query("
+                SELECT
+                    {$data['id']} AS fechamento_id,
+                    esm_medidores.nome AS device,
+                    esm_medidores.id AS medidor_id,
+                    a.leitura_anterior,
+                    a.leitura_atual,
+                    a.consumo
+                FROM esm_medidores
+                LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+                LEFT JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+                LEFT JOIN (
+                    SELECT 
+                        medidor_id,
+                        MIN(leitura) AS leitura_anterior,
+                        MAX(leitura) AS leitura_atual,
+                        MAX(leitura) - MIN(leitura) AS consumo
+                    FROM esm_leituras_" . $entidade->tabela . "_gas
+                    WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
+                    GROUP BY medidor_id
+                ) a ON a.medidor_id = esm_medidores.id
+                WHERE 
+                    esm_agrupamentos.entidade_id = {$data['entidade_id']}
+            ");
+
+            $unidades = $query->getResult();
+            if (!$unidades) {
+                $failure[] = "Não há unidades cadastradas para o cliente $entidade->nome";
+                return json_encode(array("status" => "error", "message" => $failure));
+            }
+
+            $leitura_anterior = 0;
+            $leitura_atual = 0;
+
+            foreach ($unidades as $c) {
+                $leitura_anterior += $c->leitura_anterior;
+                $leitura_atual += $c->leitura_atual;
+            }
+
+            if (!$this->db->table('esm_fechamentos_gas_entradas')->insertBatch($unidades)) {
+                $failure[] = $this->db->error();
+            }
+
+            if (!$this->db->table('esm_fechamentos_gas')->set(array(
+                'leitura_anterior' => $leitura_anterior,
+                'leitura_atual' => $leitura_atual,
+                'consumo' => $leitura_atual - $leitura_anterior,
+            ))->where(array('id' => $data['id']))->update()) {
+                $failure[] = $this->db->error();
+            }
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === FALSE) {
+            return json_encode(array("status" => "error", "message" => $failure));
+        } else {
+            return json_encode(array("status" => "success", "message" => "Fechamentos calculados com sucesso!", "entidades" => $entidades),);
         }
     }
 

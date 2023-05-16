@@ -1,5 +1,5 @@
 
-<section role="main" class="content-body" data-class="<?= $url ?>" data-monitoria="<?= $monitoria ?>">
+<section role="main" class="content-body" data-url="<?= $url ?>" data-monitoria="<?= $monitoria ?>">
 
     <!-- start: page -->
     <div class="row pt-0">
@@ -71,7 +71,7 @@
             <header class="card-header">
                 <div class="card-actions buttons">
                     <button type="button" class="btn btn-primary btn-sheet-condos"><i class="fas fa-file-download"></i> Baixar Planilha</button>
-                    <button type="button" class="btn btn-success btn-sheet-condos"><i class="fas fa-file-import"></i> Faturar</button>
+                    <button type="button" class="btn btn-success btn-inclui-all-fechamentos"><i class="fas fa-file-import"></i> Faturar Todos</button>
                 </div>
                 <h2 class="card-title">Clientes</h2>
             </header>
@@ -79,7 +79,7 @@
                 <table class="table table-bordered table-striped table-hover table-click dataTable no-footer" id="dt-entidades" data-url="/consigaz/get_entidades">
                     <thead>
                     <tr role="row">
-                        <th rowspan="2" class="text-center">Nome</th>
+                        <th rowspan="2" class="text-center">Cliente</th>
                         <th rowspan="2" class="text-center">Competência do último fechamento</th>
                         <th colspan="5" class="text-center">Válvulas</th>
                         <th colspan="3" class="text-center">Consumo</th>

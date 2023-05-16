@@ -489,8 +489,54 @@ class Gas extends UNO_Controller
         echo json_encode($response);
     }
 
+    public function add_fechamento_geral($data)
+    {
+        $entidades = $this->consigaz_model->get_entidades($this->user->id);
+        if (!$entidades) {
+            return '{ "status": "message", "message" : "Não há clientes cadastrados para esse usuário"}';
+        }
+
+        foreach ($entidades as $entidade) {
+            $entidade->ramal = $this->consigaz_model->get_ramal($entidade->id, 'gas');
+
+            if (!$entidade->ramal) {
+                return '{ "status": "message", "message" : "Não há ramal cadastrado para o cliente ' . $entidade->nome . '"}';
+            }
+
+            if ($this->gas_model->verify_competencia($entidade->id, $entidade->ramal->id, $data["competencia"])) {
+                return '{ "status": "message", "field": "tar-gas-competencia", "message" : "Cliente ' . $entidade->nome . ' já possui lançamento nessa competência"}';
+            }
+
+            if (date_create_from_format('d/m/Y', $data["inicio"])->format('U') == date_create_from_format('d/m/Y', $data["fim"])->format('U')) {
+                return '{ "status": "message", "field": "tar-gas-data-fim", "message" : "Data final igual a inicial"}';
+            }
+
+            if (date_create_from_format('d/m/Y', $data["inicio"])->format('U') > date_create_from_format('d/m/Y', $data["fim"])->format('U')) {
+                return '{ "status": "message", "field": "tar-gas-data-fim", "message" : "Data final menor que a inicial"}';
+            }
+        }
+
+        return $this->gas_model->calculateGeral($data, $entidades);
+    }
+
     public function add_fechamento()
     {
+        if (!$this->input->getPost('tar-gas-entidade')) {
+            echo $this->add_fechamento_geral(array(
+                "competencia" => $this->input->getPost('tar-gas-competencia'),
+                "inicio"      => $this->input->getPost('tar-gas-data-ini'),
+                "fim"         => $this->input->getPost('tar-gas-data-fim'),
+                "mensagem"    => $this->input->getPost('tar-gas-msg')
+            ));
+            return;
+        }
+
+        if (!$this->input->getPost('tar-gas-ramal')) {
+            sleep(2);
+            echo '{ "status": "message", "field": "", "message" : "Ramal não cadastrado, contate seu administrador"}';
+            return;
+        }
+
         $data = array(
             "entidade_id" => $this->input->getPost('tar-gas-entidade'),
             "ramal_id"    => $this->input->getPost('tar-gas-ramal'),

@@ -266,4 +266,28 @@ class Industria_model extends Base_model
 
         return $ret;
     }
+
+    public function get_user_emails($user_id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+            SELECT
+                esm_user_emails.email
+            FROM
+                esm_user_emails
+            WHERE
+                esm_user_emails.user_id = $user_id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return '';
+
+        $emails = '';
+        foreach ($query->getResult() as $e) {
+            $emails .= $e->email . ',';
+        }
+
+        return trim($emails, ',');
+    }
 }

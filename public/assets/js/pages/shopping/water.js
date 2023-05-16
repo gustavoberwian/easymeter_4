@@ -7,6 +7,8 @@
     var chart = {};
     var start_last;
     var end_last;
+    var start_res;
+    var end_res;
     var device = 0;
 
     function apexchart(start = moment().subtract(6, 'days'), end = moment()) {
@@ -94,6 +96,8 @@
                     if (start.format("YYYY-MM-DD") === end.format("YYYY-MM-DD")) {
                         // Populando seletor de data e ícones
                         $('#daterange-main span').html(start.format('ddd, DD/MM/YYYY'));
+                        start_res = start;
+                        end_res = end;
                     } else {
                         // Populando seletor de data e ícones
                         $('#daterange-main span').html(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
@@ -102,6 +106,8 @@
                     if (start.format("YYYY-MM-DD") !== end.format("YYYY-MM-DD")) {
                         start_last = start;
                         end_last = end;
+                        start_res = start;
+                        end_res = end;
                     }
                 },
                 error: function (xhr, status, error) {
@@ -118,6 +124,33 @@
             });
         });
     }
+
+    $('.btn-generate-resume').on('click', function(e){
+        e.preventDefault();
+        var dados = {
+            device  : device,
+            start   : start_res.format("YYYY-MM-DD"),
+            end     : end_res.format("YYYY-MM-DD"),
+        };
+
+        $.ajax({
+            method  : 'POST',
+            url     : "/water/generateResume",
+            data    : {
+                dados,
+                group: $('.content-body').data('group')},
+            dataType: 'json',
+            success : function (json) {
+                var $a = $("<a>");
+                $a.attr("href", json.file);
+                $("body").append($a);
+                $a.attr("download", json.name + ".xlsx");
+                $a[0].click();
+                $a.remove();
+            }
+        })
+    })
+    
 
     function daterange(start = moment().subtract(6, 'days'), end = moment()) {
         // Daterange picker
@@ -172,13 +205,12 @@
 
         apexchart(start_last, end_last);
         daterange(start_last, end_last);
+
         $('#daterange-main span').html(Math.round((end - start) / 86400000) == 1 ? moment(start).format('ddd, DD/MM/YYYY') : moment(start).format('DD/MM/YYYY') + ' - ' + moment(end).format('DD/MM/YYYY'));
         setTimeout(function() {
 //            $('#dt-data').DataTable().ajax.reload();
         }, 100);
     })
-
-    
 
     let dtResume = $("#dt-resume").DataTable({
         dom: '<"table-responsive"t>r<"row"<"col-md-6"><"col-md-6"p>>',
@@ -186,14 +218,12 @@
         paging: true,
         columns: [
             {data: "device", className: "dt-body-center"},
-            {data: "luc", className: "dt-body-center"},
             {data: "name", className: "dt-body-left"},
             {data: "type", className: "dt-body-center"},
             {data: "value_read", className: "dt-body-center"},
             {data: "value_month", className: "dt-body-center"},
-            {data: "value_month_open", className: "dt-body-center"},
-            {data: "value_month_closed", className: "dt-body-center"},
             {data: "value_last", className: "dt-body-center"},
+            {data: "value_last_month", className: "dt-body-center"},
             {data: "value_future", className: "dt-body-center"},
         ],
         serverSide: true,

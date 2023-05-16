@@ -4,13 +4,13 @@
 
     //Fazer download em excel energia
 
-    $(document).on("click", ".action-download", function () {
+    $(document).on("click", ".action-download-unity", function () {
 
         var $btn = $(this);
 		$btn.html('<i class="fas fa-spinner fa-spin"></i>');
 
         // faz a requisição
-		$.post("/energia/download", { id: $(this).data('id') }, function(json) {
+		$.post("/energia/download_unity", { id: $(this).data("uid"), fid: $(this).data('eid')}, function(json) {
 
             if (json.status == "error") {
                     
@@ -72,13 +72,13 @@
 
     //Fazer download lancamentos energia
 
-    $(document).on("click", ".btn-download", function () {
+    $(document).on("click", ".btn-download-unity", function () {
         
         var $btn = $(this);
         $btn.trigger("loading-overlay:show").prop("disabled", true);
 
         // faz a requisição
-        $.post("/energia/DownloadLancamentos", {id: $(this).data("group")}, function (json) {
+        $.post("/energia/download_lancamento_unity", {id: $(this).data("id")}, function (json) {
 
                 if (json.status == "error") {
                     
@@ -1042,16 +1042,12 @@
         processing: true,
         columns: [
             {data: "competencia", class: "dt-body-center"},
-            {data: "inicio", class: "dt-body-center" },
-            {data: "fim", class: "dt-body-center"},
+            {data: "nome", class: "dt-body-center" },
+            {data: "fid", class: "dt-body-center" },
             {data: "consumo", class: "dt-body-center"},
             {data: "consumo_p", class: "dt-body-center"},
             {data: "consumo_f", class: "dt-body-center"},
             {data: "demanda", class: "dt-body-center"},
-            {data: "consumo_u", class: "dt-body-center"},
-            {data: "consumo_u_p", class: "dt-body-center"},
-            {data: "consumo_u_f", class: "dt-body-center"},
-            {data: "demanda_u", class: "dt-body-center"},
             {data: "emissao", class: "dt-body-center"},
             {data: "action", class: "dt-body-center"},
         ],
@@ -1064,9 +1060,6 @@
         ajax: {
             type: 'POST',
             url: $("#dt-faturamentos").data("url"),
-            data: function (d) {
-                d.gid = $("#dt-faturamentos").data("group");
-            },
             error: function () {
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
@@ -1110,6 +1103,17 @@
                 $("#dt-water_wrapper .table-responsive").removeClass("processing");
             },
         },
+    });
+
+    $("#dt-faturamentos tbody").on("click", "tr", function (event) {
+        // se o clique não foi em uma celula ou na última, retorna
+        if (event.target.cellIndex == undefined) return;
+        // redireciona para o fechamento
+        var $type = (document.querySelector('[aria-selected="true"]')).innerHTML;
+        if ($type == "Energia") 
+        {
+            window.location = "/shopping/relatorio/energia/" + $(".btn-download-unity").data("group")  + "/" + $(".action-download-unity").data("fid") + "/" + $(".action-download-unity").data("eid");
+        } 
     });
 
 }).apply(this, [jQuery]);

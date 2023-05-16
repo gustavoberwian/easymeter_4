@@ -18873,3 +18873,7 @@ td .table-one-line, tr .table-one-line{
 #apexchart-demandamaximahome .apexcharts-legend-marker[rel="3"] {
 	height: 3px!important;
 }
+
+body {
+	color: #777;
+}

@@ -16,40 +16,35 @@
             <table class="table table-bordered text-center mb-0">
                 <thead>
                 <tr role="row">
-                    <th>Competência</th>
-                    <th>Data Inicial</th>
-                    <th>Data Final</th>
-                    <th>Dias</th>
-                    <th>Emissão</th>
+                    <th width="30%">Competência</th>
+                    <th width="30%">Data Inicial</th>
+                    <th width="30%">Data Final</th>
+                  
                 </tr>
                 </thead>
                 <tbody>
                 <tr role="row">
-                    <td><?= competencia_nice($fechamento->competencia); ?></td>
-                    <td><?= date('d/m/Y', $fechamento->inicio); ?></td>
-                    <td><?= date('d/m/Y', $fechamento->fim); ?></td>
-                    <td><?= round(($fechamento->fim - $fechamento->inicio) / 86400, 0); ?></td>
-                    <td><?= date('d/m/Y', strtotime($fechamento->cadastro)); ?></td>
+                    <td><?= strftime('%B/%Y', strtotime($fechamento->competencia)); ?></td>
+                    <td><?= date('d/m/Y', strtotime($fechamento->inicio)); ?></td>
+                    <td><?= date('d/m/Y', strtotime($fechamento->fim)); ?></td>
+
                 </tr>
                 </tbody>
             </table>
 
             <table class="table table-bordered text-center">
                 <thead>
-                <tr role="row" style="border-top-width: 0;">
-                    <th colspan="3" class="text-center">Consumo - L</th>
-                </tr>
                 <tr role="row">
-                    <th>Total</th>
-                    <th>Aberto</th>
-                    <th>Fechado</th>
+                    <th width="30%">Dias</th>
+                    <th width="30%">Emissão</th>
+                    <th width="30%">Consumo Atual</th>
                 </tr>
                 </thead>
                 <tbody>
                 <tr role="row">
+                    <td><?= round((strtotime($fechamento->fim) - strtotime($fechamento->inicio)) / 86400, 0); ?></td>
+                    <td><?= date('d/m/Y', strtotime($fechamento->cadastro)); ?></td>
                     <td><?= number_format(round($fechamento->consumo_c + $fechamento->consumo_u, 0), 0, ',', '.'); ?></td>
-                    <td><?= number_format(round($fechamento->consumo_c_o + $fechamento->consumo_u_o, 0), 0, ',', '.'); ?></td>
-                    <td><?= number_format(round($fechamento->consumo_c_c + $fechamento->consumo_u_c, 0), 0, ',', '.'); ?></td>
                 </tr>
                 </tbody>
             </table>
@@ -62,18 +57,15 @@
             <table class="table table-bordered table-striped table-hover table-click" id="dt-unidades" data-url="<?php echo site_url('water/GetLancamentoUnidades'); ?>">
                 <thead>
                 <tr role="row">
-                    <th colspan="2" class="text-center">Medidor</th>
+                    <th colspan="1" class="text-center">Medidor</th>
                     <th colspan="2" class="text-center">Leitura</th>
                     <th colspan="3" class="text-center">Consumo - L</th>
                 </tr>
                 <tr role="row">
                     <th>Nome</th>
-                    <th>LUC</th>
                     <th>Anterior</th>
                     <th>Atual</th>
-                    <th>Total</th>
-                    <th>Aberto</th>
-                    <th>Fechado</th>
+                    <th>Consumo Atual</th>
                 </tr>
                 </thead>
                 <tbody>

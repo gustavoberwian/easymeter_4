@@ -107,23 +107,23 @@
             <div class="padding-swiper pt-0 pb-0 text-center">
                 <h2>Sobre Nós</h2>
                 <p class="text">
-                O Easymeter foi desenvolvido pela empresa UNO Robótica, que possui mais de 10 anos
-                de experiência no mercado e foi fundada por dois especialistas em desenvolvimento
-                de produtos eletrônicos, IoT, tecnologias embarcadas e serviços web.
+                    O Easymeter foi desenvolvido pela empresa UNO Robótica, que possui mais de 10 anos
+                    de experiência no mercado e foi fundada por dois especialistas em desenvolvimento
+                    de produtos eletrônicos, IoT, tecnologias embarcadas e serviços web.
 
                 </p>
                 <p class="text">
-                O principal objetivo do Sistema Easymeter é atender às demandas de condomínios em
-                relação à medição e individualização do consumo, com base na ideia de que "o que não
-                é monitorado, não é controlado". Na prática, condomínios que utilizam nosso sistema
-                apresentam uma redução de cerca de 30% no consumo.
+                    O principal objetivo do Sistema Easymeter é atender às demandas de condomínios em
+                    relação à medição e individualização do consumo, com base na ideia de que "o que não
+                    é monitorado, não é controlado". Na prática, condomínios que utilizam nosso sistema
+                    apresentam uma redução de cerca de 30% no consumo.
 
 
                 </p>
                 <p class="text">
-                Além disso, o sistema também atende às demandas de monitoramento e controle
-                remoto e assistido de processos relacionados a água, energia, gás e resíduos em
-                condomínios, indústrias, comércios e agronegócio.
+                    Além disso, o sistema também atende às demandas de monitoramento e controle
+                    remoto e assistido de processos relacionados a água, energia, gás e resíduos em
+                    condomínios, indústrias, comércios e agronegócio.
 
                 </p>
                 <div class="space"></div>
@@ -151,10 +151,10 @@
                 <div class="padding-swiper text-center">
                     <h2 class="text-light">Painel de visualização simples e completo!</h2>
                     <p class="text text-light">
-                    A Plataforma Easymeter oferece informações em tempo real dos medidores de água,
-                    energia e gás, permitindo a identificação de padrões de consumo, tendências e outras
-                    informações relevantes para a tomada de decisão. Esses dados podem ser acessados
-                    de forma online e em tempo real através de tablets e celulares.</p>
+                        A Plataforma Easymeter oferece informações em tempo real dos medidores de água,
+                        energia e gás, permitindo a identificação de padrões de consumo, tendências e outras
+                        informações relevantes para a tomada de decisão. Esses dados podem ser acessados
+                        de forma online e em tempo real através de tablets e celulares.</p>
                     <p class="text text-light">Dentre as principais aplicações da plataforma, destacam-se:</b>
                     </p>
 
@@ -261,10 +261,10 @@
                 <h2>Diferenciais Easymeter</h2>
                 <p class="text black">
                     Nossa solução é diferente das demais do mercado, pois utilizamos hardware e software de
-                    desenvolvimento próprio para medir o consumo, 
-                <b>garantindo maior qualidade e precisão das
-                    informações. 
-                </b>
+                    desenvolvimento próprio para medir o consumo,
+                    <b>garantindo maior qualidade e precisão das
+                        informações.
+                    </b>
                     Além disso, nosso hardware é capaz de identificar até mesmo o menor consumo em
                     mililitros, o que nos permite detectar instantaneamente qualquer sinal de vazamento e emitir um
                     alerta imediato.
@@ -329,17 +329,17 @@
                     <div class="col-md-6">
                         <h3 class="text-left"><strong class="color-primary-site">Easymeter</strong> • O primeiro medidor de água 100% automatizado do Brasil</h3>
                         <p class="aplica-text text-left">
-                            A análise dos dados dos nossos clientes comprova que 
+                            A análise dos dados dos nossos clientes comprova que
                             <b>
                                 condomínios com medição
                                 individual reduziram o consumo total de água em pelo menos 35%.
                             </b>
-                            Além disso, eles economizam em custos de energia, 
+                            Além disso, eles economizam em custos de energia,
                             já que menos água é bombeada para as caixas
-                            d'água. A redução no consumo também resulta em menos 
-                            desperdício de água, o que significa uma economia 
+                            d'água. A redução no consumo também resulta em menos
+                            desperdício de água, o que significa uma economia
                             significativa. Portanto, a implementação de medição
-                            individualizada é uma opção altamente benéfica para 
+                            individualizada é uma opção altamente benéfica para
                             condomínios que desejam reduzir seu consumo de água e economizar em custos operacionais.
 
                         </p>
@@ -356,7 +356,7 @@
                             <p class="text"> Experientes e dedicados parceiros encanadores e engenheiros civis</p>
                         </div>
                         <div class="stat img-container3">
-                            <img src="<?= base_url('assets/img/site/easymeter_diferenciais_icone13_a.svg') ?>" class="img-hov3" data-src="<?= base_url('assets/img/site/easymeter_diferenciais_icone13_a.svg') ?>" data-hover="<?= base_url('/assets/img/site/easymeter_diferenciais_icone13_b.svg'); ?>"  width="80px" alt="suporte_proativo">
+                            <img src="<?= base_url('assets/img/site/easymeter_diferenciais_icone13_a.svg') ?>" class="img-hov3" data-src="<?= base_url('assets/img/site/easymeter_diferenciais_icone13_a.svg') ?>" data-hover="<?= base_url('/assets/img/site/easymeter_diferenciais_icone13_b.svg'); ?>" width="80px" alt="suporte_proativo">
                             <p class="subtitle">Suporte proativo</p>
                             <p class="text">Rotina de manutenção preventiva</p>
                         </div>
@@ -365,6 +365,8 @@
                             <p class="subtitle">Solução de ponta a ponta</p>
                             <p class="text">Dados entregues em tempo real e sem falhas</p>
                         </div>
+
+
                     </div>
                 </div>
             </div>
@@ -426,9 +428,9 @@
                         <div class="bloco d-flex">
                             <?php include_once 'assets/svgs/icon_conta.php'; ?>
                             <div class="text-structure">
-                                <h4 class="small-title">Minha conta de água é cara? mesmo?</h4> 
-		                        <p class="text-structure"><b><br>Sim, e sua conta de água é tão cara quanto a de luz e gás.<br></b>
-                                    A maioria dos moradores dividem a conta geral do condomínio, com base na fração ideal do imóvel. 
+                                <h4 class="small-title">Minha conta de água é cara? mesmo?</h4>
+                                <p class="text-structure"><b><br>Sim, e sua conta de água é tão cara quanto a de luz e gás.<br></b>
+                                    A maioria dos moradores dividem a conta geral do condomínio, com base na fração ideal do imóvel.
                                     Você pode se surpreender ao saber que 40% a 50% do valor da conta é desperdício, custo das bombas e a inadimplência.
                                 </p>
                             </div>
@@ -437,7 +439,7 @@
                             <?php include_once 'assets/svgs/icon_stop.php'; ?>
                             <div class="text-structure">
                                 <h4 class="small-title">Não é viável no meu prédio</h4>
-                                <p class="text-structure"> <b><br>A maioria dos apartamentos atuais possuem várias prumadas.<br></b> 
+                                <p class="text-structure"> <b><br>A maioria dos apartamentos atuais possuem várias prumadas.<br></b>
                                     Até poucos anos, os apartamentos não eram projetados para mediçao individual devido às práticas
                                     predominantes e custos envolvidos. A implementação de medidores individuais realmente é difícil com as soluções existentes no mercado.
                                 </p>
@@ -481,7 +483,7 @@
                         <div class="content photo-background ">
                             <span class="detail"></span>
                             <p class="text-card">O monitoramento do uso de água na indústria é crucial para garantir um uso eficiente
-                                dos recursos hídricos e minimizar impactos ambientais. 
+                                dos recursos hídricos e minimizar impactos ambientais.
                             </p>
                         </div>
                     </div>
@@ -492,8 +494,8 @@
                         <div class="content photo-background ">
                             <span class="detail"></span>
                             <p class="text-card">O monitoramento do uso de água em poços, Estações de Tratamento de Água (ETAs) e
-Estações de Tratamento de Efluentes (ETEs) é fundamental para garantir a qualidade
-da água e o uso sustentável dos recursos hídricos. </p>
+                                Estações de Tratamento de Efluentes (ETEs) é fundamental para garantir a qualidade
+                                da água e o uso sustentável dos recursos hídricos. </p>
                         </div>
                     </div>
                     <div class="col-4 box-card ">
@@ -501,7 +503,7 @@ da água e o uso sustentável dos recursos hídricos. </p>
                         <div class="content photo-background ">
                             <span class="detail"></span>
                             <p class="text-card">O monitoramento do uso de água em poços no agronegócio é uma prática importante para garantir
-a eficiência na irrigação e a preservação dos recursos hídricos. </p>
+                                a eficiência na irrigação e a preservação dos recursos hídricos. </p>
                         </div>
                     </div>
                 </div>
@@ -539,44 +541,9 @@ a eficiência na irrigação e a preservação dos recursos hídricos. </p>
         </div>
     </section>
 
-    <section id="contato" class="pb64 pb-xs-40">
-		        <div class="container">
-		            <div class="row contats">
-		                <div class="col-sm-4 contats-item">
-		                    <div class="feature feature-2 text-center">
-		                        <div class="text-center">
-                                <a href="tel:+5508005916181" class="number_footer"><i class="pe-7s-headphones icon-sm"></i></a>
-		                            <h3>Por telefone</h3>
-		                        </div>
-                                <a href="tel:+5508005916181" class="number_footer"><h4 class="color-orange"><b> 0800 591 6181</b></h4></a>
-                                <h4>De segunda à sexta<br/> das 9:00 às 17:00</h4>
-		                    </div>
-		                </div>
-		                <div class="col-sm-4 contats-item">
-		                    <div class="feature feature-2 text-center">
-		                        <div class="text-center">
-		                            <a href="mailto:contato@easymeter.com.br"><i class="pe-7s-mail icon-sm"></i></a>
-		                            <h3>Por E-mail</h3>
-		                        </div>
-		                        <a href="mailto:contato@easymeter.com.br"><h4 class="color-orange open-chat"><b>suporte@easymeter.com.br<br></b></h4></a>
-                                <h4>Um membro da equipe de suporte responderá o mais rápido possível.</h4>
-		                    </div>
-		                </div>
-		                <div class="col-sm-4 contats-item">
-		                    <div class="feature feature-2 text-center pop-up-chat">
-		                        <div class="text-center">
-                                <a href="javascript:void(Tawk_API.toggle())"><i class="pe-7s-comment icon-sm" ></i></a>
-		                            <h3>Pelo Chat</h3>
-		                        </div>
-								<a href="javascript:void(Tawk_API.toggle())"><h4 class="color-orange open-chat"><b>Iniciar</b></h3></a>
-		                        <h4>Converse agora mesmo com um de nossos atendentes.</h4>
-		                    </div>
-		                </div>
-		            </div>
-		        </div>
-		    </section>
 
-   
+
+
 
 </main>
 

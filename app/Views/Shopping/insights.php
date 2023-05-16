@@ -15,7 +15,7 @@
         <div class="col-9">
             <ul class="nav nav-pills nav-pills-primary mb-3">
                 <?php if (!is_null($group->m_energia)) : ?>
-                    <li class="nav-item configs" role="presentation">
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#energy" type="button">Energia</button>
                     </li>
                 <?php endif; ?>
@@ -43,7 +43,7 @@
 
     <div id="insights" class="tab-pane">
         <div class="tab-content configs">
-            <?php if ($user->entity->m_energia) : ?>
+            <?php if ($user->inGroup('energia')) : ?>
                 <div id="energy" class="tab-pane <?= $monitoria === 'energy' ? 'show active' : '' ?>">
                     <div class="row">
                         <div class="col-lg-6 mb-4">
@@ -200,7 +200,7 @@
                 </div>
             <?php endif; ?>
 
-            <?php if ($user->entity->m_agua) : ?>
+            <?php if ($user->inGroup('agua')) : ?>
                 <div id="water" class="tab-pane <?= $monitoria === 'water' ? 'active' : '' ?>">
                     <div class="row">
                         <div class="col-lg-6 mb-4">

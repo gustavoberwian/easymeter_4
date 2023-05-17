@@ -39,7 +39,7 @@
                                     <h2 class="card-title">Listagem</h2>
                                 </header>
                                 <div class="card-body">
-                                    <table class="table table-bordered table-striped table-hover" id="dt-centrais" data-url="<?php echo site_url('ajax/get_centrais'); ?>">
+                                    <table class="table table-bordered table-striped table-hover" id="dt-centrais" data-url="<?php echo site_url('admin/get_centrais'); ?>">
                                         <thead>
                                             <tr role="row">
                                                 <th width="5%">Status</th>

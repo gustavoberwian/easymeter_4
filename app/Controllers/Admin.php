@@ -1190,4 +1190,94 @@ class Admin extends UNO_Controller
         // retorna json
         echo json_encode($return);
     }
+    public function get_centrais()
+    {
+        $db = Database::connect('easy_com_br');
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+        SELECT 
+            esm_condominios_centrais.nome as DT_RowId, 
+            esm_condominios_centrais.nome, 
+            esm_condominios_centrais.modo, 
+            esm_condominios.nome AS condo, 
+            esm_condominios_centrais.simcard, 
+            esm_condominios.tabela, 
+            esm_condominios_centrais.auto_ok, 
+            esm_central_data.hardware,
+            esm_central_data.software,
+            esm_central_data.fonte,
+            esm_central_data.tensao,
+            esm_central_data.fraude_hi,
+            esm_central_data.fraude_low
+        FROM esm_condominios_centrais 
+        JOIN esm_condominios ON esm_condominios.id = esm_condominios_centrais.condo_id
+        LEFT JOIN esm_central_data ON esm_central_data.nome = esm_condominios_centrais.nome AND esm_central_data.timestamp = esm_condominios_centrais.ultimo_envio
+        ORDER BY esm_condominios_centrais.nome
+    ");
+
+        $dt->edit('modo', function ($data) {
+
+            if ($data['modo'] == 'Master')
+                return '<span class="badge badge-success">Master</span>';
+            if ($data['modo'] == 'Slave')
+                return '<span class="badge badge-warning">Slave</span>';
+            if ($data['modo'] == 'Unica')
+                return '<span class="badge badge-agua">Única</span>';
+
+            return '';
+        });
+
+        $dt->add('alimentacao', function ($data) {
+            if (is_null($data['fonte'])) {
+                return '-';
+            }
+            return '<i class="mr-2 fas ' . ($data['fonte'] == "R" ? 'fa-bolt text-success' : 'fa-car-battery text-danger') . '"></i>' . number_format($data['tensao'] / 10, 1, ",", "");
+        });
+
+        $dt->add('fraude', function ($data) {
+            if (is_null($data['fraude_hi'])) {
+                return '-';
+            }
+            return '<i class="fas fa-user-secret ' . ($data['fraude_hi'] == "000.000.000.000" && $data['fraude_low'] == "000.000.000.000" ? 'text-muted' : 'text-danger') . '"></i>';
+        });
+
+        $dt->add('ultima', function ($data) {
+            return $this->admin_model->get_ultima_leitura($data['nome'], $data['tabela']);
+        });
+
+        $dt->add('versao', function ($data) {
+            if (is_null($data['hardware'])) {
+                return '-/-';
+            }
+            return number_format($data['hardware'] / 100, 2) . '/' . number_format($data['software'] / 100, 2);
+        });
+
+        // inclui status
+        $dt->add('status', function ($data) {
+            if ($data['auto_ok'] > time()) {
+                return '<i class="fas fa-tint-slash text-danger" title="Auto OK ativo"></i>';
+            }
+
+            $leitura = $this->admin_model->get_last_leitura($data['nome'], $data['tabela']);
+
+            if ($leitura == 0)
+                $status = 'text-muted';
+            elseif ($leitura > time() - 3600)
+                $status = 'text-success';
+            elseif ($leitura > time() - 3600 * 2)
+                $status = 'text-warning';
+            else
+                $status = 'text-danger';
+
+            return '<i class="fas fa-circle ' . $status . '"></i>';
+        });
+
+        // inclui actions
+        $dt->add('actions', function ($data) {
+            return '<a class="dropdown-item action-view" href="' . site_url('/admin/centrais/' . $data['DT_RowId']) . '"><i class="fas fa-eye mr-2" title="Visualizar"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
 }

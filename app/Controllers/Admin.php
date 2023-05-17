@@ -7,6 +7,8 @@ use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\Codeigniter4Adapter;
 use Viacep;
 use CodeIgniter\Shield\Entities\User;
+use Config\Database;
+
 
 
 
@@ -1160,5 +1162,67 @@ class Admin extends UNO_Controller
        
         //Chamada da função de inserção
         echo $this->admin_model->edit_user($dados);
+    }   
+    
+    public function contatos()
+	{
+        $data['total'] = $this->admin_model->count_contato(0);
+		return $this->render('contatos', $data);
+	}
+    public function get_contatos()
+    {
+        
+        //Conecta ao banco principal
+        $db = Database::connect('easy_com_br');
+        
+        // realiza a query via dt
+        $builder = $db->table('esm_contatos');
+        $builder->select("id, nome, email, telefone, condominio, unidades, cidade, estado, status, DATE_FORMAT(cadastro,'%d/%m/%Y') AS data");
+        $builder->orderBy("cadastro DESC");
+
+        $dt = new Datatables(new Codeigniter4Adapter);
+     
+        // using CI4 Builder
+        $dt->query($builder);
+
+      
+
+        $dt->edit('cidade', function ($data) {
+            return $data['cidade'] . '/' . $data['estado'];
+        });
+
+        $dt->edit('condominio', function ($data) {
+            return $data['condominio'] . ' (' . $data['unidades'] . ')';
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            if ($data['status'] == 1)
+                return '<a href="#" class="action-readed" data-id="' . $data['id'] . '"><i class="far fa-eye-slash" title="Marcar como não respondido"></i></a>';
+            else
+                return '<a href="#" class="action-readed" data-id="' . $data['id'] . '"><i class="fas fa-eye" title="Marcar como respondido"></i></a>';
+        });
+
+        $dt->edit('status', function ($data) {
+            if ($data['status'] == 1)
+                return "<span class=\"badge badge-success\">Respondido</span>";
+            else
+                return "<span class=\"badge badge-danger\">Responder</span>";
+        });
+
+        // gera resultados
+        echo $dt->generate();
     }
-}   
+
+    public function set_contact_state()
+    {
+        // pega id do post
+        $id = $this->input->getPost('id');
+        
+        // altera status do log
+        $return = $this->admin_model->change_contact_state($id);
+
+        // retorna json
+        echo json_encode($return);
+    }
+}

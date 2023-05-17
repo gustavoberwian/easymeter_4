@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+use Config\Database;
 
 class Admin_model extends Base_model
 {
@@ -935,6 +936,76 @@ class Admin_model extends Base_model
         }
 
         return $values;
+    }
+
+    public function get_chamados($status = false, $limit = 0)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->table('esm_tickets');
+        // aplica filtro pelo status
+        if ($status)
+            $query->where('status', $status);
+
+        // aplica limite
+        if ($limit > 0)
+            $query->limit($limit);
+
+        // ordena por data
+        $query->orderBy('cadastro', 'DESC');
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // verifica se retornou algo
+        if ($result->getNumRows() == 0)
+            return false;
+
+        return $result->getResult();
+    }
+
+    public function count_chamados($status = false)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->table('esm_tickets');
+        // aplica filtro pelo status
+        if ($status)
+            $query->where('status', $status);
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // verifica se retornou algo
+        return $result->getNumRows();
+    }
+    public function change_contact_state($id)
+    {   
+        
+        $db = Database::connect('easy_com_br');
+       
+        $res = $db->table('esm_contatos')->where('esm_contatos.id', $id)->select('esm_contatos.status')->get()->getRow()->status;
+        $result = (intval($res) == 1 ? 0 : 1);
+     
+        if (!$db->table('esm_contatos')->set(array('status' => $result))->where('id', $id)->update())
+            return array("status"  => "error", "message" => $db->error());
+        else
+            return array("status"  => "success", "message" => "Entrada marcada com sucesso");
+    }
+    
+
+    public function count_contato($status = -1)
+    {
+        
+        $db = Database::connect('easy_com_br');
+        $query = $db->table('esm_contatos');
+        // aplica filtro pelo status
+        if ($status != -1)
+            $query->where('status', $status);
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // verifica se retornou algo
+        return $result->getNumRows();
     }
 
 }

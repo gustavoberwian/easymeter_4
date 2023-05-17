@@ -345,20 +345,6 @@ class Admin_model extends Base_model
 
         return $query->getResult();
     }
-
-    public function count_chamados($status = false)
-    {
-        // aplica filtro pelo status
-        if ($status)
-            $this->db->where('status', $status);
-
-        // realiza a consulta
-        $query = $this->db->get('esm_tickets');
-
-        // verifica se retornou algo
-        return $query->getNumRows();
-    }
-
     public function chamado_close($id, $user)
     {
         return $this->db->update('esm_tickets', array(

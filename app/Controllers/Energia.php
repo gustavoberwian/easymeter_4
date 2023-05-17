@@ -3269,7 +3269,7 @@ class Energia extends UNO_Controller
         $spreadsheet = new Spreadsheet();
 
 		$titulos = [
-			['Mês', 'Últimos 30 dias', 'Ponta', 'Fora Ponta', 'Últimas 24h', "Previsão Mês" ]
+			['Mês', 'Mês Anterior', 'Ponta', 'Fora Ponta', 'Últimas 24h', "Previsão Mês" ]
 		];
 
         $spreadsheet->getProperties()

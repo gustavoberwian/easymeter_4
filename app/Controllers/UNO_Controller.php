@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Admin_model;
 use App\Models\Shopping_model;
 
+
 class UNO_Controller extends BaseController {
 
     protected $user = false;
@@ -13,12 +14,19 @@ class UNO_Controller extends BaseController {
      * @var Shopping_model
      */
     private Shopping_model $shopping_model;
-
+    
+    /**
+     * @var Admin_model
+     */
     private Admin_model $admin_model;
+
 
     public function __construct()
     {
         $this->shopping_model = new Shopping_model();
+        $this->admin_model = new Admin_model();
+
+        
 
         $this->admin_model = new Admin_model();
         
@@ -60,9 +68,9 @@ class UNO_Controller extends BaseController {
         $data['method'] = service('router')->methodName();
         $data['user']   = $this->user;
 
-        // $data['chamados']        = $this->admin_model->get_chamados("aberto", 5);
-        // $data['chamados_count']  = $this->admin_model->count_chamados();
-        // $data['chamados_unread'] = $this->admin_model->count_chamados("aberto");
+        $data['chamados']        = $this->admin_model->get_chamados("aberto", 5);
+        $data['chamados_count']  = $this->admin_model->count_chamados();
+        $data['chamados_unread'] = $this->admin_model->count_chamados("aberto");
 
         $data['logs']   = $builder->get()->getNumRows();
 

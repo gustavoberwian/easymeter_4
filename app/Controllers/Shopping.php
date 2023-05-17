@@ -48,6 +48,7 @@ class Shopping extends UNO_Controller
 
         // set variables
         $this->url = service('uri')->getSegment(1);
+        
 
         if ($this->user->inGroup('superadmin')) {
             $this->user->entity = (object)[];

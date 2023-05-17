@@ -6,6 +6,11 @@ use App\Models\Admin_model;
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\Codeigniter4Adapter;
 use Viacep;
+use CodeIgniter\Shield\Entities\User;
+use Config\Database;
+
+
+
 
 class Admin extends UNO_Controller
 {
@@ -169,10 +174,57 @@ class Admin extends UNO_Controller
     //     }
     // }
 
-    public function users()
-    {
-        return $this->render("users");
+    public function users($param1 = null, $param2 = null)
+    {   
+
+        if ( intval($param1) > 0 ) {
+            $users = auth()->getProvider();
+            $user = $users->findById($param1);
+            $groups = $this->admin_model->get_user_info($param1);
+
+            $data['usuario']           = $user;
+            $data['id']             = $param1;
+            $data['email']          = $groups['email'];
+            $data['classificacao']  = $groups['classificacao'];
+            $data['groups']         = $this->admin_model->get_groups_for_user($param1);
+
+
+           
+            if ($data['classificacao'] == 'entidades')
+            {
+                $data['val'] = $this->admin_model->get_name_by_id($data['classificacao'], $this->admin_model->get_user_relations($param1, 'entidade'));
+
+            } elseif ($data['classificacao'] == 'agrupamentos')
+            {   
+                $data['val'] = $this->admin_model->get_name_by_id($data['classificacao'], $this->admin_model->get_user_relations($param1, 'agrupamento'));
+
+            } elseif ($data['classificacao'] == 'unidade')
+            {
+                $data['val'] = $this->admin_model->get_code_by_unity_id($this->admin_model->get_user_relations($param1, $data['classificacao']));
+
+            } else {
+                $data['val'] = '';
+            }
+
+
+            if ($param2 == 'editar')
+            {
+                $data['readonly'] = '';
+                return $this->render('edit_user', $data);
+
+            }  else {
+
+                $data['readonly'] = 'readonly disabled'; 
+                return $this->render('edit_user', $data);
+            }
+                
+            } elseif ($param1 === 'incluir')
+            {
+                return $this->render("add_user");
+            }
+            return $this->render('users');
     }
+        
 
     public function profile()
     {
@@ -673,7 +725,7 @@ class Admin extends UNO_Controller
         // centrais do condominio
         $data['centrais'] = $this->admin_model->get_centrais($cid);
         // fraçoes já cadastradas no condominio
-        $data['fracoes'] = $this->admin_model->get_fracoes_condominio($cid);
+        $data['fracoes'] = $this->admin_model->get_fracoes_entidade($cid);
         // modo
         $data['modo'] = $modo;
         // edição ou inclusão?
@@ -830,5 +882,312 @@ class Admin extends UNO_Controller
         $id = $this->input->getPost('id');
 
         echo $this->admin_model->delete_unidade($id);
+    }
+
+    public function delete_user()
+    {
+        $id = $this->input->getPost('uid');
+
+        $users = auth()->getProvider();
+
+        $users->delete($id, true);
+        return json_encode(array(
+            'status' => 'success',
+            'message' => 'Seus dados foram atualizados com sucesso.'
+        ));
+    }
+
+    public function get_users()
+    {
+        
+        if ($this->input->getGet("mode") == 0) $m = "";
+        if ($this->input->getGet('mode') == 1) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'agua'"; 
+        if ($this->input->getGet('mode') == 2) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'gas'"; 
+        if ($this->input->getGet('mode') == 3) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'energia'"; 
+        if ($this->input->getGet('mode') == 4) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'nivel'"; 
+
+
+     
+
+        $dt = $this->datatables->query("
+            SELECT 
+                auth_users.id AS id,
+                auth_users.avatar AS avatar,
+                auth_users.username AS nome,
+                auth_identities.secret AS email,
+                auth_users.page AS page,
+                auth_users.active AS status
+            FROM auth_users
+            JOIN auth_identities ON auth_identities.user_id = auth_users.id AND auth_identities.type = 'email_password'
+           " . $m
+        );
+
+        $dt->edit("avatar", function ($data) {
+            if ($data['avatar']) {
+                return '<img alt src="' . base_url('assets/img/uploads/avatars/') . $data['avatar'] . ' " style="width: 32px" class="rounded-circle" />';
+            }
+
+            return '<img alt src="' . base_url('assets/img/user.png') . ' " style="width: 32px" class="rounded-circle" />';
+        });
+
+        $dt->edit("status", function ($data) {
+            $checked = "";
+            if ($data['status']) {
+                $checked = "checked";
+            }
+
+            return '
+                <div class="switch switch-sm switch-primary">
+                    <input type="checkbox" class="switch-input" data-id="' . $data['id'] . '" name="switch" data-plugin-ios-switch ' . $checked . ' />
+                </div>
+            ';
+        });
+
+        $dt->add("monitora", function ($data) {
+            $user = auth()->getProvider()->findById($data['id']);
+
+            $res = "";
+
+            if ($user->inGroup('agua')) {
+                $res .= '<i class="fas fa-tint text-primary me-1"></i>';
+            }
+            if ($user->inGroup('energia')) {
+                $res .= '<i class="fas fa-bolt text-warning me-1"></i>';
+            }
+            if ($user->inGroup('gas')) {
+                $res .= '<i class="fas fa-fire text-success me-1"></i>';
+            }
+            if ($user->inGroup('nivel')) {
+                $res .= '<i class="fas fa-database text-info me-1"></i>';
+            }
+
+            return $res;
+        });
+
+        $dt->add("groups", function ($data) {
+            $groups = $this->admin_model->get_groups_by_user($data['id']);
+            $res = "";
+
+            foreach ($groups as $g) {
+                $res .= '<span class="badge badge-info me-1 monitor">' . $g->group . '</span>';
+            }
+
+            return $res;
+        });
+
+        $dt->add('actions', function ($data) {
+            return '
+                <a href="' . site_url('admin/users/') . $data['id'] . '/editar" class="action-edit" data-id="' . $data['id'] . '"><i class="fas fa-pencil-alt text-primary" title="Editar"></i></a>
+				<a href="#" class="action-delete-user" data-id="' . $data['id'] . '" data-toggle="confirmation" data-title="Certeza?"><i class="fas fa-trash text-danger" title="Excluir"></i></a>
+            ';
+        });
+
+        echo $dt->generate();
+    }
+
+    public function add_user()
+    {
+        $users = auth()->getProvider();
+        
+        // Cria novo usuário
+        $user = new User([
+            'username' => $this->input->getPost('nome-user') ?? '',
+            'email'    => $this->input->getPost('email-user') ?? '',
+            'password' => $this->input->getPost('senha-user') ?? '',
+            'active'   => $this->input->getPost('switch') === 'on' ? 1 : 0
+        ]);
+
+        $users->save($user);
+
+        // Recebe dados para a inserção
+        $dados['group'] = [];
+
+        if ($this->input->getPost('user-agua') === 'on')
+        {
+            $dados['group']['agua'] = 'agua';
+        } 
+
+        if ($this->input->getPost('user-gas') === 'on')
+        {
+            $dados['group']['gas'] = 'gas';
+        } 
+
+        if ($this->input->getPost('user-energia') === 'on')
+        {
+            $dados['group']['energia'] = 'energia';
+        }
+
+        if ($this->input->getPost('user-nivel') === 'on')
+        {
+            $dados['group']['nivel'] = 'nivel';
+        } 
+        
+        $dados['user-id']               = $users->getInsertID();
+        $dados['classificacao']         = $this->input->getPost('classificacao-user');   
+        $dados['page']                  = $this->input->getPost('page-user') ?? '';
+        $dados['entity-user']           = $this->input->getPost('entity-user') ?? '';
+        $dados['unity-user']            = $this->input->getPost('unity-user') ?? '';
+        $dados['group-user']            = $this->input->getPost('group-user') ?? '';
+        $dados['groups-user']           = array_map('trim',explode(",", $this->input->getPost('groups-user') ?? ''));
+
+        //Chamada da função de inserção
+        echo $this->admin_model->add_user($dados);
+    }
+
+    public function get_entity_for_select()
+    {
+        //realiza consulta
+        $p = $this->admin_model->get_entities();
+    
+        $result = '';
+        foreach($p as $option) {
+            $result .= "<option>$option</option>";
+            }
+            print_r($result);
+        echo $result;
+                    
+    }
+
+    public function get_groups_for_select()
+    {
+        //realiza consulta
+        $p = $this->admin_model->get_groups_for_select();
+    
+        $result = '';
+        foreach($p as $option) {
+            $result .= "<option>$option</option>";
+            }
+            print_r($result);
+        echo $result;
+                    
+    }
+
+    public function edit_active_stats()
+    {
+        if(!$this->admin_model->update_active($this->input->getPost('id')))
+        {
+            return false;
+        }
+           
+    }
+
+    public function edit_user()
+    {
+        $users = auth()->getProvider();
+        $dados['user_id']  = $this->input->getPost('id-user');
+
+        $user = $users->findById($dados['user_id']);
+
+        //Edita usuário
+        $user->fill([
+            'username' => $this->input->getPost('nome-user') ?? '',
+            'email'    => $this->input->getPost('email-user') ?? '',
+            'password' => $this->input->getPost('senha-user') ?? '',
+            'active'   => $this->input->getPost('switch') === 'on' ? 1 : 0
+        ]);
+
+        $users->save($user);
+
+        
+        // Recebe dados para a edição
+
+        if ($this->input->getPost('user-agua') === 'on')
+        {
+            $dados['group']['agua'] = 'agua';
+        } else {
+           $dados['group']['agua'] = ''; 
+        }
+
+        if ($this->input->getPost('user-gas') === 'on')
+        {
+            $dados['group']['gas'] = 'gas';
+        } else {
+            $dados['group']['gas'] = ''; 
+         }
+ 
+
+        if ($this->input->getPost('user-energia') === 'on')
+        {
+            $dados['group']['energia'] = 'energia';
+        } else {
+            $dados['group']['energia'] = ''; 
+         }
+ 
+
+        if ($this->input->getPost('user-nivel') === 'on')
+        {
+            $dados['group']['nivel'] = 'nivel';
+        } else {
+            $dados['group']['nivel'] = ''; 
+         }
+ 
+        
+        $dados['page'] = $this->input->getPost('page-user') ?? '';
+        $dados['groups-user'] =  array_map('trim',explode(",", $this->input->getPost('groups-user') ?? ''));
+       
+        //Chamada da função de inserção
+        echo $this->admin_model->edit_user($dados);
+    }   
+    
+    public function contatos()
+	{
+        $data['total'] = $this->admin_model->count_contato(0);
+		return $this->render('contatos', $data);
+	}
+    public function get_contatos()
+    {
+        
+        //Conecta ao banco principal
+        $db = Database::connect('easy_com_br');
+        
+        // realiza a query via dt
+        $builder = $db->table('esm_contatos');
+        $builder->select("id, nome, email, telefone, condominio, unidades, cidade, estado, status, DATE_FORMAT(cadastro,'%d/%m/%Y') AS data");
+        $builder->orderBy("cadastro DESC");
+
+        $dt = new Datatables(new Codeigniter4Adapter);
+     
+        // using CI4 Builder
+        $dt->query($builder);
+
+      
+
+        $dt->edit('cidade', function ($data) {
+            return $data['cidade'] . '/' . $data['estado'];
+        });
+
+        $dt->edit('condominio', function ($data) {
+            return $data['condominio'] . ' (' . $data['unidades'] . ')';
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            if ($data['status'] == 1)
+                return '<a href="#" class="action-readed" data-id="' . $data['id'] . '"><i class="far fa-eye-slash" title="Marcar como não respondido"></i></a>';
+            else
+                return '<a href="#" class="action-readed" data-id="' . $data['id'] . '"><i class="fas fa-eye" title="Marcar como respondido"></i></a>';
+        });
+
+        $dt->edit('status', function ($data) {
+            if ($data['status'] == 1)
+                return "<span class=\"badge badge-success\">Respondido</span>";
+            else
+                return "<span class=\"badge badge-danger\">Responder</span>";
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function set_contact_state()
+    {
+        // pega id do post
+        $id = $this->input->getPost('id');
+        
+        // altera status do log
+        $return = $this->admin_model->change_contact_state($id);
+
+        // retorna json
+        echo json_encode($return);
     }
 }

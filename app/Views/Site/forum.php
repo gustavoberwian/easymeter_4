@@ -59,7 +59,7 @@
                     <div class="col-lg-4 col-sm-6 mb-4">
                         <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
                             <i class="ti-package icon text-primary d-block mb-4"></i>
-                            <h3 class="mb-3 mt-0">Faturas</h3>
+                            <h3 class="mb-3 mt-0">Uno robótica e Easymeter</h3>
                             <p class="mb-00">Como posso conseguir minha fatura?</p>
                             <br>
                             <button class="botaoabrirmodal">Saber mais</button>

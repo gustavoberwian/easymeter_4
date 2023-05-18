@@ -637,7 +637,7 @@ class Admin_model extends Base_model
                 if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user-id'], 'entidade_id' => $this->get_table_by_name($dados['classificacao'], $dados['entity-user'])->id))->insert()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
-    
+
                 if (!$this->db->table('auth_groups_users')->set(array('group' => 'admin', 'user_id' => $dados['user-id']))->insert()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
@@ -645,7 +645,7 @@ class Admin_model extends Base_model
                 if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user-id'], 'agrupamento_id' => $this->get_table_by_name($dados['classificacao'], $dados['group-user'])->id))->insert()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
-    
+
                 if (!$this->db->table('auth_groups_users')->set(array('group' => 'group', 'user_id' => $dados['user-id']))->insert()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
@@ -832,11 +832,9 @@ class Admin_model extends Base_model
                 auth_groups_users.group != 'admin' " . $filter
         );
 
-        if ($query->getNumRows() == 0) 
-        {
+        if ($query->getNumRows() == 0) {
             return json_encode(array("status" => "success", "message" => "Usuário editado com sucesso."));
-        } else 
-        {
+        } else {
             foreach ($query->getResultArray() as $q) {
                 if (!$this->db->table('auth_groups_users')->where('user_id', $dados['user_id'])->where('group', $q)->delete()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
@@ -920,6 +918,8 @@ class Admin_model extends Base_model
         AND 
             auth_groups_users.group != 'condominio'
         AND 
+            auth_groups_users.group != 'industria'
+        AND 
             auth_groups_users.group != 'unity'
         AND 
             auth_groups_users.group != 'admin'
@@ -933,8 +933,63 @@ class Admin_model extends Base_model
         foreach ($query->getResult() as $q) {
             $values[] = $q->group;
         }
-
         return $values;
     }
+    public function get_class_by_entity($id)
+    {
+        $query = $this->db->query("
+        SELECT
+            esm_entidades.classificacao
+        FROM
+            esm_entidades
+        WHERE
+            esm_entidades.id = $id
+        ");
+        return $query->getRow()->classificacao;
+    }
+    public function get_entity_by_id($type, $id)
+    {
+        // seleciona todos os campos
+        if ($type == 'agrupamentos') {
+            $query = $this->db->query("
+        SELECT
+            esm_entidades.id
+        FROM
+            esm_entidades
+        LEFT JOIN
+            esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id
+        WHERE
+            esm_agrupamentos.id = $id
+        ");
 
+            // verifica se retornou algo
+            if ($query->getNumRows() == 0)
+                return false;
+
+            return $query->getRow()->id;
+
+        } else {
+            $query = $this->db->query("
+                SELECT
+                    esm_entidades.id
+                FROM
+                    esm_entidades
+                    LEFT JOIN
+                    esm_agrupamentos
+                    ON 
+                        esm_agrupamentos.entidade_id = esm_entidades.id
+                    INNER JOIN
+                    esm_unidades
+                    ON 
+                        esm_agrupamentos.id = esm_unidades.agrupamento_id
+                WHERE
+                    esm_unidades.id = $id
+                ");
+
+            if ($query->getNumRows() == 0)
+                return false;
+
+            return $query->getRow()->id;
+        }
+    }
 }

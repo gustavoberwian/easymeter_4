@@ -933,8 +933,62 @@ class Admin_model extends Base_model
         foreach ($query->getResult() as $q) {
             $values[] = $q->group;
         }
-
         return $values;
     }
+    public function get_class_by_entity($id) {
+        $query = $this->db->query("
+        SELECT
+            esm_entidades.classificacao
+        FROM
+            esm_entidades
+        WHERE
+            esm_entidades.id = $id
+        ");
+        return $query->getRow()->classificacao;
+    }
+    public function get_entity_by_id($type, $id)
+    {
+        // seleciona todos os campos
+        if ($type == 'agrupamentos') {
+            $query = $this->db->query("
+        SELECT
+            esm_entidades.id
+        FROM
+            esm_entidades
+        LEFT JOIN
+            esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id
+        WHERE
+            esm_agrupamentos.id = $id
+        ");
 
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow()->id;
+
+        } else {
+            $query = $this->db->query("
+                SELECT
+                    esm_entidades.id
+                FROM
+                    esm_entidades
+                    LEFT JOIN
+                    esm_agrupamentos
+                    ON 
+                        esm_agrupamentos.entidade_id = esm_entidades.id
+                    INNER JOIN
+                    esm_unidades
+                    ON 
+                        esm_agrupamentos.id = esm_unidades.agrupamento_id
+                WHERE
+                    esm_unidades.id = $id
+                ");
+
+            if ($query->getNumRows() == 0)
+                return false;
+
+            return $query->getRow()->id;
+        }
+    }
 }

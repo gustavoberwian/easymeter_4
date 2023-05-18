@@ -1060,7 +1060,7 @@ class Admin extends UNO_Controller
         if ($this->input->getPost('user-nivel') === 'on')
         {
             $dados['group']['nivel'] = 'nivel';
-        } 
+        }
         
         $dados['user-id']               = $users->getInsertID();
         $dados['classificacao']         = $this->input->getPost('classificacao-user');   
@@ -1070,8 +1070,27 @@ class Admin extends UNO_Controller
         $dados['group-user']            = $this->input->getPost('group-user') ?? '';
         $dados['groups-user']           = array_map('trim',explode(",", $this->input->getPost('groups-user') ?? ''));
 
+        if ($dados['page'] === '') {
+            if ($dados['entity-user'] != '') {
+                $dados['page'] = $this->get_entity_class('entidades', $dados['entity-user']);
+            } elseif ($dados['group-user'] != '') {
+                $dados['page'] = $this->get_entity_class('agrupamentos', $dados['group-user']);
+            } elseif ($dados['unity-user'] != '') {
+                $dados['page'] = $this->get_entity_class('unidades', $dados['unity-user']);
+            }
+        }
+            
         //Chamada da função de inserção
         echo $this->admin_model->add_user($dados);
+    }
+    public function get_entity_class($type, $data) {
+        if ($type == 'entidades') {
+            return $this->admin_model->get_class_by_entity($this->admin_model->get_table_by_name($type, $data)->id);
+        } elseif ($type == 'agrupamentos') {
+            $this->admin_model->get_class_by_entity($this->admin_model->get_entity_by_id($type, $this->admin_model->get_table_by_name($type, $data)->id));
+        } else {
+            $this->admin_model->get_class_by_entity($this->admin_model->get_entity_by_id($type, $this->admin_model->get_code_by_unity_id($this->admin_model->get_unity_by_code($data))));
+        }
     }
 
     public function get_entity_for_select()

@@ -224,7 +224,7 @@
 
 			$('.relation-user-group').attr('hidden', true);
 			$('.relation-user-group').attr('disable', true);
-			
+
 
 			$('.relation-user-entity').removeAttr('hidden');
 			$('.relation-user-entity').removeAttr('disable');
@@ -233,10 +233,10 @@
 
 
 		} else if ($('#classificacao-user').val() === 'agrupamentos') {
-			
+
 			$('.relation-user-entity').attr('hidden', true);
 			$('.relation-user-entity').attr('disable', true);
-			
+
 			$('.relation-user-unity').attr('hidden', true);
 			$('.relation-user-unity').attr('disabled', true);
 
@@ -244,7 +244,6 @@
 			$('.relation-user-group').removeAttr('disabled');
 
 			$('#entity-user').val('');
-
 
 		} else {
 			$('.relation-user-entity').attr('hidden', true);
@@ -256,7 +255,8 @@
 			$('.relation-user-unity').removeAttr('hidden');
 			$('.relation-user-unity').removeAttr('disabled');
 
-
+			$('#entity-user').val('');
+			$('#group-user').val('');
 		}
 
 	})
@@ -273,7 +273,7 @@
 		minlength: 5,
 		equalTo: "#senha-user"
 	});
-	$.validator.addClassRules("vpage", { required: false});
+	$.validator.addClassRules("vpage", { required: false });
 
 
 

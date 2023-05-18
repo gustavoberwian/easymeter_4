@@ -19,7 +19,6 @@
                     </header>
                     <div class="card-body">
                         <div class="tab-form cadastro">
-
                             <div class="form-group row">
                                 <label for="classificacao-user" class="col-lg-3 control-label text-lg-right pt-2">Classificação do usuário <span class="required">*</span></label>
                                 <div class="col-lg-6">
@@ -77,21 +76,21 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="email-user" class="col-lg-3 control-label text-lg-right pt-2">Email <span class="required">*</span></label></label> 
+                                <label for="email-user" class="col-lg-3 control-label text-lg-right pt-2">Email <span class="required">*</span></label>
                                 <div class="col-lg-6">
                                     <input id="email-user" name="email-user" type="text" value="" class="form-control vemail" placeholder="Email">
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label for="senha-user" class="col-lg-3 control-label text-lg-right pt-2">Senha <span class="required">*</span></label></label> 
+                                <label for="senha-user" class="col-lg-3 control-label text-lg-right pt-2">Senha <span class="required">*</span></label>
                                 <div class="col-lg-6">
                                     <input id="senha-user" name="senha-user" type="password"  value="" class="form-control vsenha" placeholder="Senha" autocomplete="new-password">
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label for="confirm-user" class="col-lg-3 control-label text-lg-right pt-2">Confirme a Senha <span class="required">*</span></label></label> 
+                                <label for="confirm-user" class="col-lg-3 control-label text-lg-right pt-2">Confirme a Senha <span class="required">*</span></label>
                                 <div class="col-lg-6">
                                     <input id="confirm-user" name="confirm-user" type="password" value="" class="form-control vconfirma" placeholder="Confirme">
                                 </div>
@@ -137,7 +136,7 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="page-user" class="col-lg-3 control-label text-lg-right pt-2">Grupos adicionais <span class="required">*</span></label></label> 
+                                <label for="page-user" class="col-lg-3 control-label text-lg-right pt-2">Grupos adicionais</label> 
                                 <div class="col-lg-6">
                                     <input id="groups-user" name="groups-user" type="text" value="" class="form-control " placeholder="Grupos do usuário" >
                                 </div>

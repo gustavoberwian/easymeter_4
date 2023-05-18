@@ -83,8 +83,8 @@
                     <div class="col-lg-4 col-sm-6 mb-4">
                         <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
                             <i class="ti-package icon text-primary d-block mb-4"></i>
-                            <h3 class="mb-3 mt-0">Moradores Condomínios</h3>
-                            <p class="mb-00">Visualize seu Relatório de Consumo e muito mais</p>
+                            <h3 class="mb-3 mt-0">Morador Condomínio</h3>
+                            <p class="mb-00">Relatório de Consumo de Água</p>
                             <br>
                             <button class="botaoabrirmodal">Saber mais</button>
                             <!--  FIM TÓPICO -->
@@ -95,8 +95,8 @@
                     <div class="col-lg-4 col-sm-6 mb-4">
                         <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
                             <i class="ti-package icon text-primary d-block mb-4"></i>
-                            <h3 class="mb-3 mt-0">Valores</h3>
-                            <p class="mb-00">Quais são os valores dos medidores</p>
+                            <h3 class="mb-3 mt-0">Administrador Condomínio</h3>
+                            <p class="mb-00">Saiba como administrar o consumo de água do seu condomínio</p>
                             <br>
                             <button class="botaoabrirmodal">Saber mais</button>
                             <!--  FIM TÓPICO -->
@@ -107,8 +107,8 @@
                     <div class="col-lg-4 col-sm-6 mb-4">
                         <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
                             <i class="ti-package icon text-primary d-block mb-4"></i>
-                            <h3 class="mb-3 mt-0">Instalação?</h3>
-                            <p class="mb-00">Como é feita a instalação dos medidores?</p>
+                            <h3 class="mb-3 mt-0">Indústria e Shopping</h3>
+                            <p class="mb-00">Entenda como administrar a medição da sua empresa.</p>
                             <br>
                             <button class="botaoabrirmodal">Saber mais</button>
                             <!--  FIM TÓPICO -->
@@ -119,8 +119,8 @@
                     <div class="col-lg-4 col-sm-6 mb-4">
                         <a href="assuntoforum" class="px-4 py-5 bg-white shadow text-center d-block match-height">
                             <i class="ti-package icon text-primary d-block mb-4"></i>
-                            <h3 class="mb-3 mt-0">Uno/easymeter?</h3>
-                            <p class="mb-00">Você sabe quem somos nós?</p>
+                            <h3 class="mb-3 mt-0">Suporte Técnico</h3>
+                            <p class="mb-00">Saiba como entrar em contato conosco</p>
                             <br>
                             <button id="abrirmodal" class="botaoabrirmodal">Saber mais</button>
                             <!--  FIM TÓPICO -->

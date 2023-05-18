@@ -1008,16 +1008,9 @@ class Admin extends UNO_Controller
             return $res;
         });
 
-        // $dt->add('actions', function ($data) {
-        //     return '
-        //         <a href="' . site_url('admin/users/') . $data['id'] . '/editar" class="action-edit" data-id="' . $data['id'] . '"><i class="fas fa-pencil-alt text-primary" title="Editar"></i></a>
-		// 		<a href="#" class="action-delete-user" data-id="' . $data['id'] . '" data-toggle="confirmation" data-title="Certeza?"><i class="fas fa-trash text-danger" title="Excluir"></i></a>
-        //     ';
-        // });
-
-        
         $dt->add('actions', function ($data) {
             return '
+                <a href="' . site_url('admin/users/') . $data['id'] . '/editar" class="action-edit" data-id="' . $data['id'] . '"><i class="fas fa-pencil-alt text-primary" title="Editar"></i></a>
 				<a href="#" class="action-delete-user" data-id="' . $data['id'] . '" data-toggle="confirmation" data-title="Certeza?"><i class="fas fa-trash text-danger" title="Excluir"></i></a>
             ';
         });

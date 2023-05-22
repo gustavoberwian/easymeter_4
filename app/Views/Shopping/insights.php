@@ -14,23 +14,24 @@
     <div class="row">
         <div class="col-9">
             <ul class="nav nav-pills nav-pills-primary mb-3">
+            <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back" type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <?php if (!is_null($group->m_energia)) : ?>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#energy" type="button">Energia</button>
                     </li>
                 <?php endif; ?>
                 <?php if (!is_null($group->m_agua)) : ?>
-                    <li class="nav-item me-2" role="presentation">
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#water" type="button">Água</button>
                     </li>
                 <?php endif; ?>
                 <?php if (!is_null($group->m_gas)) : ?>
-                    <li class="nav-item me-2" role="presentation">
+                    <li class="nav-item " role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#gas" type="button">Gás</button>
                     </li>
                 <?php endif; ?>
                 <?php if (!is_null($group->m_nivel)) : ?>
-                    <li class="nav-item me-2" role="presentation">
+                    <li class="nav-item" role="presentation">
                         <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#nivel" type="button">Nível</button>
                     </li>
                 <?php endif; ?>

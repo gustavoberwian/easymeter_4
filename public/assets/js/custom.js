@@ -241,5 +241,10 @@ if ($.magnificPopup) {
     });
 }
 
+$(document).on("click", "#btn-back-last", function (e) {
+    e.preventDefault();
+    history.back();
+});
+
 $(".nav-pills").children().first().children().addClass('active left');
 $(".nav-pills").children().last().children().addClass('right')

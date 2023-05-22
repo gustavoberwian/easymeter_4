@@ -18,6 +18,7 @@
     <div class="row">
         <div class="col-6">
             <ul class="nav nav-pills nav-pills-primary mb-3">
+            <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back" type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <?php if (!$user->inGroup("unity", "shopping")): ?>
                     <li class="nav-item configs" role="presentation">
                         <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#resume" type="button">Resumo</button>
@@ -35,9 +36,8 @@
                     <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#analysis" type="button">Análises</button>
                 </li>
                 <li class="nav-item configs" role="presentation">
-                    <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#data" type="button">Dados</button>
+                    <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#data" type="button">Dados</button>
                 </li>
-
             </ul>
         </div>
         <div class="col-6 text-end">

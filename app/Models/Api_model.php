@@ -1635,7 +1635,7 @@ class Api_model extends Model {
                 *
             FROM esm_client_config
             WHERE 
-                group_id = $gid
+                agrupamento_id = $gid
         ");
 
         if ($result->getNumRows()) {
@@ -2276,22 +2276,29 @@ class Api_model extends Model {
         return false;
     }
 
-    public function GetConsumption($device, $start, $end, $st = array(), $group = true)
+    public function GetConsumption($key, $device, $start, $end, $st = array(), $group = true)
     {
+        $infos = $this->db->query("
+            SELECT esm_entidades.tabela AS tabela, esm_agrupamentos.id AS agrupamento FROM esm_api_keys
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_api_keys.agrupamento_id
+            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
+            WHERE esm_api_keys.token = '$key'
+        ")->getRow();
+
         $dvc  = "";
         $dvc1 = "";
         if (is_numeric($device)) {
 
-            $dvc = "JOIN esm_medidores on esm_medidores.id = esm_leituras_ancar_agua.medidor_id AND esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE group_id = $device)";
+            $dvc = "JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $infos->tabela . "_agua.medidor_id AND esm_medidores.nome IN (SELECT device FROM esm_device_groups_entries WHERE agrupamento_id = $device)";
 
         } else if ($device == "C") {
 
-            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $infos->tabela . "_agua.medidor_id
                     LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 1";
 
         } else if ($device == "U") {
 
-            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+            $dvc = "LEFT JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $infos->tabela . "_agua.medidor_id
                     LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_medidores.unidade_id AND esm_unidades_config.type = 2";
 
         } else if ($device == "T") {
@@ -2318,13 +2325,13 @@ class Api_model extends Model {
             if ($group)
                 $group_by = "GROUP BY esm_hours.num";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     SUM(consumo) AS value
                 FROM esm_hours
                 $dvc1
-                JOIN esm_leituras_ancar_agua ON 
+                JOIN esm_leituras_" . $infos->tabela . "_agua ON 
                     HOUR(FROM_UNIXTIME(timestamp - 3600)) = esm_hours.num AND 
                     timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     timestamp <= UNIX_TIMESTAMP('$end 23:59:59') + 600
@@ -2332,7 +2339,7 @@ class Api_model extends Model {
                     $dvc
                 $group_by
                 ORDER BY esm_hours.num
-            ");
+            ";
 
         } else {
 
@@ -2340,13 +2347,13 @@ class Api_model extends Model {
             if ($group)
                 $group_by = "GROUP BY esm_calendar.dt";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     esm_calendar.dt AS label,
                     SUM(consumo) AS value
                 FROM esm_calendar
                 $dvc1
-                JOIN esm_leituras_ancar_agua ON 
+                JOIN esm_leituras_" . $infos->tabela . "_agua ON 
                     timestamp > esm_calendar.ts_start AND 
                     timestamp <= (esm_calendar.ts_end + 600)
                     $station
@@ -2356,8 +2363,10 @@ class Api_model extends Model {
                     esm_calendar.dt <= '$end' 
                 $group_by
                 ORDER BY esm_calendar.dt
-            ");
+            ";
         }
+
+        $result = $this->db->query($query);
 
         if ($result->getNumRows()) {
             return $result->getResult();
@@ -2366,8 +2375,15 @@ class Api_model extends Model {
         return false;
     }
 
-    public function water_resume($cfg, $type)
+    public function water_resume($key, $cfg, $type)
     {
+        $infos = $this->db->query("
+            SELECT esm_entidades.tabela AS tabela, esm_agrupamentos.id AS agrupamento FROM esm_api_keys
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_api_keys.agrupamento_id
+            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
+            WHERE esm_api_keys.token = '$key'
+        ")->getRow();
+
         $where = "";
         if (!is_null($type))
             $where = "AND esm_unidades_config.type = $type";
@@ -2385,18 +2401,18 @@ class Api_model extends Model {
                 ROUND(m.value / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE()))) AS prevision
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
-            JOIN (  
+            LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+            LEFT JOIN (  
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_ancar_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                FROM esm_leituras_" . $infos->tabela . "_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $infos->tabela . "_agua.medidor_id
                 WHERE timestamp > UNIX_TIMESTAMP() - 86400
                 GROUP BY medidor_id
             ) l ON l.device = esm_medidores.nome
-            JOIN (
+            LEFT JOIN (
                 SELECT esm_medidores.nome as device, SUM(consumo) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_agua d ON 
+                LEFT JOIN esm_leituras_" . $infos->tabela . "_agua d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                 JOIN esm_medidores ON esm_medidores.id = d.medidor_id
@@ -2405,17 +2421,17 @@ class Api_model extends Model {
                     esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
                 GROUP BY d.medidor_id
             ) m ON m.device = esm_medidores.nome
-            JOIN (
+            LEFT JOIN (
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_ancar_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                FROM esm_leituras_" . $infos->tabela . "_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $infos->tabela . "_agua.medidor_id
                 WHERE MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
                 GROUP BY medidor_id
             ) c ON c.device = esm_medidores.nome
-            JOIN (
+            LEFT JOIN (
                 SELECT esm_medidores.nome AS device, SUM(consumo) AS value
-                FROM esm_leituras_ancar_agua
-                JOIN esm_medidores ON esm_medidores.id = esm_leituras_ancar_agua.medidor_id
+                FROM esm_leituras_" . $infos->tabela . "_agua
+                JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $infos->tabela . "_agua.medidor_id
                 WHERE 
                     MONTH(FROM_UNIXTIME(timestamp)) = MONTH(now()) AND 
                     YEAR(FROM_UNIXTIME(timestamp)) = YEAR(now()) AND 
@@ -2424,7 +2440,8 @@ class Api_model extends Model {
                 GROUP BY medidor_id
             ) h ON h.device = esm_medidores.nome
             WHERE 
-                entrada_id = 73 $where
+                esm_unidades.agrupamento_id = " . $infos->agrupamento . "
+                $where
             ORDER BY 
             esm_unidades_config.type, esm_unidades.nome
         ");
@@ -2479,9 +2496,9 @@ class Api_model extends Model {
         $result = $this->db->query("
             SELECT esm_api_keys.*, e.id AS energia_id, a.id AS agua_id
             FROM esm_api_keys
-            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_api_keys.group_id
-            LEFT JOIN (SELECT id, condo_id FROM esm_entradas WHERE tipo = 'energia') e ON e.condo_id = esm_agrupamentos.condo_id
-            LEFT JOIN (SELECT id, condo_id FROM esm_entradas WHERE tipo = 'agua') a ON a.condo_id = esm_agrupamentos.condo_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_api_keys.agrupamento_id
+            LEFT JOIN (SELECT id, entidade_id FROM esm_entradas WHERE tipo = 'energia') e ON e.entidade_id = esm_agrupamentos.entidade_id
+            LEFT JOIN (SELECT id, entidade_id FROM esm_entradas WHERE tipo = 'agua') a ON a.entidade_id = esm_agrupamentos.entidade_id
             WHERE token = '$key'
         ");
 
@@ -2520,7 +2537,7 @@ class Api_model extends Model {
                 FROM
                     esm_fechamentos_agua
                 JOIN 
-                    esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_agua.group_id AND esm_agrupamentos.id = $gid
+                    esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_agua.agrupamento_id AND esm_agrupamentos.id = $gid
                 ORDER BY cadastro DESC
                 LIMIT 10 OFFSET $pag
             ");
@@ -2545,7 +2562,7 @@ class Api_model extends Model {
                 FROM
                     esm_fechamentos_energia
                 JOIN 
-                    esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.group_id AND esm_agrupamentos.id = $gid
+                    esm_agrupamentos ON esm_agrupamentos.id = esm_fechamentos_energia.agrupamento_id AND esm_agrupamentos.id = $gid
                 ORDER BY cadastro DESC
                 LIMIT 10 OFFSET $pag
             ");

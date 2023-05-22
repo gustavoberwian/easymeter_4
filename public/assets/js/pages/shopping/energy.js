@@ -452,11 +452,15 @@
         if (event.target.cellIndex == undefined) return;
 
         let data = dtResume.row(this).data();
-        $("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
-        $('#sel-device').trigger('change');
-        $('button[data-bs-target="#charts"]').trigger('click');
-        $('button[data-bs-target="#data"]').removeClass("disabled");
-        $('button[data-bs-target="#analysis"]').removeClass("disabled");
+        let newWindow = window.open(window.location);
+        newWindow.onload = function() {
+            newWindow.$("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
+            newWindow.$('#sel-device').trigger('change');
+            newWindow.$('button[data-bs-target="#charts"]').trigger('click');
+            newWindow.$('button[data-bs-target="#data"]').removeClass("disabled");
+            newWindow.$('button[data-bs-target="#analysis"]').removeClass("disabled"); 
+        };
+        
     });
 
     $(document).on("click", ".btn-download-abnormal", function () {

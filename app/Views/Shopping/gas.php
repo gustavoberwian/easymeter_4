@@ -10,6 +10,7 @@
 
     <div class="row">
         <div class="col-6">
+        <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back" type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
             <ul class="nav nav-pills nav-pills-primary mb-3">
                 <?php if (!$user->inGroup("unity", "shopping")): ?>
                     <li class="nav-item configs" role="presentation">

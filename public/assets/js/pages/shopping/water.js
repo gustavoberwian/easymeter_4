@@ -253,9 +253,12 @@
         if (event.target.cellIndex == undefined) return;
 
         let data = dtResume.row(this).data();
-        $("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
-        $('#sel-device').trigger('change');
-        $('.nav-pills button[data-bs-target="#charts"]').tab('show');
+        let newWindow = window.open(window.location);
+        newWindow.onload = function () {
+            newWindow.$("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
+            newWindow.$('#sel-device').trigger('change');
+            newWindow.$('.nav-pills button[data-bs-target="#charts"]').tab('show'); 
+        };
     });
 
     $(document).on("click", ".btn-download", function () {

@@ -26,6 +26,8 @@ class Admin extends UNO_Controller
     {
         parent::__construct();
 
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+
         // load requests
         $this->input = \Config\Services::request();
 
@@ -659,7 +661,7 @@ class Admin extends UNO_Controller
         });
 
         $dt->edit('competencia', function ($data) {
-            return competencia_nice($data['competencia']);
+            return strftime('%b/%Y', strtotime($data['competencia']));
         });
 
         // inclui actions
@@ -699,7 +701,7 @@ class Admin extends UNO_Controller
         ");
 
         $dt->edit('competencia', function ($data) {
-            return competencia_nice(date("m/Y", $data['competencia']));
+            return strftime('%b/%Y', strtotime($data['competencia']));
         });
 
         $dt->edit('data_inicio', function ($data) {

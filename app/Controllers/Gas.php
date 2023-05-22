@@ -27,6 +27,8 @@ class Gas extends UNO_Controller
     {
         parent::__construct();
 
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+
         // load models
         $this->consigaz_model = new Consigaz_model();
         $this->gas_model = new Gas_model();
@@ -292,10 +294,10 @@ class Gas extends UNO_Controller
                 DATE_FORMAT(esm_fechamentos_gas.cadastro, '%d/%m/%Y') AS emissao
             FROM esm_fechamentos_gas
             JOIN esm_entidades ON esm_entidades.id = esm_fechamentos_gas.entidade_id AND esm_entidades.id = $entidade
-            ORDER BY emissao DESC");
+            ORDER BY competencia DESC");
 
         $dt->edit('competencia', function ($data) {
-            return competencia_nice($data['competencia']);
+            return strftime('%b/%Y', strtotime($data['competencia']));
         });
 
         // inclui actions
@@ -521,6 +523,7 @@ class Gas extends UNO_Controller
 
     public function add_fechamento()
     {
+        echo date('Y-m-01', strtotime($this->input->getPost('tar-gas-competencia'), 'm')); return;
         if (!$this->input->getPost('tar-gas-entidade')) {
             echo $this->add_fechamento_geral(array(
                 "competencia" => $this->input->getPost('tar-gas-competencia'),

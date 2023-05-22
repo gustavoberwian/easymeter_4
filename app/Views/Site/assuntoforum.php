@@ -52,14 +52,7 @@
             <p class="secp1">Lorem ipsum dolor sit amet. Cum tenetur sint vel
                 accusamus commodi non aliquam perspiciatis et cupidit
                 ate autem? Et tempora enim qui vitae quisquam qui omnis sint
-                ea voluptate nisi in vero praesentium ut voluptates vo
-                luptate qui rerum laboriosam. Vel perferendis ducimus eos
-                doloremque veniam et voluptatem doloremque sed excepturi
-                eveniet. A nihil culpa sed nisi voluptatem cum tempora
-                aepe et beatae eius id quia eaque. Eos laborum internos nam
-                minima aperiam aut consectetur unde aut quis odit ut
-                aspernatur quidem? Ea quidem dolores sit iste quia id expedit
-                a atque non soluta doloremque et voluptatem molestiae.</p>
+                ea voluptate nisi in vero praesentium ut voluptates. </p>
             <div class="assuntosforumimg">
                 <img class="teste1" alt="demonstracao" src="http://localhost:8080/assets/img/site/easymeter_mandala.svg" style="max-height: 550px;">
             </div>

@@ -25,7 +25,7 @@
                 </thead>
                 <tbody>
                 <tr role="row">
-                    <td><?= competencia_nice($fechamento->competencia); ?></td>
+                    <td><?= strftime('%b/%Y', strtotime($fechamento->competencia)); ?></td>
                     <td><?= number_format(round($fechamento->leitura_atual - $fechamento->leitura_anterior, 0), 0, ',', '.'); ?></td>
                     <td><?= date('d/m/Y', $fechamento->inicio); ?></td>
                     <td><?= date('d/m/Y', $fechamento->fim); ?></td>

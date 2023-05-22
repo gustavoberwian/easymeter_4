@@ -9,6 +9,7 @@
         processing: true,
         columns: [
             {data: "medidor", className: "dt-body-center align-middle"},
+            {data: "device", className: "dt-body-center align-middle"},
             {data: "bloco", className: "dt-body-center align-middle"},
             {data: "unidade", className: "dt-body-center align-middle"},
             {data: "ultimo_mes", className: "dt-body-center align-middle"},
@@ -62,6 +63,17 @@
                     // altera status do botão
                     $(_self).parent().addClass('warning')
                     $(_self).parent().addClass('disabled')
+                    setTimeout(function () {
+                        $.ajax({
+                            method: 'POST',
+                            url: '/consigaz/edit_valve_stats',
+                            data: formData,
+                            dataType: 'json',
+                            success: function (json) {
+
+                            },
+                        });
+                    }, 5000);
                 } else {
                     // notifica erro
                     notifyError(json.message);

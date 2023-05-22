@@ -270,7 +270,7 @@
 							</figure>
 							<div class="profile-info">
 								<span class="name"><?= $user->nickname; ?></span>
-								<span class="role"><?= $url; ?></span>
+								<span class="role"><?= $user->description; ?></span>
 							</div>
 
 							<i class="fa custom-caret"></i>
@@ -280,7 +280,7 @@
 							<ul class="list-unstyled mb-2">
 								<li class="divider"></li>
 								<li>
-									<a  role="menuitem" tabindex="-1" href="<?php echo site_url($url . "/profile/"); ?>"><i class="fas fa-user btn-profile"></i> Minha Conta</a>
+									<a role="menuitem" tabindex="-1" href="<?php echo site_url($url . "/profile/"); ?>"><i class="fas fa-user btn-profile"></i> Minha Conta</a>
 								</li>
 								<li>
 									<a role="menuitem" tabindex="-1" href="<?php echo site_url('logout'); ?>"><i class="fas fa-power-off"></i> Sair</a>

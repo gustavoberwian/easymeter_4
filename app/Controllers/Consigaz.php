@@ -86,7 +86,6 @@ class Consigaz extends UNO_Controller
         $data['valvulas']['erros'] = $this->consigaz_model->get_valvulas(null, 'vermelho', 'count');
 
         $data['alertas']['vazamentos'] = $this->gas_model->get_alertas_by_user($this->user->id, 'vazamento', 'count');
-        $data['alertas']['valvulas'] = $this->consigaz_model->get_valvulas(null, 'amarelo', 'count');
         $data['alertas']['outros'] = $this->gas_model->get_alertas_by_user($this->user->id, null, 'count');
 
         return $this->render("index", $data);
@@ -203,7 +202,11 @@ class Consigaz extends UNO_Controller
         $dt->query($builder);
 
         $dt->add('ultima_competencia', function ($data) {
-            return $this->consigaz_model->get_last_fechamento($data['id'])->competencia ?? '';
+            if ($this->consigaz_model->get_last_fechamento($data['id'])->competencia) {
+                return strftime('%b/%Y', strtotime($this->consigaz_model->get_last_fechamento($data['id'])->competencia));
+            } else {
+                return '';
+            }
         });
 
         $dt->add("opened", function ($data) {
@@ -328,7 +331,7 @@ class Consigaz extends UNO_Controller
         $builder->join('esm_unidades', 'esm_unidades.id = esm_medidores.unidade_id');
         $builder->join('esm_agrupamentos', 'esm_agrupamentos.id = esm_unidades.agrupamento_id');
         $builder->join('esm_valves_stats', 'esm_valves_stats.medidor_id = esm_medidores.id');
-        $builder->select('esm_medidores.id as m_id, esm_unidades.id as u_id, esm_medidores.nome AS medidor, esm_unidades.nome as unidade, esm_agrupamentos.nome as bloco, esm_valves_stats.state, esm_valves_stats.status');
+        $builder->select('esm_medidores.id as m_id, esm_unidades.id as u_id, esm_medidores.nome AS device, esm_medidores.device AS medidor, esm_unidades.nome as unidade, esm_agrupamentos.nome as bloco, esm_valves_stats.state, esm_valves_stats.status');
         $builder->where('esm_agrupamentos.entidade_id', $entidade);
 
         // Datatables Php Library

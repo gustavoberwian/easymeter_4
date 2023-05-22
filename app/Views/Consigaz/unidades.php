@@ -40,7 +40,7 @@
         <section class="card card-easymeter mb-4">
             <header class="card-header">
                 <div class="card-actions buttons">
-                    <button type="button" class="btn btn-primary btn-sheet-unidades">Baixar Planilha</button>
+                    <button type="button" class="btn btn-primary btn-sheet-unidades"><i class="fas fa-file-download"></i> Baixar Planilha</button>
                 </div>
                 <h2 class="card-title">Unidades</h2>
             </header>
@@ -57,6 +57,7 @@
                     </tr>
                     <tr>
                         <th class="text-center">Medidor</th>
+                        <th class="text-center">Dispositivo</th>
                         <th class="text-center">Bloco</th>
                         <th class="text-center">Apto</th>
                         <th class="text-center">Último mês</th>

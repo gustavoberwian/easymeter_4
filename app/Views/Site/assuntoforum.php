@@ -48,57 +48,41 @@
             <br>
             <br>
 
-            <h1 class="sech1">Lorem ipsum</h1>
-            <p class="secp1">Lorem ipsum dolor sit amet. Cum tenetur sint vel
-                accusamus commodi non aliquam perspiciatis et cupidit
-                ate autem? Et tempora enim qui vitae quisquam qui omnis sint
-                ea voluptate nisi in vero praesentium ut voluptates. </p>
+            <h1 class="sech1">Uno Robótica</h1>
+            <p class="secp1">Uma empresa dedicada a superar barreiras e alcançar resultados extraordinários. Nossa equipe é composta por profissionais altamente experientes e especializados em diversas áreas. Os fundadores da empresa possuem um histórico impressionante de empreendimentos bem-sucedidos, tanto na área de tecnologia inovadora quanto na produção em larga escala. Além disso, eles encontram grande satisfação em seu trabalho.
+
+Somos apaixonados pelo que fazemos e estamos empenhados em causar um impacto significativo no mundo. Nosso objetivo é introduzir produtos inovadores que melhorem a qualidade de vida das pessoas de maneira transparente e eficaz. Acreditamos firmemente no potencial da tecnologia como uma ferramenta para facilitar a vida cotidiana e proporcionar bem-estar pessoal.
+
+Guiados por valores éticos como integridade, cuidado e apreciação pela criatividade, não aceitamos o status quo. Estamos constantemente desafiando os limites convencionais e explorando novas possibilidades. O trabalho na Uno Robótica é uma jornada emocionante, repleta de desafios estimulantes que nos impulsionam a crescer e inovar.
+
+Adotamos uma abordagem colaborativa, valorizando a diversidade de habilidades e perspectivas. Acreditamos que é na interseção dessas competências variadas que a verdadeira inovação acontece. Juntos, buscamos soluções criativas e eficientes para os problemas do mundo real, utilizando a robótica como uma poderosa ferramenta para alcançar resultados excepcionais.
+
+Na Uno Robótica, transformamos ideias visionárias em realidade, combinando expertise técnica com uma mentalidade empreendedora. Estamos entusiasmados em compartilhar nossa jornada com você. Uno Robótica: onde a inovação ganha vida e o impossível se torna possível.
+
+ </p>
             <div class="assuntosforumimg">
                 <img class="teste1" alt="demonstracao" src="http://localhost:8080/assets/img/site/easymeter_mandala.svg" style="max-height: 550px;">
             </div>
 
-            <h2 class="sech2">Lorem ipsum</h2>
-            <p class="secp1">Lorem ipsum dolor sit amet. Cum tenetur sint vel
-                accusamus commodi non aliquam perspiciatis et cupidit
-                ate autem? Et tempora enim qui vitae quisquam qui omnis sint
-                ea voluptate nisi in vero praesentium ut voluptates vo
-                luptate qui rerum laboriosam. Vel perferendis ducimus eos
-                doloremque veniam et voluptatem doloremque sed excepturi
-                eveniet. A nihil culpa sed nisi voluptatem cum tempora
-                aepe et beatae eius id quia eaque. Eos laborum internos nam
-                minima aperiam aut consectetur unde aut quis odit ut
-                aspernatur quidem? Ea quidem dolores sit iste quia id expedit
-                a atque non soluta doloremque et voluptatem molestiae.</p>
+            <h2 class="sech2">Easymeter</h2>
+            <p class="secp1">Nosso principal objetivo com o Sistema Easymeter é atender às demandas dos condomínios, indústrias e shoppings em relação à medição e individualização do consumo. Acreditamos firmemente na máxima de que "o que não é monitorado, não é controlado". Por meio de nossa solução, os condomínios que adotam o sistema experimentam uma redução média de cerca de 30% em seu consumo.
+
+O Easymeter vai além da medição de consumo. Também atendemos às necessidades de monitoramento e controle remoto e assistido de processos relacionados a água, energia, gás e resíduos em condomínios, indústrias, comércios e agronegócio. O que nos diferencia no mercado é o fato de utilizarmos hardware e software de desenvolvimento próprio para realizar a medição do consumo, garantindo uma qualidade e precisão superiores nas informações coletadas.
+
+Nosso hardware possui uma capacidade única de identificar até mesmo o menor consumo, medindo em mililitros. Essa característica nos permite detectar instantaneamente qualquer sinal de vazamento, por menor que seja, e emitir um alerta imediato. Com o Easymeter, os condomínios podem ter a tranquilidade de saber que seu consumo está sendo monitorado de forma precisa e confiável, permitindo a detecção precoce de problemas e ações corretivas imediatas.
+
+Estamos comprometidos em oferecer uma solução completa e eficiente para o controle de consumo e monitoramento de processos. O Easymeter é a resposta para as demandas crescentes por eficiência energética e gestão sustentável. Junte-se a nós e experimente os benefícios de ter o controle total do seu consumo. Easymeter: a tecnologia que traz economia e precisão para o seu dia a dia.
+</p>
             <div class="assuntosforumimg">
                 <img class="teste1" alt="demonstracao" src="http://localhost:8080/assets/img/site/easymeter_telas.png" style="max-height: 550px;">
             </div>
 
-            <h2 class="sech2">Lorem ipsum Lorem ipsum</h2>
-            <p class="secp1">Lorem ipsum dolor sit amet. Cum tenetur sint vel
-                accusamus commodi non aliquam perspiciatis et cupidit
-                ate autem? Et tempora enim qui vitae quisquam qui omnis sint
-                ea voluptate nisi in vero praesentium ut voluptates vo
-                luptate qui rerum laboriosam. Vel perferendis ducimus eos
-                doloremque veniam et voluptatem doloremque sed excepturi
-                eveniet. A nihil culpa sed nisi voluptatem cum tempora
-                aepe et beatae eius id quia eaque. Eos laborum internos nam
-                minima aperiam aut consectetur unde aut quis odit ut
-                aspernatur quidem? Ea quidem dolores sit iste quia id expedit
-                a atque non soluta doloremque et voluptatem molestiae.</p>
+            <h2 class="sech2"></h2>
+            <p class="secp1"></p>
 
-            <p class="secp1">Lorem ipsum dolor sit amet. Cum tenetur sint vel
-                accusamus commodi non aliquam perspiciatis et cupidit
-                ate autem? Et tempora enim qui vitae quisquam qui omnis sint
-                ea voluptate nisi in vero praesentium ut voluptates vo
-                luptate qui rerum laboriosam. Vel perferendis ducimus eos
-                doloremque veniam et voluptatem doloremque sed excepturi
-                eveniet. A nihil culpa sed nisi voluptatem cum tempora
-                aepe et beatae eius id quia eaque. Eos laborum internos nam
-                minima aperiam aut consectetur unde aut quis odit ut
-                aspernatur quidem? Ea quidem dolores sit iste quia id expedit
-                a atque non soluta doloremque et voluptatem molestiae.</p>
+            <p class="secp1"></p>
 
-            <p class="secp1" data-url="<?php echo site_url('site/assuntoforum'); ?>">a</p>
+            <p class="secp1" data-url="<?php echo site_url('site/assuntoforum'); ?>"></p>
 
         </section>
         <br>

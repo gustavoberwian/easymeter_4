@@ -133,7 +133,7 @@ class Industria extends UNO_Controller
             $data["data"]   = $this->industria_model->get_report_data_by_id($rid);
 
             if ($data["report"]->tipo == 1) {
-                $data["competencia"] = competencia_nice($data['report']->competencia);
+                $data["competencia"] = strftime('%b/%Y', strtotime($data['report']->competencia));
             } else if ($data["report"]->tipo == 2) {
                 $data["competencia"] = $data['report']->competencia;
             }
@@ -267,7 +267,7 @@ class Industria extends UNO_Controller
 
         $dt->edit('competencia', function ($data) use ($id) {
             if ($id == 1)
-                return competencia_nice($data['competencia']);
+                return strftime('%b/%Y', strtotime($data['competencia']));
             else if ($id == 2)
                 return week_day(date_create_from_format('d/m/Y', $data['competencia'])->format("N"), 2).", ".$data['competencia'];
             else

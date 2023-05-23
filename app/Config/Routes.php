@@ -58,10 +58,10 @@ $routes->get('/frasle/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth
 $routes->post('/frasle/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 
 // Routes da Consigaz para shopping
-$routes->get('/consigaz', 'Shopping::index',['filter'=>'checkApiAuth']);
-$routes->get('/consigaz/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
-$routes->get('/consigaz/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
-$routes->post('/consigaz/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+$routes->get('/consigaz', 'Consigaz::index',['filter'=>'checkApiAuth']);
+$routes->get('/consigaz/(:any)', 'Consigaz::$1',['filter'=>'checkApiAuth']);
+$routes->get('/consigaz/(:any)/(:num)', 'Consigaz::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/consigaz/(:any)', 'Consigaz::$1',['filter'=>'checkApiAuth']);
 
 // Routes para grandeza de energia
 $routes->post('/energia/(:any)', 'Energia::$1',['filter'=>'checkApiAuth']);

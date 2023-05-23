@@ -32,23 +32,23 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <?php for ($i = 0; $i < count($groups); $i++): ?>
-                                <tr role="row" class="<?= ($i % 2 == 0) ? "odd" : "" ?>" data-group="<?= $groups[$i]->agrupamento_id; ?>">
-                                    <td class="dt-body-center"><?= $groups[$i]->nome; ?></td>
-                                    <td class="dt-body-center"><?= $groups[$i]->tipo; ?></td>
-                                    <td class="dt-body-center">
-                                        <?= ($groups[$i]->m_energia) ? '<i class="fas fa-bolt text-warning"></i>' : '' ?>
-                                        <?= ($groups[$i]->m_agua) ? '<i class="fas fa-tint text-primary"></i>' : '' ?>
-                                        <?= ($groups[$i]->m_gas) ? '<i class="fas fa-fire text-success"></i>' : '' ?>
-                                        <?= ($groups[$i]->m_nivel) ? '<i class="fas fa-ruler-vertical text-info"></i>' : '' ?>
-                                    </td>
-                                    <td class="dt-body-center"><?= $groups[$i]->endereco; ?></td>
-                                    <td class="dt-body-center"><?= $groups[$i]->municipio; ?></td>
-                                    <td class="dt-body-center">
-                                        <a class="action-visualiza text-center text-primary"><i class="fas fa-eye"></i></a>
-                                    </td>
-                                </tr>
-                            <?php endfor; ?>
+                        <?php for ($i = 0; $i < count($groups); $i++): ?>
+                            <tr role="row" class="<?= ($i % 2 == 0) ? "odd" : "" ?>" data-group="<?= $groups[$i]->agrupamento_id; ?>">
+                                <td class="dt-body-center"><?= $groups[$i]->nome; ?></td>
+                                <td class="dt-body-center"><?= $groups[$i]->tipo; ?></td>
+                                <td class="dt-body-center">
+                                    <?= ($groups[$i]->m_energia) ? '<i class="fas fa-bolt text-warning"></i>' : '' ?>
+                                    <?= ($groups[$i]->m_agua) ? '<i class="fas fa-tint text-primary"></i>' : '' ?>
+                                    <?= ($groups[$i]->m_gas) ? '<i class="fas fa-fire text-success"></i>' : '' ?>
+                                    <?= ($groups[$i]->m_nivel) ? '<i class="fas fa-ruler-vertical text-info"></i>' : '' ?>
+                                </td>
+                                <td class="dt-body-center"><?= $groups[$i]->endereco; ?></td>
+                                <td class="dt-body-center"><?= $groups[$i]->municipio; ?></td>
+                                <td class="dt-body-center">
+                                    <a class="action-visualiza text-center text-primary"><i class="fas fa-eye"></i></a>
+                                </td>
+                            </tr>
+                        <?php endfor; ?>
                         </tbody>
                     </table>
                 </div>

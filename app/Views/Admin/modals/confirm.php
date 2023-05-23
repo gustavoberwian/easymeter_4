@@ -19,7 +19,7 @@
 		</div>
 		<footer class="card-footer">
 			<div class="row">
-				<div class="col-md-12 text-right">
+				<div class="col-md-12 text-end">
 					<button class="btn btn-danger modal-confirm overlay-small" data-loading-overlay><?php echo $button[0]; ?></button>
 					<button class="btn btn-default modal-dismiss"><?php echo $button[1]; ?></button>
 				</div>

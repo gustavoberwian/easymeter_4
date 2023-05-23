@@ -360,7 +360,7 @@ class Water_model extends Base_model
         return false;
     }
 
-    public function VerifyCompetencia($entrada_id, $competencia)
+    public function VerifyCompetencia($agrupamento_id, $competencia)
     {
         $result = $this->db->query("
             SELECT
@@ -368,7 +368,7 @@ class Water_model extends Base_model
             FROM 
                 esm_fechamentos_agua
             WHERE
-                entrada_id = $entrada_id AND competencia = '$competencia'
+                agrupamento_id = $agrupamento_id AND competencia = '$competencia'
             LIMIT 1
         ");
 
@@ -421,7 +421,7 @@ class Water_model extends Base_model
                 GROUP BY medidor_id
             ) c ON c.medidor_id = esm_medidores.id
             WHERE 
-                esm_medidores.entrada_id = {$data['entrada_id']}
+                esm_unidades.agrupamento_id = {$data['agrupamento_id']}
         ");
 
         return $query;

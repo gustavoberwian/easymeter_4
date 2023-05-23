@@ -241,5 +241,14 @@ if ($.magnificPopup) {
     });
 }
 
-$(".nav-pills").children().first().children().addClass('active left');
-$(".nav-pills").children().last().children().addClass('right')
+$(document).on("click", "#btn-back-last", function (e) {
+    e.preventDefault();
+    history.back();
+});
+if (!document.querySelector('#btn-back-last')) {
+    $(".nav-pills").children().first().children().addClass('active left');
+    $(".nav-pills").children().last().children().addClass('right') 
+} else {
+    $(".nav-pills").children().eq(1).children().addClass('active left');
+    $(".nav-pills").children().last().children().addClass('right')
+}

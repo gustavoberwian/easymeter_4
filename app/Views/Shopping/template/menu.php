@@ -27,8 +27,8 @@
                         <?php if ($user->inGroup('admin', 'shopping')): ?>
                             <li class="<?php if (in_array($method, array('index'))) echo 'nav-active'; ?>">
                                 <a class="nav-link" href="<?= site_url($url); ?>">
-                                    <i class="fas fa-arrow-alt-circle-left" aria-hidden="true"></i>
-                                    <span>Voltar</span>
+                                    <i class="fas fa-home" aria-hidden="true"></i>
+                                    <span>Início</span>
                                 </a>
                             </li>
                         <?php endif; ?>

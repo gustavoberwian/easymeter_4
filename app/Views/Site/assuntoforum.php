@@ -48,8 +48,8 @@
             <br>
             <br>
 
-            <h1 class="sech1">Uno Robótica</h1>
-            <p class="secp1">Uma empresa dedicada a superar barreiras e alcançar resultados extraordinários. Nossa equipe é composta por profissionais altamente experientes e especializados em diversas áreas. Os fundadores da empresa possuem um histórico impressionante de empreendimentos bem-sucedidos, tanto na área de tecnologia inovadora quanto na produção em larga escala. Além disso, eles encontram grande satisfação em seu trabalho.
+            <h1 class="sech1">Texto de teste</h1>
+            <p class="secp1">(Add um texto de apresentação)Uma empresa dedicada a superar barreiras e alcançar resultados extraordinários. Nossa equipe é composta por profissionais altamente experientes e especializados em diversas áreas. Os fundadores da empresa possuem um histórico impressionante de empreendimentos bem-sucedidos, tanto na área de tecnologia inovadora quanto na produção em larga escala. Além disso, eles encontram grande satisfação em seu trabalho.
 
 Somos apaixonados pelo que fazemos e estamos empenhados em causar um impacto significativo no mundo. Nosso objetivo é introduzir produtos inovadores que melhorem a qualidade de vida das pessoas de maneira transparente e eficaz. Acreditamos firmemente no potencial da tecnologia como uma ferramenta para facilitar a vida cotidiana e proporcionar bem-estar pessoal.
 

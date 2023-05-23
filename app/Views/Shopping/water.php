@@ -67,7 +67,7 @@
                     <div class="card-body" style="background-color: #03aeef;">
                         <h6 class="card-body-title mb-3 mt-0 text-light"><label for="sel-device">Medidor</label> <i
                                 class="float-end fas fa-microchip"></i></h6>
-                        <select class="form-control" name="sel-device" id="sel-device">
+                        <select class="form-control" name="sel-device" id="sel-device" >
                             <option value="T">Todos</option>
                             <optgroup label="Medidores">
                                 <?php foreach ($unidades as $u): ?>
@@ -180,6 +180,7 @@
                                 </select>
                                 <button class="btn btn-primary btn-generate-resume" data-group="<?= $group_id; ?>"><i
                                         class="fas fa-file-download mr-3"></i> Gerar Planilha</button>
+                                <button class="btn btn-primary btn-reload-chart"><i class="fas fa-sync"></i></button>
                             </div>
                             <h2 class="card-title">Consumo</h2>
                         </header>

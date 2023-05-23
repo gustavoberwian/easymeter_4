@@ -6607,6 +6607,9 @@ html.sidebar-light:not(.dark) ul.nav-main li .nav-children li a:hover,html.sideb
 	border-color: #ccc #ccc #b3b3b3;
 	color: #fff
 }
+.btn btn-reload-chart {
+	margin-left: 10px;
+}
 
 .btn-primary:hover,.btn-primary.hover {
 	background-color: #dfdfdf;

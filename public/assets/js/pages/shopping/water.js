@@ -248,18 +248,28 @@
         },
     });
 
+    
     $("#dt-resume tbody").on("click", "tr", function (event) {
         // se o clique não foi em uma celula ou na última, retorna
         if (event.target.cellIndex == undefined) return;
+        
 
-        let data = dtResume.row(this).data();
+        let data = dtResume.row(this).data();         
         let newWindow = window.open(window.location);
+        newWindow.control = 1;
         newWindow.onload = function () {
             newWindow.$("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
             newWindow.$('#sel-device').trigger('change');
-            newWindow.$('.nav-pills button[data-bs-target="#charts"]').tab('show'); 
+            newWindow.$('.nav-pills button[data-bs-target="#charts"]').tab('show');
         };
     });
+
+    $(document).on("click", ".btn-reload-chart", function () {
+        $('#sel-device').trigger('change');
+
+    })
+        
+
 
     $(document).on("click", ".btn-download", function () {
         
@@ -333,8 +343,14 @@
                 $(this).data('unselecting2', false);
             }
         }
-    });    
+    });
 
-    $('#sel-device').trigger('change');
+    if(!window.control){
+        window.control = 0;
+    }
 
+    if(window.control == 0){
+        $('#sel-device').trigger('change');
+    }
+    
 }).apply(this, [jQuery]);

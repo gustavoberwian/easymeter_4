@@ -1,0 +1,15 @@
+Meu relatório de consumo de água
+Passo a passo para acessar o relatório de consumo de água:
+
+1. Abra o navegador da web em seu dispositivo e vá para o site easymeter.com.br
+2. Localize a opção de login ou acesso à sua conta. Insira suas credenciais de login (nome de usuário e senha) e faça login em sua conta.
+3. Após fazer login, você será redirecionado para o painel principal da sua conta.
+4. No painel principal, procure a seção relacionada ao consumo de água. Geralmente, ela é identificada como "Água".
+5. Dentro da seção de consumo de água, você encontrará várias opções e informações relacionadas ao seu consumo. Procure pela seção de faturamento.
+6. Dentro da seção de faturamento, haverá uma opção chamada "Detalhes'. Clique nessa opção para prosseguir.
+7. Ao selecionar "Detalhes", você será direcionado para uma página com mais informações sobre sua fatura de consumo de água.
+8. Nessa página de detalhes, procure por uma opção intitulada "Visualizar Relatório de Consumo" e clique nela.
+9. Agora você terá acesso ao seu relatório de consumo de água completo.
+10. Dentro do relatório, você poderá visualizar informações como a duração do ciclo, os dias abrangidos pelo ciclo, a data de fechamento do ciclo, além do mês e ano referentes à fatura de consumo de água.
+
+Seguindo esses passos, você poderá acessar e visualizar facilmente o seu relatório de consumo de água, obtendo informações detalhadas sobre seu uso e faturamento.

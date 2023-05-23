@@ -5,8 +5,12 @@
     // Inicializa tabela faturamentos
     let $dtUnidades = $("#dt-unidades");
     let dtUnidades = $dtUnidades.DataTable({
-        dom: '<"table-responsive"t>pr',
-        processing: true,
+        dom: '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>pr',
+        processing : true,
+        paging     : true,
+        language   : {
+            sSearch: ""
+        },
         columns: [
             {data: "medidor", className: "dt-body-center align-middle"},
             {data: "device", className: "dt-body-center align-middle"},
@@ -49,9 +53,43 @@
         dtUnidades.ajax.reload();
     });
 
-    $(document).on('click', '.ios-switch', function () {
-        let _self = this;
+    $(document).on('click', '.ios-switch', function (e) {
+        // para propagação
+        e.preventDefault();
+
+        if ($(this).hasClass('on')) {
+            $(this).removeClass('on');
+            $(this).addClass('off');
+        } else {
+            $(this).removeClass('off');
+            $(this).addClass('on');
+        }
+
         let formData = $(this).parent().parent().serialize();
+
+        $("#md-pin-check .alert").html("").addClass("d-none");
+
+        // abre modal
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_check_code'},
+            type: 'ajax',
+            modal: true,
+            focus: "#code",
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: formData
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '#md-pin-check .modal-confirm', function (e) {
+        e.preventDefault();
+
+        let formData = $('.form-check-code').serialize();
+
+        $("#md-pin-check .alert").html("").addClass("d-none");
 
         $.ajax({
             method: 'POST',
@@ -60,32 +98,13 @@
             dataType: 'json',
             success: function (json) {
                 if (json.status === "success") {
-                    // altera status do botão
-                    $(_self).parent().addClass('warning')
-                    $(_self).parent().addClass('disabled')
-                    setTimeout(function () {
-                        $.ajax({
-                            method: 'POST',
-                            url: '/consigaz/edit_valve_stats',
-                            data: formData,
-                            dataType: 'json',
-                            success: function (json) {
-
-                            },
-                        });
-                    }, 5000);
+                    // recarrega tabela
+                    dtUnidades.ajax.reload();
+                    // fecha a modal
+                    $.magnificPopup.close();
                 } else {
-                    // notifica erro
-                    notifyError(json.message);
-
-                    // altera status do botão para valor anterior
-                    if ($(_self).hasClass('on')) {
-                        $(_self).removeClass('on');
-                        $(_self).addClass('off');
-                    } else {
-                        $(_self).removeClass('off');
-                        $(_self).addClass('on');
-                    }
+                    // mostra erro
+                    $("#md-pin-check .alert").html(json.message).removeClass("d-none");
                 }
             },
             error: function (xhr, status, error) {
@@ -93,7 +112,7 @@
             complete: function () {
             }
         });
-    });
+    })
 
     $(document).on('click', '.sync-leitura-modal', function (e) {
         e.preventDefault();

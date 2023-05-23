@@ -345,4 +345,42 @@ class Consigaz_model extends Base_model
 
         return $this->db->query($query)->getResult();
     }
+
+    public function save_secret_key($secret, $user_id)
+    {
+        $this->db->transStart();
+
+        $this->db->table('auth_identities')
+            ->where('user_id', $user_id)
+            ->set(array('secret_key' => $secret))
+            ->update();
+
+        $this->db->transComplete();
+
+        return $this->db->transStatus();
+    }
+
+    public function get_secret_key($user_id)
+    {
+        $query = "SELECT auth_identities.secret_key 
+            FROM auth_users
+            JOIN auth_identities ON auth_identities.user_id = auth_users.id AND auth_users.id = $user_id";
+
+        if ($this->db->query($query)->getNumRows()) {
+            return $this->db->query($query)->getRow()->secret_key;
+        }
+
+        return false;
+    }
+
+    public function get_medidor($medidor_id)
+    {
+        $query = "SELECT esm_medidores.*, esm_unidades.nome AS unidade_nome, esm_agrupamentos.nome AS agrupamento_nome
+            FROM esm_medidores
+            LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            LEFT JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+            WHERE esm_medidores.id = $medidor_id";
+
+        return $this->db->query($query)->getRow();
+    }
 }

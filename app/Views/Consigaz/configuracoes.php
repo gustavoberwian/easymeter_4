@@ -37,14 +37,26 @@
                             <div class="card-body">
 
                                 <div class="row">
-                                    <div class="col-md-4 mb-3">
-                                        <label for="area-comum" class="form-label">Identificador da Área Comum</label>
-                                        <input id="area-comum" value="" name="area_comum" type="text" class="form-control" placeholder="">
+                                    <div class="form-group row pb-4">
+                                        <label class="col-lg-5 control-label text-lg-end pt-2" for="area-comum">Identificador da Área Comum</label>
+                                        <div class="col-lg-5">
+                                            <input id="area-comum" value="" name="area_comum" type="text" class="form-control" placeholder="">
+                                        </div>
                                     </div>
-                                    <div class="col-md-4 mb-3">
-                                        <label for="split-report" class="form-label">Separar Área Comum e Unidades nos relatórios</label></br>
-                                        <div class="switch switch-sm switch-primary">
+                                    <div class="form-group row pb-4">
+                                        <label class="col-lg-5 control-label text-lg-end pt-2" for="split-report">Separar Área Comum e Unidades nos relatórios</label>
+                                        <div class="col-lg-6 switch switch-sm switch-primary align-items-center d-flex">
                                             <input type="checkbox" class="switch-input" id="split-report" name="split_report" data-plugin-ios-switch>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row pb-4">
+                                        <label class="col-lg-5 control-label text-lg-end pt-2">Autenticação em 2 etapas</label>
+                                        <div class="col-lg-6">
+                                            <?php if (is_null($secret)): ?>
+                                                <button class="btn btn-default generate-code"><i class="fas fa-qrcode" title=""></i> Gerar QR Code</button>
+                                            <?php else: ?>
+                                                <a class="btn btn-default request-code"><i class="fas fa-qrcode" title=""></i> Solicitar QR Code</a>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
                                 </div>
@@ -78,7 +90,9 @@
                                             <th class="d-none"></th>
                                             <th class="d-none"></th>
                                             <th class="text-center">Medidor</th>
-                                            <th class="text-center">Unidade</th>
+                                            <th class="text-center">Dispositivo</th>
+                                            <th class="text-center">Apto</th>
+                                            <th class="text-center">Bloco</th>
                                             <th class="text-center">Ações</th>
                                         </tr>
                                         </thead>

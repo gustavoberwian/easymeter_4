@@ -47,7 +47,7 @@
         },
     });
 
-    //setInterval(() => dtUnidades.ajax.reload(), 30000);
+    setInterval(() => dtUnidades.ajax.reload(), 30000);
 
     $(document).on('click', '.reload-table-modal', function () {
         dtUnidades.ajax.reload();
@@ -100,9 +100,6 @@
                 if (json.status === "success") {
                     // recarrega tabela
                     dtUnidades.ajax.reload();
-                    setTimeout(function () {
-                        dtUnidades.ajax.reload();
-                    }, 7500);
                     // fecha a modal
                     $.magnificPopup.close();
                 } else {
@@ -116,52 +113,6 @@
             }
         });
     })
-
-    /*$(document).on('click', '.ios-switch', function () {
-        let _self = this;
-        let formData = $(this).parent().parent().serialize();
-
-        $.ajax({
-            method: 'POST',
-            url: '/consigaz/edit_valve_stats',
-            data: formData,
-            dataType: 'json',
-            success: function (json) {
-                if (json.status === "success") {
-                    // altera status do botão
-                    $(_self).parent().addClass('warning')
-                    $(_self).parent().addClass('disabled')
-                    setTimeout(function () {
-                        $.ajax({
-                            method: 'POST',
-                            url: '/consigaz/edit_valve_stats',
-                            data: formData,
-                            dataType: 'json',
-                            success: function (json) {
-
-                            },
-                        });
-                    }, 5000);
-                } else {
-                    // notifica erro
-                    notifyError(json.message);
-
-                    // altera status do botão para valor anterior
-                    if ($(_self).hasClass('on')) {
-                        $(_self).removeClass('on');
-                        $(_self).addClass('off');
-                    } else {
-                        $(_self).removeClass('off');
-                        $(_self).addClass('on');
-                    }
-                }
-            },
-            error: function (xhr, status, error) {
-            },
-            complete: function () {
-            }
-        });
-    });*/
 
     $(document).on('click', '.sync-leitura-modal', function (e) {
         e.preventDefault();

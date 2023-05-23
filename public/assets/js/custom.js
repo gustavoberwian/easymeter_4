@@ -245,6 +245,10 @@ $(document).on("click", "#btn-back-last", function (e) {
     e.preventDefault();
     history.back();
 });
-
-$(".nav-pills").children().first().children().addClass('active left');
-$(".nav-pills").children().last().children().addClass('right')
+if (!document.querySelector('#btn-back-last')) {
+    $(".nav-pills").children().first().children().addClass('active left');
+    $(".nav-pills").children().last().children().addClass('right') 
+} else {
+    $(".nav-pills").children().eq(1).children().addClass('active left');
+    $(".nav-pills").children().last().children().addClass('right')
+}

@@ -33,8 +33,8 @@
 
                 <div class="tab-content" style="background-color: transparent; box-shadow: none; padding: 0;">
 
-<div class="tab-pane fade <?= $monitoria === 'water' ? 'show active' : '' ?>" id="water">
-
+                    <div class="tab-pane fade show active" id="water">
+            
     <section class="card card-easymeter mb-4">
         <header class="card-header">
             <div class="card-actions buttons">

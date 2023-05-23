@@ -187,3 +187,6 @@ button.nav-link.configs {
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
     border-top-color: #0088CC;
 }
+.btn-reload-chart {
+	margin-left: 10px;
+}

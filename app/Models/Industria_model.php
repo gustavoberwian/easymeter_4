@@ -179,15 +179,13 @@ class Industria_model extends Base_model
             }
         }
 
-        return $query;
-
-        if ($query->getNumRows() == 0)
+        if ($this->db->query($query)->getNumRows() == 0)
             return false;
 
         if ($array)
-            return $query->getResultArray();
+            return $this->db->query($query)->getResultArray();
         else
-            return $query->getResult();
+            return $this->db->query($query)->getResult();
     }
 
     public function get_report_by_id($id, $array = false)
@@ -201,13 +199,13 @@ class Industria_model extends Base_model
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
         if ($array)
-            return $query->row_array();
+            return $query->getRowArray();
         else
-            return $query->row();
+            return $query->getRow();
     }
 
     public function get_report_data_by_id($id, $array = false)
@@ -226,13 +224,13 @@ class Industria_model extends Base_model
         ");
 
         // verifica se retornou algo
-        if ($query->num_rows() == 0)
+        if ($query->getNumRows() == 0)
             return false;
 
         if ($array)
-            return $query->result_array();
+            return $query->getResultArray();
         else
-            return $query->result();
+            return $query->getResult();
     }
 
     public function get_user_alert($id, $monitoramento = null, $readed = false)

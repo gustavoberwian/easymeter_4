@@ -64,7 +64,7 @@ Na Uno Robótica, transformamos ideias visionárias em realidade, combinando exp
                 <img class="teste1" alt="demonstracao" src="http://localhost:8080/assets/img/site/easymeter_mandala.svg" style="max-height: 550px;">
             </div>
 
-            <h2 class="sech2">Easymeter</h2>
+            <h2 class="sech2">Texto de teste- Easymeter</h2>
             <p class="secp1">Nosso principal objetivo com o Sistema Easymeter é atender às demandas dos condomínios, indústrias e shoppings em relação à medição e individualização do consumo. Acreditamos firmemente na máxima de que "o que não é monitorado, não é controlado". Por meio de nossa solução, os condomínios que adotam o sistema experimentam uma redução média de cerca de 30% em seu consumo.
 
 O Easymeter vai além da medição de consumo. Também atendemos às necessidades de monitoramento e controle remoto e assistido de processos relacionados a água, energia, gás e resíduos em condomínios, indústrias, comércios e agronegócio. O que nos diferencia no mercado é o fato de utilizarmos hardware e software de desenvolvimento próprio para realizar a medição do consumo, garantindo uma qualidade e precisão superiores nas informações coletadas.

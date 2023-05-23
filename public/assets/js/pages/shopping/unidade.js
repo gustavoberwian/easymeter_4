@@ -1116,4 +1116,7 @@
         } 
     });
 
+    $(".nav-pills").children().eq(1).children().addClass('active left');
+    $(".nav-pills").children().last().children().addClass('right')
+
 }).apply(this, [jQuery]);

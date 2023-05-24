@@ -264,13 +264,6 @@
         };
     });
 
-    $(document).on("click", ".btn-reload-chart", function () {
-        $('#sel-device').trigger('change');
-
-    })
-        
-
-
     $(document).on("click", ".btn-download", function () {
         
         var $btn = $(this);
@@ -318,9 +311,10 @@
         }
     });
 
-    /**
-     * Handler on change select value
-     */
+    $(document).on("click", ".btn-reload-chart", function () {
+        apexchart(start, end);
+    });
+
     $('#compare').on('change', function () {
         apexchart(start_last, end_last);
     })

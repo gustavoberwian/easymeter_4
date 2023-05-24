@@ -2321,7 +2321,7 @@ class Energia extends UNO_Controller
                 c.value AS value_last_month
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+            LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
             LEFT JOIN (  
                     SELECT 
                         device,

@@ -36,7 +36,7 @@ class Water extends UNO_Controller
         $this->datatables = new Datatables(new Codeigniter4Adapter);
     }
 
-    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array())
+    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array(), $decimals_tooltip = 0)
     {
         $config = array(
             "chart" => array(
@@ -87,7 +87,7 @@ class Water extends UNO_Controller
             "extra" => array(
                 "tooltip" => array(
                     "title" => $titles,
-                    "decimals" => 0,
+                    "decimals" => $decimals_tooltip,
                 ),
                 "unit" => $unit,
                 "decimals" => $decimals,
@@ -338,7 +338,7 @@ class Water extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, 0, $extra, $footer, $dates);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, 0, $extra, $footer, $dates, 2);
 
         echo json_encode($config);
     }

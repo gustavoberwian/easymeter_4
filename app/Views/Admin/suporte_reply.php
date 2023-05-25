@@ -32,7 +32,7 @@
                                         <?php endif; ?>
                                     </h3>
                             
-                                    <p class="mt-2 mb-0 text-5"><?= (!is_null($chamado->condo)) ? $chamado->condo." - ".((!is_null($chamado->bloco)) ? $chamado->bloco."/" : "").$chamado->unidade." - " : ''; ?><?= (!is_null($chamado->email)) ? $chamado->email.' em ' : ''; ?><?= date("d/m/Y \à\s H:i", strtotime($chamado->cadastro)); ?></p>
+                                    <p class="mt-2 mb-0 text-5"><?= (!is_null($chamado->entidade)) ? $chamado->entidade." - ".((!is_null($chamado->agrupamento)) ? $chamado->agrupamento."/" : "").$chamado->unidade." - " : ''; ?><?= (!is_null($chamado->email)) ? $chamado->email.' em ' : ''; ?><?= date("d/m/Y \à\s H:i", strtotime($chamado->cadastro)); ?></p>
                                 </div>
                                 <div class="card mb-3">
                                     <div class="card-body">

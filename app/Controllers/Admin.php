@@ -18,6 +18,8 @@ class Admin extends UNO_Controller
 
     protected $input;
 
+    protected $email;
+
     protected Datatables $datatables;
 
     protected Viacep $viacep;
@@ -39,8 +41,8 @@ class Admin extends UNO_Controller
         $this->datatables = new Datatables(new Codeigniter4Adapter);
         $this->viacep = new Viacep();
 
-         // set variables
-         $this->url = service('uri')->getSegment(1);
+        // set variables
+        $this->url = service('uri')->getSegment(1);
     }
 
     public function index(): string
@@ -50,26 +52,26 @@ class Admin extends UNO_Controller
     }
 
     public function centrais($id = false)
-	{
+    {
         if ($id) {
             $data['central'] = $this->admin_model->get_central_entidade($id);
             $data['data'] = $this->admin_model->get_last_data($data['central']->nome, $data['central']->ultimo_envio);
             $data['erros'] = $this->admin_model->get_error_leitura($id, $data['central']->tabela);
 
             $labels = array();
-            for($i = 0; $i < 40; $i++) {
+            for ($i = 0; $i < 40; $i++) {
                 $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
             }
             $data['leituras'] = $labels;
 
-             return $this->render('central', $data);
+            return $this->render('central', $data);
         } else
-           return $this->render('centrais', array('count' => $this->admin_model->get_centrais_count()));
-	}
+            return $this->render('centrais', array('count' => $this->admin_model->get_centrais_count()));
+    }
 
     public function entities($param1 = null, $param2 = null): string
     {
-        if ( intval($param1) > 0 ) {
+        if (intval($param1) > 0) {
 
             $data['geral'] = false;
             $data['entity'] = $this->admin_model->get_entity($param1);
@@ -83,26 +85,24 @@ class Admin extends UNO_Controller
                 $data['readonly'] = '';
 
                 $labels = array();
-                for($i = 0; $i < 40; $i++) {
+                for ($i = 0; $i < 40; $i++) {
                     $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
                 }
                 $data['leituras'] = $labels;
 
                 return $this->render('entity_edit', $data);
-
             } else {
 
                 $data['readonly'] = 'readonly disabled';
 
                 $labels = array();
-                for($i = 0; $i < 40; $i++) {
+                for ($i = 0; $i < 40; $i++) {
                     $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
                 }
                 $data['leituras'] = $labels;
 
                 return $this->render('entity_edit', $data);
             }
-
         } elseif ($param1 === 'incluir') {
 
             return $this->render('entity_add');
@@ -175,9 +175,9 @@ class Admin extends UNO_Controller
     // }
 
     public function users($param1 = null, $param2 = null)
-    {   
+    {
 
-        if ( intval($param1) > 0 ) {
+        if (intval($param1) > 0) {
             $users = auth()->getProvider();
             $user = $users->findById($param1);
             $groups = $this->admin_model->get_user_info($param1);
@@ -189,42 +189,32 @@ class Admin extends UNO_Controller
             $data['groups']         = $this->admin_model->get_groups_for_user($param1);
 
 
-           
-            if ($data['classificacao'] == 'entidades')
-            {
+
+            if ($data['classificacao'] == 'entidades') {
                 $data['val'] = $this->admin_model->get_name_by_id($data['classificacao'], $this->admin_model->get_user_relations($param1, 'entidade'));
-
-            } elseif ($data['classificacao'] == 'agrupamentos')
-            {   
+            } elseif ($data['classificacao'] == 'agrupamentos') {
                 $data['val'] = $this->admin_model->get_name_by_id($data['classificacao'], $this->admin_model->get_user_relations($param1, 'agrupamento'));
-
-            } elseif ($data['classificacao'] == 'unidade')
-            {
+            } elseif ($data['classificacao'] == 'unidade') {
                 $data['val'] = $this->admin_model->get_code_by_unity_id($this->admin_model->get_user_relations($param1, $data['classificacao']));
-
             } else {
                 $data['val'] = '';
             }
 
 
-            if ($param2 == 'editar')
-            {
+            if ($param2 == 'editar') {
                 $data['readonly'] = '';
                 return $this->render('edit_user', $data);
+            } else {
 
-            }  else {
-
-                $data['readonly'] = 'readonly disabled'; 
+                $data['readonly'] = 'readonly disabled';
                 return $this->render('edit_user', $data);
             }
-                
-            } elseif ($param1 === 'incluir')
-            {
-                return $this->render("add_user");
-            }
-            return $this->render('users');
+        } elseif ($param1 === 'incluir') {
+            return $this->render("add_user");
+        }
+        return $this->render('users');
     }
-        
+
 
     public function profile()
     {
@@ -236,9 +226,8 @@ class Admin extends UNO_Controller
         $data['emails'] = $this->admin_model->get_user_emails($this->user->id);
         helper('form');
         $user_id = $this->user->id;
-        
-        if ($this->user->inGroup('shopping', 'admin'))
-        {
+
+        if ($this->user->inGroup('shopping', 'admin')) {
             $data['condo'] = $this->admin_model->get_condo($this->user->type->entity_id);
         } elseif ($this->user->inGroup('group')) {
             $data['condo'] = $this->admin_model->get_condo_by_group($this->user->type->group_id);
@@ -251,7 +240,7 @@ class Admin extends UNO_Controller
         if ($this->input->getMethod() == 'post') {
             $image = $this->input->getPost('crop-image');
             $senha = $this->input->getPost('password');
-        
+
             if ($image) {
                 // valida se é imagem...
 
@@ -261,22 +250,20 @@ class Admin extends UNO_Controller
                 $image = base64_decode($image);
                 $filename = time() . $this->user->id . '.png';
                 if (file_put_contents('../public/assets/img/uploads/avatars/' . $filename, $image)) {
-        
-                // mensagem
+
+                    // mensagem
                     $img['avatar'] = $filename;
 
                     // apaga avatar anterior
                     if ($this->user->avatar && file_exists('../public/assets/img/uploads/avatars/' . $this->user->avatar)) {
                         unlink('../public/assets/img/uploads/avatars/' . $this->user->avatar);
                         $this->user->avatar = $filename;
-                                
-                }
-                    
+                    }
+
                     // atualiza avatar em auth_users
                     if ($this->admin_model->update_avatar($this->user->id, $img)) {
                         $data['error'] = false;
-                        }
-                         else {
+                    } else {
                         //erro e mensagem
                     }
                 } else {
@@ -285,37 +272,36 @@ class Admin extends UNO_Controller
             } else {
 
 
-                if($this->input->getPost('password'))
-                {
+                if ($this->input->getPost('password')) {
                     $rules = [
-                'password' => 'required|min_length[6]',
-                'confirm' => 'required|matches[password]',
-                'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
-                'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
-               ];
+                        'password' => 'required|min_length[6]',
+                        'confirm' => 'required|matches[password]',
+                        'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
+                        'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
+                    ];
                 } else {
                     $rules = [
                         'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
                         'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
                     ];
                 };
-                
 
-                 $emails = null;
-                 if ($this->input->getPost('emails') != '') {
-                     $emails = explode(',', $this->input->getPost('emails'));
-                        $rules = [
-                            'emails' => 'valid_email'
-                        ];
-                     }
-                 
-               
+
+                $emails = null;
+                if ($this->input->getPost('emails') != '') {
+                    $emails = explode(',', $this->input->getPost('emails'));
+                    $rules = [
+                        'emails' => 'valid_email'
+                    ];
+                }
+
+
                 if ($this->validate($rules) && !isset($data['email_form'])) {
                     // coleta os dados do post
                     $password = $this->input->getPost('password');
                     $telefone = $this->input->getPost('telefone');
                     $celular  = $this->input->getPost('celular');
-                    
+
 
                     // atualiza dados
                     if (!$this->admin_model->update_user($user_id, $password, $telefone, $celular, $emails)) {
@@ -324,7 +310,6 @@ class Admin extends UNO_Controller
                             'status' => 'error',
                             'message' => 'Não foi possível atualizar os dados. Tente novamente em alguns minutos.'
                         ));
-
                     } else {
                         $data['error'] = false;
                         //mensagem
@@ -332,8 +317,6 @@ class Admin extends UNO_Controller
                             'status' => 'success',
                             'message' => 'Seus dados foram atualizados com sucesso.'
                         ));
-                        
-
                     }
                 }
                 return;
@@ -344,14 +327,14 @@ class Admin extends UNO_Controller
     }
 
     public function grupos()
-	{
-		$this->render('grupos');
-	}
+    {
+        $this->render('grupos');
+    }
 
     public function alertas()
-	{
-		$this->render('alerts');
-	}
+    {
+        $this->render('alerts');
+    }
 
 
     // POST PART FILE
@@ -390,7 +373,8 @@ class Admin extends UNO_Controller
                 LEFT JOIN esm_pessoas ON esm_entidades.gestor_id = esm_pessoas.id
                 LEFT JOIN esm_administradoras ON esm_entidades.admin_id = esm_administradoras.id 
             WHERE
-                esm_entidades.visibility = 'normal'" . $inactives . $mode);
+                esm_entidades.visibility = 'normal'" . $inactives . $mode
+        );
         // inclui monitoramento
         $dt->add('monitoramento', function ($data) {
             $ret = '';
@@ -503,7 +487,7 @@ class Admin extends UNO_Controller
     }
 
     public function suporte($id = false)
-	{
+    {
         if ($id) {
             if ($this->input->getPost('fechar') == "fechar") {
                 $data['chamado_close'] = $this->admin_model->chamado_close($id, $this->user->id);
@@ -513,19 +497,124 @@ class Admin extends UNO_Controller
                 //TODO: enviar email pro usuário
             }
             $data['chamado'] = $this->admin_model->get_chamado($id);
-			if ($data['chamado']->status == 'aberto')
+            if ($data['chamado']->status == 'aberto')
                 $data['status'] = "<span class=\"badge badge-danger\">Aberto</span>";
             elseif ($data['chamado']->status == 'fechado')
                 $data['status'] = "<span class=\"badge badge-success\">Fechado</span>";
-			else
-                $data['status'] = "<span class=\"badge badge-warning\">".ucfirst($data['chamado']->status)."</span>";
+            else
+                $data['status'] = "<span class=\"badge badge-warning\">" . ucfirst($data['chamado']->status) . "</span>";
 
             $data['replys']  = $this->admin_model->get_chamado_reply($id);
             $this->render('suporte_reply', $data);
         } else {
-            $this->render('suporte');
+            return $this->render('suporte');
         }
-	}
+    }
+
+    public function md_chamado()
+    {
+        echo view('Admin/modals/chamado');
+    }
+
+    public function md_new_chamado()
+    {
+
+        return view('modals/admin/md_chamado');
+    }
+
+    public function new_chamado()
+    {
+        $ass = $this->input->getPost('assunto');
+        $msg = $this->input->getPost('message');
+        $this->user->email = $this->admin_model->get_user_emails($this->user->id);
+
+        $ret = $this->admin_model->new_chamado($this->user, $ass, $msg);
+
+        if ($ret['status'] == 'success') {
+            //envia email
+            $email = \Config\Services::email();
+            
+            $data['cid'] = date('Y') . str_pad($ret['id'], 6, "0", STR_PAD_LEFT);
+            $data['titulo'] = $ret['assunto'];
+            $data['nome'] = $this->user->username;
+            $data['msg'] = $msg;
+            $data['prev'] = date('d/m/Y', strtotime("+2 days", time()));
+
+            $email->setFrom('contato@easymeter.com.br', "Easymeter");
+            $email->setTo('gabrieleduardowagener@gmail.com');
+            $email->setReplyTo('contato@easymeter.com.br');
+            $email->setSubject('Suporte Easymeter');
+            $email->setMessage(view('admin/emails/suporte', $data));
+
+            $email->send();
+        }
+
+        echo json_encode($ret);
+    }
+
+    public function get_chamados_novo()
+    {
+        // realiza a query via dt
+        $dt = $this->datatables->query("  SELECT
+        esm_tickets.id AS id, 
+        esm_tickets.unidade_id AS Unidade_id, 
+        esm_tickets.nome AS ticket, 
+        esm_tickets.email AS email, 
+        esm_tickets.mensagem AS mensagem, 
+        esm_tickets.STATUS AS status, 
+        DATE_FORMAT( esm_tickets.cadastro, '%d/%m/%Y' ) AS cadastro, 
+        esm_departamentos.nome AS departamento, 
+        esm_entidades.tabela AS entidade, 
+        esm_entidades.nome AS agrupamento, 
+        esm_entidades.classificacao AS classificacao
+    FROM
+        esm_tickets
+        JOIN
+        esm_departamentos
+        ON 
+            esm_tickets.departamento = esm_departamentos.id
+        LEFT JOIN
+        esm_unidades
+        ON 
+            esm_unidades.id = esm_tickets.unidade_id
+        LEFT JOIN
+        esm_agrupamentos
+        ON 
+            esm_agrupamentos.id = esm_unidades.agrupamento_id
+        LEFT JOIN
+        esm_entidades
+        ON 
+            esm_entidades.id = esm_agrupamentos.entidade_id
+    GROUP BY
+        esm_tickets.id
+    ORDER BY
+        COALESCE ( esm_tickets.cadastro ) DESC
+            ");
+
+        $dt->add('DT_RowId', function ($data) {
+            return $data['id'];
+        });
+
+        $dt->edit('entidade', function ($data) {
+            return ucfirst($data['entidade']);
+        });
+
+        $dt->edit('classificacao', function ($data) {
+            return '<span class="badge badge-primary">' . ucfirst($data['classificacao']) . '</span>';
+        });
+
+        $dt->edit('status', function ($data) {
+            if ($data['status'] == 'aberto')
+                return "<span class=\"badge badge-danger\" style=\"width: 70px;\">Aberto</span>";
+            elseif ($data['status'] == 'fechado')
+                return "<span class=\"badge badge-success\" style=\"width: 70px;\">Fechado</span>";
+            else
+                return "<span class=\"badge badge-warning\" style=\"width: 70px;\">" . ucfirst($data['status']) . "</span>";
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
 
     public function relatorios($entity = "")
     {
@@ -624,7 +713,7 @@ class Admin extends UNO_Controller
     public function add_ramal()
     {
         $dados['nome']          = $this->input->getPost('nome-ramal') ?? '';
-        $dados['tipo']          = $this->input->getPost('tipo-ramal') ?? ''; 
+        $dados['tipo']          = $this->input->getPost('tipo-ramal') ?? '';
         $dados['entidade_id']   = $this->input->getPost('sel-entity') ?? '';
 
         echo $this->admin_model->add_ramal($dados);
@@ -843,29 +932,29 @@ class Admin extends UNO_Controller
         $nome       = $this->input->getPost('id-bloco');
         $rid        = json_decode($this->input->getPost('sel-ramal'));
         $message    = [];
-        
-        if (is_array($rid)) {  
+
+        if (is_array($rid)) {
             if ($id) {
                 // atualiza bloco na tabela blocos
                 if (!$this->admin_model->update_agrupamento($id, $nome, 0)) {
                     return false;
                 } else {
-                    foreach ($rid as $r) {            
+                    foreach ($rid as $r) {
                         $data['agrupamento_id'] = $id->data->value;
                         $data['ramal_id'] = $r->value;
                         $message = $this->admin_model->group_ramais($data);
                     }
-                } 
+                }
             } else {
                 // insere bloco
                 $return = json_decode($this->admin_model->add_agrupamento($cid, $nome, 0));
-                foreach ($rid as $r) {            
+                foreach ($rid as $r) {
                     $data['agrupamento_id'] = $return->data->value;
                     $data['ramal_id'] = $r->value;
                     $message = $this->admin_model->group_ramais($data);
-                } 
+                }
             }
-        } else {  
+        } else {
             if ($id) {
                 // atualiza bloco na tabela blocos
                 $message = $this->admin_model->update_agrupamento($id, $nome, $rid->value);
@@ -899,17 +988,18 @@ class Admin extends UNO_Controller
 
     public function get_users()
     {
-        
+
         if ($this->input->getGet("mode") == 0) $m = "";
-        if ($this->input->getGet('mode') == 1) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'agua'"; 
-        if ($this->input->getGet('mode') == 2) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'gas'"; 
-        if ($this->input->getGet('mode') == 3) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'energia'"; 
-        if ($this->input->getGet('mode') == 4) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'nivel'"; 
+        if ($this->input->getGet('mode') == 1) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'agua'";
+        if ($this->input->getGet('mode') == 2) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'gas'";
+        if ($this->input->getGet('mode') == 3) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'energia'";
+        if ($this->input->getGet('mode') == 4) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'nivel'";
 
 
-     
 
-        $dt = $this->datatables->query("
+
+        $dt = $this->datatables->query(
+            "
             SELECT 
                 auth_users.id AS id,
                 auth_users.avatar AS avatar,
@@ -988,7 +1078,7 @@ class Admin extends UNO_Controller
     public function add_user()
     {
         $users = auth()->getProvider();
-        
+
         // Cria novo usuário
         $user = new User([
             'username' => $this->input->getPost('nome-user') ?? '',
@@ -1002,33 +1092,29 @@ class Admin extends UNO_Controller
         // Recebe dados para a inserção
         $dados['group'] = [];
 
-        if ($this->input->getPost('user-agua') === 'on')
-        {
+        if ($this->input->getPost('user-agua') === 'on') {
             $dados['group']['agua'] = 'agua';
-        } 
+        }
 
-        if ($this->input->getPost('user-gas') === 'on')
-        {
+        if ($this->input->getPost('user-gas') === 'on') {
             $dados['group']['gas'] = 'gas';
-        } 
+        }
 
-        if ($this->input->getPost('user-energia') === 'on')
-        {
+        if ($this->input->getPost('user-energia') === 'on') {
             $dados['group']['energia'] = 'energia';
         }
 
-        if ($this->input->getPost('user-nivel') === 'on')
-        {
+        if ($this->input->getPost('user-nivel') === 'on') {
             $dados['group']['nivel'] = 'nivel';
-        } 
-        
+        }
+
         $dados['user-id']               = $users->getInsertID();
-        $dados['classificacao']         = $this->input->getPost('classificacao-user');   
+        $dados['classificacao']         = $this->input->getPost('classificacao-user');
         $dados['page']                  = $this->input->getPost('page-user') ?? '';
         $dados['entity-user']           = $this->input->getPost('entity-user') ?? '';
         $dados['unity-user']            = $this->input->getPost('unity-user') ?? '';
         $dados['group-user']            = $this->input->getPost('group-user') ?? '';
-        $dados['groups-user']           = array_map('trim',explode(",", $this->input->getPost('groups-user') ?? ''));
+        $dados['groups-user']           = array_map('trim', explode(",", $this->input->getPost('groups-user') ?? ''));
 
         //Chamada da função de inserção
         echo $this->admin_model->add_user($dados);
@@ -1038,37 +1124,33 @@ class Admin extends UNO_Controller
     {
         //realiza consulta
         $p = $this->admin_model->get_entities();
-    
+
         $result = '';
-        foreach($p as $option) {
+        foreach ($p as $option) {
             $result .= "<option>$option</option>";
-            }
-            print_r($result);
+        }
+        print_r($result);
         echo $result;
-                    
     }
 
     public function get_groups_for_select()
     {
         //realiza consulta
         $p = $this->admin_model->get_groups_for_select();
-    
+
         $result = '';
-        foreach($p as $option) {
+        foreach ($p as $option) {
             $result .= "<option>$option</option>";
-            }
-            print_r($result);
+        }
+        print_r($result);
         echo $result;
-                    
     }
 
     public function edit_active_stats()
     {
-        if(!$this->admin_model->update_active($this->input->getPost('id')))
-        {
+        if (!$this->admin_model->update_active($this->input->getPost('id'))) {
             return false;
         }
-           
     }
 
     public function edit_user()
@@ -1088,69 +1170,66 @@ class Admin extends UNO_Controller
 
         $users->save($user);
 
-        
+
         // Recebe dados para a edição
 
-        if ($this->input->getPost('user-agua') === 'on')
-        {
+        if ($this->input->getPost('user-agua') === 'on') {
             $dados['group']['agua'] = 'agua';
         } else {
-           $dados['group']['agua'] = ''; 
+            $dados['group']['agua'] = '';
         }
 
-        if ($this->input->getPost('user-gas') === 'on')
-        {
+        if ($this->input->getPost('user-gas') === 'on') {
             $dados['group']['gas'] = 'gas';
         } else {
-            $dados['group']['gas'] = ''; 
-         }
- 
+            $dados['group']['gas'] = '';
+        }
 
-        if ($this->input->getPost('user-energia') === 'on')
-        {
+
+        if ($this->input->getPost('user-energia') === 'on') {
             $dados['group']['energia'] = 'energia';
         } else {
-            $dados['group']['energia'] = ''; 
-         }
- 
+            $dados['group']['energia'] = '';
+        }
 
-        if ($this->input->getPost('user-nivel') === 'on')
-        {
+
+        if ($this->input->getPost('user-nivel') === 'on') {
             $dados['group']['nivel'] = 'nivel';
         } else {
-            $dados['group']['nivel'] = ''; 
-         }
- 
-        
+            $dados['group']['nivel'] = '';
+        }
+
+
         $dados['page'] = $this->input->getPost('page-user') ?? '';
-        $dados['groups-user'] =  array_map('trim',explode(",", $this->input->getPost('groups-user') ?? ''));
-       
+        $dados['groups-user'] =  array_map('trim', explode(",", $this->input->getPost('groups-user') ?? ''));
+
         //Chamada da função de inserção
         echo $this->admin_model->edit_user($dados);
-    }   
-    
+    }
+
     public function contatos()
-	{
+    {
         $data['total'] = $this->admin_model->count_contato(0);
-		return $this->render('contatos', $data);
-	}
+        return $this->render('contatos', $data);
+    }
+
     public function get_contatos()
     {
-        
+
         //Conecta ao banco principal
         $db = Database::connect('easy_com_br');
-        
+
         // realiza a query via dt
         $builder = $db->table('esm_contatos');
         $builder->select("id, nome, email, telefone, condominio, unidades, cidade, estado, status, DATE_FORMAT(cadastro,'%d/%m/%Y') AS data");
         $builder->orderBy("cadastro DESC");
 
         $dt = new Datatables(new Codeigniter4Adapter);
-     
+
         // using CI4 Builder
         $dt->query($builder);
 
-      
+
 
         $dt->edit('cidade', function ($data) {
             return $data['cidade'] . '/' . $data['estado'];
@@ -1183,7 +1262,7 @@ class Admin extends UNO_Controller
     {
         // pega id do post
         $id = $this->input->getPost('id');
-        
+
         // altera status do log
         $return = $this->admin_model->change_contact_state($id);
 

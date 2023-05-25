@@ -541,7 +541,16 @@ class Admin extends UNO_Controller
             $data['prev'] = date('d/m/Y', strtotime("+2 days", time()));
 
             $email->setFrom('contato@easymeter.com.br', "Easymeter");
-            $email->setTo('gabrieleduardowagener@gmail.com');
+            $email->setTo('atendimento@unorobotica.com.br');
+            $email->setReplyTo($this->user->email);
+            $email->setSubject('Suporte Easymeter');
+            $email->setMessage(view('admin/emails/aviso_chamado', $data));
+
+            $email->send();
+
+            
+            $email->setFrom('contato@easymeter.com.br', "Easymeter");
+            $email->setTo($this->user->email);
             $email->setReplyTo('contato@easymeter.com.br');
             $email->setSubject('Suporte Easymeter');
             $email->setMessage(view('admin/emails/suporte', $data));

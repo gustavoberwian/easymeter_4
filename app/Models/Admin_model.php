@@ -273,41 +273,6 @@ class Admin_model extends Base_model
         return $query->getResult();
     }
 
-    public function new_reply($id, $message, $user){
-        
-    $db = \Config\Database::connect();
-
-    $db->transStart();
-
-    $data = [
-        'ticket_id' => $id,
-        'mensagem' => $message,
-        'user_id' => $user
-    ];
-    
-    $db->table('esm_tickets_reply')->insert($data);
-
-    $db->table('esm_tickets')->where('id', $id)->update(array('status' => 'respondido', 'fechado_em' => null, 'fechado_por' => null));
-
-    $db->transComplete();
-
-    // verifica status e retorna de acordo
-    if ($db->transStatus() === FALSE) {
-        return array(
-            "status" => "error", 
-            "id" => $id, 
-            'assunto' => $message
-        );
-    } else {
-        return array(
-            "status" => "success", 
-            "id" => $id, 
-            'assunto' => $message
-        );
-    }
-}
-
-
     //  public function get_chamados_novo($status = false, $limit = 0)
     // {
     //     // aplica filtro pelo status

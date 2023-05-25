@@ -9,24 +9,26 @@
 							<h2 class="card-title">Chamados</h2>
 						</header>
 						<div class="card-body">
-							<table class="table table-bordered table-striped table-nowrap table-hover" id="dt-tickets" data-url="<?php echo site_url('ajax/chamados'); ?>">
+							<table class="table table-bordered table-striped table-nowrap" id="dt-suporte" data-url="<?php echo site_url('admin/get_chamados_novo'); ?>">
 								<thead>
 									<tr role="row">
-										<th width="7%">id</th>
-										<th width="8%">Status</th>
-                                        <th width="15%">Nome</th>
-                                        <th width="6%">Cond.</th>
-                                        <th width="6%">Unid.</th>
-										<th width="34%">Mensagem</th>
-										<th width="6%">Dpto</th>
-										<th width="8%">Criação</th>
-										<th width="8%">Ú.Movim.</th>
+										<th width="10%">Unidade</th>
+										<th width="25%">Nome</th>
+										<th width="10%">Email</th>
+										<th width="15%">Mensagem</th>
+										<th width="15%">Status</th>
+										<th width="15%">Cadastro</th>
+										<th width="15%">Departamento</th>
+										<th width="15%">Agrupamento</th>
+										<th width="15%">Classificação</th>
 									</tr>
 								</thead>
-								<tbody>
-								</tbody>
+							
 							</table>
 						</div>
 					</section>
 					<!-- end: page -->
 				</section>
+				
+
+				

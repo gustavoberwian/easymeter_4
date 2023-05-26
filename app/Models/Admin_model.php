@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Models;
+
 use Config\Database;
 
 class Admin_model extends Base_model
@@ -27,25 +28,52 @@ class Admin_model extends Base_model
         // realiza a consulta
         $query = $this->db->query("
         SELECT
-        esm_entidades.nome AS entidade_nome,
-        esm_entidades_centrais.nome AS DT_RowId,
-        esm_entidades_centrais.nome,
-        esm_entidades_centrais.modo,
-        esm_entidades_centrais.board,
-        esm_entidades_centrais.firmware,
-        esm_entidades_centrais.simcard,
-        esm_entidades.nome AS entidade,
-        esm_entidades.tabela,
-        esm_entidades_centrais.parent,
-        esm_entidades_centrais.auto_ok,
-        esm_entidades_centrais.ultimo_envio,
-        esm_entidades_centrais.localizador 
-    FROM
-        esm_entidades_centrais
-        JOIN esm_entidades ON esm_entidades.id = esm_entidades_centrais.entidade_id 
-    WHERE
-        esm_entidades_centrais.nome = '$id'
+            esm_entidades.nome AS entidade_nome,
+            esm_entidades_centrais.nome AS DT_RowId,
+            esm_entidades_centrais.nome,
+            esm_entidades_centrais.modo,
+            esm_entidades_centrais.board,
+            esm_entidades_centrais.firmware,
+            esm_entidades_centrais.simcard,
+            esm_entidades.nome AS entidade,
+            esm_entidades.tabela,
+            esm_entidades_centrais.parent,
+            esm_entidades_centrais.auto_ok,
+            esm_entidades_centrais.ultimo_envio,
+            esm_entidades_centrais.localizador 
+        FROM
+            esm_entidades_centrais
+            JOIN esm_entidades ON esm_entidades.id = esm_entidades_centrais.entidade_id 
+        WHERE
+            esm_entidades_centrais.nome = '$id'
         ");
+
+        if ($query->getNumRows() == 0) {
+            $db = Database::connect('easy_com_br');
+            $query = $db->query("
+            SELECT 
+                esm_condominios.nome AS entidade_nome,
+                esm_condominios_centrais.nome as DT_RowId,
+                esm_condominios_centrais.nome,
+                esm_condominios_centrais.modo,
+                esm_condominios_centrais.board, 
+                esm_condominios_centrais.firmware,
+                esm_condominios_centrais.simcard,
+                esm_condominios.nome AS condo,
+                esm_condominios.tabela, 
+                esm_condominios_centrais.parent,
+                esm_condominios_centrais.auto_ok,
+                esm_condominios_centrais.ultimo_envio,
+                esm_condominios_centrais.localizador
+            FROM 
+                esm_condominios_centrais 
+            JOIN
+                esm_condominios ON esm_condominios.id = esm_condominios_centrais.condo_id
+            WHERE 
+                esm_condominios_centrais.nome = '$id'
+            ");
+        }
+
 
         return $query->getRow();
     }
@@ -70,15 +98,40 @@ class Admin_model extends Base_model
 
     public function get_last_data($central, $stamp)
     {
-        $query = $this->db->query("
+        if (!$stamp) {
+            $query = $this->db->query("
+            SELECT *
+            FROM esm_central_data
+            WHERE nome = '$central'
+        ");
+        } else {
+            $query = $this->db->query("
             SELECT *
             FROM esm_central_data
             WHERE nome = '$central' AND timestamp = $stamp
         ");
+        }
 
         // verifica se retornou algo
+        if (!$query) {
+            $db = Database::connect('easy_com_br');
+            if (!$stamp) {
+                $query = $db->query("
+                SELECT *
+                FROM esm_central_data
+                WHERE nome = '$central'
+            ");
+            } else {
+                $query = $db->query("
+                SELECT *
+                FROM esm_central_data
+                WHERE nome = '$central' AND timestamp = $stamp
+            ");
+            }
+        }
         if (!$query)
-            return false;
+            return 0;
+            
 
         return $query->getRow();
     }
@@ -96,12 +149,28 @@ class Admin_model extends Base_model
         if ($medidor->getNumRows() == 0)
             return false;
 
+        $db = Database::connect('easy_com_br');
+
+        $query = $this->db->query("SHOW TABLES LIKE 'esm_leituras_{$tabela}_agua'");
+
         // 604800 = ultimos 7 dias
-        $query = $this->db->query("
+        if ($query->getNumRows() != 0) {
+            $query = $this->db->query("
             SELECT COUNT(timestamp) AS realizadas, ( UNIX_TIMESTAMP() - MOD(UNIX_TIMESTAMP(), 3600) - MIN(timestamp) ) / 3600 + 1 AS total
             FROM esm_leituras_{$tabela}_agua 
             WHERE medidor_id = {$medidor->getRow()->id}  AND timestamp > (UNIX_TIMESTAMP() - 604800)
         ");
+        } else {
+            $query = $db->query("
+            SELECT COUNT(timestamp) AS realizadas, ( UNIX_TIMESTAMP() - MOD(UNIX_TIMESTAMP(), 3600) - MIN(timestamp) ) / 3600 + 1 AS total
+            FROM esm_leituras_{$tabela}_agua 
+            WHERE medidor_id = {$medidor->getRow()->id}  AND timestamp > (UNIX_TIMESTAMP() - 604800)
+        ");
+        }
+
+        // verifica se retornou algo
+        if (!$query)
+            return 0;
 
         return $query->getRow();
     }
@@ -238,12 +307,21 @@ class Admin_model extends Base_model
 
     public function get_central_leituras($central, $tabela)
     {
+        $db = Database::connect('easy_com_br');
         $query = $this->db->query("
             SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
             FROM esm_leituras_{$tabela}_agua
             WHERE timestamp >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY)) AND medidor_id = (SELECT id FROM esm_medidores WHERE central = '$central' LIMIT 1)
             GROUP BY year(FROM_UNIXTIME(`timestamp`)), month(FROM_UNIXTIME(`timestamp`)), day(FROM_UNIXTIME(`timestamp`))
         ");
+        if ($query) {
+            $query = $db->query("
+            SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
+            FROM esm_leituras_{$tabela}_agua
+            WHERE timestamp >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY)) AND medidor_id = (SELECT id FROM esm_medidores WHERE central = '$central' LIMIT 1)
+            GROUP BY year(FROM_UNIXTIME(`timestamp`)), month(FROM_UNIXTIME(`timestamp`)), day(FROM_UNIXTIME(`timestamp`))
+        ");
+        }
 
         $values = array();
         if ($query->getNumRows() == 0)
@@ -337,7 +415,8 @@ class Admin_model extends Base_model
     {
         return $this->db->update('esm_tickets', array(
             'status' => 'fechado',
-            'fechado_em' => date("Y/m/d H:i:s"), 'fechado_por' => $user
+            'fechado_em' => date("Y/m/d H:i:s"),
+            'fechado_por' => $user
         ), array('id' => $id));
     }
 
@@ -359,7 +438,8 @@ class Admin_model extends Base_model
     {
         $entity_id = $this->input->getGet('entity');
         $this->user = auth()->user();
-        if (is_null($entity_id)) $entity_id = $this->user->entity->id;
+        if (is_null($entity_id))
+            $entity_id = $this->user->entity->id;
         // realiza a query via dt
         $dt = $this->datatables->query("
             SELECT esm_fechamentos.id AS DT_RowId, esm_fechamentos.competencia,
@@ -406,7 +486,8 @@ class Admin_model extends Base_model
     {
         $entity_id = $this->input->getGet('condo');
         $this->user = auth()->user();
-        if (is_null($entity_id)) $entity_id = $this->user->entity->id;
+        if (is_null($entity_id))
+            $entity_id = $this->user->entity->id;
 
         // realiza a query via dt
         $dt = $this->datatables->query("
@@ -891,7 +972,7 @@ class Admin_model extends Base_model
                 if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user-id'], 'entidade_id' => $this->get_table_by_name($dados['classificacao'], $dados['entity-user'])->id))->insert()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
-    
+
                 if (!$this->db->table('auth_groups_users')->set(array('group' => 'admin', 'user_id' => $dados['user-id']))->insert()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
@@ -899,7 +980,7 @@ class Admin_model extends Base_model
                 if (!$this->db->table('auth_user_relation')->set(array('user_id' => $dados['user-id'], 'agrupamento_id' => $this->get_table_by_name($dados['classificacao'], $dados['group-user'])->id))->insert()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
-    
+
                 if (!$this->db->table('auth_groups_users')->set(array('group' => 'group', 'user_id' => $dados['user-id']))->insert()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
                 }
@@ -1086,11 +1167,9 @@ class Admin_model extends Base_model
                 auth_groups_users.group != 'admin' " . $filter
         );
 
-        if ($query->getNumRows() == 0) 
-        {
+        if ($query->getNumRows() == 0) {
             return json_encode(array("status" => "success", "message" => "Usuário editado com sucesso."));
-        } else 
-        {
+        } else {
             foreach ($query->getResultArray() as $q) {
                 if (!$this->db->table('auth_groups_users')->where('user_id', $dados['user_id'])->where('group', $q)->delete()) {
                     return json_encode(array("status" => "error", "message" => $this->db->error()));
@@ -1391,23 +1470,23 @@ class Admin_model extends Base_model
     }
 
     public function change_contact_state($id)
-    {   
-        
+    {
+
         $db = Database::connect('easy_com_br');
-       
+
         $res = $db->table('esm_contatos')->where('esm_contatos.id', $id)->select('esm_contatos.status')->get()->getRow()->status;
         $result = (intval($res) == 1 ? 0 : 1);
-     
+
         if (!$db->table('esm_contatos')->set(array('status' => $result))->where('id', $id)->update())
-            return array("status"  => "error", "message" => $db->error());
+            return array("status" => "error", "message" => $db->error());
         else
-            return array("status"  => "success", "message" => "Entrada marcada com sucesso");
+            return array("status" => "success", "message" => "Entrada marcada com sucesso");
     }
-    
+
 
     public function count_contato($status = -1)
     {
-        
+
         $db = Database::connect('easy_com_br');
         $query = $db->table('esm_contatos');
         // aplica filtro pelo status
@@ -1420,5 +1499,91 @@ class Admin_model extends Base_model
         // verifica se retornou algo
         return $result->getNumRows();
     }
+    public function get_ultima_leitura($central, $tabela)
+    {
+        $db = Database::connect('easy_com_br');
 
+        $query = $db->query("
+            SELECT IFNULL(DATE_FORMAT(FROM_UNIXTIME(MAX(timestamp)), '%d/%m/%Y %H:%i:%s'), '-') AS ultima_leitura
+            FROM esm_leituras_{$tabela}_agua
+            WHERE medidor_id = (SELECT id FROM esm_medidores WHERE central = '$central' LIMIT 1)
+        ");
+
+        return $query->getRow()->ultima_leitura;
+    }
+    public function get_last_leitura($central, $tabela)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->query("
+            SELECT MAX(timestamp) AS leitura 
+            FROM esm_leituras_{$tabela}_agua 
+            WHERE medidor_id = (SELECT id 
+                FROM esm_medidores
+                WHERE central = '$central'
+                LIMIT 1)
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow()->leitura;
+    }
+    public function get_bateria($id)
+    {
+        $query = $this->db->query("
+            SELECT tensao
+            FROM esm_bateria
+            WHERE medidor_id = $id
+            ORDER BY timestamp
+            LIMIT 10
+        ");
+
+        if ($query->getNumRows() == 0)
+            return "";
+
+        foreach (($query->getResult()) as $r) {
+            $res[] = number_format($r->tensao * 4 / 1023, 2);
+        }
+
+        return implode(",", $res);
+    }
+    public function get_post($id)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->query("
+            SELECT text, header
+            FROM post
+            WHERE id = $id
+        ");
+
+        return $query->getRow();
+    }
+    public function get_data_raw($id)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->query("
+            SELECT 
+                payload AS text, 
+                header
+            FROM post_raw
+            WHERE id = $id
+        ");
+
+        return $query->getRow();
+    }
+    public function get_medidores_central($central)
+    {
+        $query = $this->db->query("
+            SELECT LPAD(id, 6, '0') AS id, posicao
+            FROM esm_medidores
+            WHERE central = '$central'
+            ORDER BY posicao
+        ");
+
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getResult();
+    }
 }

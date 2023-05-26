@@ -31,15 +31,16 @@
                                                 <input type="text" class="form-control" name="q" placeholder="Medidor" style="width:100px;">
                                                 <span class="input-group-append">
                                                     <button class="btn btn-primary search" type="button" data-searching="0"><i class="fas fa-search"></i></button>
+                                                    <button class="btn btn-primary btn-centrais-reload"><i class="fas fa-redo-alt"></i></button>
                                                 </span>
                                             </div>
-                                            <button class="btn btn-primary btn-centrais-reload"><i class="fas fa-redo-alt"></i></button>
+                                            
                                         </form>
                                     </div>
                                     <h2 class="card-title">Listagem</h2>
                                 </header>
                                 <div class="card-body">
-                                    <table class="table table-bordered table-striped table-hover" id="dt-centrais" data-url="<?php echo site_url('ajax/get_centrais'); ?>">
+                                    <table class="table table-bordered table-striped table-hover" id="dt-centrais" data-url="<?php echo site_url('admin/get_centrais'); ?>">
                                         <thead>
                                             <tr role="row">
                                                 <th width="5%">Status</th>
@@ -69,7 +70,7 @@
                                     <h2 class="card-title">Últimos Envios</h2>
                                 </header>
                                 <div class="card-body">
-                                    <table class="table table-sm table-bordered table-striped" id="dt-postagens" data-url="<?php echo site_url('ajax/get_postagens'); ?>">
+                                    <table class="table table-sm table-bordered table-striped" id="dt-postagens" data-url="<?php echo site_url('admin/get_postagens'); ?>">
                                         <thead>
                                             <tr role="row">
                                                 <th width="20%">Central</th>
@@ -85,7 +86,7 @@
                             </section>
                         </div>
                     </div>
-                    <div class="row row-eq-height">
+                    <!-- <div class="row row-eq-height">
                         <div class="col-md-3">
                             <section class="card h-100">
                                 <header class="card-header">
@@ -161,7 +162,7 @@
                                     </table>
                                 </div>
                             </section>
-                        </div>
+                        </div> -->
                     </div>
 					<!-- end: page -->
 				</section>

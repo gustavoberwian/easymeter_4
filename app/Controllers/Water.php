@@ -36,7 +36,7 @@ class Water extends UNO_Controller
         $this->datatables = new Datatables(new Codeigniter4Adapter);
     }
 
-    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array(), $decimals_tooltip = 0)
+    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array())
     {
         $config = array(
             "chart" => array(
@@ -87,7 +87,7 @@ class Water extends UNO_Controller
             "extra" => array(
                 "tooltip" => array(
                     "title" => $titles,
-                    "decimals" => $decimals_tooltip,
+                    "decimals" => 0,
                 ),
                 "unit" => $unit,
                 "decimals" => $decimals,
@@ -338,7 +338,7 @@ class Water extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, 0, $extra, $footer, $dates, 2);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, 0, $extra, $footer, $dates);
 
         echo json_encode($config);
     }
@@ -1081,12 +1081,8 @@ class Water extends UNO_Controller
             return number_format($data["value_month"], 0, ",", ".");
         });
 
-        $dt->edit('value_month_open', function ($data) {
-            return number_format($data["value_month_open"], 0, ",", ".");
-        });
-
-        $dt->edit('value_month_closed', function ($data) {
-            return number_format($data["value_month_closed"], 0, ",", ".");
+        $dt->edit('value_last_month', function ($data) {
+            return number_format($data["value_last_month"], 0, ",", ".");
         });
 
         $dt->edit('value_future', function ($data) {

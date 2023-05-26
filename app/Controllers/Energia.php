@@ -2321,7 +2321,7 @@ class Energia extends UNO_Controller
                 c.value AS value_last_month
             FROM esm_medidores
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
-            LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
+            JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
             LEFT JOIN (  
                     SELECT 
                         device,
@@ -3577,12 +3577,8 @@ class Energia extends UNO_Controller
             return number_format($data["value_ponta"], 3, ",", ".");
         });
 
-        $dt->edit('value_month_open', function ($data) {
-            return number_format($data["value_month_open"], 3, ",", ".");
-        });
-
-        $dt->edit('value_month_closed', function ($data) {
-            return number_format($data["value_month_closed"], 3, ",", ".");
+        $dt->edit('value_last_month', function ($data) {
+            return number_format($data["value_last_month"], 3, ",", ".");
         });
 
         $dt->edit('value_future', function ($data) {

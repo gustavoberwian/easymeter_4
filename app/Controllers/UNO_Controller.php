@@ -23,6 +23,7 @@ class UNO_Controller extends BaseController {
 
     public function __construct()
     {
+
         $this->shopping_model = new Shopping_model();
         $this->admin_model = new Admin_model();
 

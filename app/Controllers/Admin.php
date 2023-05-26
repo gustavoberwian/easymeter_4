@@ -18,6 +18,8 @@ class Admin extends UNO_Controller
 
     protected $input;
 
+    protected $email;
+
     protected Datatables $datatables;
 
     protected Viacep $viacep;
@@ -45,6 +47,7 @@ class Admin extends UNO_Controller
 
         // set variables
         $this->url = service('uri')->getSegment(1);
+
 
         $this->db = Database::connect();
 
@@ -97,7 +100,6 @@ class Admin extends UNO_Controller
                 $data['leituras'] = $labels;
 
                 return $this->render('entity_edit', $data);
-
             } else {
 
                 $data['readonly'] = 'readonly disabled';
@@ -110,7 +112,6 @@ class Admin extends UNO_Controller
 
                 return $this->render('entity_edit', $data);
             }
-
         } elseif ($param1 === 'incluir') {
 
             return $this->render('entity_add');
@@ -203,10 +204,8 @@ class Admin extends UNO_Controller
 
             } elseif ($data['classificacao'] == 'agrupamentos') {
                 $data['val'] = $this->admin_model->get_name_by_id($data['classificacao'], $this->admin_model->get_user_relations($param1, 'agrupamento'));
-
             } elseif ($data['classificacao'] == 'unidade') {
                 $data['val'] = $this->admin_model->get_code_by_unity_id($this->admin_model->get_user_relations($param1, $data['classificacao']));
-
             } else {
                 $data['val'] = '';
             }
@@ -215,9 +214,7 @@ class Admin extends UNO_Controller
             if ($param2 == 'editar') {
                 $data['readonly'] = '';
                 return $this->render('edit_user', $data);
-
             } else {
-
                 $data['readonly'] = 'readonly disabled';
                 return $this->render('edit_user', $data);
             }
@@ -298,8 +295,9 @@ class Admin extends UNO_Controller
                         'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
                         'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
                     ];
-                }
-                ;
+
+                };
+
 
 
                 $emails = null;
@@ -315,29 +313,26 @@ class Admin extends UNO_Controller
                     // coleta os dados do post
                     $password = $this->input->getPost('password');
                     $telefone = $this->input->getPost('telefone');
+
                     $celular = $this->input->getPost('celular');
+
 
 
                     // atualiza dados
                     if (!$this->admin_model->update_user($user_id, $password, $telefone, $celular, $emails)) {
                         $data['error'] = true;
-                        echo json_encode(
-                            array(
-                                'status' => 'error',
-                                'message' => 'Não foi possível atualizar os dados. Tente novamente em alguns minutos.'
-                            )
-                        );
 
+                        echo json_encode(array(
+                            'status' => 'error',
+                            'message' => 'Não foi possível atualizar os dados. Tente novamente em alguns minutos.'
+                        ));
                     } else {
                         $data['error'] = false;
                         //mensagem
-                        echo json_encode(
-                            array(
-                                'status' => 'success',
-                                'message' => 'Seus dados foram atualizados com sucesso.'
-                            )
-                        );
-
+                        echo json_encode(array(
+                            'status' => 'success',
+                            'message' => 'Seus dados foram atualizados com sucesso.'
+                        ));
 
                     }
                 }
@@ -538,8 +533,122 @@ class Admin extends UNO_Controller
             $data['replys'] = $this->admin_model->get_chamado_reply($id);
             $this->render('suporte_reply', $data);
         } else {
-            $this->render('suporte');
+            return $this->render('suporte');
         }
+    }
+
+    public function md_chamado()
+    {
+        echo view('Admin/modals/chamado');
+    }
+
+    public function md_new_chamado()
+    {
+
+        return view('modals/admin/md_chamado');
+    }
+
+    public function new_chamado()
+    {
+        $ass = $this->input->getPost('assunto');
+        $msg = $this->input->getPost('message');
+        $this->user->email = $this->admin_model->get_user_emails($this->user->id);
+
+        $ret = $this->admin_model->new_chamado($this->user, $ass, $msg);
+
+        if ($ret['status'] == 'success') {
+            //envia email
+            $email = \Config\Services::email();
+            
+            $data['cid'] = date('Y') . str_pad($ret['id'], 6, "0", STR_PAD_LEFT);
+            $data['titulo'] = $ret['assunto'];
+            $data['nome'] = $this->user->username;
+            $data['msg'] = $msg;
+            $data['prev'] = date('d/m/Y', strtotime("+2 days", time()));
+
+            $email->setFrom('contato@easymeter.com.br', "Easymeter");
+            $email->setTo('atendimento@unorobotica.com.br');
+            $email->setReplyTo($this->user->email);
+            $email->setSubject('Suporte Easymeter');
+            $email->setMessage(view('admin/emails/aviso_chamado', $data));
+
+            $email->send();
+
+            
+            $email->setFrom('contato@easymeter.com.br', "Easymeter");
+            $email->setTo($this->user->email);
+            $email->setReplyTo('contato@easymeter.com.br');
+            $email->setSubject('Suporte Easymeter');
+            $email->setMessage(view('admin/emails/suporte', $data));
+
+            $email->send();
+        }
+
+        echo json_encode($ret);
+    }
+
+    public function get_chamados_novo()
+    {
+        // realiza a query via dt
+        $dt = $this->datatables->query("  SELECT
+        esm_tickets.id AS id, 
+        esm_tickets.unidade_id AS Unidade_id, 
+        esm_tickets.nome AS ticket, 
+        esm_tickets.email AS email, 
+        esm_tickets.mensagem AS mensagem, 
+        esm_tickets.STATUS AS status, 
+        DATE_FORMAT( esm_tickets.cadastro, '%d/%m/%Y' ) AS cadastro, 
+        esm_departamentos.nome AS departamento, 
+        esm_entidades.tabela AS entidade, 
+        esm_entidades.nome AS agrupamento, 
+        esm_entidades.classificacao AS classificacao
+    FROM
+        esm_tickets
+        JOIN
+        esm_departamentos
+        ON 
+            esm_tickets.departamento = esm_departamentos.id
+        LEFT JOIN
+        esm_unidades
+        ON 
+            esm_unidades.id = esm_tickets.unidade_id
+        LEFT JOIN
+        esm_agrupamentos
+        ON 
+            esm_agrupamentos.id = esm_unidades.agrupamento_id
+        LEFT JOIN
+        esm_entidades
+        ON 
+            esm_entidades.id = esm_agrupamentos.entidade_id
+    GROUP BY
+        esm_tickets.id
+    ORDER BY
+        COALESCE ( esm_tickets.cadastro ) DESC
+            ");
+
+        $dt->add('DT_RowId', function ($data) {
+            return $data['id'];
+        });
+
+        $dt->edit('entidade', function ($data) {
+            return ucfirst($data['entidade']);
+        });
+
+        $dt->edit('classificacao', function ($data) {
+            return '<span class="badge badge-primary">' . ucfirst($data['classificacao']) . '</span>';
+        });
+
+        $dt->edit('status', function ($data) {
+            if ($data['status'] == 'aberto')
+                return "<span class=\"badge badge-danger\" style=\"width: 70px;\">Aberto</span>";
+            elseif ($data['status'] == 'fechado')
+                return "<span class=\"badge badge-success\" style=\"width: 70px;\">Fechado</span>";
+            else
+                return "<span class=\"badge badge-warning\" style=\"width: 70px;\">" . ucfirst($data['status']) . "</span>";
+        });
+
+        // gera resultados
+        echo $dt->generate();
     }
 
     public function relatorios($entity = "")
@@ -638,9 +747,10 @@ class Admin extends UNO_Controller
 
     public function add_ramal()
     {
-        $dados['nome'] = $this->input->getPost('nome-ramal') ?? '';
-        $dados['tipo'] = $this->input->getPost('tipo-ramal') ?? '';
-        $dados['entidade_id'] = $this->input->getPost('sel-entity') ?? '';
+
+        $dados['nome']          = $this->input->getPost('nome-ramal') ?? '';
+        $dados['tipo']          = $this->input->getPost('tipo-ramal') ?? '';
+        $dados['entidade_id']   = $this->input->getPost('sel-entity') ?? '';
 
         echo $this->admin_model->add_ramal($dados);
     }
@@ -855,11 +965,13 @@ class Admin extends UNO_Controller
 
     public function edit_agrupamento()
     {
-        $id = $this->input->getPost('id');
-        $cid = $this->input->getPost('id-condo');
-        $nome = $this->input->getPost('id-bloco');
-        $rid = json_decode($this->input->getPost('sel-ramal'));
-        $message = [];
+
+        $id         = $this->input->getPost('id');
+        $cid        = $this->input->getPost('id-condo');
+        $nome       = $this->input->getPost('id-bloco');
+        $rid        = json_decode($this->input->getPost('sel-ramal'));
+        $message    = [];
+
 
         if (is_array($rid)) {
             if ($id) {
@@ -918,22 +1030,14 @@ class Admin extends UNO_Controller
 
     public function get_users()
     {
+        if ($this->input->getGet("mode") == 0) $m = "";
+        if ($this->input->getGet('mode') == 1) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'agua'";
+        if ($this->input->getGet('mode') == 2) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'gas'";
+        if ($this->input->getGet('mode') == 3) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'energia'";
+        if ($this->input->getGet('mode') == 4) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'nivel'";
 
-        if ($this->input->getGet("mode") == 0)
-            $m = "";
-        if ($this->input->getGet('mode') == 1)
-            $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'agua'";
-        if ($this->input->getGet('mode') == 2)
-            $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'gas'";
-        if ($this->input->getGet('mode') == 3)
-            $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'energia'";
-        if ($this->input->getGet('mode') == 4)
-            $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'nivel'";
-
-
-
-
-        $dt = $this->datatables->query("
+        $dt = $this->datatables->query(
+            "
             SELECT 
                 auth_users.id AS id,
                 auth_users.avatar AS avatar,
@@ -1042,13 +1146,14 @@ class Admin extends UNO_Controller
             $dados['group']['nivel'] = 'nivel';
         }
 
-        $dados['user-id'] = $users->getInsertID();
-        $dados['classificacao'] = $this->input->getPost('classificacao-user');
-        $dados['page'] = $this->input->getPost('page-user') ?? '';
-        $dados['entity-user'] = $this->input->getPost('entity-user') ?? '';
-        $dados['unity-user'] = $this->input->getPost('unity-user') ?? '';
-        $dados['group-user'] = $this->input->getPost('group-user') ?? '';
-        $dados['groups-user'] = array_map('trim', explode(",", $this->input->getPost('groups-user') ?? ''));
+        $dados['user-id']               = $users->getInsertID();
+        $dados['classificacao']         = $this->input->getPost('classificacao-user');
+        $dados['page']                  = $this->input->getPost('page-user') ?? '';
+        $dados['entity-user']           = $this->input->getPost('entity-user') ?? '';
+        $dados['unity-user']            = $this->input->getPost('unity-user') ?? '';
+        $dados['group-user']            = $this->input->getPost('group-user') ?? '';
+        $dados['groups-user']           = array_map('trim', explode(",", $this->input->getPost('groups-user') ?? ''));
+
 
         //Chamada da função de inserção
         echo $this->admin_model->add_user($dados);
@@ -1065,7 +1170,6 @@ class Admin extends UNO_Controller
         }
         print_r($result);
         echo $result;
-
     }
 
     public function get_groups_for_select()
@@ -1087,7 +1191,6 @@ class Admin extends UNO_Controller
         if (!$this->admin_model->update_active($this->input->getPost('id'))) {
             return false;
         }
-
     }
 
     public function edit_user()
@@ -1128,8 +1231,6 @@ class Admin extends UNO_Controller
         } else {
             $dados['group']['energia'] = '';
         }
-
-
         if ($this->input->getPost('user-nivel') === 'on') {
             $dados['group']['nivel'] = 'nivel';
         } else {
@@ -1149,6 +1250,7 @@ class Admin extends UNO_Controller
         $data['total'] = $this->admin_model->count_contato(0);
         return $this->render('contatos', $data);
     }
+
     public function get_contatos()
     {
 
@@ -1162,11 +1264,9 @@ class Admin extends UNO_Controller
 
         $dt = new Datatables(new Codeigniter4Adapter);
         $dt->db->db = $db;
+
         // using CI4 Builder
         $dt->query($builder);
-
-
-
         $dt->edit('cidade', function ($data) {
             return $data['cidade'] . '/' . $data['estado'];
         });

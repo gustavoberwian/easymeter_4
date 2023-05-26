@@ -49,6 +49,7 @@
                             <span>Usuários</span>
                         </a>
                     </li>
+                    
                     <li class="<?php if (in_array($method, array('contatos')))
                         echo 'nav-active'; ?>">
                         <a class="nav-link" href="<?php echo site_url('admin/contatos'); ?>">
@@ -58,6 +59,14 @@
                             <span>Contatos</span>
                         </a>
                     </li>
+
+                    <li class="<?php if(in_array($method, array('suporte'))) echo 'nav-active'; ?>">
+                        <a class="nav-link" href="<?php echo site_url('admin/suporte'); ?>">
+                            <span class="float-right badge badge-danger badge-suporte" ></span>
+				            <i class="fas fa-ambulance"></i>
+				            <span>Suporte</span>
+				        </a>
+				    </li>
                 </ul>
             </nav>
         </div>

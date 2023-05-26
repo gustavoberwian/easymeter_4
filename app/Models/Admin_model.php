@@ -351,19 +351,7 @@ class Admin_model extends Base_model
         return $query->getResult();
     }
 
-    public function new_reply($id, $message, $user)
-    {
-        $this->db->transStart();
-
-        $this->db->insert('esm_tickets_reply', array('ticket_id' => $id, 'mensagem' => $message, 'user_id' => $user));
-        $this->db->update('esm_tickets', array('status' => 'respondido', 'fechado_em' => null, 'fechado_por' => null), array('id' => $id));
-
-        $this->db->transComplete();
-
-        return $this->db->transStatus();
-    }
-
-    // public function get_chamados($status = false, $limit = 0)
+    //  public function get_chamados_novo($status = false, $limit = 0)
     // {
     //     // aplica filtro pelo status
     //     if ($status)
@@ -371,20 +359,20 @@ class Admin_model extends Base_model
 
     //     // aplica limite
     //     if ($limit > 0)
-    //         $this->db->limit($limit);
+    //          $this->db->limit($limit);
 
-    //     // ordena por data
+    // //     // ordena por data
     //     $this->db->orderBy('cadastro', 'DESC');
 
     //     // realiza a consulta       
     //     $query = $this->db->getPost('esm_tickets');
 
-    //     // verifica se retornou algo
-    //     if ($query->getNumRows() == 0)
-    //         return false;
+    //    // verifica se retornou algo
+    //      if ($query->getNumRows() == 0)
+    //          return false;
 
     //     return $query->getResult();
-    // }
+    //  }
 
     public function get_chamado($id)
     {
@@ -399,7 +387,7 @@ class Admin_model extends Base_model
             LEFT JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
             WHERE esm_tickets.id = $id        
         ");
-
+        
         // verifica se retornou algo
         if ($query->getNumRows() == 0)
             return false;
@@ -411,10 +399,10 @@ class Admin_model extends Base_model
     {
         // realiza a consulta
         $query = $this->db->query("
-            SELECT esm_tickets_reply.*, auth_users.nome 
-            FROM esm_tickets_reply
-            LEFT JOIN auth_users ON auth_users.id = esm_tickets_reply.user_id
-            WHERE esm_tickets_reply.ticket_id = $id        
+        SELECT esm_tickets_reply.*, auth_users.username 
+        FROM esm_tickets_reply
+        LEFT JOIN auth_users ON auth_users.id = esm_tickets_reply.user_id
+        WHERE esm_tickets_reply.ticket_id = $id    
         ");
 
         // verifica se retornou algo
@@ -1307,6 +1295,165 @@ class Admin_model extends Base_model
         return $result->getResult();
     }
 
+    public function get_chamados_novos(){
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+        SELECT
+            esm_tickets.id,
+            esm_tickets.unidade_id,
+            esm_tickets.nome,
+            esm_tickets.email,
+            esm_tickets.mensagem,
+            esm_tickets.STATUS,
+            DATE_FORMAT( esm_tickets.cadastro, '%d/%m/%Y' ) AS cadastro,
+            esm_departamentos.nome AS departamento,
+            MAX(
+            DATE_FORMAT( COALESCE ( esm_tickets.fechado_em ), '%d/%m/%Y' )) AS movimento,
+            DATE_FORMAT( esm_tickets.fechado_em, '%d/%m/%Y' ) AS fechado_em,
+            esm_entidades.tabela AS entidade,
+            esm_entidades.nome AS agrupamento,
+            esm_unidades.nome AS apto 
+        FROM
+            esm_tickets
+            JOIN esm_departamentos ON esm_tickets.departamento = esm_departamentos.id
+            LEFT JOIN esm_unidades ON esm_unidades.id = esm_tickets.unidade_id
+            LEFT JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+            LEFT JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id 
+        GROUP BY
+            esm_tickets.id 
+        ORDER BY
+            COALESCE ( esm_tickets.cadastro ) DESC
+        ");
+
+        $dt->add('DT_RowId', function ($data) {
+            return $data['id'];
+        });
+
+        $dt->add('unidade', function ($data) {
+            if (is_null($data['agrupamento'])) {
+                return $data['apto'];
+            } else {
+                return $data['agrupamento'] . "/" . $data['apto'];
+            }
+        });
+
+        $dt->edit('id', function ($data) {
+            return str_pad($data['id'], 5, "0", STR_PAD_LEFT);
+        });
+
+        $dt->edit('entidade', function ($data) {
+            return ucfirst($data['entidade']);
+        });
+
+        $dt->edit('movimento', function ($data) {
+            if ($data['status'] == 'fechado')
+                return $data['fechado_em'];
+            else
+                return $data['movimento'];
+        });
+
+        $dt->edit('status', function ($data) {
+            if ($data['status'] == 'aberto')
+                return "<span class=\"badge badge-danger\" style=\"width: 70px;\">Aberto</span>";
+            elseif ($data['status'] == 'fechado')
+                return "<span class=\"badge badge-success\" style=\"width: 70px;\">Fechado</span>";
+            else
+                return "<span class=\"badge badge-warning\" style=\"width: 70px;\">" . ucfirst($data['status']) . "</span>";
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function get_suporte_now()
+    {
+     $query = $this->db->query
+        ("
+        SELECT
+            Entidade.classificacao, 
+            Entidade.nome AS Entidade, 
+            esm_agrupamentos.entidade_id, 
+            esm_unidades.agrupamento_id, 
+            esm_tickets.id, 
+            esm_tickets.nome, 
+            esm_tickets.email, 
+            esm_tickets.departamento, 
+            esm_tickets.assunto, 
+            esm_tickets.mensagem, 
+            esm_tickets.status, 
+            esm_tickets.cadastro, 
+            esm_tickets.fechado_por
+        FROM
+            esm_tickets,
+            esm_entidades AS Entidade
+            INNER JOIN
+            esm_agrupamentos
+            ON 
+                Entidade.id = esm_agrupamentos.entidade_id
+            INNER JOIN
+            esm_unidades
+            ON 
+                esm_agrupamentos.id = esm_unidades.agrupamento_id
+    ");
+
+
+    $result = $query->get();
+
+        // verifica se retornou algo
+        return $result->getNumRows();
+    }
+
+    
+
+    // **
+    // Busca Bloco para Visualizaçao em Modal
+    // [post] id do bloco OU 0 para incluir
+    // [out] Conteúdo HTML para modal
+    // **
+
+    public function new_chamado($user, $assunto, $message)
+    {
+        $a = '';
+        if ($assunto == 's')     $a = 'Sugestão';
+        elseif ($assunto == 'd') $a = 'Dúvida';
+        elseif ($assunto == 'r') $a = 'Revisão';
+        elseif ($assunto == 'v') $a = 'Visita Técnica';
+    
+        if (empty($user->unidade))
+        {
+            $uid = 0;
+        } else
+        {
+            $uid = $user->unidade->id;
+        }
+    
+        $data = [
+            'user_id' => $user->id,
+            'unidade_id' => $uid,
+            'departamento' => 2,
+            'assunto' => $a,
+            'mensagem' => $message
+        ];
+    
+        $this->db->table('esm_tickets')->insert($data);
+    
+        if ($this->db->affectedRows() > 0)
+        {
+            $insertId = $this->db->insertID();
+            return [
+                "status"  => "success",
+                "id"      => $insertId,
+                "assunto"  => $a,
+                "message" => "<strong>Chamado criado com sucesso.</strong><br/>Em até 48hrs entraremos em contato pelo e-mail."
+            ];
+        } else {
+            return [
+                "status"  => "error",
+                "message" => $this->db->error()
+            ];
+        }
+    }
+
     public function count_chamados($status = false)
     {
         $db = Database::connect('easy_com_br');
@@ -1321,6 +1468,7 @@ class Admin_model extends Base_model
         // verifica se retornou algo
         return $result->getNumRows();
     }
+
     public function change_contact_state($id)
     {
 

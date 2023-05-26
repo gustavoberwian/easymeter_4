@@ -39,60 +39,8 @@ var dtEnvios;
 		order:[],
         serverSide: true,
         pageLength: 16,
-        pagingType: "input",
-		ajax: { url: $('#dt-postagens').data('url') },
-    });
-
-    var dtPortas2, dtPortas3, dtPortas4;
-	var dtPortas1 = $('#dt-portas1').DataTable({
-		dom: '<"table-responsive"t>pr',
-		processing: true,
-        columns: [ { data: "central", class: "dt-body-center" },
-                   { data: "consumo_total", class: "dt-body-center" } ],
-		order:[],
-        serverSide: true,
-        pageLength: 8,
-        pagingType: "input",
-        ajax: { url: $('#dt-portas1').data('url') },
-        drawCallback: function() {
-            dtPortas2 = $('#dt-portas2').DataTable({
-                dom: '<"table-responsive"t>pr',
-                processing: true,
-                columns: [ { data: "central", class: "dt-body-center" },
-                           { data: "consumo_total", class: "dt-body-center" } ],
-                order:[],
-                serverSide: true,
-                pageLength: 8,
-                pagingType: "input",
-                ajax: { url: $('#dt-portas2').data('url') },
-                drawCallback: function() {
-                    dtPortas3 = $('#dt-portas3').DataTable({
-                        dom: '<"table-responsive"t>pr',
-                        processing: true,
-                        columns: [ { data: "central", class: "dt-body-center" },
-                                   { data: "consumo_total", class: "dt-body-center" } ],
-                        order:[],
-                        serverSide: true,
-                        pageLength: 8,
-                        pagingType: "input",
-                        ajax: { url: $('#dt-portas3').data('url') },
-                        drawCallback: function() {
-                            dtPortas4 = $('#dt-portas4').DataTable({
-                                dom: '<"table-responsive"t>pr',
-                                processing: true,
-                                columns: [ { data: "central", class: "dt-body-center" },
-                                           { data: "consumo_total", class: "dt-body-center" } ],
-                                order:[],
-                                serverSide: true,
-                                pageLength: 8,
-                                pagingType: "input",
-                                ajax: { url: $('#dt-portas4').data('url') }
-                            });
-                        }
-                    });
-                }
-            });
-        }
+        pagingType: "numbers",
+		ajax: { url: $('#dt-postagens').data('url') }
     });
 
     $(document).on('click', '.btn-centrais-reload', function (e) {
@@ -138,7 +86,7 @@ var dtEnvios;
 	var dtPortas = $('#dt-portas').DataTable({
         dom: '<"table-responsive"t><"row"<"col-lg-6"l><"col-lg-6"p>>r',
 		processing: true,
-        columns: [  { data: "version", class: "d-none"},
+        columns: [ 
                     { data: "posicao", class: "dt-body-center" }, 
                     { data: "id", class: "dt-body-center" },
                     { data: "sensor", class: "dt-body-center" },
@@ -150,7 +98,6 @@ var dtEnvios;
                     { data: "leitura", class: "dt-body-center" },
                     { data: "consumo", class: "dt-body-center" },
                     { data: "fraude", class: "dt-body-center" },
-                    { data: "ultimo_post", class: "dt-body-center" },
                     { data: "actions", class: "actions dt-body-center" } ],
         ordering: false,
         pageLength: 16,
@@ -158,7 +105,6 @@ var dtEnvios;
         pagingType: "numbers",
 		serverSide: true,
 		ajax: { url: $('#dt-portas').data('url') },
-        drawCallback: function() {$('.inlinebar').sparkline('html', {type: 'line', fillColor: false, width: '80px'}); }
 	});
 
     // **
@@ -172,7 +118,7 @@ var dtEnvios;
                    { data: "data", class: "dt-body-center" } ],
         ordering: false,
         pageLength: 24,
-        pagingType: "input",
+        pagingType: "numbers",
 		serverSide: true,
 		ajax: { url: $('#dt-envios').data('url') },
         createdRow: function ( row, data ) {
@@ -188,7 +134,7 @@ var dtEnvios;
 
 	$(document).on('click', '#dt-envios tr', function (e) {
 		$.magnificPopup.open( {
-			items: {src: '/ajax/md_envio'},
+			items: {src: '/admin/md_envio'},
 			type: 'ajax',
 			modal:true,
 			ajax: {

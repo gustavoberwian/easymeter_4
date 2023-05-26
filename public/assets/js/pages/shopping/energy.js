@@ -453,6 +453,7 @@
 
         let data = dtResume.row(this).data();
         let newWindow = window.open(window.location);
+        newWindow.control = 1;
         newWindow.onload = function() {
             newWindow.$("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
             newWindow.$('#sel-device').trigger('change');
@@ -504,7 +505,12 @@
             });
     });
 
+    if(!window.control){
+        window.control = 0;
+    }
 
-    $('#sel-device').trigger('change');
+    if(window.control == 0){
+        $('#sel-device').trigger('change');
+    }
 
 }).apply(this, [jQuery]);

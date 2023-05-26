@@ -80,25 +80,25 @@
                                         <div class="col-md-3">
                                             <h6 class="card-body-title mb-0 text-primary"><?= $area_comum[$i]; ?></br> Consumo Mês</h6>
                                             <div class="row">
-                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->inGroup('demo')) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["consum"]; ?></span></div>
+                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->inGroup('demo')) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["consum"]; ?></span> <?= $user->demo ? '<small>kWh</small>' : ''; ?></div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <h6 class="card-body-title mb-0 text-primary"></br>Previsão</h6>
                                             <div class="row">
-                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["prevision"] ?></span></div>
+                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["prevision"] ?></span> <?= $user->demo ? '<small>kWh</small>' : ''; ?></div>
                                             </div>
                                         </div>
                                         <div class="col-md-3" style="border-left: 1px solid #777;">
                                             <h6 class="card-body-title mb-0 text-primary">Unidades</br>Consumo Mês</h6>
                                             <div class="row">
-                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["consum"]; ?></span></div>
+                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["consum"]; ?></span> <?= $user->demo ? '<small>kWh</small>' : ''; ?></div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <h6 class="card-body-title mb-0 text-primary"></br>Previsão</h6>
                                             <div class="row">
-                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["prevision"] ?></span></div>
+                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["prevision"] ?></span> <?= $user->demo ? '<small>kWh</small>' : ''; ?></div>
                                             </div>
                                         </div>
                                     </div>

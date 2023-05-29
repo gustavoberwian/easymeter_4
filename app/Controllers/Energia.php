@@ -145,10 +145,19 @@ class Energia extends UNO_Controller
             $period_f = $this->energy_model->GetActivePositive($device, $group, $start, $end, array(), false, $this->user->demo);
             $period_i = false;
 
+            $trans = $period_f;
+
         } else {
+
             $period_p = $this->energy_model->GetActivePositive($device, $group, $start, $end, array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end), false, $this->user->demo);
             $period_f = $this->energy_model->GetActivePositive($device, $group, $start, $end, array("fora", $this->user->config->ponta_start, $this->user->config->ponta_end), false, $this->user->demo);
             $period_i = false;
+
+            $trans = $period_p;
+            foreach ($period_f as $v) {
+                $trans[] = $v;
+            }
+
         }
 
         $month_p = $this->energy_model->GetActivePositive($device, $group, date("Y-m-01"), date("Y-m-d"), array("ponta", $this->user->config->ponta_start, $this->user->config->ponta_end), $this->user->demo)[0]->value;
@@ -174,9 +183,33 @@ class Energia extends UNO_Controller
         $min_p = 999999999;
         $min_f = 999999999;
 
+        $maior = 0;
+
+        foreach ($trans as $t) {
+            if ($t->value > $maior) {
+                $maior = $t->value;
+            }
+        }
+
+        if ($maior > 999 && $maior <= 999999) {
+            $unidade_medida = "kWh";
+            $divisor = 1000;
+            $decimals = 1;
+        } elseif ($maior > 999999) {
+            $unidade_medida = "MWh";
+            $divisor = 1000000;
+            $decimals = 3;
+        } else {
+            $unidade_medida = "Wh";
+            $divisor = 1;
+            $decimals = 0;
+        }
+
         if ($period_f) {
+
             foreach ($period_f as $v) {
-                $values_f[] = $v->value;
+
+                $values_f[] = $v->value / $divisor;
                 $labels[]   = $v->label;
 
                 if ($start == $end) {
@@ -193,7 +226,7 @@ class Energia extends UNO_Controller
 
         if ($period_p) {
             foreach ($period_p as $v) {
-                $values_p[] = $v->value;
+                $values_p[] = $v->value / $divisor;
                 $total_p += is_null($v->value) ? 0 : floatval($v->value);
                 if ($max_p < floatval($v->value) && !is_null($v->value)) $max_p = floatval($v->value);
                 if ($min_p > floatval($v->value) && !is_null($v->value)) $min_p = floatval($v->value);
@@ -202,7 +235,7 @@ class Energia extends UNO_Controller
 
         if ($period_i) {
             foreach ($period_i as $v) {
-                $values_i[] = $v->value;
+                $values_i[] = $v->value / $divisor;
                 $total_i += is_null($v->value) ? 0 : floatval($v->value);
             }
         }
@@ -231,42 +264,40 @@ class Energia extends UNO_Controller
             );
         }
 
-        $decimals = ($total_p + $total_f) > 1000 ? 0 : 1;
-
         $dias   = ((strtotime(date("Y-m-d")) - strtotime(date("Y-m-01"))) / 86400) + 1;
         $dias_t = date('d', mktime(0, 0, 0, date("m") + 1, 0, date("Y")));
 
         $extra = array(
-            "main"        => str_pad(round($main), 6 , '0' , STR_PAD_LEFT). " <span style='font-size:12px;'>kWh</span>",
-            "period"      => number_format(round($total_p + $total_f, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "period_p"    => number_format(round($total_p, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "period_f"    => number_format(round($total_f, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "month"       => number_format(round($month_p + $month_f, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "month_p"     => number_format(round($month_p, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "month_f"     => number_format(round($month_f, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "prevision"   => number_format(round(($month_p + $month_f) / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "prevision_p" => number_format(round($month_p / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "prevision_f" => number_format(round($month_f / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "day"         => number_format(round(($day_p + $day_f), $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "day_p"       => number_format(round($day_p, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
-            "day_f"       => number_format(round($day_f, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>kWh</span>",
+            "main"        => str_pad(round($main), 6 , '0' , STR_PAD_LEFT). " <span style='font-size:12px;'>$unidade_medida</span>",
+            "period"      => number_format(round(($total_p + $total_f) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "period_p"    => number_format(round($total_p / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "period_f"    => number_format(round($total_f / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "month"       => number_format(round(($month_p + $month_f) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "month_p"     => number_format(round($month_p / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "month_f"     => number_format(round($month_f / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "prevision"   => number_format(round((($month_p + $month_f) / $dias * $dias_t) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "prevision_p" => number_format(round(($month_p / $dias * $dias_t) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "prevision_f" => number_format(round(($month_f / $dias * $dias_t) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "day"         => number_format(round(($day_p + $day_f) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "day_p"       => number_format(round($day_p / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "day_f"       => number_format(round($day_f / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
         );
 
         $data = array(
-            array("Máximo Fora", ($max_f == -1) ? "-" : number_format(round($max_f), 0, ",", ".") . " <span style='font-size:12px;'>kWh</span>", "#268ec3"),
-            array("Mínimo Fora", ($min_f == 999999999) ? "-" : number_format(round($min_f), 0, ",", ".") . " <span style='font-size:12px;'>kWh</span>", "#268ec3"),
-            array("Médio Fora",  ($min_f == 999999999) ? "-" : number_format(round($total_f / count($period_f)), 0, ",", ".") . " <span style='font-size:12px;'>kWh</span>", "#268ec3"),
+            array("Máximo Fora", ($max_f == -1) ? "-" : number_format(round($max_f / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#268ec3"),
+            array("Mínimo Fora", ($min_f == 999999999) ? "-" : number_format(round($min_f / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#268ec3"),
+            array("Médio Fora",  ($min_f == 999999999) ? "-" : number_format(round(($total_f / count($period_f)) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#268ec3"),
         );
 
         if ($start != $end || date("N", strtotime($start)) < 6) {
-            $data[] = array("Máximo Ponta", ($max_p == -1) ? "-" : number_format(round($max_p), 0, ",", ".") . " <span style='font-size:12px;'>kWh</span>", "#ff6178");
-            $data[] = array("Mínimo Ponta", ($min_p == 999999999) ? "-" : number_format(round($min_p), 0, ",", ".") . " <span style='font-size:12px;'>kWh</span>", "#ff6178");
-            $data[] = array("Médio Ponta",  ($min_p == 999999999) ? "-" : number_format(round($total_p / count($period_p)), 0, ",", ".") . " <span style='font-size:12px;'>kWh</span>", "#ff6178");
+            $data[] = array("Máximo Ponta", ($max_p == -1) ? "-" : number_format(round($max_p / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#ff6178");
+            $data[] = array("Mínimo Ponta", ($min_p == 999999999) ? "-" : number_format(round($min_p / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#ff6178");
+            $data[] = array("Médio Ponta",  ($min_p == 999999999) ? "-" : number_format(round(($total_p / count($period_p)) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#ff6178");
         }
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", true, $series, $titles, $labels, "kWh", 0, $extra, $footer, $dates);
+        $config = $this->chartConfig("bar", true, $series, $titles, $labels, $unidade_medida, 0, $extra, $footer, $dates);
 
         return json_encode($config);
     }
@@ -360,10 +391,34 @@ class Energia extends UNO_Controller
         $titles     = array();
         $dates      = array();
 
+        $maior = 0;
+
+        if ($period) {
+            foreach ($period as $t) {
+                if ($t->valueSum / $count > $maior) {
+                    $maior = $t->valueSum / $count;
+                }
+            }
+        }
+
+        if ($maior > 999 && $maior <= 999999) {
+            $unidade_medida = "kWh";
+            $divisor = 1000;
+            $decimals = 1;
+        } elseif ($maior > 999999) {
+            $unidade_medida = "MWh";
+            $divisor = 1000000;
+            $decimals = 3;
+        } else {
+            $unidade_medida = "Wh";
+            $divisor = 1;
+            $decimals = 0;
+        }
+
         if ($period) {
             foreach ($period as $v) {
-                $values_max[] = $v->valueMax;
-                $values_avg[] = $v->valueSum === null ? null : $v->valueSum / $count;
+                $values_max[] = $v->valueMax / $divisor;
+                $values_avg[] = $v->valueSum === null ? null : ($v->valueSum / $count) / $divisor;
                 $labels[]   = $v->label;
                 if ($start == $end)
                     $titles[] = $v->label." - ".$v->next;
@@ -387,7 +442,7 @@ class Energia extends UNO_Controller
             )
         );
 
-        return json_encode($this->chartConfig("bar", false, $series, $titles, $labels, "kW", 0, array(), "", $dates));
+        return json_encode($this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, 0, array(), "", $dates));
     }
 
     private function chartMainFactor()
@@ -570,11 +625,35 @@ class Energia extends UNO_Controller
 
         $values  = $this->energy_model->GetConsumptionDay($device, $group, $this->user->demo);
 
+        $maior = 0;
+
+        if ($values) {
+            foreach ($values as $t) {
+                if ($t->value > $maior) {
+                    $maior = $t->value;
+                }
+            }
+        }
+
+        if ($maior > 999 && $maior <= 999999) {
+            $unidade_medida = "kWh";
+            $divisor = 1000;
+            $decimals = 1;
+        } elseif ($maior > 999999) {
+            $unidade_medida = "MWh";
+            $divisor = 1000000;
+            $decimals = 3;
+        } else {
+            $unidade_medida = "Wh";
+            $divisor = 1;
+            $decimals = 0;
+        }
+
         if ($values) {
 
             foreach ($values as $v) {
 
-                $value[]  = $v->value;
+                $value[]  = $v->value / $divisor;
                 $labels[] = $v->label;
                 $titles[] = $v->title;
             }
@@ -593,7 +672,7 @@ class Energia extends UNO_Controller
             ),
         );
 
-        $options = $this->chartConfig("line", true, $series, $titles, $labels, "kWh", 1);
+        $options = $this->chartConfig("line", true, $series, $titles, $labels, $unidade_medida, 1);
 
         $options["chart"]["height"] = 200;
 
@@ -622,11 +701,34 @@ class Energia extends UNO_Controller
         $min_c = 999999999;
         $min_i = 999999999;
 
+        $maior = 0;
+
+        if ($period) {
+            foreach ($period as $t) {
+                if (max($t->valueCap, $t->valueInd) > $maior) {
+                    $maior = max($t->valueCap, $t->valueInd);
+                }
+            }
+        }
+
+        if ($maior > 999 && $maior <= 999999) {
+            $unidade_medida = "kVArh";
+            $divisor = 1000;
+            $decimals = 1;
+        } elseif ($maior > 999999) {
+            $unidade_medida = "MVArh";
+            $divisor = 1000000;
+            $decimals = 3;
+        } else {
+            $unidade_medida = "VArh";
+            $divisor = 1;
+            $decimals = 0;
+        }
 
         if ($period) {
             foreach ($period as $v) {
-                $values_c[] = $v->valueCap;
-                $values_i[] = $v->valueInd;
+                $values_c[] = $v->valueCap / $divisor;
+                $values_i[] = $v->valueInd / $divisor;
 
                 $total_c += floatval($v->valueCap);
                 $total_i += floatval($v->valueInd);
@@ -659,17 +761,17 @@ class Energia extends UNO_Controller
         );
 
         $data = array(
-            array("Máxima Capacitiva", number_format(round($max_c), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
-            array("Mínima Capacitiva", number_format(round(($min_c == 999999999) ? 0 : $min_c), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
-            array("Média Capacitiva", number_format(round($total_c / count($period)), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
-            array("Máxima Indutiva", number_format(round($max_i), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
-            array("Mínima Indutiva", number_format(round(($min_i == 999999999) ? 0 : $min_i), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
-            array("Média Indutiva", number_format(round($total_i / count($period)), 0, ",", ".") . " <span style='font-size:12px;'>kVArh</span>", "#999"),
+            array("Máxima Capacitiva", number_format(round($max_c / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#999"),
+            array("Mínima Capacitiva", number_format(round(($min_c == 999999999) ? 0 : $min_c / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#999"),
+            array("Média Capacitiva", number_format(round(($total_c / count($period)) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#999"),
+            array("Máxima Indutiva", number_format(round($max_i / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#999"),
+            array("Mínima Indutiva", number_format(round(($min_i == 999999999) ? 0 : $min_i / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#999"),
+            array("Média Indutiva", number_format(round(($total_i / count($period)) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>", "#999"),
         );
 
         $footer = $this->chartFooter($data);
 
-        return json_encode($this->chartConfig("bar", true, $series, $titles, $labels, "kVArh", 0, array(), $footer, $dates));
+        return json_encode($this->chartConfig("bar", true, $series, $titles, $labels, $unidade_medida, 0, array(), $footer, $dates));
     }
 
     private function chartMainLoad()
@@ -747,10 +849,34 @@ class Energia extends UNO_Controller
 
         $values = $this->energy_model->GetActivePositive($device, $group, $start, $end, array(), false, $this->user->demo);
 
+        $maior = 0;
+
+        if ($values) {
+            foreach ($values as $t) {
+                if ($t->value * $factor > $maior) {
+                    $maior = $t->value * $factor;
+                }
+            }
+        }
+
+        if ($maior > 999 && $maior <= 999999) {
+            $unidade_medida = "kg";
+            $divisor = 1000;
+            $decimals = 1;
+        } elseif ($maior > 999999) {
+            $unidade_medida = "ton";
+            $divisor = 1000000;
+            $decimals = 3;
+        } else {
+            $unidade_medida = "g";
+            $divisor = 1;
+            $decimals = 0;
+        }
+
         if ($values) {
 
             foreach ($values as $v) {
-                $value[] = is_null($v->value) ? null : $v->value * $factor;
+                $value[] = is_null($v->value) ? null : round(($v->value * $factor) / $divisor, $decimals);
                 $labels[]   = $v->label;
                 if ($start == $end) {
                     $titles[] = $v->label." - ".$v->next;
@@ -776,7 +902,7 @@ class Energia extends UNO_Controller
             ),
         );
 
-        return json_encode($this->chartConfig("area", true, $series, $titles, $labels, "kg", 1, array(), "", $dates));
+        return json_encode($this->chartConfig("area", true, $series, $titles, $labels, $unidade_medida, 1, array(), "", $dates));
     }
 
     public function chart_engineering()
@@ -2400,23 +2526,93 @@ class Energia extends UNO_Controller
         });
 
         $dt->edit('value_last', function ($data) {
-            return number_format($data["value_last"], 3, ",", ".");
+            if ($data["value_last"] > 999 && $data["value_last"] <= 999999) {
+                $unidade_medida = "kWh";
+                $divisor = 1000;
+                $decimals = 1;
+            } elseif ($data["value_last"] > 999999) {
+                $unidade_medida = "MWh";
+                $divisor = 1000000;
+                $decimals = 3;
+            } else {
+                $unidade_medida = "Wh";
+                $divisor = 1;
+                $decimals = 0;
+            }
+
+            return number_format(round($data["value_last"] / $divisor, $decimals), $decimals, ",", ".") . " <small>$unidade_medida</small>";
         });
 
         $dt->edit('value_month', function ($data) {
-            return number_format($data["value_month"], 3, ",", ".");
+            if ($data["value_month"] > 999 && $data["value_month"] <= 999999) {
+                $unidade_medida = "kWh";
+                $divisor = 1000;
+                $decimals = 1;
+            } elseif ($data["value_month"] > 999999) {
+                $unidade_medida = "MWh";
+                $divisor = 1000000;
+                $decimals = 3;
+            } else {
+                $unidade_medida = "Wh";
+                $divisor = 1;
+                $decimals = 0;
+            }
+
+            return number_format(round($data["value_month"] / $divisor, $decimals), $decimals, ",", ".") . " <small>$unidade_medida</small>";
         });
 
         $dt->edit('value_fora', function ($data) {
-            return number_format($data["value_fora"], 3, ",", ".");
+            if ($data["value_fora"] > 999 && $data["value_fora"] <= 999999) {
+                $unidade_medida = "kWh";
+                $divisor = 1000;
+                $decimals = 1;
+            } elseif ($data["value_fora"] > 999999) {
+                $unidade_medida = "MWh";
+                $divisor = 1000000;
+                $decimals = 3;
+            } else {
+                $unidade_medida = "Wh";
+                $divisor = 1;
+                $decimals = 0;
+            }
+
+            return number_format(round($data["value_fora"] / $divisor, $decimals), $decimals, ",", ".") . " <small>$unidade_medida</small>";
         });
 
         $dt->edit('value_ponta', function ($data) {
-            return number_format($data["value_ponta"], 3, ",", ".");
+            if ($data["value_ponta"] > 999 && $data["value_ponta"] <= 999999) {
+                $unidade_medida = "kWh";
+                $divisor = 1000;
+                $decimals = 1;
+            } elseif ($data["value_ponta"] > 999999) {
+                $unidade_medida = "MWh";
+                $divisor = 1000000;
+                $decimals = 3;
+            } else {
+                $unidade_medida = "Wh";
+                $divisor = 1;
+                $decimals = 0;
+            }
+
+            return number_format(round($data["value_ponta"] / $divisor, $decimals), $decimals, ",", ".") . " <small>$unidade_medida</small>";
         });
 
         $dt->edit('value_last_month', function ($data) {
-            return number_format($data["value_last_month"], 3, ",", ".");
+            if ($data["value_last_month"] > 999 && $data["value_last_month"] <= 999999) {
+                $unidade_medida = "kWh";
+                $divisor = 1000;
+                $decimals = 1;
+            } elseif ($data["value_last_month"] > 999999) {
+                $unidade_medida = "MWh";
+                $divisor = 1000000;
+                $decimals = 3;
+            } else {
+                $unidade_medida = "Wh";
+                $divisor = 1;
+                $decimals = 0;
+            }
+
+            return number_format(round($data["value_last_month"] / $divisor, $decimals), $decimals, ",", ".") . " <small>$unidade_medida</small>";
         });
 
         $dt->edit('value_future', function ($data) {
@@ -2426,7 +2622,21 @@ class Energia extends UNO_Controller
             else if ($data["value_future"] > $data["value_last_month"])
                 $icon = "<i class=\"fa fa-level-down-alt text-success ms-2\"></i>";
 
-            return number_format($data["value_future"], 3, ",", ".").$icon;
+            if ($data["value_future"] > 999 && $data["value_future"] <= 999999) {
+                $unidade_medida = "kWh";
+                $divisor = 1000;
+                $decimals = 1;
+            } elseif ($data["value_future"] > 999999) {
+                $unidade_medida = "MWh";
+                $divisor = 1000000;
+                $decimals = 3;
+            } else {
+                $unidade_medida = "Wh";
+                $divisor = 1;
+                $decimals = 0;
+            }
+
+            return number_format(round($data["value_future"] / $divisor, $decimals), $decimals, ",", ".") . " <small>$unidade_medida</small> $icon";
         });
 
         // gera resultados

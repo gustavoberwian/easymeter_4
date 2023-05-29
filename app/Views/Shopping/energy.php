@@ -208,8 +208,8 @@
                                 <th rowspan="2">Medidor</th>
                                 <th rowspan="2">Nome</th>
                                 <th rowspan="2">Tipo</th>
-                                <th rowspan="2">Leitura - kWh</th>
-                                <th colspan="7" class="text-center">Consumo - kWh</th>
+                                <th rowspan="2">Leitura</th>
+                                <th colspan="7" class="text-center">Consumo</th>
                             </tr>
                             <tr role="row">
                                 <th>Mês Atual</th>

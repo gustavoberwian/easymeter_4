@@ -747,7 +747,7 @@ class Energy_model extends Base_model
             if ($demo)
                 $value = "RAND() * 10 AS value_a, RAND() * 10 AS value_b, RAND() * 10 AS value_c";
 
-            $result = $this->db->query("
+            $result = "
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
@@ -760,13 +760,14 @@ class Energy_model extends Base_model
                     $dvc
                 GROUP BY esm_hours.num
                 ORDER BY esm_hours.num
-            ");
+            ";
 
         } else {
 
-            $value = "RAND() * 100 AS value_a, RAND() * 100 AS value_b, RAND() * 100 AS value_c";
+            if ($demo)
+                $value = "RAND() * 100 AS value_a, RAND() * 100 AS value_b, RAND() * 100 AS value_c";
 
-            $result = $this->db->query("
+            $result = "
                 SELECT 
                     CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label, 
                     esm_calendar.dt AS date,
@@ -782,11 +783,11 @@ class Energy_model extends Base_model
                         esm_calendar.dt <= '$end' 
                 GROUP BY esm_calendar.dt
                 ORDER BY esm_calendar.dt
-            ");
+            ";
         }
 
-        if ($result->getNumRows()) {
-            return $result->getResult();
+        if ($this->db->query($result)->getNumRows()) {
+            return $this->db->query($result)->getResult();
         }
 
         return false;

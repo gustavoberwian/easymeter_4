@@ -42,11 +42,22 @@ class Energy_model extends Base_model
         ");
 
         if ($result->getNumRows()) {
+            $max = max($result->getRow()->value, $result->getRow()->prevision, $result->getRow()->average);
+            if ($max > 999 && $max <= 999999) {
+                $unidade_medida = "kWh";
+                $divisor = 1000;
+            } elseif ($max > 999999) {
+                $unidade_medida = "MWh";
+                $divisor = 1000000;
+            } else {
+                $unidade_medida = "Wh";
+                $divisor = 1;
+            }
             return array (
-                "bloco"    => number_format(round($result->getRow()->agrupamento_id, 0), 0, ",", ".") . "  <small>kWh</small>",
-                "consum"    => number_format(round($result->getRow()->value, 0), 0, ",", ".") . "  <small>kWh</small>",
-                "prevision" => number_format(round($result->getRow()->prevision, 0), 0, ",", ".") . "  <small>kWh</small>",
-                "average"   => number_format(round($result->getRow()->average, 0), 0, ",", ".") . "  <small>kWh</small>"
+                "bloco"    => number_format(round($result->getRow()->agrupamento_id, 0), 0, ",", ".") . "  <small>$unidade_medida</small>",
+                "consum"    => number_format(round($result->getRow()->value / $divisor, 0), 0, ",", ".") . "  <small>$unidade_medida</small>",
+                "prevision" => number_format(round($result->getRow()->prevision / $divisor, 0), 0, ",", ".") . "  <small>$unidade_medida</small>",
+                "average"   => number_format(round($result->getRow()->average / $divisor, 0), 0, ",", ".") . "  <small>$unidade_medida</small>"
             );
         }
 

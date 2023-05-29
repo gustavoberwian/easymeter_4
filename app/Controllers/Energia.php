@@ -268,7 +268,7 @@ class Energia extends UNO_Controller
         $dias_t = date('d', mktime(0, 0, 0, date("m") + 1, 0, date("Y")));
 
         $extra = array(
-            "main"        => str_pad(round($main), 6 , '0' , STR_PAD_LEFT). " <span style='font-size:12px;'>$unidade_medida</span>",
+            "main"        => str_pad(round($main), 6 , '0' , STR_PAD_LEFT). " <span style='font-size:12px;'>Wh</span>",
             "period"      => number_format(round(($total_p + $total_f) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
             "period_p"    => number_format(round($total_p / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
             "period_f"    => number_format(round($total_f / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",

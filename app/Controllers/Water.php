@@ -304,7 +304,7 @@ class Water extends UNO_Controller
                     }
 
                     $series[] = array(
-                        "name" => ucfirst(strtolower($this->shopping_model->GetUnidadeByDevice($c)->nome)),
+                        "name" => ucfirst(mb_strtolower($this->shopping_model->GetUnidadeByDevice($c)->nome)),
                         "data" => $values_c,
                         "color" => 'rgb(' . rand(0, 255) . ',' . rand(0, 255) . ',' . rand(0, 255) . ')',
                     );

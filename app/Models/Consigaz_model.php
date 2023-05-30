@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Gas_model;
 use CodeIgniter\Database\ConnectionInterface;
 use CodeIgniter\Validation\ValidationInterface;
+use Config\Database;
 
 class Consigaz_model extends Base_model
 {
@@ -24,7 +25,7 @@ class Consigaz_model extends Base_model
     {
         $status_valve = $this->db->table('esm_valves_stats')->where('medidor_id', $medidor)->select('status')->get();
 
-        if ($status_valve->getRow()->status !== 'verde') {
+        if ($status_valve->getRow()->status === 'vermelho') {
             return json_encode(array("status" => "warning", "message" => "Não foi possível alterar status da válvula"));
         }
 
@@ -254,12 +255,12 @@ class Consigaz_model extends Base_model
     {
         $response = array();
 
-        $entidades = $this->db->query("SELECT 
-                esm_entidades.id,
-                esm_entidades.nome
+        $entidades = $this->db->query('SELECT 
+                esm_entidades.id, esm_entidades.nome,
+                CONCAT(esm_entidades.logradouro, ", ", esm_entidades.numero, " - ", esm_entidades.bairro, ", ", esm_entidades.cidade, " - ", esm_entidades.uf, ", ", esm_entidades.cep) as endereco
             FROM auth_user_relation
             JOIN esm_entidades ON esm_entidades.id = auth_user_relation.entidade_id
-            WHERE auth_user_relation.user_id = $user_id")->getResult();
+            WHERE auth_user_relation.user_id = ' . $user_id)->getResult();
 
         foreach ($entidades as $i => $entidade) {
             $response[$i]['nome'] = $entidade->nome;
@@ -294,7 +295,7 @@ class Consigaz_model extends Base_model
                     }
                 }
 
-                $response[$i]['ultimo_mes'] = $t_ultimo_mes . ' <small>m³</small>';
+                $response[$i]['ultimo_mes'] = $t_ultimo_mes;
 
                 $mes_atual = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
                 foreach ($mes_atual as $c) {
@@ -305,7 +306,7 @@ class Consigaz_model extends Base_model
                     }
                 }
 
-                $response[$i]['mes_atual'] = $t_mes_atual . ' <small>m³</small>';
+                $response[$i]['mes_atual'] = $t_mes_atual;
 
                 $previsao = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
                 foreach ($previsao as $c) {
@@ -319,7 +320,7 @@ class Consigaz_model extends Base_model
                 $days = (strtotime(date('Y-m-d')) - strtotime(date('Y-m-01'))) / 86400 + 1;
                 $days_month = date('t', strtotime('this month'));
 
-                $response[$i]['previsao'] = number_format($t_previsao / $days * $days_month, 0, '', '') . ' <small>m³</small>';
+                $response[$i]['previsao'] = number_format($t_previsao / $days * $days_month, 0, '', '');
             };
         }
 

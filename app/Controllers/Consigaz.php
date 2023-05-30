@@ -453,6 +453,11 @@ class Consigaz extends UNO_Controller
 
         $secret_key = $this->consigaz_model->get_secret_key($this->user->id);
 
+        if (is_null($secret_key)) {
+            echo json_encode(array("status" => "error", "message" => "QR Code não gerado!"));
+            return;
+        }
+
         if (!$this->check_code($code, $secret_key)) {
             echo json_encode(array("status" => "error", "message" => "Código inválido!"));
             return;

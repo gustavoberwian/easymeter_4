@@ -25,7 +25,7 @@ class Consigaz_model extends Base_model
     {
         $status_valve = $this->db->table('esm_valves_stats')->where('medidor_id', $medidor)->select('status')->get();
 
-        if ($status_valve->getRow()->status !== 'verde') {
+        if ($status_valve->getRow()->status === 'vermelho') {
             return json_encode(array("status" => "warning", "message" => "Não foi possível alterar status da válvula"));
         }
 

@@ -1035,4 +1035,25 @@ class Shopping_model extends Base_model
 
         return $result->getRow()->id;
     }
+    public function GetUnidadeByDevice($device)
+    {
+        $query = "
+            SELECT
+                esm_unidades.nome
+            FROM
+                esm_unidades
+            JOIN 
+                esm_medidores on esm_medidores.unidade_id = esm_unidades.id
+            WHERE
+                esm_medidores.nome = '$device'
+        ";
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0) {
+
+            return false;
+        }
+
+        return $result->getRow();
+    }
 }

@@ -170,10 +170,8 @@
                     <section class="card card-easymeter h-100 mb-4">
                         <header class="card-header">
                             <div class="card-actions buttons d-flex">
-                                <select data-plugin-selectTwo class="form-control populate placeholder" id="compare"
-                                    data-plugin-options='{ "placeholder": "Comparar", "allowClear": true }'
-                                    style="width: 150px">
-                                    <option></option>
+                                <select data-plugin-selectTwo class="form-control populate placeholder multiple" id="compare" name="compare[]" multiple
+                                    data-plugin-options='{ "placeholder": "Comparar", "allowClear": true}'>
                                     <?php foreach ($unidades as $u) { ?>
                                         <option value="<?= $u["medidor_id"] ?>"><?= $u["unidade_nome"]; ?></option>
                                     <?php } ?>

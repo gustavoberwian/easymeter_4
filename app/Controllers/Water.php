@@ -299,7 +299,7 @@ class Water extends UNO_Controller
             $comp = $this->water_model->GetConsumption($compare, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
             if ($comp) {
                 foreach ($comp as $v) {
-                    $values_c[] = $v->value;
+                    $values_c[] = $v->value / $divisor;
                 }
 
                 $series[] = array(

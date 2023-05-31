@@ -1469,6 +1469,63 @@ class Admin_model extends Base_model
         return $result->getNumRows();
     }
 
+    public function get_log($status = false, $limit = 0)
+    {
+
+        $db = Database::connect('easy_com_br');
+        $query = $db->table('esm_log');
+        // aplica filtro pelo status
+        if ($status)
+            $query->where('lido', $status);
+
+        // aplica limite
+        if ($limit > 0)
+            $query->limit($limit);
+
+        // ordena por data
+        $query->orderBy('cadastro', 'DESC');
+
+        $result = $query->get();
+        // verifica se retornou algo
+        if ($result->getNumRows() == 0)
+            return false;
+
+        return $result->getNumRows();
+    }
+
+    public function count_log($status = -1)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->table('esm_log');
+        // aplica filtro pelo status
+        if ($status != -1)
+            $query->where('lido', $status);
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // verifica se retornou algo
+        return $result->getNumRows();
+    }
+    
+
+    public function change_log_state($id)
+    {
+        $db = Database::connect('easy_com_br');
+
+        if ($id == 0) {
+            if ($this->db->query("UPDATE esm_log SET lido = 1"))
+                return array("status"  => "success", "message" => "Entradas marcadas com sucesso");
+            else
+                return array("status"  => "error", "message" => $this->db->error()['message']);
+        } else {
+            if ($this->db->query("UPDATE esm_log SET lido = IF(lido = 1, 0, 1) WHERE id = $id"))
+                return array("status"  => "success", "message" => "Entrada marcada com sucesso");
+            else
+                return array("status"  => "error", "message" => $this->db->error()['message']);
+        }
+    }
+
     public function change_contact_state($id)
     {
 

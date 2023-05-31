@@ -73,6 +73,9 @@ class UNO_Controller extends BaseController {
         $data['chamados_count']  = $this->admin_model->count_chamados();
         $data['chamados_unread'] = $this->admin_model->count_chamados("aberto");
 
+        $data['log_unread']      = $this->admin_model->count_log(0);
+        $data['contato_unread']  = $this->admin_model->count_contato(0);
+
         $data['logs']   = $builder->get()->getNumRows();
 
         if ($menu) {

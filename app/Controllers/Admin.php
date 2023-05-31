@@ -1193,6 +1193,77 @@ class Admin extends UNO_Controller
         }
     }
 
+    public function historico($sub = '', $id = '')
+	{
+		if ($sub == 'boletim') {
+			return $this->render('boletim');	
+		} else {
+			return $this->render('historico');	
+		}
+	}
+
+    public function set_log_state()
+    {
+        // pega id do post
+        $id = $this->input->getPost('id');
+
+        // altera status do log
+        $return = $this->admin_model->change_log_state($id);
+
+        // retorna json
+        echo json_encode($return);
+    }
+
+    public function get_access($unidade_id = 0)
+    {
+        $where = ($unidade_id) ? "WHERE esm_unidades.id = " . $unidade_id : "";
+
+        // realiza a query via dt
+
+        $dt = $this->datatables->query("
+        SELECT
+            auth_users.username, 
+            auth_logins.date AS `data`, 
+            esm_entidades.nome AS entidade, 
+            esm_agrupamentos.nome AS agrupamento, 
+            esm_unidades.nome AS apto, 
+            auth_logins.id, 
+            esm_unidades.id AS unidade_id
+        FROM
+            auth_logins
+            JOIN
+            auth_users
+            ON 
+                auth_users.id = auth_logins.user_id
+            JOIN
+            esm_unidades
+            
+            JOIN
+            esm_agrupamentos
+            ON 
+                esm_agrupamentos.id = esm_unidades.agrupamento_id
+            JOIN
+            esm_entidades
+            ON 
+                esm_entidades.id = esm_agrupamentos.entidade_id
+                $where
+        ORDER BY
+            auth_logins.date DESC");
+
+        $dt->add('unidade', function ($data) {
+            return ((is_null($data['agrupamento'])) ? "" : $data['agrupamento'] . "/") . $data['apto'];
+        });
+
+
+        // actions
+        $dt->add('actions', function ($data) {
+            return '<a href="' . site_url('admin/unidades/' . $data['unidade_id']) . '"><i class="fas fa-eye" title="Visualizar Unidade"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
     public function edit_user()
     {
         $users = auth()->getProvider();
@@ -1249,6 +1320,83 @@ class Admin extends UNO_Controller
     {
         $data['total'] = $this->admin_model->count_contato(0);
         return $this->render('contatos', $data);
+    }
+
+    public function get_log()
+    {
+        $tipo = $this->input->getGet('tipo');
+        $aux = '';
+        if ($tipo > -1) {
+            $aux = "WHERE esm_log.tipo = $tipo";
+        }
+
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+        SELECT
+            esm_log.id,
+            esm_log.mensagem,
+            esm_log.tipo,
+            DATE_FORMAT( esm_log.cadastro, '%d/%m/%Y %H:%i:%s' ) AS cadastro,
+            esm_log.lido,
+            auth_users.username,
+            auth_users.avatar 
+        FROM
+            esm_log
+            JOIN auth_users ON auth_users.id = esm_log.user_id 
+            $aux
+        ORDER BY
+            esm_log.cadastro DESC
+        ");
+
+        // icone do remetente
+        $dt->add('enviado_por', function ($data) {
+            return '<img src="' . avatar($data['avatar']) . '" title="' . $data['username'] . '" style="width: 32px" class="rounded-circle" />';
+        });
+
+        // mensagem
+        $dt->edit('mensagem', function ($data) {
+            if (substr($data['mensagem'], 0, 30) == "Consumo acima 700L no medidor ") {
+                $arr = explode(" ", $data['mensagem']);
+                $uid = $this->admin_model->get_unidade_by_medidor($arr[5]);
+                return $data['mensagem'] . ' (' . date('d/m/y H:i', $arr[7]) . ') [<a href="' . site_url('admin/unidades/' . $uid) . '" target="_blank">Visualizar</a>]';
+            } else if (substr($data['mensagem'], 0, 38) == "Leitura menor que anterior no medidor ") {
+                $arr = explode(" ", $data['mensagem']);
+                $uid = $this->admin_model->get_unidade_by_medidor($arr[6]);
+                return $data['mensagem'] . ' (' . date('d/m/y H:i', $arr[8]) . ') [<a href="' . site_url('admin/unidades/' . $uid) . '" target="_blank">Visualizar</a>]';
+            }
+            return $data['mensagem'];
+        });
+
+        // tipo do log
+        $dt->edit('tipo', function ($data) {
+            if ($data['tipo'] == 2)
+                return '<span class="badge badge-danger" style="width: 60px;">Erro</span>';
+            if ($data['tipo'] == 1)
+                return '<span class="badge badge-info" style="width: 60px;">Informação</span>';
+            if ($data['tipo'] == 3)
+                return '<span class="badge badge-warning" style="width: 60px;">Verificar</span>';
+            else
+                return '<span class="badge badge-primary" style="width: 60px;">Indefinido</span>';
+        });
+
+
+        $dt->add('DT_RowClass', function ($data) {
+            if ($data['lido'])
+                return '';
+            else
+                return 'unread';
+        });
+
+        // actions
+        $dt->add('actions', function ($data) {
+            if ($data['lido'])
+                return '<a href="#" class="action-readed" data-id="' . $data['id'] . '"><i class="far fa-eye-slash" title="Marcar como não lido"></i></a>';
+            else
+                return '<a href="#" class="action-readed" data-id="' . $data['id'] . '"><i class="fas fa-eye" title="Marcar como lido"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate(true, array('total' => $this->admin_model->count_log(0)));
     }
 
     public function get_contatos()

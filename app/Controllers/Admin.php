@@ -3,12 +3,11 @@
 namespace App\Controllers;
 
 use App\Models\Admin_model;
+use App\Models\Painel_model;
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\Codeigniter4Adapter;
 use Viacep;
 use CodeIgniter\Shield\Entities\User;
-use Config\Database;
-
 
 
 
@@ -16,9 +15,9 @@ class Admin extends UNO_Controller
 {
     private Admin_model $admin_model;
 
-    protected $input;
+    private Painel_model $painel_model;
 
-    protected $email;
+    protected $input;
 
     protected Datatables $datatables;
 
@@ -26,13 +25,11 @@ class Admin extends UNO_Controller
 
     public $url;
 
-    public $db;
-
-    public $db2;
-
     public function __construct()
     {
         parent::__construct();
+
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
 
         // load requests
         $this->input = \Config\Services::request();
@@ -41,41 +38,20 @@ class Admin extends UNO_Controller
         // load models
         $this->admin_model = new Admin_model();
 
+        $this->painel_model = new Painel_model();
+
         // load libraries
         $this->datatables = new Datatables(new Codeigniter4Adapter);
         $this->viacep = new Viacep();
 
         // set variables
         $this->url = service('uri')->getSegment(1);
-
-
-        $this->db = Database::connect();
-
-        $this->db2 = Database::connect('easy_com_br');
-
     }
 
     public function index(): string
     {
-        $data['centrais'] = $this->admin_model->get_all_centrais();
-        return $this->render("index", $data);
-    }
 
-    public function centrais($id = false)
-    {
-        if ($id) {
-            $data['central'] = $this->admin_model->get_central_entidade($id);
-            $data['data'] = $this->admin_model->get_last_data($data['central']->nome, $data['central']->ultimo_envio);
-            $data['erros'] = $this->admin_model->get_error_leitura($id, $data['central']->tabela);
-            $labels = array();
-            for ($i = 0; $i < 40; $i++) {
-                $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
-            }
-            $data['leituras'] = $labels;
-
-            return $this->render('central', $data);
-        } else
-            return $this->render('centrais', array('count' => $this->admin_model->get_centrais_count()));
+        return $this->render("index");
     }
 
     public function entities($param1 = null, $param2 = null): string
@@ -100,6 +76,7 @@ class Admin extends UNO_Controller
                 $data['leituras'] = $labels;
 
                 return $this->render('entity_edit', $data);
+
             } else {
 
                 $data['readonly'] = 'readonly disabled';
@@ -112,6 +89,7 @@ class Admin extends UNO_Controller
 
                 return $this->render('entity_edit', $data);
             }
+
         } elseif ($param1 === 'incluir') {
 
             return $this->render('entity_add');
@@ -125,7 +103,7 @@ class Admin extends UNO_Controller
     //     if ( intval($param1) > 0 ) {
 
     //         $data['condo'] = $this->admin_model->get_condo($param1);
-    //         $data['agrupamentos'] = $this->admin_model->get_groups($data['condo']->id);
+    //         $data['blocos'] = $this->admin_model->get_groups($data['condo']->id);
 
     //         if ($param2 == "editar") {
 
@@ -159,9 +137,9 @@ class Admin extends UNO_Controller
     //             }
 
     //             if ($data['geral']) {
-    //                 $data['unidade_geral'] = $this->admin_model->get_unidade_medidor_principal($param1);
-    //                 $data['central_geral'] = $this->admin_model->get_central_by_unidade($data['unidade_geral'])->central;
-    //                 $data['primeira_leitura'] = date("d/m/Y", $this->admin_model->get_primeira_leitura($data['condo']->tabela, 'agua', $data['unidade_geral']));
+    //                 $data['unidade_geral'] = $this->painel_model->get_unidade_medidor_principal($param1);
+    //                 $data['central_geral'] = $this->painel_model->get_central_by_unidade($data['unidade_geral'])->central;
+    //                 $data['primeira_leitura'] = date("d/m/Y", $this->painel_model->get_primeira_leitura($data['condo']->tabela, 'agua', $data['unidade_geral']));
 
     //             }
 
@@ -204,8 +182,10 @@ class Admin extends UNO_Controller
 
             } elseif ($data['classificacao'] == 'agrupamentos') {
                 $data['val'] = $this->admin_model->get_name_by_id($data['classificacao'], $this->admin_model->get_user_relations($param1, 'agrupamento'));
+
             } elseif ($data['classificacao'] == 'unidade') {
                 $data['val'] = $this->admin_model->get_code_by_unity_id($this->admin_model->get_user_relations($param1, $data['classificacao']));
+
             } else {
                 $data['val'] = '';
             }
@@ -214,7 +194,9 @@ class Admin extends UNO_Controller
             if ($param2 == 'editar') {
                 $data['readonly'] = '';
                 return $this->render('edit_user', $data);
+
             } else {
+
                 $data['readonly'] = 'readonly disabled';
                 return $this->render('edit_user', $data);
             }
@@ -246,6 +228,10 @@ class Admin extends UNO_Controller
         } else {
             $data['condo'] = '';
         }
+
+
+
+
 
         if ($this->input->getMethod() == 'post') {
             $image = $this->input->getPost('crop-image');
@@ -295,9 +281,8 @@ class Admin extends UNO_Controller
                         'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
                         'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
                     ];
-
-                };
-
+                }
+                ;
 
 
                 $emails = null;
@@ -313,26 +298,29 @@ class Admin extends UNO_Controller
                     // coleta os dados do post
                     $password = $this->input->getPost('password');
                     $telefone = $this->input->getPost('telefone');
-
                     $celular = $this->input->getPost('celular');
-
 
 
                     // atualiza dados
                     if (!$this->admin_model->update_user($user_id, $password, $telefone, $celular, $emails)) {
                         $data['error'] = true;
+                        echo json_encode(
+                            array(
+                                'status' => 'error',
+                                'message' => 'Não foi possível atualizar os dados. Tente novamente em alguns minutos.'
+                            )
+                        );
 
-                        echo json_encode(array(
-                            'status' => 'error',
-                            'message' => 'Não foi possível atualizar os dados. Tente novamente em alguns minutos.'
-                        ));
                     } else {
                         $data['error'] = false;
                         //mensagem
-                        echo json_encode(array(
-                            'status' => 'success',
-                            'message' => 'Seus dados foram atualizados com sucesso.'
-                        ));
+                        echo json_encode(
+                            array(
+                                'status' => 'success',
+                                'message' => 'Seus dados foram atualizados com sucesso.'
+                            )
+                        );
+
 
                     }
                 }
@@ -343,17 +331,205 @@ class Admin extends UNO_Controller
         echo $this->render('profile', $data);
     }
 
-    public function grupos()
-    {
-        $this->render('grupos');
-    }
-
     public function alertas()
     {
-        $this->render('alerts');
+        return $this->render('alertas');
     }
 
-    
+    public function get_alertas()
+    {
+        $box = $this->input->getGet('box');
+        $monitoramento = $this->input->getGet('monitoramento');
+        $user_id = $this->user->id;
+        $count = $this->painel_model->count_alerta_nao_lido($user_id);
+
+        //trata filtro pelo monitoramento
+        $m = ($monitoramento == 'todos') ? '' : "AND esm_alertas.monitoramento = '$monitoramento'";
+
+        if ($box == 'in') {
+            // realiza a query via dt
+            if ($this->user->inGroup('superadmin')) {
+                $query = "
+                SELECT 
+                    esm_alertas.id AS DT_RowId, 
+                    esm_alertas.tipo, 
+                    esm_alertas.titulo, 
+                    esm_alertas.texto, 
+                    esm_alertas.enviada, 
+                    esm_alertas.finalizado, 
+                    esm_alertas.monitoramento, 
+                    ROUND(esm_alertas.consumo_horas, 0) AS consumo_total, 
+                    esm_entidades.nome AS entidade,
+                    esm_medidores.horas_consumo,
+                    ROUND(esm_medidores.consumo_horas, 0) AS consumo_horas,
+                    0 as avatar,
+                    'Easymeter' AS nome,
+                    'in' AS box,
+                    'read' as DT_RowClass,
+                    IF(ISNULL(esm_alertas.finalizado), 'active', 'ended') as active
+                FROM esm_alertas
+                JOIN esm_medidores ON esm_medidores.id = esm_alertas.medidor_id
+                JOIN esm_unidades ON esm_unidades.id = esm_alertas.unidade_id
+                JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+                JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
+                WHERE esm_alertas.visibility = 'normal'
+                ORDER BY esm_alertas.enviada DESC
+                ";
+            } elseif ($this->user->inGroup("industria")) {
+                $query = "
+                    SELECT 
+                        esm_alertas_envios.id AS DT_RowId, 
+                        esm_alertas.tipo, 
+                        esm_alertas.titulo, 
+                        esm_alertas.texto, 
+                        esm_alertas.enviada, 
+                        esm_alertas.finalizado, 
+                        ROUND(esm_alertas.consumo_horas, 0) AS consumo_total, 
+                        IFNULL(esm_alertas_envios.lida, 'unread') as DT_RowClass, 
+                        IF(ISNULL(esm_alertas.finalizado), 'active', 'ended') as active, 
+                        'in' AS box,
+                        esm_alertas.monitoramento
+                    FROM esm_alertas_envios 
+                    JOIN esm_alertas ON esm_alertas.id = esm_alertas_envios.alerta_id 
+                    WHERE
+                        esm_alertas_envios.user_id = $user_id AND 
+                        esm_alertas.visibility = 'normal' AND 
+                        esm_alertas_envios.visibility = 'normal' AND
+                        esm_alertas.enviada IS NOT NULL $m
+                        ORDER BY esm_alertas.enviada DESC
+                ";
+            } else {
+                $query = "
+                SELECT 
+                    esm_alertas_envios.id AS DT_RowId, 
+                    esm_alertas.tipo, 
+                    esm_alertas.titulo, 
+                    esm_alertas.texto, 
+                    esm_alertas.enviada, 
+                    esm_alertas.finalizado, 
+                    ROUND(esm_alertas.consumo_horas, 0) AS consumo_total, 
+                    auth_users.username, 
+                    IFNULL(esm_alertas_envios.lida, 'unread') as DT_RowClass, 
+                    IF(ISNULL(esm_alertas.finalizado), 'active', 'ended') as active, 
+                    auth_users.avatar, 
+                    'in' AS box,
+                    esm_alertas.monitoramento, 
+                    esm_entidades.nome AS entidade
+                FROM esm_alertas_envios 
+                JOIN esm_alertas ON esm_alertas.id = esm_alertas_envios.alerta_id 
+                LEFT JOIN auth_users ON auth_users.id = esm_alertas.enviado_por 
+                JOIN esm_unidades ON esm_unidades.id = esm_alertas.unidade_id
+                JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+                JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
+                WHERE
+                    esm_alertas_envios.user_id = $user_id AND 
+                    esm_alertas.visibility = 'normal' AND 
+                    esm_alertas_envios.visibility = 'normal' AND
+                    esm_alertas.enviada IS NOT NULL $m
+                    ORDER BY esm_alertas.enviada DESC
+                ";
+            }
+        } else if ($box == 'out') {
+            // realiza a query via dt
+            $query = "
+                SELECT esm_alertas.id AS DT_RowId, esm_alertas.tipo,
+                esm_alertas.titulo, esm_alertas.texto, 
+                auth_users.username,
+                IFNULL(esm_alertas.enviada, 'unread') AS DT_RowClass, 
+                auth_users.avatar, 
+                IFNULL(esm_alertas.enviada, 'agendada') AS enviada, 
+                'out' AS box,
+                esm_alertas.monitoramento
+                FROM esm_alertas
+                LEFT JOIN auth_users ON auth_users.id = esm_alertas.enviado_por 
+                WHERE esm_alertas.enviado_por = $user_id AND esm_alertas.visibility = 'normal' $m
+                ORDER BY (esm_alertas.enviada IS NOT NULL), esm_alertas.enviada DESC
+            ";
+        }
+
+        $dt = $this->datatables->query($query);
+
+        // formata icone do monitoramento
+        $dt->edit('titulo', function ($data) {
+            if ($this->user->inGroup('administradora', 'admin')) {
+                return $data['entidade'] . ': ' . $data['titulo'];
+            } else {
+                return $data['titulo'];
+            }
+        });
+
+        $dt->edit('texto', function ($data) {
+            if (is_null($data['finalizado'])) {
+                if ($this->user->inGroup('admin'))
+                    return $data['texto'] . " [" . $data['horas_consumo'] . "h/" . $data['consumo_horas'] . " L]";
+                else
+                    return $data['texto'];
+            } else {
+                if ($data['tipo'] == 'nivel')
+                    return $data['texto'] . "<br/><b>O nível normalizou em " . date('d/m/Y H:i', strtotime($data['finalizado'])) . "</b>";
+                else
+                    return $data['texto'] . "<br/><b>O vazamento parou em " . date('d/m/Y H:i', strtotime($data['finalizado'])) . " [" . $data['consumo_total'] . " L].</b>";
+            }
+        });
+
+        // icone do tipo
+        $dt->add('icon', function ($data) {
+            $f = is_null($data['finalizado']) ? '' : ' text-muted';
+            return '<span class="fa-stack">' . alerta_tipo2icon($data['tipo'], 'fa-stack-2x' . $f) . entrada_icon($data['monitoramento'], 'fa-stack-1x') . '</span>';
+        });
+
+        // formata data envio
+        $dt->edit('enviada', function ($data) {
+            if ($data['enviada'] == 'agendada') {
+                $envio = TaskRunner::getRunDates('*/5 * * * *', 1);
+                return '<span title="Previsão de Envio: ' . $envio[0]->format('d/m/Y H:i') . '">Agendada</span>';
+            }
+            return time_ago($data['enviada']);
+        });
+
+        // formata icone do monitoramento
+        $dt->edit('monitoramento', function ($data) {
+            return entrada_icon($data['monitoramento']);
+        });
+
+        // icone do remetente
+        $dt->add('enviado_por', function ($data) {
+            if (!$this->user->inGroup("industria")) {
+                return '<img src="' . avatar($data['avatar']) . '" title="' . $data['nome'] . '" style="width: 32px" class="rounded-circle" />';
+            } else {
+                return '<img src="http://easymeter.com.br/uploads/avatars/sistema.png" title="Easymeter" style="width: 32px" class="rounded-circle">';
+            }
+        });
+
+        // actions
+        $dt->add('actions', function ($data) {
+            //            if ($data['box'] == 'out' && $data['enviada'] != 'agendada') return '';
+            $show = '';
+            if ($data['box'] == 'in' && $data['DT_RowClass'] == 'unread')
+                $show = ' d-none';
+            return '<a href="#" class="action-delete' . $show . '" data-id="' . $data['DT_RowId'] . '"><i class="fas fa-trash" title="Excluir alerta"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function md_confirma_aviso()
+    {
+        $data['envio'] = TaskRunner::getRunDates('*/5 * * * *', 1);
+
+        $this->load->view('modals/painel/conf_envio_aviso', $data);
+    }
+
+    public function delete_alerta()
+    {
+        $id = $this->input->getPost('id');
+        $box = $this->input->getPost('box');
+        $adm = $this->input->getPost('adm');
+
+        echo $this->painel_model->delete_alerta($id, $box, $adm);
+    }
+
     // POST PART FILE
 
     public function get_entities()
@@ -512,158 +688,6 @@ class Admin extends UNO_Controller
         echo $dt->generate();
     }
 
-    public function suporte($id = false)
-    {
-        if ($id) {
-            if ($this->input->getPost('fechar') == "fechar") {
-                $data['chamado_close'] = $this->admin_model->chamado_close($id, $this->user->id);
-            }
-            if ($this->input->getPost('reply') == "reply") {
-                $data['chamado_reply'] = $this->admin_model->new_reply($id, $this->input->getPost('message'), $this->user->id);
-                //TODO: enviar email pro usuário
-            }
-            $data['chamado'] = $this->admin_model->get_chamado($id);
-            if ($data['chamado']->status == 'aberto')
-                $data['status'] = "<span class=\"badge badge-danger\">Aberto</span>";
-            elseif ($data['chamado']->status == 'fechado')
-                $data['status'] = "<span class=\"badge badge-success\">Fechado</span>";
-            else
-                $data['status'] = "<span class=\"badge badge-warning\">" . ucfirst($data['chamado']->status) . "</span>";
-
-            $data['replys'] = $this->admin_model->get_chamado_reply($id);
-            $this->render('suporte_reply', $data);
-        } else {
-            return $this->render('suporte');
-        }
-    }
-
-    public function md_chamado()
-    {
-        echo view('Admin/modals/chamado');
-    }
-
-    public function md_new_chamado()
-    {
-
-        return view('modals/admin/md_chamado');
-    }
-
-    public function new_chamado()
-    {
-        $ass = $this->input->getPost('assunto');
-        $msg = $this->input->getPost('message');
-        $this->user->email = $this->admin_model->get_user_emails($this->user->id);
-
-        $ret = $this->admin_model->new_chamado($this->user, $ass, $msg);
-
-        if ($ret['status'] == 'success') {
-            //envia email
-            $email = \Config\Services::email();
-            
-            $data['cid'] = date('Y') . str_pad($ret['id'], 6, "0", STR_PAD_LEFT);
-            $data['titulo'] = $ret['assunto'];
-            $data['nome'] = $this->user->username;
-            $data['msg'] = $msg;
-            $data['prev'] = date('d/m/Y', strtotime("+2 days", time()));
-
-            $email->setFrom('contato@easymeter.com.br', "Easymeter");
-            $email->setTo('atendimento@unorobotica.com.br');
-            $email->setReplyTo($this->user->email);
-            $email->setSubject('Suporte Easymeter');
-            $email->setMessage(view('admin/emails/aviso_chamado', $data));
-
-            $email->send();
-
-            
-            $email->setFrom('contato@easymeter.com.br', "Easymeter");
-            $email->setTo($this->user->email);
-            $email->setReplyTo('contato@easymeter.com.br');
-            $email->setSubject('Suporte Easymeter');
-            $email->setMessage(view('admin/emails/suporte', $data));
-
-            $email->send();
-        }
-
-        echo json_encode($ret);
-    }
-
-    public function get_chamados_novo()
-    {
-        // realiza a query via dt
-        $dt = $this->datatables->query("  SELECT
-        esm_tickets.id AS id, 
-        esm_tickets.unidade_id AS Unidade_id, 
-        esm_tickets.nome AS ticket, 
-        esm_tickets.email AS email, 
-        esm_tickets.mensagem AS mensagem, 
-        esm_tickets.STATUS AS status, 
-        DATE_FORMAT( esm_tickets.cadastro, '%d/%m/%Y' ) AS cadastro, 
-        esm_departamentos.nome AS departamento, 
-        esm_entidades.tabela AS entidade, 
-        esm_entidades.nome AS agrupamento, 
-        esm_entidades.classificacao AS classificacao
-    FROM
-        esm_tickets
-        JOIN
-        esm_departamentos
-        ON 
-            esm_tickets.departamento = esm_departamentos.id
-        LEFT JOIN
-        esm_unidades
-        ON 
-            esm_unidades.id = esm_tickets.unidade_id
-        LEFT JOIN
-        esm_agrupamentos
-        ON 
-            esm_agrupamentos.id = esm_unidades.agrupamento_id
-        LEFT JOIN
-        esm_entidades
-        ON 
-            esm_entidades.id = esm_agrupamentos.entidade_id
-    GROUP BY
-        esm_tickets.id
-    ORDER BY
-        COALESCE ( esm_tickets.cadastro ) DESC
-            ");
-
-        $dt->add('DT_RowId', function ($data) {
-            return $data['id'];
-        });
-
-        $dt->edit('entidade', function ($data) {
-            return ucfirst($data['entidade']);
-        });
-
-        $dt->edit('classificacao', function ($data) {
-            return '<span class="badge badge-primary">' . ucfirst($data['classificacao']) . '</span>';
-        });
-
-        $dt->edit('status', function ($data) {
-            if ($data['status'] == 'aberto')
-                return "<span class=\"badge badge-danger\" style=\"width: 70px;\">Aberto</span>";
-            elseif ($data['status'] == 'fechado')
-                return "<span class=\"badge badge-success\" style=\"width: 70px;\">Fechado</span>";
-            else
-                return "<span class=\"badge badge-warning\" style=\"width: 70px;\">" . ucfirst($data['status']) . "</span>";
-        });
-
-        // gera resultados
-        echo $dt->generate();
-    }
-
-    public function relatorios($entity = "")
-    {
-        if ($entity == 'viver') {
-            $data['competencias'] = $this->admin_model->get_competencias(3, 3);
-            $this->render('reports_viver', $data);
-        } else if ($entity == 'baviera') {
-            $data['competencias'] = $this->admin_model->get_competencias(3, 3);
-            $this->render('reports_baviera', $data);
-        } else {
-            $this->render('reports');
-        }
-    }
-
     public function delete_entity()
     {
         $id = $this->input->getPost('id');
@@ -747,10 +771,9 @@ class Admin extends UNO_Controller
 
     public function add_ramal()
     {
-
-        $dados['nome']          = $this->input->getPost('nome-ramal') ?? '';
-        $dados['tipo']          = $this->input->getPost('tipo-ramal') ?? '';
-        $dados['entidade_id']   = $this->input->getPost('sel-entity') ?? '';
+        $dados['nome'] = $this->input->getPost('nome-ramal') ?? '';
+        $dados['tipo'] = $this->input->getPost('tipo-ramal') ?? '';
+        $dados['entidade_id'] = $this->input->getPost('sel-entity') ?? '';
 
         echo $this->admin_model->add_ramal($dados);
     }
@@ -817,6 +840,105 @@ class Admin extends UNO_Controller
 
         // executa o curl e retorna os dados
         echo $this->viacep->busca_cep($cep);
+    }
+
+    public function get_fechamentos()
+    {
+        $condo_id = $this->input->getGet('condo');
+        $this->user = auth()->user();
+        if (is_null($condo_id))
+            $condo_id = $this->user->entity->id;
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT esm_fechamentos.id AS DT_RowId, esm_fechamentos.competencia,
+			DATE_FORMAT(FROM_UNIXTIME(esm_fechamentos.data_inicio),'%d/%m/%Y') AS data_inicio,
+			DATE_FORMAT(FROM_UNIXTIME(esm_fechamentos.data_fim),'%d/%m/%Y') AS data_fim, 
+            LPAD(esm_fechamentos.leitura_anterior, 6, '0') AS leitura_anterior, LPAD(esm_fechamentos.leitura_atual, 6, '0') AS leitura_atual, 
+            CONCAT(esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior, ' m<sup>3</sup>') AS consumo,
+            CONCAT('<span class=\"float-left\">R$</span> ', FORMAT(esm_fechamentos.v_concessionaria, 2, 'de_DE')) AS v_concessionaria, 
+            DATE_FORMAT(esm_fechamentos.cadastro,'%d/%m/%Y') AS cadastro, esm_ramais.nome AS ramal,
+            (SELECT IFNULL(GROUP_CONCAT(DATE_FORMAT(data, '%d/%m/%Y') SEPARATOR '<br/>'), 'Não Enviados') FROM esm_fechamentos_envios WHERE fechamento_id = esm_fechamentos.id) AS envios
+            FROM esm_fechamentos
+			LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
+            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
+            WHERE esm_entidades.id = $condo_id AND esm_ramais.tipo = 'agua' ORDER BY esm_fechamentos.id DESC
+        ");
+
+        $dt->edit('envios', function ($data) {
+            if ($data['envios'] == 'Não Enviados')
+                return '<span class="badge badge-warning">Não Enviados</span>';
+            else
+                return '<span class="badge badge-success" title="' . $data['envios'] . '" data-toggle="tooltip" data-html="true">Enviados</span>';
+        });
+
+        $dt->edit('competencia', function ($data) {
+            return strftime('%b/%Y', strtotime($data['competencia']));
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            $dis = "";
+            if ($this->user->inGroup('demo')) {
+                $dis = " disabled";
+            }
+
+            return '<a href="#" class="action-download-agua ' . $dis . '" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>
+				<a href="#" class="action-delete ' . $dis . '" data-id="' . $data['DT_RowId'] . '"><i class="fas fa-trash" title="Excluir"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function get_leituras()
+    {
+        $condo_id = $this->input->getGet('condo');
+        $this->user = auth()->user();
+        if (is_null($condo_id))
+            $condo_id = $this->user->entity->id;
+
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT 
+                UNIX_TIMESTAMP(STR_TO_DATE(CONCAT('01/', competencia), '%d/%m/%Y')) AS competencia,
+                esm_fechamentos.data_inicio,
+                esm_fechamentos.data_fim, 
+                esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior AS consumo,
+                esm_fechamentos.cadastro AS leitura,
+                esm_fechamentos.id AS DT_RowId
+            FROM esm_fechamentos
+            LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
+            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
+            WHERE esm_entidades.id = $condo_id AND esm_ramais.nome LIKE \"G%\" ORDER BY esm_fechamentos.id DESC
+        ");
+
+        $dt->edit('competencia', function ($data) {
+            return strftime('%b/%Y', strtotime($data['competencia']));
+        });
+
+        $dt->edit('data_inicio', function ($data) {
+            return date("d/m/Y", $data['data_inicio']);
+        });
+
+        $dt->edit('data_fim', function ($data) {
+            return date("d/m/Y", $data['data_fim']);
+        });
+
+        $dt->edit('leitura', function ($data) {
+            return date_format(date_create($data['leitura']), "d/m/Y");
+        });
+
+        $dt->edit('consumo', function ($data) {
+            return number_format($data['consumo'] / 1000, 3, ',', '.') . ' m<sup>3</sup>';
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            return '<a href="#" class="action-download-gas" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
     }
 
     public function md_bloco()
@@ -926,7 +1048,7 @@ class Admin extends UNO_Controller
             $agua_edit = $this->input->getPost('id-prumada-edit') ?? "";
             $agua_delete = $this->input->getPost('id-prumada-delete') ?? "";
 
-            // atualiza bloco na tabela agrupamentos
+            // atualiza bloco na tabela blocos
             echo $this->admin_model->update_bloco($id, $nome, $agua, $agua_edit, $agua_delete, $ramal_id);
         } else {
             $unidade = array(
@@ -965,17 +1087,15 @@ class Admin extends UNO_Controller
 
     public function edit_agrupamento()
     {
-
-        $id         = $this->input->getPost('id');
-        $cid        = $this->input->getPost('id-condo');
-        $nome       = $this->input->getPost('id-bloco');
-        $rid        = json_decode($this->input->getPost('sel-ramal'));
-        $message    = [];
-
+        $id = $this->input->getPost('id');
+        $cid = $this->input->getPost('id-condo');
+        $nome = $this->input->getPost('id-bloco');
+        $rid = json_decode($this->input->getPost('sel-ramal'));
+        $message = [];
 
         if (is_array($rid)) {
             if ($id) {
-                // atualiza bloco na tabela agrupamentos
+                // atualiza bloco na tabela blocos
                 if (!$this->admin_model->update_agrupamento($id, $nome, 0)) {
                     return false;
                 } else {
@@ -996,7 +1116,7 @@ class Admin extends UNO_Controller
             }
         } else {
             if ($id) {
-                // atualiza bloco na tabela agrupamentos
+                // atualiza bloco na tabela blocos
                 $message = $this->admin_model->update_agrupamento($id, $nome, $rid->value);
             } else {
                 // insere bloco
@@ -1030,14 +1150,22 @@ class Admin extends UNO_Controller
 
     public function get_users()
     {
-        if ($this->input->getGet("mode") == 0) $m = "";
-        if ($this->input->getGet('mode') == 1) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'agua'";
-        if ($this->input->getGet('mode') == 2) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'gas'";
-        if ($this->input->getGet('mode') == 3) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'energia'";
-        if ($this->input->getGet('mode') == 4) $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'nivel'";
 
-        $dt = $this->datatables->query(
-            "
+        if ($this->input->getGet("mode") == 0)
+            $m = "";
+        if ($this->input->getGet('mode') == 1)
+            $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'agua'";
+        if ($this->input->getGet('mode') == 2)
+            $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'gas'";
+        if ($this->input->getGet('mode') == 3)
+            $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'energia'";
+        if ($this->input->getGet('mode') == 4)
+            $m = " JOIN auth_groups_users ON auth_groups_users.user_id = auth_users.id AND auth_groups_users.group = 'nivel'";
+
+
+
+
+        $dt = $this->datatables->query("
             SELECT 
                 auth_users.id AS id,
                 auth_users.avatar AS avatar,
@@ -1105,7 +1233,6 @@ class Admin extends UNO_Controller
 
         $dt->add('actions', function ($data) {
             return '
-                <a href="' . site_url('admin/users/') . $data['id'] . '/editar" class="action-edit" data-id="' . $data['id'] . '"><i class="fas fa-pencil-alt text-primary" title="Editar"></i></a>
 				<a href="#" class="action-delete-user" data-id="' . $data['id'] . '" data-toggle="confirmation" data-title="Certeza?"><i class="fas fa-trash text-danger" title="Excluir"></i></a>
             ';
         });
@@ -1146,17 +1273,38 @@ class Admin extends UNO_Controller
             $dados['group']['nivel'] = 'nivel';
         }
 
-        $dados['user-id']               = $users->getInsertID();
-        $dados['classificacao']         = $this->input->getPost('classificacao-user');
-        $dados['page']                  = $this->input->getPost('page-user') ?? '';
-        $dados['entity-user']           = $this->input->getPost('entity-user') ?? '';
-        $dados['unity-user']            = $this->input->getPost('unity-user') ?? '';
-        $dados['group-user']            = $this->input->getPost('group-user') ?? '';
-        $dados['groups-user']           = array_map('trim', explode(",", $this->input->getPost('groups-user') ?? ''));
+        $dados['user-id'] = $users->getInsertID();
+        $dados['classificacao'] = $this->input->getPost('classificacao-user');
+        $dados['page'] = $this->input->getPost('page-user') ?? '';
+        $dados['entity-user'] = $this->input->getPost('entity-user') ?? '';
+        $dados['unity-user'] = $this->input->getPost('unity-user') ?? '';
+        $dados['group-user'] = $this->input->getPost('group-user') ?? '';
+        $dados['groups-user'] = array_map('trim', explode(",", $this->input->getPost('groups-user') ?? ''));
 
+        if ($dados['page'] === '') {
 
+            if ($dados['entity-user'] != '') {
+                $dados['page'] = $this->get_entity_class('entidades', $dados['entity-user']);
+
+            } elseif ($dados['group-user'] != '') {
+                $dados['page'] = $this->get_entity_class('agrupamentos', $dados['group-user']);
+
+            } elseif ($dados['unity-user'] != '') {
+                $dados['page'] = $this->get_entity_class('unidades', $dados['unity-user']);
+            }
+        }
         //Chamada da função de inserção
         echo $this->admin_model->add_user($dados);
+    }
+    public function get_entity_class($type, $data)
+    {
+        if ($type == 'entidades') {
+            return $this->admin_model->get_class_by_entity($this->admin_model->get_table_by_name($type, $data)->id);
+        } elseif ($type == 'agrupamentos') {
+            return $this->admin_model->get_class_by_entity($this->admin_model->get_entity_by_id($type, $this->admin_model->get_table_by_name($type, $data)->id));
+        } else {
+            return $this->admin_model->get_class_by_entity($this->admin_model->get_entity_by_id($type, $this->admin_model->get_unity_by_code($data)->id));
+        }
     }
 
     public function get_entity_for_select()
@@ -1170,6 +1318,7 @@ class Admin extends UNO_Controller
         }
         print_r($result);
         echo $result;
+
     }
 
     public function get_groups_for_select()
@@ -1191,6 +1340,7 @@ class Admin extends UNO_Controller
         if (!$this->admin_model->update_active($this->input->getPost('id'))) {
             return false;
         }
+
     }
 
     public function historico($sub = '', $id = '')
@@ -1302,6 +1452,8 @@ class Admin extends UNO_Controller
         } else {
             $dados['group']['energia'] = '';
         }
+
+
         if ($this->input->getPost('user-nivel') === 'on') {
             $dados['group']['nivel'] = 'nivel';
         } else {
@@ -1315,6 +1467,7 @@ class Admin extends UNO_Controller
         //Chamada da função de inserção
         echo $this->admin_model->edit_user($dados);
     }
+
 
     public function contatos()
     {
@@ -1826,4 +1979,5 @@ class Admin extends UNO_Controller
 
         return array($ret, $count);
     }
+
 }

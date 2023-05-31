@@ -1,251 +1,237 @@
-(function () {
+(function($) {
 
-    "use strict";
+	'use strict';
 
-    function CallAlerts() {
-        return {
-            initialize: function (table, columns, url){
-                this
-                    .options(table, columns, url)
-                    .setVars()
-                    .build()
-                    .events();
-            },
+    // ***********************************************************************************************
+    // * Inicializadores
+    // ***********************************************************************************************
 
-            options: function (table, columns, url) {
-                this.$options = {
-                    table: table,
-                    columns: columns,
-                    url: url
-                }
+    // **
+    // * Inicializa datatable
+    // **
+	$.fn.dataTable.ext.errMode = 'throw';
+	$.fn.dataTableExt.oApi.fnProcessingIndicator = function ( oSettings, onoff ) {
+		if ( typeof( onoff ) == 'undefined' ) {
+			onoff = true;
+		}
+		this.oApi._fnProcessingDisplay( oSettings, onoff );
+	};
 
-                return this;
-            },
-
-            setVars: function () {
-                this.table = this.$options.table;
-                this.columns = this.$options.columns;
-                this.url = this.$options.url;
-                this.$table = $(this.$options.table);
-                this.$columns = $(this.$options.columns);
-
-                return this;
-            },
-
-            build: function () {
-                let _self = this;
-
-                this.datatable = this.$table.DataTable({
-                    dom: '<"table-responsive"t>r<"row"<"col-md-12"p>>',
-                    processing: true,
-                    columns: _self.$columns,
-                    serverSide: true,
-                    sorting: [],
-                    pagingType: "numbers",
-                    pageLength: 20,
-                    ajax: {
-                        type: "POST",
-                        url: _self.$table.data("url"),
-                        data: {
-                            fid: $(".btn-download").data("id"),
-                            monitoramento: _self.$table.data("tipo"),
-                            group: $(".page-header").data("group")
-                        },
-                        error: function () {
-                            notifyError(
-                                "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
-                            );
-                            _self.$table.dataTable().fnProcessingIndicator(false);
-                            $(_self.table + " .table-responsive").removeClass("processing");
-                        },
-                    },
-                    fnDrawCallback: function() {
-                        $(_self.table + "_wrapper .table-responsive").removeClass("processing");
-                        if ($(_self.table + ' tbody tr').hasClass('unread') && !$('.dataTables_paginate').children().hasClass('select-all'))
-                            $(_self.table + '_paginate').prepend('<div class="select-all"><a class="mark-all' + _self.$table.data("tipo") + ' cur-pointer">Marcar todos como lidos</a></div>')
-                    }
-                });
-
-                window.dt = this.datatable;
-
-                return this;
-            },
-
-            events: function () {
-                let _self = this;
-
-                // duplica thead
-                $(_self.table + ' thead tr').clone(true).appendTo( _self.table + ' thead' ).addClass('filter');
-
-                // adiciona campos de filtro
-                $(_self.table + ' thead tr:eq(1) th.filter').each( function (i) {
-
-                    $(this).html( '<input type="text" class="form-control input-block" value="">' );
-
-                    $( 'input', this ).on( 'keyup change', function () {
-                        if ( _self.datatable.column(i).search() !== this.value ) {
-                            _self.datatable
-                                .column(i+1)
-                                .search( this.value )
-                                .draw();
-                        }
-                    } );
+    var box = 'in';
+    var monitoramento = 'todos'; //$('.monitoramento.active input').data('filter');
+	var dtAlertas = $('#dt-alertas').DataTable({
+		dom: '<"row"<"col-lg-6"l><"col-lg-6">><"table-responsive"t>pr',
+		processing: true,
+        columns: [ 
+                { data: "tipo", visible: false, orderable: false}, 
+                { data: "DT_RowClass", visible: false, orderable: false},
+                { data: "active", visible: false, orderable: false},
+                { data: "icon", class: "dt-body-center", orderable: false }, 
+                { data: "titulo", className: 'table-ellipsis' }, 
+                { data: "texto", className: 'table-ellipsis d-none d-lg-table-cell', orderable: false },
+                { data: "enviada" }, 
+                { data: "enviado_por", class: "dt-body-center d-none d-lg-table-cell", orderable: false }, 
+                { data: "actions", className: "actions dt-body-center d-none d-lg-table-cell", orderable: false} ],
+        ordering: true,
+        pagingType: "numbers",
+        sorting: [],
+        lengthChange: false,
+        pageLength: 10,
+        serverSide: true,
+		ajax: { 
+            url: $('#dt-alertas').data('url'),
+            data: function ( d ) {
+                return $.extend( {}, d, {
+                    box: box,
+                    monitoramento: monitoramento
                 } );
+            },
+			error: function () {
+				notifyError( 'Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes.' );
+                $('#dt-alertas').dataTable().fnProcessingIndicator(false);
+                $('.table-responsive').removeClass('processing');
+            },
+            dataSrc: function ( json ) {
+                //$('.badge-alerta').attr('data-count', json.extra.count).html(json.extra.count);
 
-                // limpa campos que não são filtros
-                $(_self.table + ' thead tr:eq(1) th:not(.filter)').each( function () {
-                    $(this).text('')
-                });
-
-                // inclui botão limpar filtros
-                $(_self.table + ' thead tr:eq(1) th:eq(6)').html('<a href="" class="clear-filter" title="Limpa filtros"><i class="fas fa-times"></i></a>').addClass('actions text-center');
-
-                // handler botão limpar filtros
-                $('.clear-filter').on('click', function () {
-                    $(_self.table + ' thead tr:eq(1) th.filter input').each( function () {
-                        this.value = '';
-                    });
-                    _self.datatable.columns().search('').draw();
-                });
-
-                $(_self.table + ' tbody').on('click', 'tr', function (event) {
-
-                    if (event.target.cellIndex === undefined || event.target.cellIndex === 6) return;
-
-                    let data = _self.datatable.row( this ).data();
-                    let $row = $(this);
-
-                    $.magnificPopup.open( {
-                        items: {src: '/shopping/ShowAlert'},
-                        type: 'ajax',
-                        modal:true,
-                        ajax: {
-                            settings: {
-                                type: 'POST',
-                                data: { id: data.DT_RowId, monitoramento: _self.$table.data("tipo") }
-                            }
-                        },
-                        callbacks: {
-                            close: function() {
-                                // mostra action
-                                $('.action-delete').filter('[data-id="'+data.DT_RowId+'"]').removeClass('d-none')
-                                // atualiza badge se necessário
-                                if ($row.hasClass('unread')) {
-                                    let $badge = $('.badge-alerta');
-                                    let $count = $badge.attr('data-count') - 1;
-                                    $badge.attr('data-count', $count).html($count);
-                                }
-                                // remove destaque da linha
-                                $row.removeClass('unread');
-                            }
-                        }
-                    });
-                });
-
-                // **
-                // * Handler Fechar Modal
-                // **
-                $(document).on('click', '.modal-dismiss', function (e) {
-                    // para propagação
-                    e.preventDefault();
-                    // fecha a modal
-                    $.magnificPopup.close();
-                });
-
-                // **
-                // * Handler Action Excluir Alerta
-                // **
-                $(document).on('click', _self.table + ' .action-delete', function () {
-
-                    let $btn = $(this);
-                    $btn.html('<i class="fas fa-spinner fa-spin"></i>');
-
-                    // faz a requisição
-                    $.post(
-                        "/shopping/DeleteAlert",
-                        {
-                            id: $(this).data('id'),
-                            monitoramento: _self.$table.data('tipo'),
-                        },
-                        function(json) {
-                            if (json.status == 'success') {
-                                // remove linha
-                                _self.datatable.draw();
-                                // mostra notificação
-                                notifySuccess(json.message);
-                            } else {
-                                $btn.html('<i class="fas fa-trash"></i>');
-                                // mostra erro
-                                notifyError(json.message);
-                            }
-                        }, 'json').fail(function(xhr, status, error) {
-                            $btn.html('<i class="fas fa-trash"></i>');
-                            notifyError(error, 'Ajax Error');
-                        }
-                    );
-                });
-
-                $(document).on("click", 'a.mark-all' + _self.$table.data("tipo"), function() {
-
-                    // faz a requisição
-                    $.ajax({
-                        method : 'POST',
-                        url : "/shopping/ReadAllAlert",
-                        data : { monitoramento : _self.$table.data("tipo") },
-                        dataType : 'json',
-                        success : function(json) {
-                            if (json.status == 'success') {
-                                _self.datatable.draw();
-                                // mostra notificação
-                                notifySuccess(json.message);
-                            } else {
-                                // mostra erro
-                                notifyError(json.message);
-                            }
-                        },
-                        error : function(xhr, status, error) {
-                            // mostra erro
-                            notifyError(error, 'Ajax Error');
-                        }
-                    });
-                })
-
-                _self.$table
-                    .on('click', '', function (e) {
-
-                    })
-            }
-        }
-    }
-
-    let energyAlertsTable = new CallAlerts();
-    energyAlertsTable.initialize("#dt-alerts-energia",
-        [
-            {data: "type", className: "dt-body-center", orderable: false},
-            {data: "tipo", className: "dt-body-center", orderable: false},
-            {data: "device", className: "dt-body-center filter"},
-            {data: "nome", className: "filter" },
-            {data: "titulo"},
-            {data: "enviada", className: "dt-body-center"},
-            {data: "actions", className: "dt-body-center", orderable: false},
-        ],
-    );
-
-    let waterAlertsTable = new CallAlerts();
-    waterAlertsTable.initialize("#dt-alerts-water",
-        [
-            {data: "type", className: "dt-body-center", orderable: false},
-            {data: "tipo", className: "dt-body-center", orderable: false},
-            {data: "device", className: "dt-body-center filter"},
-            {data: "nome", className: "filter" },
-            {data: "titulo"},
-            {data: "enviada", className: "dt-body-center"},
-            {data: "actions", className: "dt-body-center", orderable: false},
-        ],
-    );
-
-    $(".btn-alert-config").on("click", function (event) {
-        window.location.href = "/" + $(".page-header").data("url") + "/configuracoes/" + $(".page-header").data("group");
+                return json.data;
+            }           
+        },
+		fnPreDrawCallback: function() { $('.table-responsive').addClass('processing'); },
+        fnDrawCallback: function(oSettings) { 
+            $('.table-responsive').removeClass('processing'); 
+            if (box == 'in' && $('#dt-alertas tbody tr').hasClass('unread')) //oSettings.aoData.length > 0
+                $('#dt-alertas_paginate').prepend('<div class="select-all"><a href="#" class="mark-all">Marcar todas como lida</a></div>')
+        }        
     });
 
-}.apply(this, [jQuery]));
+    $('.read').on('click', function (event) {
+        dtAlertas.column(2).search( $(this).data('filter'), true, false ).draw();
+    });
+
+    $('.inbox-group label.btn').on("click", function() {
+        box = this.id;
+        if (box == 'in') {
+            $('.vis-group').fadeIn(); 
+            $('a.mark-all').show();
+        } else { 
+            dtAlertas.column(0).search( '', true, false )
+            dtAlertas.column(1).search( '', true, false );
+            $('.vis-group').fadeOut();
+            $('a.mark-all').hide();
+            $('.tipo-group label').removeClass('active').first().addClass('active');
+            $('.box-group label').removeClass('active').first().addClass('active');
+        }
+        dtAlertas.ajax.reload( );
+    });
+
+    $(".monitoramento-group :input").change(function() {
+        monitoramento = $(this).data('filter');
+        dtAlertas.ajax.reload( );
+    });
+
+    $('#refresh label.btn').on("click", function() {
+        dtAlertas.ajax.reload( );
+    });
+
+    $(document).on("click", 'a.mark-all', function() {
+
+        // faz a requisição
+		$.post("/ajax/mark_all_read", { id: $('.userbox').data('uid') }, function(json) {
+			if (json.status == 'success') {
+                // remove destaque da linha
+                $('#dt-alertas tbody tr').removeClass('unread');
+                // mostra actions
+                $('#dt-alertas .action-delete').removeClass('d-none');
+                // reset badge
+                $('.badge-alerta').attr('data-count', 0)
+                // esconde link
+                $('.select-all').remove();
+                // mostra notificação
+				notifySuccess(json.message);
+			} else {
+				// fecha modal
+				$.magnificPopup.close();
+				// mostra erro
+				notifyError(json.message);
+			}
+		}, 'json')
+		.fail(function(xhr, status, error) {
+			// mostra erro
+			notifyError(error, 'Ajax Error');
+		});
+    });
+
+	$(document).on('click', '.modal-dismiss', function (e) {
+		// para propagação
+		e.preventDefault();
+		// fecha a modal
+		$.magnificPopup.close();
+    });
+
+
+	// **
+	// * Handler Action Excluir Alerta
+	// **
+	$(document).on('click', '#dt-alertas .action-delete', function () {
+
+        var id = $(this).data('id');
+		// abre a modal
+		$.magnificPopup.open( {
+			items: {src: '#modalExclui'}, type: 'inline',
+			callbacks: {
+				beforeOpen: function() {
+					$('#modalExclui .id').val( id );
+				}
+			}
+		});
+	});
+	
+	// **
+	// * Handler Action Excluir Alerta
+	// **
+	$(document).on('click', '.btn-send', function () {
+
+		// abre a modal
+//		$.magnificPopup.open( {
+//			items: {src: '#modalEnvia'}, type: 'inline'
+//        });
+        $.magnificPopup.open( {
+            items: {src: '/admin/md_confirma_aviso'},
+            type: 'ajax',
+            modal:true,
+        });
+
+
+	});
+
+    // **
+	// * Handler Botão Excluir Modal Confirmação Exclusão Alerta
+	// **
+	$(document).on('click', '#modalExclui .modal-confirm', function () {
+		// mostra indicador
+		var $btn = $(this);
+		$btn.trigger('loading-overlay:show');
+		// desabilita botões
+		var $btn_d = $('.btn:enabled').prop('disabled', true);
+		// pega o valor do id
+		var id = $('#modalExclui .id').val();
+		// faz a requisição
+		$.post("/ajax/delete_alerta", { id: id, box: box, adm: 1 }, function(json) {
+			if (json.status == 'success') {
+				// fecha modal
+				$.magnificPopup.close();
+                // remove linha
+                $('#dt-alertas tr#' + id).hide('slow', function(){ $(this).remove(); });
+				// mostra notificação
+				notifySuccess(json.message);
+			} else {
+				// fecha modal
+				$.magnificPopup.close();
+				// mostra erro
+				notifyError(json.message);
+			}
+		}, 'json')
+		.fail(function(xhr, status, error) {
+			// fecha modal
+			$.magnificPopup.close();
+			// mostra erro
+			notifyError(error, 'Ajax Error');
+  		})
+		.always(function() {
+			// oculta indicador e habilita botão
+			$btn.trigger('loading-overlay:hide');
+			// habilita botões
+			$btn_d.prop('disabled', false);
+			// limpa id
+			$('#modalExclui .id').val('');
+		});
+	});
+
+    $(document).on("click", '.btn-export', function() {
+
+        var $btn = $(this);
+		$btn.trigger('loading-overlay:show').prop('disabled', true);
+
+        // faz a requisição
+		$.post("/painel/download_alertas", function(json) {
+            var $a = $("<a>");
+            $a.attr("href", json.file);
+            $("body").append($a);
+            $a.attr("download", json.name + '.xlsx');
+            $a[0].click();
+            $a.remove();
+		}, 'json')
+		.fail(function(xhr, status, error) {
+			// mostra erro
+            notifyError(error, 'Ajax Error');
+        })
+		.always(function() {
+			// oculta indicador e habilita botão
+			$btn.trigger('loading-overlay:hide').prop('disabled', false);
+        });
+    });
+
+
+
+}).apply(this, [jQuery]);

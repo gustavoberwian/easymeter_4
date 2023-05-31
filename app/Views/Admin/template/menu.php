@@ -65,6 +65,13 @@
                         </a>
                     </li>
 
+                    <li class="<?php if(in_array($method, array('alertas'))) echo 'nav-active'; ?>">
+                                        <a class="nav-link" href="<?php echo site_url('admin/alertas'); ?>">
+                                            <i class="fas fa-bell"></i>
+                                            <span>Alertas</span>
+                                        </a>
+                                    </li>
+
                     <li class="<?php if (in_array($method, array('historico'))) echo 'nav-active'; ?>">
                         <a class="nav-link" href="<?php echo site_url('admin/historico'); ?>">
                             <span class="float-right badge badge-danger badge-log" data-count="<?= $log_unread; ?>"><?= $log_unread; ?></span>

@@ -57,9 +57,7 @@
                         <h5 class="mb-2 mt-3">Endereço</h5>
                         <p class="mb-0">
                             <?php echo $condo->logradouro; ?>,
-                            <?php echo $condo->numero; ?> -
-                            <?= !is_null($user->unidade->bloco) ? $user->unidade->bloco . '/' : ''; ?>
-                            <?php echo $condo->apto; ?>
+                            <?php echo $condo->numero; ?>
                         </p>
                         <p class="mb-0">
                             <?php echo $condo->bairro; ?> -

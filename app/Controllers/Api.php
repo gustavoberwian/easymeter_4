@@ -720,4 +720,14 @@ class Api extends UNO_Controller {
         }
         
     }
+
+    public function tamper()
+    {
+        return $this->response->setStatusCode(200)->setBody(
+            json_encode(array(
+                "s" => 1,
+                "ts" => intval(gmdate('U'))
+            ), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+        );
+    }
 }

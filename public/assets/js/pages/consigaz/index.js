@@ -66,6 +66,13 @@
                 if (json.status !== "success") {
                     // notifica erro
                     notifyError(json.message);
+                } else {
+                    let $a = $("<a>");
+                    $a.attr("href", json.file);
+                    $("body").append($a);
+                    $a.attr("download", json.name + ".xlsx");
+                    $a[0].click();
+                    $a.remove();
                 }
             },
             error: function (xhr, status, error) {

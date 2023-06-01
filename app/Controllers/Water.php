@@ -295,18 +295,20 @@ class Water extends UNO_Controller
         }
 
         if ($compare != "") {
-            $values_c   = array();
-            $comp = $this->water_model->GetConsumption($compare, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
-            if ($comp) {
-                foreach ($comp as $v) {
-                    $values_c[] = $v->value / $divisor;
-                }
+            foreach ($compare as $c) {
+                $values_c   = array();
+                $comp = $this->water_model->GetConsumption($c, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
+                if ($comp) {
+                    foreach ($comp as $v) {
+                        $values_c[] = $v->value / $divisor;
+                    }
 
-                $series[] = array(
-                    "name" => "Comparado", //$this->shopping_model->GetUnidadeByDevice($compare)->nome,
-                    "data" => $values_c,
-                    "color" => "#87c1de",
-                );
+                    $series[] = array(
+                        "name" => ucfirst(mb_strtolower($this->shopping_model->GetUnidadeByDevice($c)->nome)),
+                        "data" => $values_c,
+                        "color" => 'rgb(' . rand(0, 255) . ',' . rand(0, 255) . ',' . rand(0, 255) . ')',
+                    );
+                }
             }
         }
 

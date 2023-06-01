@@ -24,7 +24,7 @@
                 start   : start.format("YYYY-MM-DD"),
                 end     : end.format("YYYY-MM-DD"),
                 field   : el.data("field"),
-                compare : $('#compare').find(':selected').val(),
+                compare : $('#compare').val(),
                 shopping_id : $('.content-body').data('group')
             };
 
@@ -201,6 +201,8 @@
             $("#compare option").prop('disabled', false);
             $("#compare option[value='" + device + "']").prop('disabled', true);
             $('#compare').select2('destroy').select2({"theme": "bootstrap", "placeholder": "Comparar", "allowClear": true});
+            $('.select2-container--bootstrap').attr('style', 'width: auto;')
+
         }
 
         apexchart(start_last, end_last);

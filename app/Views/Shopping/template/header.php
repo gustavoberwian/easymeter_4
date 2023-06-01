@@ -280,10 +280,10 @@
 							<ul class="list-unstyled mb-2">
 								<li class="divider"></li>
 								<li>
-									<a  role="menuitem" tabindex="-1" href="<?php echo site_url($url . "/profile/"); ?>"><i class="fas fa-user btn-profile"></i> Minha Conta</a>
+									<a  role="menuitem" tabindex="-1" href="<?php echo base_url($url . "/profile/"); ?>"><i class="fas fa-user btn-profile"></i> Minha Conta</a>
 								</li>
 								<li>
-									<a role="menuitem" tabindex="-1" href="<?php echo site_url('logout'); ?>"><i class="fas fa-power-off"></i> Sair</a>
+									<a role="menuitem" tabindex="-1" href="<?php echo base_url('logout'); ?>"><i class="fas fa-power-off"></i> Sair</a>
 								</li>
 							</ul>
 						</div>

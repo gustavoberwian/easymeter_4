@@ -1058,7 +1058,7 @@ class Shopping extends UNO_Controller
 
     public function get_subtipo_cliente_config()
     {
-        echo $this->shopping_model->get_subtipo_cliente_config($this->input->getPost("group"), $this->input->getPost("uid"));
+        echo $this->shopping_model->get_subtipo_cliente_config($this->input->getPost("group"), $this->input->getPost("tipo"));
     }
 
     public function edit_unidade()

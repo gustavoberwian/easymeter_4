@@ -691,7 +691,7 @@ class Shopping_model extends Base_model
         return true;
     }
 
-    public function get_subtipo_cliente_config($grp)
+    public function get_subtipo_cliente_config($grp, $type = 'energia')
     {
         $query = "
             SELECT
@@ -703,7 +703,7 @@ class Shopping_model extends Base_model
             FROM esm_medidores me
             JOIN esm_unidades un ON un.id = me.unidade_id
             JOIN esm_unidades_config unc ON unc.unidade_id = un.id
-            WHERE un.agrupamento_id = $grp AND me.tipo = 'energia'
+            WHERE un.agrupamento_id = $grp AND me.tipo = '$type'
         ";
 
         return $this->db->query($query)->getRow()->subtipo;

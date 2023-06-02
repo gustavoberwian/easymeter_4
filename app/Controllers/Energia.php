@@ -2187,10 +2187,16 @@ class Energia extends UNO_Controller
         $min    = $this->input->getPost('min');
         $max    = $this->input->getPost('max');
 
+        // print_r(sprintf("%.2f", $min));
+
         if (!is_null($min))
-            $min    = floatval(str_replace(array('.', ','), array('', '.'), $this->input->getPost('min')));
+            $min    = floatval(str_replace(array('.', ','), array('', '.'), sprintf("%.2f", $this->input->getPost('min'))));
+          
         if (!is_null($max))
-            $max    = floatval(str_replace(array('.', ','), array('', '.'), $this->input->getPost('max')));
+            $max    = floatval(str_replace(array('.', ','), array('', '.'), sprintf("%.2f", $this->input->getPost('max'))));
+        
+
+    
 
         $abnormal = "";
         $field    = "activePositive,";
@@ -2864,7 +2870,15 @@ class Energia extends UNO_Controller
         });
 
         $dt->edit('value', function ($data) use ($factor) {
-            return number_format($data["value"] * $factor, 3, ",", ".").($factor == 1 ? " kWh" : " Kg");
+            if ($data["value"] > 999999 && $factor == 1) {
+                return number_format(($data["value"] / 1000000) * $factor, 3, ",", "."). "MWh";
+            } elseif ($data["value"] > 999 && $factor == 1) {
+                return number_format(($data["value"] / 1000) * $factor, 3, ",", "."). "KWh";
+            } elseif ( $factor == 1) {
+                return number_format($data["value"] * $factor, 3, ",", ".")."Wh";
+            } else {
+                return number_format($data["value"] * $factor, 3, ",", ".")."Kg";
+            }
         });
 
         $dt->add('percentage', function ($data) use ($total, $factor) {

@@ -604,11 +604,8 @@ class Water_model extends Base_model
     {
         $entity = $this->get_entity_by_group($group);
 
-        $station = "";
-        if ($st[0] == 'fora') {
-            $station = " AND (((MOD((d.timestamp), 86400) < $st[1] OR MOD((d.timestamp), 86400) > $st[2]) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)";
-        } else if ($st[0] == 'consumo') {
-            $station = "AND ((MOD((d.timestamp), 86400) >= $st[1] AND MOD((d.timestamp), 86400) <= $st[2]) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)";
+        if ($st == 'vazamento') {
+        } else if ($st == 'consumo') {
         }
 
         $value = "SUM(consumo) AS value";
@@ -627,7 +624,6 @@ class Water_model extends Base_model
             LEFT JOIN $tabela d ON 
                 (d.timestamp) > (esm_calendar.ts_start) AND 
                 (d.timestamp) <= (esm_calendar.ts_end + 600) 
-                $station
             JOIN esm_medidores ON esm_medidores.id = d.medidor_id
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group
             WHERE 

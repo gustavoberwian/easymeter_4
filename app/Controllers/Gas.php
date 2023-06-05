@@ -137,13 +137,59 @@ class Gas extends UNO_Controller
     {
         $period = $this->gas_model->get_battery_consumption($device, $start, $end, true);
 
-        $values  = array();
+        $bateria1  = array();
+        $bateria2  = array();
         $labels  = array();
         $titles  = array();
         $dates   = array();
 
-        $max = -1;
-        $min = 999999999;
+        $series = array();
+
+        if ($period) {
+            foreach ($period as $v) {
+                $bateria1[] = $v->bateria1;
+                $bateria2[] = $v->bateria2;
+                $labels[] = $v->label;
+
+                if ($start == $end) {
+                    $titles[] = $v->label." - ".$v->next;
+                } else {
+                    $titles[] = $v->label." - ".weekDayName($v->dw);
+                    $dates[]  = $v->date;
+                }
+            }
+
+            $series[] = array(
+                "name"  => "Bateria 1",
+                "data"  => $bateria1,
+                "color" => "#007AB8",
+            );
+            $series[] = array(
+                "name"  => "Bateria 2",
+                "data"  => $bateria2,
+                "color" => "#734BA9",
+            );
+        }
+
+        $extra = array();
+
+        $data = array();
+
+        $footer = $this->chartFooter($data);
+
+        $config = $this->chartConfig("line", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
+
+        echo json_encode($config);
+    }
+
+    public function chart_sensor($device, $compare, $start, $end)
+    {
+        $period = $this->gas_model->get_sensor_consumption($device, $start, $end, true);
+
+        $values  = array();
+        $labels  = array();
+        $titles  = array();
+        $dates   = array();
 
         $series = array();
 
@@ -158,12 +204,10 @@ class Gas extends UNO_Controller
                     $titles[] = $v->label." - ".weekDayName($v->dw);
                     $dates[]  = $v->date;
                 }
-                if ($max < floatval($v->value) && !is_null($v->value)) $max = floatval($v->value);
-                if ($min > floatval($v->value) && !is_null($v->value)) $min = floatval($v->value);
             }
 
             $series[] = array(
-                "name"  => "Bateria",
+                "name"  => "Sensor",
                 "data"  => $values,
                 "color" => "#007AB8",
             );
@@ -175,7 +219,7 @@ class Gas extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("area", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
+        $config = $this->chartConfig("line", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
 
         echo json_encode($config);
     }
@@ -198,7 +242,7 @@ class Gas extends UNO_Controller
             $this->chart_battery($device, $compare, $start, $end);
             return;
         } elseif ($field === "sensor") {
-            $this->chart_battery($device, $compare, $start, $end);
+            $this->chart_sensor($device, $compare, $start, $end);
             //$this->chart_sensor($device, $compare, $start, $end);
             return;
         }

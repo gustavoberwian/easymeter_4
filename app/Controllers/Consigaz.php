@@ -92,45 +92,13 @@ class Consigaz extends UNO_Controller
         return $this->render("index", $data);
     }
 
-    public function unidades($entidade_id)
+    public function unidades()
     {
         $data['user'] = $this->user;
         $data['url'] = $this->url;
         $data['monitoria'] = $this->monitoria;
 
-        $data['entidade'] = $this->consigaz_model->get_entidade($entidade_id);
-        $data['entidade_id'] = $data['entidade']->id;
-
-        $total_mes_atual = 0;
-        $total_mes_anterior = 0;
-        $valvulas_abertas = 0;
-        $valvulas_fechadas = 0;
-        $valvulas_erros = 0;
-
-        $medidores = $this->consigaz_model->get_medidores_by_entidade($entidade_id);
-
-        foreach ($medidores as $medidor) {
-            $consumo_mes_atual = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
-            foreach ($consumo_mes_atual as $c) {
-                $total_mes_atual += $c->value;
-            }
-
-            $consumo_mes_anterior = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of last month')), date('Y-m-d H:i:s', strtotime('last day of last month')), array(), false);
-            foreach ($consumo_mes_anterior as $c) {
-                $total_mes_anterior += $c->value;
-            }
-
-            $valvulas_abertas += $this->consigaz_model->get_valvulas($medidor->id, 'open', 'count');
-            $valvulas_fechadas += $this->consigaz_model->get_valvulas($medidor->id, 'close', 'count');
-            $valvulas_erros += $this->consigaz_model->get_valvulas($medidor->id, 'vermelho', 'count');
-        }
-
-        $data['consumo']['mes_atual'] = number_format($total_mes_atual, 0, '', '.') . ' <small>m³</small>';
-        $data['consumo']['ultimo_mes'] = number_format($total_mes_anterior, 0, '', '.') . ' <small>m³</small>';
-
-        $data['valvulas']['abertas'] = $valvulas_abertas;
-        $data['valvulas']['fechadas'] = $valvulas_fechadas;
-        $data['valvulas']['erros'] = $valvulas_erros;
+        $data['clientes'] = $this->consigaz_model->get_clientes_by_user($this->user->id);
 
         return $this->render("unidades", $data);
     }
@@ -149,15 +117,13 @@ class Consigaz extends UNO_Controller
         return $this->render("unidade", $data);
     }
 
-    public function fechamentos($entidade_id, $fechamento = null)
+    public function fechamentos($fechamento = null)
     {
         $data['user'] = $this->user;
         $data['url'] = $this->url;
         $data['monitoria'] = $this->monitoria;
 
-        $data['entidade'] = $this->consigaz_model->get_entidade($entidade_id);
-        $data['ramal'] = $this->consigaz_model->get_ramal($entidade_id, 'gas');
-        $data['entidade_id'] = $data['entidade']->id;
+        $data['clientes'] = $this->consigaz_model->get_clientes_by_user($this->user->id);
 
         if (!is_null($fechamento)) {
             $data['fechamento'] = $this->consigaz_model->get_fechamento($fechamento);
@@ -189,30 +155,22 @@ class Consigaz extends UNO_Controller
         return $this->render("relatorio", $data);
     }
 
-    public function alertas($entidade_id)
+    public function alertas()
     {
         $data['user'] = $this->user;
         $data['url'] = $this->url;
         $data['monitoria'] = $this->monitoria;
 
-        $data['entidade'] = $this->consigaz_model->get_entidade($entidade_id);
-        $data['ramal'] = $this->consigaz_model->get_ramal($entidade_id, 'gas');
-        $data['entidade_id'] = $entidade_id;
-
         return $this->render("alertas", $data);
     }
 
-    public function configuracoes($entidade_id)
+    public function configuracoes()
     {
         $data['user'] = $this->user;
         $data['url'] = $this->url;
         $data['monitoria'] = $this->monitoria;
 
         $data['secret'] = $this->consigaz_model->get_secret_key($this->user->id);
-
-        $data['entidade'] = $this->consigaz_model->get_entidade($entidade_id);
-        $data['ramal'] = $this->consigaz_model->get_ramal($entidade_id, 'gas');
-        $data['entidade_id'] = $entidade_id;
 
         return $this->render("configuracoes", $data);
     }
@@ -586,10 +544,6 @@ class Consigaz extends UNO_Controller
 
         $spreadsheet = new Spreadsheet();
 
-        $titulos = [
-            ['Nome', 'Leitura', 'Válvulas', 'Consumo']
-        ];
-
         $spreadsheet->getProperties()
             ->setCreator('Easymeter')
             ->setLastModifiedBy('Easymeter')
@@ -599,10 +553,11 @@ class Consigaz extends UNO_Controller
             ->setKeywords('Relatório Clientes')
             ->setCategory('Relatório')->setCompany('Easymeter');
 
-        $spreadsheet->getActiveSheet()->getStyle('A1:H2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $spreadsheet->getActiveSheet()->mergeCells('A1:H1');
+        $spreadsheet->getActiveSheet()->getStyle('A1:I2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->setCellValue('A1', 'Easymeter');
+        $spreadsheet->getActiveSheet()->mergeCells('A1:I1');
         $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - '. date("01/m/Y").' a '.date("d/m/Y"));
-        $spreadsheet->getActiveSheet()->mergeCells('A2:H2');
+        $spreadsheet->getActiveSheet()->mergeCells('A2:I2');
 
         $spreadsheet->getActiveSheet()->setCellValue('A4', 'Nome')->mergeCells('A4:A5');
         $spreadsheet->getActiveSheet()->setCellValue('B4', 'Abertas')->mergeCells('B4:B5');
@@ -610,29 +565,28 @@ class Consigaz extends UNO_Controller
         $spreadsheet->getActiveSheet()->setCellValue('D4', 'Erros')->mergeCells('D4:D5');
         $spreadsheet->getActiveSheet()->setCellValue('E4', 'Alertas')->mergeCells('E4:E5');
         $spreadsheet->getActiveSheet()->setCellValue('F4', 'Corretas')->mergeCells('F4:F5');
-        $spreadsheet->getActiveSheet()->setCellValue('G4', 'Último Mês')->mergeCells('G4:G5');
-        $spreadsheet->getActiveSheet()->setCellValue('H4', 'Mês Atual')->mergeCells('H4:H5');
-        $spreadsheet->getActiveSheet()->setCellValue('I4', 'Previsão')->mergeCells('I4:I5');
+        $spreadsheet->getActiveSheet()->setCellValue('G4', 'Último Mês - m³')->mergeCells('G4:G5');
+        $spreadsheet->getActiveSheet()->setCellValue('H4', 'Mês Atual - m³')->mergeCells('H4:H5');
+        $spreadsheet->getActiveSheet()->setCellValue('I4', 'Previsão - m³')->mergeCells('I4:I5');
 
-        $spreadsheet->getActiveSheet()->getStyle('A1:J5')->getFont()->setBold(true);
-        $spreadsheet->getActiveSheet()->getStyle('A4:H5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-        $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'D5');
+        $spreadsheet->getActiveSheet()->getStyle('A1:I5')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A4:I5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $spreadsheet->getActiveSheet()->fromArray($resume, NULL, 'A6');
 
-        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
-        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
-        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(30);
-        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
-        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
-        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(30);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(12);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(12);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(12);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(12);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(12);
         $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
         $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(18);
 
         $spreadsheet->getActiveSheet()->getStyle('A6:A'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $spreadsheet->getActiveSheet()->getStyle('B6:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        $spreadsheet->getActiveSheet()->getStyle('D6:J'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $spreadsheet->getActiveSheet()->getStyle('D6:I'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $spreadsheet->getActiveSheet()->getStyle('A6:G'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
@@ -723,5 +677,79 @@ class Consigaz extends UNO_Controller
         $google2fa = new \PragmaRX\Google2FA\Google2FA();
 
         return $google2fa->verifyKey($secret_key, $user_provided_code);
+    }
+
+    public function download_unidades()
+    {
+        $resume = $this->consigaz_model->download_unidades($this->input->getPost('entidade'));
+
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->getProperties()
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório Unidades')
+            ->setSubject(MonthName(date("m"))."/".date("Y"))
+            ->setDescription('Relatório Unidades - '.date("01/m/Y").' - '.date("d/m/Y"))
+            ->setKeywords('Relatório Unidades')
+            ->setCategory('Relatório')->setCompany('Easymeter');
+
+        $spreadsheet->getActiveSheet()->getStyle('A1:H2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->setCellValue('A1', 'Easymeter');
+        $spreadsheet->getActiveSheet()->mergeCells('A1:H1');
+        $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Unidades - '. date("01/m/Y").' a '.date("d/m/Y"));
+        $spreadsheet->getActiveSheet()->mergeCells('A2:H2');
+
+        $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
+        $spreadsheet->getActiveSheet()->setCellValue('B4', 'Dispositivo')->mergeCells('B4:B5');
+        $spreadsheet->getActiveSheet()->setCellValue('C4', 'Bloco')->mergeCells('C4:C5');
+        $spreadsheet->getActiveSheet()->setCellValue('D4', 'Apto')->mergeCells('D4:D5');
+        $spreadsheet->getActiveSheet()->setCellValue('E4', 'Último Mês - m³')->mergeCells('E4:E5');
+        $spreadsheet->getActiveSheet()->setCellValue('F4', 'Mês Atual - m³')->mergeCells('F4:F5');
+        $spreadsheet->getActiveSheet()->setCellValue('G4', 'Previsão - m³')->mergeCells('G4:G5');
+        $spreadsheet->getActiveSheet()->setCellValue('H4', 'Válvula')->mergeCells('H4:H5');
+
+        $spreadsheet->getActiveSheet()->getStyle('A1:J5')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A4:H5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->fromArray($resume, NULL, 'A6');
+
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(30);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(12);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(18);
+
+        $spreadsheet->getActiveSheet()->getStyle('A6:A'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('B6:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('D6:H'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->getStyle('A6:G'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->setCellValue('A'.(count($resume) + 7), 'Gerado em '.date("d/m/Y H:i"));
+
+        $spreadsheet->getActiveSheet()->setSelectedCell('A1');
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = "Resumo Unidades";
+
+        ob_start();
+        $writer->save("php://output");
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        $response =  array(
+            'status' => "success",
+            'name'   => $filename,
+            'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
+        );
+
+        echo json_encode($response);
     }
 }

@@ -1,5 +1,5 @@
 
-<section role="main" class="content-body" data-class="<?= $url ?>" data-monitoria="<?= $monitoria ?>" data-entidade="<?= $entidade->id ?>">
+<section role="main" class="content-body" data-class="<?= $url ?>" data-monitoria="<?= $monitoria ?>">
 
     <style>
         .ios-switch .state-background {
@@ -33,21 +33,39 @@
 
     <!-- start: page -->
     <header class="page-header">
-        <h2><?= $entidade->nome ?> - Unidades</h2>
+        <h2>Unidades</h2>
     </header>
 
-    <div class="row pt-0">
+    <div class="row pt-0 mb-4">
         <div class="col-md-4">
-            <section class="card card-easymeter mb-4">
+            <section class="card card-comparativo h-100">
+                <div class="card-body" style="background-color: #03aeef;">
+                    <h6 class="card-body-title mb-3 mt-0 text-light">Cliente <i class="float-end fas fa-microchip"></i></h6>
+                    <div class="row">
+                        <div class="col-lg-12 pl-1">
+                            <select id="sel-entity" name="sel-entity" class="form-control" required>
+                                <option selected disabled value="">Selecione o cliente</option>
+                                <?php foreach ($clientes as $cliente) : ?>
+                                    <option value="<?= $cliente->id ?>"><?= $cliente->nome ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <div class="col-md-4">
+            <section class="card card-easymeter h-100">
                 <div class="card-body">
                     <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo <i class="float-end fas fa-calendar"></i></h6>
                     <div class="row">
                         <div class="col-lg-6 pl-1">
-                            <div class="h5 mb-0 mt-1"><?= $consumo['mes_atual']; ?></div>
+                            <div class="h5 mb-0 mt-1"><span class="consumo-mes-atual">-</span></div>
                             <p class="text-3 text-muted mb-0">Mês atual</p>
                         </div>
                         <div class="col-lg-6 pr-1">
-                            <div class="h5 mb-0 mt-1"><?= $consumo['ultimo_mes']; ?></div>
+                            <div class="h5 mb-0 mt-1"><span class="consumo-mes-anterior">-</span></div>
                             <p class="text-3 text-muted mb-0">Último mês</p>
                         </div>
                     </div>
@@ -56,20 +74,20 @@
         </div>
 
         <div class="col-md-4">
-            <section class="card card-easymeter mb-4">
+            <section class="card card-easymeter h-100">
                 <div class="card-body">
                     <h6 class="card-body-title mb-3 mt-0 text-success">Válvulas <i class="float-end fas fa-life-ring"></i></h6>
                     <div class="row">
                         <div class="col-lg-4 pr-1">
-                            <div class="h5 mb-0 mt-1"><?= $valvulas['abertas']; ?></div>
+                            <div class="h5 mb-0 mt-1"><span class="abertas">-</span></div>
                             <p class="text-3 text-muted mb-0">Abertas</p>
                         </div>
                         <div class="col-lg-4 pl-1">
-                            <div class="h5 mb-0 mt-1"><?= $valvulas['fechadas']; ?></div>
+                            <div class="h5 mb-0 mt-1"><span class="fechadas">-</span></div>
                             <p class="text-3 text-muted mb-0">Fechadas</p>
                         </div>
                         <div class="col-lg-4 pl-1">
-                            <div class="h5 mb-0 mt-1"><?= $valvulas['erros']; ?></div>
+                            <div class="h5 mb-0 mt-1"><span class="erros">-</span></div>
                             <p class="text-3 text-muted mb-0">Com erro</p>
                         </div>
                     </div>
@@ -93,8 +111,8 @@
                         <th></th>
                         <th></th>
                         <th></th>
-                        <th colspan="3" class="text-center">Consumo</th>
                         <th></th>
+                        <th colspan="3" class="text-center">Consumo</th>
                         <th></th>
                     </tr>
                     <tr>

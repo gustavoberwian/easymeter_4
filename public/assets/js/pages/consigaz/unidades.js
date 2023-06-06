@@ -30,8 +30,8 @@
         ajax: {
             url: $dtUnidades.data("url"),
             method: 'POST',
-            data: {
-                entidade: $(".content-body").data("entidade"),
+            data: function(d){
+                d.entidade = $("#sel-entity").val();
             },
             error: function () {
                 notifyError(
@@ -41,16 +41,29 @@
                 $("#dt-unidades_wrapper .table-responsive").removeClass("processing");
             },
         },
-        fnDrawCallback: function () {
+        fnDrawCallback: function (settings) {
             $("#dt-unidades_wrapper .table-responsive").removeClass("processing");
-            $(".switch-input").themePluginIOS7Switch()
+            $(".switch-input").themePluginIOS7Switch();
+            $(".consumo-mes-atual").html(settings.json.distinctData.atual);
+            $(".consumo-mes-anterior").html(settings.json.distinctData.anterior);
+            $(".abertas").html(settings.json.distinctData.abertas);
+            $(".fechadas").html(settings.json.distinctData.fechadas);
+            $(".erros").html(settings.json.distinctData.erros);
+        },
+        initComplete: function (settings, json) {
+            let api = this.api();
+            setInterval(function () {
+                api.ajax.reload(null, false);
+            }, 30000);
         },
     });
 
-    setInterval(() => dtUnidades.ajax.reload(), 30000);
+    $(document).on('change', '#sel-entity', function () {
+        dtUnidades.ajax.reload();
+    });
 
     $(document).on('click', '.reload-table-modal', function () {
-        dtUnidades.ajax.reload();
+        dtUnidades.ajax.reload(null, false);
     });
 
     $(document).on('click', '.ios-switch', function (e) {
@@ -99,7 +112,7 @@
             success: function (json) {
                 if (json.status === "success") {
                     // recarrega tabela
-                    dtUnidades.ajax.reload();
+                    dtUnidades.ajax.reload(null, false);
                     // fecha a modal
                     $.magnificPopup.close();
                 } else {
@@ -159,6 +172,38 @@
             error: function (xhr, status, error) {
             },
             complete: function () {
+            }
+        });
+    })
+
+    $(document).on('click', '.btn-sheet-unidades', function () {
+        let _self = this;
+        $(_self).html('<i class="fas fa-spinner fa-spin"></i>');
+
+        $.ajax({
+            method: 'POST',
+            url: '/consigaz/download_unidades',
+            dataType: 'json',
+            data: {
+                entidade: $("#sel-entity").val()
+            },
+            success: function (json) {
+                if (json.status !== "success") {
+                    // notifica erro
+                    notifyError(json.message);
+                } else {
+                    let $a = $("<a>");
+                    $a.attr("href", json.file);
+                    $("body").append($a);
+                    $a.attr("download", json.name + '.xlsx');
+                    $a[0].click();
+                    $a.remove();
+                }
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function () {
+                $(_self).html('<i class="fas fa-file-download"></i> Baixar Planilha');
             }
         });
     })

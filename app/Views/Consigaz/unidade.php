@@ -57,9 +57,9 @@
         <div class="col-md-12 mb-4">
             <section class="card card-easymeter h-100 mb-4">
                 <header class="card-header">
-                    <div class="card-actions buttons">
+                    <!--<div class="card-actions buttons">
                         <button type="button" class="btn btn-primary btn-sheet-consumo">Gerar Planilha</button>
-                    </div>
+                    </div>-->
                     <h2 class="card-title">Consumo</h2>
                 </header>
                 <div class="card-body chart_activePositive-body" data-loading-overlay data-loading-overlay-options='{ "css": { "backgroundColor": "#00000080" } }'>
@@ -74,7 +74,7 @@
 
     <div class="row pt-0">
 
-        <div class="col-md-6 mb-4">
+        <div class="col-md-12 mb-4">
             <section class="card card-easymeter h-100 mb-4">
                 <header class="card-header">
                     <h2 class="card-title">Nível de Bateria</h2>
@@ -87,7 +87,11 @@
             </section>
         </div>
 
-        <div class="col-md-6 mb-4">
+    </div>
+
+    <div class="row pt-0">
+
+        <div class="col-md-12 mb-4">
             <section class="card card-easymeter h-100 mb-4">
                 <header class="card-header">
                     <h2 class="card-title">Sensor</h2>

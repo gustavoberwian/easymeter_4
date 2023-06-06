@@ -1,8 +1,28 @@
-<section role="main" class="content-body" data-entidade="<?= $entidade->id ?>" data-ramal="<?= $ramal->id ?>" data-url="<?= $url ?>">
+<section role="main" class="content-body" data-url="<?= $url ?>">
     <!-- start: page -->
     <header class="page-header">
-        <h2><?= $entidade->nome ?> - Fechamentos</h2>
+        <h2>Fechamentos</h2>
     </header>
+
+    <div class="row pt-0 mb-4">
+        <div class="col-md-4">
+            <section class="card card-comparativo h-100">
+                <div class="card-body" style="background-color: #03aeef;">
+                    <h6 class="card-body-title mb-3 mt-0 text-light">Cliente <i class="float-end fas fa-microchip"></i></h6>
+                    <div class="row">
+                        <div class="col-lg-12 pl-1">
+                            <select id="sel-entity" name="sel-entity" class="form-control" required>
+                                <option selected disabled value="">Selecione o cliente</option>
+                                <?php foreach ($clientes as $cliente) : ?>
+                                    <option value="<?= $cliente->id ?>"><?= $cliente->nome ?></option>
+                                <?php endforeach; ?>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
 
     <div class="row pt-0">
         <section class="col-md-12 card card-easymeter h-auto mt-0 mb-3">
@@ -85,8 +105,23 @@
 
                 <form class="form-gas-fechamento">
 
-                    <input type="hidden" id="tar-gas-entidade" name="tar-gas-entidade" value="<?= $entidade->id; ?>">
-                    <input type="hidden" id="tar-gas-ramal" name="tar-gas-ramal" value="<?= $ramal->id ?>">
+                    <div class="form-group row">
+                        <label class="col-lg-3 control-label text-lg-right pt-2">Competência<span class="required">*</span></label>
+                        <div class="col-lg-9">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <select id="tar-gas-entidade" name="tar-gas-entidade" class="form-control" required>
+                                        <option selected disabled value="">Selecione o cliente</option>
+                                        <option value="ALL">Todos</option>
+                                        <?php foreach ($clientes as $cliente) : ?>
+                                            <option value="<?= $cliente->id ?>"><?= $cliente->nome ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="form-group row">
                         <label class="col-lg-3 control-label text-lg-right pt-2">Competência<span class="required">*</span></label>
                         <div class="col-lg-9">
@@ -124,9 +159,6 @@
 
             <footer class="card-footer">
                 <div class="row">
-                    <div class="col-md-6">
-                        <button class="btn btn-primary btn-cfg" href="<?= site_url('shopping/configuracoes/'.$entidade->id.'#unidades'); ?>" tabIndex="8">Configurar Unidades</button>
-                    </div>
                     <div class="col-md-6 text-end">
                         <button class="btn btn-primary modal-gas-confirm overlay-small" data-loading-overlay tabIndex="8">Incluir</button>
                         <button class="btn btn-default modal-dismiss" tabIndex="9">Cancelar</button>

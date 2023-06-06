@@ -79,7 +79,8 @@ class Consigaz_model extends Base_model
 
     public function get_ultima_leitura($uid)
     {
-        $result = $this->db->query("SELECT leitura FROM esm_leituras_consigaz_gas
+        $result = $this->db->query("SELECT leitura FROM esm_leituras_bancada_gas
+            JOIN esm_medidores ON esm_medidores.id = esm_leituras_bancada_gas.medidor_id
             JOIN esm_unidades ON esm_unidades.id = $uid
             ORDER BY timestamp DESC LIMIT 1");
 
@@ -90,7 +91,10 @@ class Consigaz_model extends Base_model
     {
         $result = $this->db->query("SELECT * FROM esm_ramais WHERE entidade_id = $entidade_id AND tipo = '$monitoriamento'");
 
-        return $result->getRow();
+        if ($result->getNumRows())
+            return $result->getRow();
+
+        return false;
     }
 
     public function get_fechamento($fechamento_id)
@@ -248,7 +252,12 @@ class Consigaz_model extends Base_model
     {
         $query = "SELECT * FROM esm_fechamentos_gas WHERE entidade_id = $entidade_id ORDER BY cadastro DESC LIMIT 1";
 
-        return $this->db->query($query)->getRow();
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows())
+            return $result->getRow();
+
+        return false;
     }
 
     public function download_clientes($user_id)

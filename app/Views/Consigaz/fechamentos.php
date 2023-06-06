@@ -11,7 +11,7 @@
                     <h6 class="card-body-title mb-3 mt-0 text-light">Cliente <i class="float-end fas fa-microchip"></i></h6>
                     <div class="row">
                         <div class="col-lg-12 pl-1">
-                            <select id="entity" name="entity" class="form-control" required>
+                            <select id="sel-entity" name="sel-entity" class="form-control" required>
                                 <option selected disabled value="">Selecione o cliente</option>
                                 <?php foreach ($clientes as $cliente) : ?>
                                     <option value="<?= $cliente->id ?>"><?= $cliente->nome ?></option>
@@ -104,6 +104,23 @@
                 </div>
 
                 <form class="form-gas-fechamento">
+
+                    <div class="form-group row">
+                        <label class="col-lg-3 control-label text-lg-right pt-2">Competência<span class="required">*</span></label>
+                        <div class="col-lg-9">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <select id="tar-gas-entidade" name="tar-gas-entidade" class="form-control" required>
+                                        <option selected disabled value="">Selecione o cliente</option>
+                                        <option value="ALL">Todos</option>
+                                        <?php foreach ($clientes as $cliente) : ?>
+                                            <option value="<?= $cliente->id ?>"><?= $cliente->nome ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
 
                     <div class="form-group row">
                         <label class="col-lg-3 control-label text-lg-right pt-2">Competência<span class="required">*</span></label>

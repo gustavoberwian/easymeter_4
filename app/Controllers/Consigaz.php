@@ -33,6 +33,8 @@ class Consigaz extends UNO_Controller
     {
         parent::__construct();
 
+        setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
+
         // load requests
         $this->input = \Config\Services::request();
 
@@ -117,7 +119,7 @@ class Consigaz extends UNO_Controller
         return $this->render("unidade", $data);
     }
 
-    public function fechamentos($fechamento = null)
+    public function fechamentos($fechamento = null, $entidade = null)
     {
         $data['user'] = $this->user;
         $data['url'] = $this->url;
@@ -125,9 +127,11 @@ class Consigaz extends UNO_Controller
 
         $data['clientes'] = $this->consigaz_model->get_clientes_by_user($this->user->id);
 
-        if (!is_null($fechamento)) {
+        if (!is_null($fechamento) && !is_null($entidade)) {
             $data['fechamento'] = $this->consigaz_model->get_fechamento($fechamento);
-
+            $data['entidade'] = $this->consigaz_model->get_entidade(40);
+            $data['ramal'] = $this->consigaz_model->get_ramal(40, 'gas');
+            $data['entidade_id'] = $data['entidade']->id;
             return $this->render("fechamento", $data);
         }
 
@@ -193,8 +197,49 @@ class Consigaz extends UNO_Controller
         // using CI4 Builder
         $dt->query($builder);
 
+        $data = $dt->generate()->getData();
+
+        $totalConsumoAtual = 0;
+        $totalConsumoAnterior = 0;
+        $totalAbertas = 0;
+        $totalFechadas = 0;
+        $totalErros = 0;
+        $totalAlertas = 0;
+        $totalVazamentos = 0;
+
+        foreach ($data as $d) {
+            $medidores = $this->consigaz_model->get_medidores_by_entidade($d['id']);
+
+            foreach ($medidores as $medidor) {
+                $consumoAnterior = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of last month')), date('Y-m-d H:i:s', strtotime('last day of last month')), array(), false);
+                foreach ($consumoAnterior as $c) {
+                    $totalConsumoAnterior += $c->value;
+                }
+
+                $consumoAtual = $this->gas_model->GetConsumption($medidor->id, date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
+                foreach ($consumoAtual as $c) {
+                    $totalConsumoAtual += $c->value;
+                }
+
+                $totalAbertas += $this->consigaz_model->get_valvulas($medidor->id, 'open', 'count');
+                $totalFechadas += $this->consigaz_model->get_valvulas($medidor->id, 'close', 'count');
+                $totalErros += $this->consigaz_model->get_valvulas($medidor->id, 'vermelho', 'count');
+                $totalAlertas += $this->consigaz_model->get_valvulas($medidor->id, 'amarelo', 'count');
+            }
+        }
+
+        $dt->setDistinctResponse(array(
+            'atual' => $totalConsumoAtual . ' <small>m³</small>',
+            'anterior' => $totalConsumoAnterior . ' <small>m³</small>',
+            'abertas' => $totalAbertas,
+            'fechadas' => $totalFechadas,
+            'erros' => $totalErros,
+            'alertas' => $totalAlertas,
+            'vazamentos' => $totalVazamentos,
+        ));
+
         $dt->add('ultima_competencia', function ($data) {
-            if ($this->consigaz_model->get_last_fechamento($data['id'])->competencia) {
+            if ($this->consigaz_model->get_last_fechamento($data['id'])) {
                 return strftime('%b/%Y', strtotime($this->consigaz_model->get_last_fechamento($data['id'])->competencia));
             } else {
                 return '';
@@ -234,23 +279,24 @@ class Consigaz extends UNO_Controller
             return number_format($total, 0, '', '.');
         });
 
+        $dt->add("vazamentos", function ($data) {
+            return number_format(0, 0, '', '.');
+            $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
+
+            $total = 0;
+            foreach ($medidores as $medidor) {
+                $total += $this->consigaz_model->get_valvulas($medidor->id, 'verde', 'count');
+            }
+
+            return number_format($total, 0, '', '.');
+        });
+
         $dt->add("amarelo", function ($data) {
             $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
 
             $total = 0;
             foreach ($medidores as $medidor) {
                 $total += $this->consigaz_model->get_valvulas($medidor->id, 'amarelo', 'count');
-            }
-
-            return number_format($total, 0, '', '.');
-        });
-
-        $dt->add("verde", function ($data) {
-            $medidores = $this->consigaz_model->get_medidores_by_entidade($data['id'], 'gas');
-
-            $total = 0;
-            foreach ($medidores as $medidor) {
-                $total += $this->consigaz_model->get_valvulas($medidor->id, 'verde', 'count');
             }
 
             return number_format($total, 0, '', '.');
@@ -332,6 +378,44 @@ class Consigaz extends UNO_Controller
         // using CI4 Builder
         $dt->query($builder);
 
+        $data = $dt->generate()->getData();
+
+        $totalConsumoAtual = 0;
+        $totalConsumoAnterior = 0;
+        $totalAbertas = 0;
+        $totalFechadas = 0;
+        $totalErros = 0;
+
+        foreach ($data as $d) {
+            $consumoAnterior = $this->gas_model->GetConsumption($d['m_id'], date('Y-m-d H:i:s', strtotime('first day of last month')), date('Y-m-d H:i:s', strtotime('last day of last month')), array(), false);
+            foreach ($consumoAnterior as $c) {
+                $totalConsumoAnterior += $c->value;
+            }
+
+            $consumoAtual = $this->gas_model->GetConsumption($d['m_id'], date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
+            foreach ($consumoAtual as $c) {
+                $totalConsumoAtual += $c->value;
+            }
+
+            if ($d['state']) {
+                $totalAbertas ++;
+            } else {
+                $totalFechadas ++;
+            }
+
+            if ($d['status'] === 'vermelho') {
+                $totalErros ++;
+            }
+        }
+
+        $dt->setDistinctResponse(array(
+            'atual' => $totalConsumoAtual . ' <small>m³</small>',
+            'anterior' => $totalConsumoAnterior . ' <small>m³</small>',
+            'abertas' => $totalAbertas,
+            'fechadas' => $totalFechadas,
+            'erros' => $totalErros,
+        ));
+
         $dt->add("ultimo_mes", function ($data) {
             $consumo = $this->gas_model->GetConsumption($data['m_id'], date('Y-m-d H:i:s', strtotime('first day of last month')), date('Y-m-d H:i:s', strtotime('last day of last month')), array(), false);
             $total = 0;
@@ -395,7 +479,7 @@ class Consigaz extends UNO_Controller
         $dt->add("actions", function ($data) {
             return '
                 <a class="text-primary reload-table-modal cur-pointer me-1"><i class="fas fa-rotate" title="Atualizar"></i>
-                <a href="' . base_url($this->url . '/unidade/' . $data['u_id'] . '/consumo') . '" class="text-primary me-1"><i class="fas fa-eye" title="Consumo"></i></a>
+                <a target="_blank" href="' . base_url($this->url . '/unidade/' . $data['u_id'] . '/consumo') . '" class="text-primary me-1"><i class="fas fa-eye" title="Consumo"></i></a>
                 <a class="text-primary sync-leitura-modal cur-pointer" data-mid="' . $data['m_id'] . '"><i class="fas fa-gear" title="Sincronizar"></i>
             ';
         });
@@ -681,6 +765,11 @@ class Consigaz extends UNO_Controller
 
     public function download_unidades()
     {
+        if (!$this->input->getPost('entidade')) {
+            echo json_encode(array("status" => "error", "message" => "Nenhum cliente selecionado"));
+            return;
+        }
+
         $resume = $this->consigaz_model->download_unidades($this->input->getPost('entidade'));
 
         $spreadsheet = new Spreadsheet();

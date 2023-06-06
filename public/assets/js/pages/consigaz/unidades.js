@@ -31,7 +31,7 @@
             url: $dtUnidades.data("url"),
             method: 'POST',
             data: function(d){
-                d.entidade = $("#entity").val();
+                d.entidade = $("#sel-entity").val();
             },
             error: function () {
                 notifyError(
@@ -41,17 +41,26 @@
                 $("#dt-unidades_wrapper .table-responsive").removeClass("processing");
             },
         },
-        fnDrawCallback: function () {
+        fnDrawCallback: function (settings) {
             $("#dt-unidades_wrapper .table-responsive").removeClass("processing");
-            $(".switch-input").themePluginIOS7Switch()
+            $(".switch-input").themePluginIOS7Switch();
+            $(".consumo-mes-atual").html(settings.json.distinctData.atual);
+            $(".consumo-mes-anterior").html(settings.json.distinctData.anterior);
+            $(".abertas").html(settings.json.distinctData.abertas);
+            $(".fechadas").html(settings.json.distinctData.fechadas);
+            $(".erros").html(settings.json.distinctData.erros);
+        },
+        initComplete: function (settings, json) {
+            let api = this.api();
+            setInterval(function () {
+                api.ajax.reload(null, false);
+            }, 30000);
         },
     });
 
-    $(document).on('change', '#entity', function () {
+    $(document).on('change', '#sel-entity', function () {
         dtUnidades.ajax.reload();
     });
-
-    setInterval(() => dtUnidades.ajax.reload(null, false), 30000);
 
     $(document).on('click', '.reload-table-modal', function () {
         dtUnidades.ajax.reload(null, false);
@@ -176,7 +185,7 @@
             url: '/consigaz/download_unidades',
             dataType: 'json',
             data: {
-                entidade: $(".content-body").data("entidade")
+                entidade: $("#sel-entity").val()
             },
             success: function (json) {
                 if (json.status !== "success") {

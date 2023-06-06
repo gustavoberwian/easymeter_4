@@ -195,7 +195,7 @@ class Gas extends UNO_Controller
 
         if ($period) {
             foreach ($period as $v) {
-                $values[] = $v->value;
+                $values[] = $v->value == 65535 ? 0 : $v->value;
                 $labels[] = $v->label;
 
                 if ($start == $end) {
@@ -326,7 +326,7 @@ class Gas extends UNO_Controller
 
     public function get_fechamentos_gas()
     {
-        $entidade = $this->input->getPost('entidade');
+        $entidade = empty($this->input->getPost('entidade')) ? 0 : $this->input->getPost('entidade');
 
         // realiza a query via dt
         $dt = $this->datatables->query("SELECT
@@ -387,9 +387,9 @@ class Gas extends UNO_Controller
             ->setCreator('Easymeter')
             ->setLastModifiedBy('Easymeter')
             ->setTitle('Relatório de Consumo')
-            ->setSubject(competencia_nice($fechamento->competencia))
+            ->setSubject(strftime('%b/%Y', strtotime($fechamento->competencia)))
             ->setDescription('Relatório de Consumo - '.$fechamento->nome.' - '.$fechamento->competencia)
-            ->setKeywords($fechamento->nome.' '.competencia_nice($fechamento->competencia))
+            ->setKeywords($fechamento->nome.' '.strftime('%b/%Y', strtotime($fechamento->competencia)))
             ->setCategory('Relatório')->setCompany('Easymeter');
 
         $split = 0;
@@ -432,7 +432,7 @@ class Gas extends UNO_Controller
 
         $writer = new Xlsx($spreadsheet);
 
-        $filename = $fechamento->nome.' Gás - '.competencia_nice($fechamento->competencia, ' ');
+        $filename = $fechamento->nome.' Gás - '. strftime('%b/%Y', strtotime($fechamento->competencia));
 
         ob_start();
         $writer->save("php://output");
@@ -452,12 +452,19 @@ class Gas extends UNO_Controller
     {
         $entidade_id = $this->input->getPost('id');
 
+        // verifica retorno
+        if(!$entidade_id) {
+            // mostra erro
+            echo json_encode(array("status"  => "error", "message" => "Nenhum cliente selecionado"));
+            return;
+        }
+        
         // busca fechamento
         $fechamentos = $this->gas_model->get_fechamentos($entidade_id);
         $entidade    = $this->consigaz_model->get_entidade($entidade_id);
 
         //TODO verificar se usuário tem acesso a esse fechamento
-
+        
         // verifica retorno
         if(!$fechamentos) {
             // mostra erro
@@ -466,7 +473,7 @@ class Gas extends UNO_Controller
         }
 
         foreach($fechamentos as &$f) {
-            $f['competencia'] = competencia_nice($f['competencia']);
+            $f['competencia'] = strftime('%b/%Y', strtotime($f['competencia']));
         }
 
         $spreadsheet = new Spreadsheet();
@@ -567,10 +574,11 @@ class Gas extends UNO_Controller
 
     public function add_fechamento()
     {
-        echo date('Y-m-01', strtotime($this->input->getPost('tar-gas-competencia'), 'm')); return;
-        if (!$this->input->getPost('tar-gas-entidade')) {
+        $competencia = date("Y-m-d", strtotime('01-' . str_replace('/', '-', $this->input->getPost('tar-gas-competencia'))));
+
+        if (!$this->input->getPost('tar-gas-entidade') || $this->input->getPost('tar-gas-entidade') === 'ALL') {
             echo $this->add_fechamento_geral(array(
-                "competencia" => $this->input->getPost('tar-gas-competencia'),
+                "competencia" => $competencia,
                 "inicio"      => $this->input->getPost('tar-gas-data-ini'),
                 "fim"         => $this->input->getPost('tar-gas-data-fim'),
                 "mensagem"    => $this->input->getPost('tar-gas-msg')
@@ -578,7 +586,7 @@ class Gas extends UNO_Controller
             return;
         }
 
-        if (!$this->input->getPost('tar-gas-ramal')) {
+        if (!$this->consigaz_model->get_ramal($this->input->getPost('tar-gas-entidade'), 'gas')) {
             sleep(2);
             echo '{ "status": "message", "field": "", "message" : "Ramal não cadastrado, contate seu administrador"}';
             return;
@@ -586,8 +594,8 @@ class Gas extends UNO_Controller
 
         $data = array(
             "entidade_id" => $this->input->getPost('tar-gas-entidade'),
-            "ramal_id"    => $this->input->getPost('tar-gas-ramal'),
-            "competencia" => $this->input->getPost('tar-gas-competencia'),
+            "ramal_id"    => $this->consigaz_model->get_ramal($this->input->getPost('tar-gas-entidade'), 'gas')->id,
+            "competencia" => $competencia,
             "inicio"      => $this->input->getPost('tar-gas-data-ini'),
             "fim"         => $this->input->getPost('tar-gas-data-fim'),
             "mensagem"    => $this->input->getPost('tar-gas-msg'),

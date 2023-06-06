@@ -513,8 +513,8 @@ class Gas_model extends Base_model
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    esm_leituras_detalhes.bateria,
-                    esm_leituras_detalhes.bateria1
+                    esm_leituras_detalhes.bateria AS bateria1,
+                    esm_leituras_detalhes.bateria1 AS bateria2
                 FROM esm_hours
                 LEFT JOIN esm_medidores ON esm_medidores.id = '$device'
                 LEFT JOIN esm_leituras_detalhes ON 
@@ -573,7 +573,7 @@ class Gas_model extends Base_model
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    esm_leituras_detalhes.gas
+                    esm_leituras_detalhes.gas AS value
                 FROM esm_hours
                 LEFT JOIN esm_medidores ON esm_medidores.id = '$device'
                 LEFT JOIN esm_leituras_detalhes ON 

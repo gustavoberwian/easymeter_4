@@ -43,7 +43,7 @@
                     <h6 class="card-body-title mb-3 mt-0 text-light">Cliente <i class="float-end fas fa-microchip"></i></h6>
                     <div class="row">
                         <div class="col-lg-12 pl-1">
-                            <select id="entity" name="entity" class="form-control" required>
+                            <select id="sel-entity" name="sel-entity" class="form-control" required>
                                 <option selected disabled value="">Selecione o cliente</option>
                                 <?php foreach ($clientes as $cliente) : ?>
                                     <option value="<?= $cliente->id ?>"><?= $cliente->nome ?></option>
@@ -79,15 +79,15 @@
                     <h6 class="card-body-title mb-3 mt-0 text-success">Válvulas <i class="float-end fas fa-life-ring"></i></h6>
                     <div class="row">
                         <div class="col-lg-4 pr-1">
-                            <div class="h5 mb-0 mt-1"><span class="valvulas-abertas"></span>-</div>
+                            <div class="h5 mb-0 mt-1"><span class="abertas">-</span></div>
                             <p class="text-3 text-muted mb-0">Abertas</p>
                         </div>
                         <div class="col-lg-4 pl-1">
-                            <div class="h5 mb-0 mt-1"><span class="valvulas-fechadas"></span>-</div>
+                            <div class="h5 mb-0 mt-1"><span class="fechadas">-</span></div>
                             <p class="text-3 text-muted mb-0">Fechadas</p>
                         </div>
                         <div class="col-lg-4 pl-1">
-                            <div class="h5 mb-0 mt-1"><span class="valvulas-erros"></span>-</div>
+                            <div class="h5 mb-0 mt-1"><span class="erros">-</span></div>
                             <p class="text-3 text-muted mb-0">Com erro</p>
                         </div>
                     </div>

@@ -2,57 +2,64 @@
 
     "use strict";
 
-    if ($("#dt-entidades").length) {
-        let dtEntidades = $("#dt-entidades").DataTable({
-            dom        : '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>pr',
-            processing : true,
-            paging     : true,
-            language   : {
-                sSearch: ""
+    let dtEntidades = $("#dt-entidades").DataTable({
+        dom        : '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>pr',
+        processing : true,
+        paging     : true,
+        language   : {
+            sSearch: ""
+        },
+        columns    : [
+            {data: "nome", className: "dt-body-center table-one-line"},
+            {data: "ultima_competencia", className: "dt-body-center"},
+            {data: "opened", className: "dt-body-center"},
+            {data: "closed", className: "dt-body-center"},
+            {data: "vermelho", className: "dt-body-center"},
+            {data: "vazamentos", className: "dt-body-center"},
+            {data: "amarelo", className: "dt-body-center"},
+            {data: "ultimo_mes", className: "dt-body-center"},
+            {data: "mes_atual", className: "dt-body-center"},
+            {data: "previsao", className: "dt-body-center"},
+            {data: "actions", className: "dt-body-center"},
+        ],
+        serverSide : true,
+        ordering   : false,
+        pagingType : "numbers",
+        searching  : true,
+        ajax       : {
+            type: 'POST',
+            url: $("#dt-entidades").data("url"),
+            error: function () {
+                notifyError(
+                    "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
+                );
+                $("#dt-entidades").dataTable().fnProcessingIndicator(false);
+                $("#dt-entidades_wrapper .table-responsive").removeClass("processing");
             },
-            columns    : [
-                {data: "nome", className: "dt-body-center table-one-line"},
-                {data: "ultima_competencia", className: "dt-body-center"},
-                {data: "opened", className: "dt-body-center"},
-                {data: "closed", className: "dt-body-center"},
-                {data: "vermelho", className: "dt-body-center"},
-                {data: "amarelo", className: "dt-body-center"},
-                {data: "verde", className: "dt-body-center"},
-                {data: "ultimo_mes", className: "dt-body-center"},
-                {data: "mes_atual", className: "dt-body-center"},
-                {data: "previsao", className: "dt-body-center"},
-                {data: "actions", className: "dt-body-center"},
-            ],
-            serverSide : true,
-            ordering   : false,
-            pagingType : "numbers",
-            searching  : true,
-            ajax       : {
-                type: 'POST',
-                url: $("#dt-entidades").data("url"),
-                error: function () {
-                    notifyError(
-                        "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
-                    );
-                    $("#dt-entidades").dataTable().fnProcessingIndicator(false);
-                    $("#dt-entidades_wrapper .table-responsive").removeClass("processing");
-                },
-            },
-        });
+        },
+        fnDrawCallback: function (settings) {
+            $(".consumo-mes-atual").html(settings.json.distinctData.atual);
+            $(".consumo-mes-anterior").html(settings.json.distinctData.anterior);
+            $(".abertas").html(settings.json.distinctData.abertas);
+            $(".fechadas").html(settings.json.distinctData.fechadas);
+            $(".erros").html(settings.json.distinctData.erros);
+            $(".vazamentos").html(settings.json.distinctData.vazamentos);
+            $(".outros").html(settings.json.distinctData.alertas);
+        }
+    });
 
-        $("#dt-entidades tbody").on("click", "tr", function (event) {
-            // se o clique não foi em uma celula ou na última, retorna
-            if (event.target.cellIndex == undefined) return;
+    $("#dt-entidades tbody").on("click", "tr", function (event) {
+        // se o clique não foi em uma celula ou na última, retorna
+        if (event.target.cellIndex == undefined) return;
 
-            let data = dtEntidades.row(this).data();
+        let data = dtEntidades.row(this).data();
 
-            window.location = "/" + $(".content-body").data("url") + "/unidades/" + data.id;
-        });
-    } else {
-        $(document).on('click', '.card-group', function () {
-            window.location = $(".content-body").data("url") + "/" + $(".content-body").data("monitoria") + "/" + $(this).data('group');
-        });
-    }
+        let newWindow = window.open("/" + $(".content-body").data("url") + "/unidades/");
+        newWindow.onload = function () {
+            newWindow.$("#sel-entity option[value=" + data.id + "]").attr('selected', 'selected');
+            newWindow.$('#sel-entity').trigger('change');
+        };
+    });
 
     $(document).on('click', '.btn-sheet-condos', function () {
         let _self = this;
@@ -139,7 +146,7 @@
                     if (json.status === 'success') {
                         if (json.id) {
                             // vai para a pagina do fechamento
-                            window.location = "/" + $(".content-body").data("url") + "/fechamentos/" + json.entidade + "/" + json.id;
+                            window.location = "/" + $(".content-body").data("url") + "/fechamentos/" + json.id + "/" + json.entidade;
                         } else {
                             // mostra sucesso
                             notifySuccess(json.message);

@@ -147,8 +147,8 @@ class Gas extends UNO_Controller
 
         if ($period) {
             foreach ($period as $v) {
-                $bateria1[] = $v->bateria1;
-                $bateria2[] = $v->bateria2;
+                $bateria1[] = ($v->bateria1 / 1545.66) + 0.3;
+                $bateria2[] = ($v->bateria2 / 1545.66) + 0.2;
                 $labels[] = $v->label;
 
                 if ($start == $end) {
@@ -243,7 +243,6 @@ class Gas extends UNO_Controller
             return;
         } elseif ($field === "sensor") {
             $this->chart_sensor($device, $compare, $start, $end);
-            //$this->chart_sensor($device, $compare, $start, $end);
             return;
         }
 

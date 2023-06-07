@@ -3,13 +3,13 @@
     "use strict";
 
     // Inicializa tabela faturamentos
-    let $dtUnidades = $("#dt-unidades");
-    let dtUnidades = $dtUnidades.DataTable({
+    let dtUnidades = $("#dt-unidades").DataTable({
         dom: '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>pr',
         processing : true,
         paging     : true,
         language   : {
-            sSearch: ""
+            sSearch: "",
+            sSearchPlaceholder: "Pesquisar..."
         },
         columns: [
             {data: "medidor", className: "dt-body-center align-middle"},
@@ -23,13 +23,13 @@
             {data: "actions", className: "dt-body-center align-middle"},
         ],
         serverSide: true,
-        sorting: [],
+        ordering   : false,
         pageLength: 25,
         pagingType: "numbers",
         searching: true,
         ajax: {
-            url: $dtUnidades.data("url"),
             method: 'POST',
+            url: $("#dt-unidades").data("url"),
             data: function(d){
                 d.entidade = $("#sel-entity").val();
             },
@@ -37,12 +37,11 @@
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
                 );
-                $dtUnidades.dataTable().fnProcessingIndicator(false);
+                $("#dt-unidades").dataTable().fnProcessingIndicator(false);
                 $("#dt-unidades_wrapper .table-responsive").removeClass("processing");
             },
         },
         fnDrawCallback: function (settings) {
-            $("#dt-unidades_wrapper .table-responsive").removeClass("processing");
             $(".switch-input").themePluginIOS7Switch();
             $(".consumo-mes-atual").html(settings.json.distinctData.atual);
             $(".consumo-mes-anterior").html(settings.json.distinctData.anterior);

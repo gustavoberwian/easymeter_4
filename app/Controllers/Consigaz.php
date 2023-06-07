@@ -242,7 +242,7 @@ class Consigaz extends UNO_Controller
             if ($this->consigaz_model->get_last_fechamento($data['id'])) {
                 return strftime('%b/%Y', strtotime($this->consigaz_model->get_last_fechamento($data['id'])->competencia));
             } else {
-                return '';
+                return 'Nenhum fechamento encontrado';
             }
         });
 
@@ -354,7 +354,7 @@ class Consigaz extends UNO_Controller
                 <div class="dropdown">
                     <a class="" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars" title="Ações"></i></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-                        <a class="dropdown-item action-view" data-id="' . $data['id'] . '"><i class="fas fa-eye me-1" title="Ver"></i> Ver</a>
+                        <a class="dropdown-item action-view" data-id="' . $data['id'] . '"><i class="fas fa-eye me-1" title="Ver"></i> Detalhes</a>
                         <a class="dropdown-item action-inclui-fechamento" data-id="' . $data['id'] . '"><i class="fas fa-file-import me-1" title="Faturar Individual"></i> Faturar</a>
                         <a class="dropdown-item action-edit" data-id="' . $data['id'] . '" href="#"><i class="fas fa-pencil-alt me-1"></i> Editar</a>
                     </div>

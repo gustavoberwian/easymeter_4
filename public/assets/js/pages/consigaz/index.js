@@ -7,7 +7,8 @@
         processing : true,
         paging     : true,
         language   : {
-            sSearch: ""
+            sSearch: "",
+            sSearchPlaceholder: "Pesquisar..."
         },
         columns    : [
             {data: "nome", className: "dt-body-center table-one-line"},

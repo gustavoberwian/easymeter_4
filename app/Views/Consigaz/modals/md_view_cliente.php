@@ -6,7 +6,8 @@
         </header>
 
         <div class="card-body">
-            <?= $entidade->nome; ?>
+            <p><?= $entidade->nome; ?></p>
+            <p>TODO: quais infos trazer nesse modal?</p>
         </div>
 
         <footer class="card-footer">

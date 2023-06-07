@@ -489,9 +489,10 @@ class Consigaz extends UNO_Controller
                         <a class="dropdown-item reload-table-modal me-1" href="#"><i class="fas fa-rotate" title="Atualizar"></i> Atualizar</a>
                         <a class="dropdown-item me-1" target="_blank" href="' . base_url($this->url . '/unidade/' . $data['u_id'] . '/consumo') . '"><i class="fas fa-eye" title="Consumo"></i> Consumo</a>
                         <a class="dropdown-item sync-leitura-modal me-1" data-mid="' . $data['m_id'] . '" href="#"><i class="fas fa-gear" title="Sincronizar"></i> Sincronizar</a>
-                        <a class="dropdown-item action-edit me-1" data-mid="' . $data['m_id'] . '" href="#"><i class="fas fa-pencil-alt me-1"></i> Editar</a>
                     </div>
                 </div>';
+
+            // TODO: btn editar -> <a class="dropdown-item action-edit me-1" data-mid="' . $data['m_id'] . '" href="#"><i class="fas fa-pencil-alt me-1"></i> Editar</a>
         });
 
         echo $dt->generate();
@@ -763,6 +764,9 @@ class Consigaz extends UNO_Controller
         $data['mid'] = $this->input->getPost('m_id');
         $data['state'] = $this->input->getPost("state") ? 1 : 0;
 
+        $data['entidade'] = $this->input->getPost('entidade');
+        $data['medidor'] = $this->input->getPost('medidor');
+
         echo view('Consigaz/modals/md_check_code', $data);
     }
 
@@ -929,5 +933,25 @@ class Consigaz extends UNO_Controller
         }
 
         echo view('Consigaz/modals/md_view_cliente', $data);
+    }
+
+    public function verify_code()
+    {
+        $code = $this->input->getPost("code");
+        $entidade = $this->input->getPost("entidade");
+
+        $secret_key = $this->consigaz_model->get_secret_key($this->user->id);
+
+        if (is_null($secret_key)) {
+            echo json_encode(array("status" => "error", "message" => "QR Code não gerado!"));
+            return;
+        }
+
+        if (!$this->check_code($code, $secret_key)) {
+            echo json_encode(array("status" => "error", "message" => "Código inválido!"));
+            return;
+        }
+
+        echo json_encode(array("status" => "success", "message" => "Código válido!", "entidade" => $entidade));
     }
 }

@@ -9,8 +9,16 @@
         <form class="form-check-code">
             <div class="card-body">
                 <div class="alert alert-danger fade show d-none" role="alert"></div>
+                <?php if (!empty($mid) && !empty($state)) : ?>
                     <input type="hidden" class="mid" name="mid" value="<?= $mid ?>">
                     <input type="hidden" class="state" name="state" value="<?= $state ?>">
+                <?php endif; ?>
+                <?php if (!empty($entidade)) : ?>
+                    <input type="hidden" class="entidade" name="entidade" value="<?= $entidade ?>">
+                <?php endif; ?>
+                <?php if (!empty($medidor)) : ?>
+                    <input type="hidden" class="medidor" name="medidor" value="<?= $medidor ?>">
+                <?php endif; ?>
                     <div class="form-group row">
                         <label for="code" class="col-lg-3 control-label text-lg-right pt-2">Pin <span class="required">*</span></label>
                         <div class="col-lg-9">

@@ -150,7 +150,6 @@
                         notifySuccess(json.message);
                         // fecha a modal
                         $.magnificPopup.close();
-
                     } else {
                         $("#md-fechamento-inclui .alert").html(json.message).removeClass("d-none");
                     }
@@ -171,11 +170,11 @@
         // para propagação
         e.preventDefault();
 
-        // abre modal
-        $.magnificPopup.open( {
-            items: {src: '/consigaz/md_edit_cliente'},
+        $.magnificPopup.open({
+            items: {src: '/consigaz/md_check_code'},
             type: 'ajax',
             modal: true,
+            focus: "#code",
             ajax: {
                 settings: {
                     type: 'POST',
@@ -183,6 +182,58 @@
                         entidade: $(this).data("id")
                     }
                 }
+            }
+        });
+    });
+
+    $('.form-check-code').on('keypress', function (e) {
+        e.preventDefault();
+
+        // força click quando botão é pressionado
+        $('#md-pin-check .modal-confirm').trigger("click");
+
+        // retorna falso para não atualizar a página
+        return false;
+    })
+
+    $(document).on('click', '#md-pin-check .modal-confirm', function (e) {
+        e.preventDefault();
+
+        let formData = $('.form-check-code').serialize();
+
+        $("#md-pin-check .alert").html("").addClass("d-none");
+
+        $.ajax({
+            method: 'POST',
+            url: '/consigaz/verify_code',
+            data: formData,
+            dataType: 'json',
+            success: function (json) {
+                if (json.status === "success") {
+                    // fecha a modal
+                    $.magnificPopup.close();
+
+                    $.magnificPopup.open( {
+                        items: {src: '/consigaz/md_edit_cliente'},
+                        type: 'ajax',
+                        modal: true,
+                        ajax: {
+                            settings: {
+                                type: 'POST',
+                                data: {
+                                    entidade: json.entidade
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // mostra erro
+                    $("#md-pin-check .alert").html(json.message).removeClass("d-none");
+                }
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function () {
             }
         });
     });

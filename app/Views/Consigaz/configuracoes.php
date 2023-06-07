@@ -27,7 +27,7 @@
         </div>
     </div>
 
-    TODO: o que mais pode ser configurável além do QR Code? Talvez dar opção de adicionar cliente <br/>
-    TODO: quando alertas estiverem sendo gerados criar aba para configurar eles
+<!--    TODO: o que mais pode ser configurável além do QR Code? Talvez dar opção de adicionar cliente <br/>-->
+<!--    TODO: quando alertas estiverem sendo gerados criar aba para configurar eles-->
     <!-- end: page -->
 </section>

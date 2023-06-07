@@ -229,8 +229,8 @@ class Consigaz extends UNO_Controller
         }
 
         $dt->setDistinctResponse(array(
-            'atual' => $totalConsumoAtual . ' <small>m³</small>',
-            'anterior' => $totalConsumoAnterior . ' <small>m³</small>',
+            'atual' => number_format($totalConsumoAtual, 2, ',', '.') . ' <small>m³</small>',
+            'anterior' => number_format($totalConsumoAnterior, 2, ',', '.') . ' <small>m³</small>',
             'abertas' => $totalAbertas,
             'fechadas' => $totalFechadas,
             'erros' => $totalErros,
@@ -313,7 +313,7 @@ class Consigaz extends UNO_Controller
                 }
             }
 
-            return number_format($total, 0, '', '.') . ' <small>m³</small>';
+            return number_format($total, 2, ',', '.') . ' <small>m³</small>';
         });
 
         $dt->add("mes_atual", function ($data) {
@@ -327,7 +327,7 @@ class Consigaz extends UNO_Controller
                 }
             }
 
-            return number_format($total, 0, '', '.') . ' <small>m³</small>';
+            return number_format($total, 2, ',', '.') . ' <small>m³</small>';
         });
 
         $dt->add("previsao", function ($data) {
@@ -346,7 +346,7 @@ class Consigaz extends UNO_Controller
 
             $total = $total / $days * $days_month;
 
-            return number_format($total, 0, '', '.') . ' <small>m³</small>';
+            return number_format($total, 2, ',', '.') . ' <small>m³</small>';
         });
 
         $dt->add("actions", function ($data) {

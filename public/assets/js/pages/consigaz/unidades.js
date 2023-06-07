@@ -1,4 +1,4 @@
-(function ($) {
+(function () {
 
     "use strict";
 
@@ -24,7 +24,6 @@
         ],
         serverSide: true,
         ordering   : false,
-        pageLength: 25,
         pagingType: "numbers",
         searching: true,
         ajax: {
@@ -99,32 +98,10 @@
     $('.form-check-code').on('keypress', function (e) {
         e.preventDefault();
 
-        let formData = $('.form-check-code').serialize();
+        // força click quando botão é pressionado
+        $('#md-pin-check .modal-confirm').trigger("click");
 
-        $("#md-pin-check .alert").html("").addClass("d-none");
-
-        $.ajax({
-            method: 'POST',
-            url: '/consigaz/edit_valve_stats',
-            data: formData,
-            dataType: 'json',
-            success: function (json) {
-                if (json.status === "success") {
-                    // recarrega tabela
-                    dtUnidades.ajax.reload(null, false);
-                    // fecha a modal
-                    $.magnificPopup.close();
-                } else {
-                    // mostra erro
-                    $("#md-pin-check .alert").html(json.message).removeClass("d-none");
-                }
-            },
-            error: function (xhr, status, error) {
-            },
-            complete: function () {
-            }
-        });
-
+        // retorna falso para não atualizar a página
         return false;
     })
 

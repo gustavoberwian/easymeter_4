@@ -7,7 +7,8 @@
         processing : true,
         paging     : true,
         language   : {
-            sSearch: ""
+            sSearch: "",
+            sSearchPlaceholder: "Pesquisar..."
         },
         columns    : [
             {data: "nome", className: "dt-body-center table-one-line"},
@@ -24,6 +25,7 @@
         ],
         serverSide : true,
         ordering   : false,
+        pageLength : 25,
         pagingType : "numbers",
         searching  : true,
         ajax       : {
@@ -144,17 +146,10 @@
                 data: data,
                 success: function (json) {
                     if (json.status === 'success') {
-                        if (json.id) {
-                            // vai para a pagina do fechamento
-                            window.location = "/" + $(".content-body").data("url") + "/fechamentos/" + json.id + "/" + json.entidade;
-                        } else {
-                            // mostra sucesso
-                            notifySuccess(json.message);
-                        }
-
+                        // mostra sucesso
+                        notifySuccess(json.message);
                         // fecha a modal
                         $.magnificPopup.close();
-
                     } else {
                         $("#md-fechamento-inclui .alert").html(json.message).removeClass("d-none");
                     }
@@ -169,6 +164,140 @@
                 }
             });
         }
+    });
+
+    $(document).on('click', '.action-edit', function (e) {
+        // para propagação
+        e.preventDefault();
+
+        $.magnificPopup.open({
+            items: {src: '/consigaz/md_check_code'},
+            type: 'ajax',
+            modal: true,
+            focus: "#code",
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: {
+                        entidade: $(this).data("id")
+                    }
+                }
+            }
+        });
+    });
+
+    $('.form-check-code').on('keypress', function (e) {
+        e.preventDefault();
+
+        // força click quando botão é pressionado
+        $('#md-pin-check .modal-confirm').trigger("click");
+
+        // retorna falso para não atualizar a página
+        return false;
+    })
+
+    $(document).on('click', '#md-pin-check .modal-confirm', function (e) {
+        e.preventDefault();
+
+        let formData = $('.form-check-code').serialize();
+
+        $("#md-pin-check .alert").html("").addClass("d-none");
+
+        $.ajax({
+            method: 'POST',
+            url: '/consigaz/verify_code',
+            data: formData,
+            dataType: 'json',
+            success: function (json) {
+                if (json.status === "success") {
+                    // fecha a modal
+                    $.magnificPopup.close();
+
+                    $.magnificPopup.open( {
+                        items: {src: '/consigaz/md_edit_cliente'},
+                        type: 'ajax',
+                        modal: true,
+                        ajax: {
+                            settings: {
+                                type: 'POST',
+                                data: {
+                                    entidade: json.entidade
+                                }
+                            }
+                        }
+                    });
+                } else {
+                    // mostra erro
+                    $("#md-pin-check .alert").html(json.message).removeClass("d-none");
+                }
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function () {
+            }
+        });
+    });
+
+    $(document).on('click', '#md-edit-cliente .modal-confirm', function () {
+
+        if (!$(".form-edit-cliente").valid())
+            return;
+
+        let $btn = $(this);
+        $btn.trigger("loading-overlay:show");
+
+        // valida formulário
+        if ( $(".form-edit-cliente").valid() ) {
+            // captura dados
+            let data = $(".form-edit-cliente").serializeArray();
+
+            $.ajax({
+                method: 'POST',
+                url: '/consigaz/edit_cliente',
+                dataType: 'json',
+                data: data,
+                success: function (json) {
+                    if (json.status === 'success') {
+                        // mostra sucesso
+                        notifySuccess(json.message);
+                        // fecha a modal
+                        $.magnificPopup.close();
+                        // recarrega tabela
+                        dtEntidades.ajax.reload();
+                    } else {
+                        $("#md-edit-cliente .alert").html(json.message).removeClass("d-none");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // mostra erro
+                    notifyError(error, 'Ajax Error');
+                },
+                complete: function () {
+                    $btn.trigger("loading-overlay:hide");
+                    $("#md-edit-cliente .btn").removeAttr("disabled");
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '.action-view', function (e) {
+        // para propagação
+        e.preventDefault();
+
+        // abre modal
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_view_cliente'},
+            type: 'ajax',
+            modal: true,
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: {
+                        entidade: $(this).data("id")
+                    }
+                }
+            }
+        });
     });
 
     $.validator.addClassRules("vdate", { dateBR : true });

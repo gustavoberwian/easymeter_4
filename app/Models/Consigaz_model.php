@@ -488,4 +488,38 @@ class Consigaz_model extends Base_model
 
         return $this->db->query($query)->getResult();
     }
+
+    public function edit_cliente($entidade, $data)
+    {
+        $this->db->transStart();
+
+        $this->db->table('esm_entidades')
+            ->where('id', $entidade)
+            ->update($data);
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        return json_encode(array('status' => 'success', 'message' => 'Cliente atualizado com sucesso!'));
+    }
+
+    public function edit_medidor($medidor, $data)
+    {
+        $this->db->transStart();
+
+        $this->db->table('esm_medidores')
+            ->where('id', $medidor)
+            ->update(array('device' => $data['medidor']));
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === false) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+
+        return json_encode(array('status' => 'success', 'message' => 'Unidade atualizada com sucesso!'));
+    }
 }

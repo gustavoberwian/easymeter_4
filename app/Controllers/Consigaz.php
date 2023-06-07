@@ -229,8 +229,8 @@ class Consigaz extends UNO_Controller
         }
 
         $dt->setDistinctResponse(array(
-            'atual' => $totalConsumoAtual . ' <small>m³</small>',
-            'anterior' => $totalConsumoAnterior . ' <small>m³</small>',
+            'atual' => number_format($totalConsumoAtual, 2, ',', '.') . ' <small>m³</small>',
+            'anterior' => number_format($totalConsumoAnterior, 2, ',', '.') . ' <small>m³</small>',
             'abertas' => $totalAbertas,
             'fechadas' => $totalFechadas,
             'erros' => $totalErros,
@@ -242,7 +242,7 @@ class Consigaz extends UNO_Controller
             if ($this->consigaz_model->get_last_fechamento($data['id'])) {
                 return strftime('%b/%Y', strtotime($this->consigaz_model->get_last_fechamento($data['id'])->competencia));
             } else {
-                return '';
+                return 'Nenhum fechamento encontrado';
             }
         });
 
@@ -313,7 +313,7 @@ class Consigaz extends UNO_Controller
                 }
             }
 
-            return number_format($total, 0, '', '.') . ' <small>m³</small>';
+            return number_format($total, 2, ',', '.') . ' <small>m³</small>';
         });
 
         $dt->add("mes_atual", function ($data) {
@@ -327,7 +327,7 @@ class Consigaz extends UNO_Controller
                 }
             }
 
-            return number_format($total, 0, '', '.') . ' <small>m³</small>';
+            return number_format($total, 2, ',', '.') . ' <small>m³</small>';
         });
 
         $dt->add("previsao", function ($data) {
@@ -346,14 +346,19 @@ class Consigaz extends UNO_Controller
 
             $total = $total / $days * $days_month;
 
-            return number_format($total, 0, '', '.') . ' <small>m³</small>';
+            return number_format($total, 2, ',', '.') . ' <small>m³</small>';
         });
 
         $dt->add("actions", function ($data) {
             return '
-                <a class="text-success me-1" data-id="' . $data['id'] . '"><i class="fas fa-eye" title="Ver"></i></a>
-                <a class="action-inclui-fechamento text-primary" data-id="' . $data['id'] . '"><i class="fas fa-file-import" title="Faturar Individual"></i></a>
-            ';
+                <div class="dropdown">
+                    <a class="" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars" title="Ações"></i></a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" data-popper-placement="top-end">
+                        <a class="dropdown-item action-view" data-id="' . $data['id'] . '"><i class="fas fa-eye me-1" title="Ver"></i> Detalhes</a>
+                        <a class="dropdown-item action-inclui-fechamento" data-id="' . $data['id'] . '"><i class="fas fa-file-import me-1" title="Faturar Individual"></i> Faturar</a>
+                        <a class="dropdown-item action-edit" data-id="' . $data['id'] . '" href="#"><i class="fas fa-pencil-alt me-1"></i> Editar</a>
+                    </div>
+                </div>';
         });
 
         echo $dt->generate();
@@ -409,8 +414,8 @@ class Consigaz extends UNO_Controller
         }
 
         $dt->setDistinctResponse(array(
-            'atual' => $totalConsumoAtual . ' <small>m³</small>',
-            'anterior' => $totalConsumoAnterior . ' <small>m³</small>',
+            'atual' => number_format($totalConsumoAtual, 2, ',', '.') . ' <small>m³</small>',
+            'anterior' => number_format($totalConsumoAnterior, 2, ',', '.') . ' <small>m³</small>',
             'abertas' => $totalAbertas,
             'fechadas' => $totalFechadas,
             'erros' => $totalErros,
@@ -424,7 +429,7 @@ class Consigaz extends UNO_Controller
                 $total += $c->value;
             }
 
-            return number_format($total, 0, '', '.') . ' <small>m³</small>';
+            return number_format($total, 2, ',', '.') . ' <small>m³</small>';
         });
 
         $dt->add("mes_atual", function ($data) {
@@ -435,7 +440,7 @@ class Consigaz extends UNO_Controller
                 $total += $c->value;
             }
 
-            return number_format($total, 0, '', '.') . ' <small>m³</small>';
+            return number_format($total, 2, ',', '.') . ' <small>m³</small>';
         });
 
         $dt->add("previsao", function ($data) {
@@ -451,7 +456,7 @@ class Consigaz extends UNO_Controller
 
             $total = $total / $days * $days_month;
 
-            return number_format($total, 0, '', '.') . ' <small>m³</small>';
+            return number_format($total, 2, ',', '.') . ' <small>m³</small>';
         });
 
         $dt->add("state", function ($data) {
@@ -478,10 +483,16 @@ class Consigaz extends UNO_Controller
 
         $dt->add("actions", function ($data) {
             return '
-                <a class="text-primary reload-table-modal cur-pointer me-1"><i class="fas fa-rotate" title="Atualizar"></i>
-                <a target="_blank" href="' . base_url($this->url . '/unidade/' . $data['u_id'] . '/consumo') . '" class="text-primary me-1"><i class="fas fa-eye" title="Consumo"></i></a>
-                <a class="text-primary sync-leitura-modal cur-pointer" data-mid="' . $data['m_id'] . '"><i class="fas fa-gear" title="Sincronizar"></i>
-            ';
+                <div class="dropdown">
+                    <a class="" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars" title="Ações"></i></a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" data-popper-placement="top-end">
+                        <a class="dropdown-item reload-table-modal me-1" href="#"><i class="fas fa-rotate" title="Atualizar"></i> Atualizar</a>
+                        <a class="dropdown-item me-1" target="_blank" href="' . base_url($this->url . '/unidade/' . $data['u_id'] . '/consumo') . '"><i class="fas fa-eye" title="Consumo"></i> Consumo</a>
+                        <a class="dropdown-item sync-leitura-modal me-1" data-mid="' . $data['m_id'] . '" href="#"><i class="fas fa-gear" title="Sincronizar"></i> Sincronizar</a>
+                    </div>
+                </div>';
+
+            // TODO: btn editar -> <a class="dropdown-item action-edit me-1" data-mid="' . $data['m_id'] . '" href="#"><i class="fas fa-pencil-alt me-1"></i> Editar</a>
         });
 
         echo $dt->generate();
@@ -753,6 +764,9 @@ class Consigaz extends UNO_Controller
         $data['mid'] = $this->input->getPost('m_id');
         $data['state'] = $this->input->getPost("state") ? 1 : 0;
 
+        $data['entidade'] = $this->input->getPost('entidade');
+        $data['medidor'] = $this->input->getPost('medidor');
+
         echo view('Consigaz/modals/md_check_code', $data);
     }
 
@@ -840,5 +854,104 @@ class Consigaz extends UNO_Controller
         );
 
         echo json_encode($response);
+    }
+
+    public function md_edit_cliente()
+    {
+        $entidade_id = $this->input->getPost('entidade');
+
+        $data['entidade'] = (object) null;
+
+        $data['entidade']->id = null;
+
+        if ($entidade_id) {
+            $data['entidade'] = $this->consigaz_model->get_entidade($entidade_id);
+        }
+
+        echo view('Consigaz/modals/md_edit_cliente', $data);
+    }
+
+    public function edit_cliente()
+    {
+        $entidade = $this->input->getPost("entidade");
+
+        $data = array(
+            "nome" => $this->input->getPost("nome"),
+            "cep" => $this->input->getPost("cep"),
+            "logradouro" => $this->input->getPost("logradouro"),
+            "numero" => $this->input->getPost("numero"),
+            "complemento" => $this->input->getPost("complemento"),
+            "bairro" => $this->input->getPost("bairro"),
+            "cidade" => $this->input->getPost("cidade"),
+            "uf" => $this->input->getPost("uf"),
+        );
+
+        echo $this->consigaz_model->edit_cliente($entidade, $data);
+    }
+
+    public function md_edit_medidor()
+    {
+        $medidor_id = $this->input->getPost('medidor');
+
+        $data['medidor'] = (object) null;
+
+        $data['medidor']->id = null;
+
+        if ($medidor_id) {
+            $data['medidor'] = $this->consigaz_model->get_medidor($medidor_id);
+        }
+
+        echo view('Consigaz/modals/md_edit_medidor', $data);
+    }
+
+    public function edit_medidor()
+    {
+        $medidor = $this->input->getPost("medidor");
+        $data = array(
+            "medidor" => $this->input->getPost("device")
+        );
+
+        echo $this->consigaz_model->edit_medidor($medidor, $data);
+    }
+
+    public function md_view_cliente()
+    {
+        $entidade_id = $this->input->getPost('entidade');
+
+        $data['entidade'] = (object) null;
+
+        $data['entidade']->id = null;
+
+        if ($entidade_id) {
+            $data['entidade'] = $this->consigaz_model->get_entidade($entidade_id);
+            $fechamento = $this->consigaz_model->get_last_fechamento($entidade_id);
+            if ($fechamento) {
+                $data['fechamento'] = strftime('%b/%Y', strtotime($fechamento->competencia)) . ' <a href="' . $this->url . '/fechamentos/' . $fechamento->id . '/' . $entidade_id . '" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i></a>';
+            } else {
+                $data['fechamento'] = 'Nenhum fechamento encontrado';
+            }
+        }
+
+        echo view('Consigaz/modals/md_view_cliente', $data);
+    }
+
+    public function verify_code()
+    {
+        $code = $this->input->getPost("code");
+        $entidade = $this->input->getPost("entidade");
+
+        $secret_key = $this->consigaz_model->get_secret_key($this->user->id);
+
+        if (is_null($secret_key)) {
+            echo json_encode(array("status" => "error", "message" => "QR Code não gerado!"));
+            return;
+        }
+
+        if (!$this->check_code($code, $secret_key)) {
+            echo json_encode(array("status" => "error", "message" => "Código inválido!"));
+            return;
+        }
+
+        echo json_encode(array("status" => "success", "message" => "Código válido!", "entidade" => $entidade));
     }
 }

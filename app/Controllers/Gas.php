@@ -40,7 +40,7 @@ class Gas extends UNO_Controller
         $this->datatables = new Datatables(new Codeigniter4Adapter);
     }
 
-    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array())
+    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array(), $events = true)
     {
         $config = array(
             "chart" => array(
@@ -56,7 +56,7 @@ class Gas extends UNO_Controller
                     "enabled" => false
                 ),
                 "events"    => array(
-                    "click" => true
+                    "click" => $events
                 )
             ),
             "series" => $series,
@@ -179,6 +179,12 @@ class Gas extends UNO_Controller
 
         $config = $this->chartConfig("line", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
 
+        $config["annotations"] = array(
+            "yaxis" => [
+                array("y" => 3.0, "borderColor" => "red", "label" => array("text" => "Limite: 3,0 V")),
+            ]
+        );
+
         echo json_encode($config);
     }
 
@@ -195,7 +201,7 @@ class Gas extends UNO_Controller
 
         if ($period) {
             foreach ($period as $v) {
-                $values[] = $v->value == 65535 ? 0 : $v->value;
+                $values[] = $v->value == 65535 ? 0 : pow($v->value, 2) / 6600;
                 $labels[] = $v->label;
 
                 if ($start == $end) {
@@ -219,7 +225,15 @@ class Gas extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "PPM", 1, $extra, $footer, $dates, false);
+
+        $config["yaxis"] = array("labels" => array("formatter" => "function"), "tickAmount" => 1,"min" => 0,"max" => 10000);
+
+        $config["annotations"] = array(
+            "yaxis" => [
+                array("y" => 1364, "borderColor" => "red", "label" => array("text" => "Limite: 1364,0 PPM")),
+            ]
+        );
 
         echo json_encode($config);
     }
@@ -318,7 +332,7 @@ class Gas extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "m³", 0, $extra, $footer, $dates);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "m³", 2, $extra, $footer, $dates);
 
         echo json_encode($config);
     }

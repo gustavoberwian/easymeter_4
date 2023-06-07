@@ -1,15 +1,15 @@
-(function ($) {
+(function () {
 
     "use strict";
 
     // Inicializa tabela faturamentos
-    let $dtUnidades = $("#dt-unidades");
-    let dtUnidades = $dtUnidades.DataTable({
+    let dtUnidades = $("#dt-unidades").DataTable({
         dom: '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>pr',
         processing : true,
         paging     : true,
         language   : {
-            sSearch: ""
+            sSearch: "",
+            sSearchPlaceholder: "Pesquisar..."
         },
         columns: [
             {data: "medidor", className: "dt-body-center align-middle"},
@@ -23,13 +23,12 @@
             {data: "actions", className: "dt-body-center align-middle"},
         ],
         serverSide: true,
-        sorting: [],
-        pageLength: 25,
+        ordering   : false,
         pagingType: "numbers",
         searching: true,
         ajax: {
-            url: $dtUnidades.data("url"),
             method: 'POST',
+            url: $("#dt-unidades").data("url"),
             data: function(d){
                 d.entidade = $("#sel-entity").val();
             },
@@ -37,12 +36,11 @@
                 notifyError(
                     "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
                 );
-                $dtUnidades.dataTable().fnProcessingIndicator(false);
+                $("#dt-unidades").dataTable().fnProcessingIndicator(false);
                 $("#dt-unidades_wrapper .table-responsive").removeClass("processing");
             },
         },
         fnDrawCallback: function (settings) {
-            $("#dt-unidades_wrapper .table-responsive").removeClass("processing");
             $(".switch-input").themePluginIOS7Switch();
             $(".consumo-mes-atual").html(settings.json.distinctData.atual);
             $(".consumo-mes-anterior").html(settings.json.distinctData.anterior);
@@ -96,6 +94,16 @@
             }
         });
     });
+
+    $('.form-check-code').on('keypress', function (e) {
+        e.preventDefault();
+
+        // força click quando botão é pressionado
+        $('#md-pin-check .modal-confirm').trigger("click");
+
+        // retorna falso para não atualizar a página
+        return false;
+    })
 
     $(document).on('click', '#md-pin-check .modal-confirm', function (e) {
         e.preventDefault();
@@ -207,5 +215,67 @@
             }
         });
     })
+
+    $(document).on('click', '.action-edit', function (e) {
+        // para propagação
+        e.preventDefault();
+
+        // abre modal
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_edit_medidor'},
+            type: 'ajax',
+            modal: true,
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: {
+                        medidor: $(this).data("mid")
+                    }
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '#md-edit-medidor .modal-confirm', function () {
+
+        if (!$(".form-edit-medidor").valid())
+            return;
+
+        let $btn = $(this);
+        $btn.trigger("loading-overlay:show");
+
+        // valida formulário
+        if ( $(".form-edit-medidor").valid() ) {
+            // captura dados
+            let data = $(".form-edit-medidor").serializeArray();
+
+            $.ajax({
+                method: 'POST',
+                url: '/consigaz/edit_medidor',
+                dataType: 'json',
+                data: data,
+                success: function (json) {
+                    if (json.status === 'success') {
+                        // mostra sucesso
+                        notifySuccess(json.message);
+                        // fecha a modal
+                        $.magnificPopup.close();
+                        // recarrega tabela
+                        dtUnidades.ajax.reload();
+                    } else {
+                        $("#md-edit-medidor .alert").html(json.message).removeClass("d-none");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // mostra erro
+                    notifyError(error, 'Ajax Error');
+                },
+                complete: function () {
+                    $btn.trigger("loading-overlay:hide");
+                    $("#md-edit-medidor .btn").removeAttr("disabled");
+                }
+            });
+        }
+    });
 
 }.apply(this, [jQuery]));

@@ -11,9 +11,15 @@
 
         $(".chart-main").each(function() {
 
-            $(this).parent().parent().trigger('loading-overlay:show');
-
             let el = $(this);
+
+            if (el.data('field') === 'sensor') {
+                if (start.format("YYYY-MM-DD") === end.format("YYYY-MM-DD")) {
+                    return;
+                }
+            } else {
+                el.parent().parent().trigger('loading-overlay:show');
+            }
 
             let dados = {
                 device  : device,
@@ -51,7 +57,7 @@
                     }
 
                     if (json.chart.hasOwnProperty('events')) {
-                        if (json.chart.events.hasOwnProperty('click')) {
+                        if (json.chart.events.hasOwnProperty('click') && json.chart.events.click === true) {
                             json.chart.events.click = function (event, chartContext, config) {
                                 if (start.format("YYYY-MM-DD") === end.format("YYYY-MM-DD")) {
                                     apexchart(start_last, end_last)

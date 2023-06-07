@@ -12,9 +12,9 @@
                     <div class="row">
                         <div class="col-lg-12 pl-1">
                             <select id="sel-entity" name="sel-entity" class="form-control" required>
-                                <option selected disabled value="">Selecione o cliente</option>
-                                <?php foreach ($clientes as $cliente) : ?>
-                                    <option value="<?= $cliente->id ?>"><?= $cliente->nome ?></option>
+                                <option disabled value="">Selecione o cliente</option>
+                                <?php foreach ($clientes as $i => $cliente) : ?>
+                                    <option <?= (array_key_first($clientes) == $i) ? 'selected' : '' ?> value="<?= $cliente->id ?>"><?= $cliente->nome ?></option>
                                 <?php endforeach; ?>
                             </select>
                         </div>

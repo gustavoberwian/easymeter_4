@@ -25,6 +25,7 @@
         ],
         serverSide : true,
         ordering   : false,
+        pageLength : 25,
         pagingType : "numbers",
         searching  : true,
         ajax       : {
@@ -145,14 +146,8 @@
                 data: data,
                 success: function (json) {
                     if (json.status === 'success') {
-                        if (json.id) {
-                            // vai para a pagina do fechamento
-                            window.location = "/" + $(".content-body").data("url") + "/fechamentos/" + json.id + "/" + json.entidade;
-                        } else {
-                            // mostra sucesso
-                            notifySuccess(json.message);
-                        }
-
+                        // mostra sucesso
+                        notifySuccess(json.message);
                         // fecha a modal
                         $.magnificPopup.close();
 

@@ -563,52 +563,28 @@ class Gas_model extends Base_model
 
     public function get_sensor_consumption($device, $start, $end, $group = null)
     {
-        if ($start == $end) {
+        $group_by = "";
+        if ($group)
+            $group_by = "GROUP BY esm_calendar.dt";
 
-            $group_by = "";
-            if ($group)
-                $group_by = "GROUP BY esm_hours.num";
-
-            $query = "
-                SELECT 
-                    CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
-                    CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    SUM(IF(esm_leituras_detalhes.gas = 65535, 0, (POW(esm_leituras_detalhes.gas, 2) / 6600))) AS value
-                FROM esm_hours
-                LEFT JOIN esm_medidores ON esm_medidores.id = '$device'
-                LEFT JOIN esm_leituras_detalhes ON 
-                    HOUR(FROM_UNIXTIME(timestamp - 3600)) = esm_hours.num AND 
-                    timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
-                    timestamp <= UNIX_TIMESTAMP('$end 23:59:59') + 600 AND 
-                       esm_leituras_detalhes.device = esm_medidores.nome
-                $group_by
-                ORDER BY esm_hours.num
-            ";
-        } else {
-
-            $group_by = "";
-            if ($group)
-                $group_by = "GROUP BY esm_calendar.dt";
-
-            $query = "
-                SELECT
-                    CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label,
-                    esm_calendar.dt AS date,
-                    esm_calendar.dw AS dw,
-                    SUM(IF(esm_leituras_detalhes.gas = 65535, 0, esm_leituras_detalhes.gas)) AS value
-                FROM esm_calendar
-                LEFT JOIN esm_medidores ON esm_medidores.id = '$device'
-                LEFT JOIN esm_leituras_detalhes ON
-                    timestamp > esm_calendar.ts_start AND
-                    timestamp <= (esm_calendar.ts_end + 600) AND
-                      esm_leituras_detalhes.device = esm_medidores.nome
-                WHERE 
-                    esm_calendar.dt >= '$start' AND 
-                    esm_calendar.dt <= '$end'
-                $group_by
-                ORDER BY esm_calendar.dt
-            ";
-        }
+        $query = "
+            SELECT
+                CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label,
+                esm_calendar.dt AS date,
+                esm_calendar.dw AS dw,
+                SUM(IF(esm_leituras_detalhes.gas = 65535, 0, esm_leituras_detalhes.gas)) AS value
+            FROM esm_calendar
+            LEFT JOIN esm_medidores ON esm_medidores.id = '$device'
+            LEFT JOIN esm_leituras_detalhes ON
+                timestamp > esm_calendar.ts_start AND
+                timestamp <= (esm_calendar.ts_end + 600) AND
+                  esm_leituras_detalhes.device = esm_medidores.nome
+            WHERE 
+                esm_calendar.dt >= '$start' AND 
+                esm_calendar.dt <= '$end'
+            $group_by
+            ORDER BY esm_calendar.dt
+        ";
 
         $result = $this->db->query($query);
 

@@ -353,7 +353,7 @@ class Consigaz extends UNO_Controller
             return '
                 <div class="dropdown">
                     <a class="" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars" title="Ações"></i></a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" data-popper-placement="top-end">
                         <a class="dropdown-item action-view" data-id="' . $data['id'] . '"><i class="fas fa-eye me-1" title="Ver"></i> Detalhes</a>
                         <a class="dropdown-item action-inclui-fechamento" data-id="' . $data['id'] . '"><i class="fas fa-file-import me-1" title="Faturar Individual"></i> Faturar</a>
                         <a class="dropdown-item action-edit" data-id="' . $data['id'] . '" href="#"><i class="fas fa-pencil-alt me-1"></i> Editar</a>
@@ -485,7 +485,7 @@ class Consigaz extends UNO_Controller
             return '
                 <div class="dropdown">
                     <a class="" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars" title="Ações"></i></a>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" data-popper-placement="top-end">
                         <a class="dropdown-item reload-table-modal me-1" href="#"><i class="fas fa-rotate" title="Atualizar"></i> Atualizar</a>
                         <a class="dropdown-item me-1" target="_blank" href="' . base_url($this->url . '/unidade/' . $data['u_id'] . '/consumo') . '"><i class="fas fa-eye" title="Consumo"></i> Consumo</a>
                         <a class="dropdown-item sync-leitura-modal me-1" data-mid="' . $data['m_id'] . '" href="#"><i class="fas fa-gear" title="Sincronizar"></i> Sincronizar</a>
@@ -870,8 +870,16 @@ class Consigaz extends UNO_Controller
     public function edit_cliente()
     {
         $entidade = $this->input->getPost("entidade");
+
         $data = array(
-            "nome" => $this->input->getPost("nome")
+            "nome" => $this->input->getPost("nome"),
+            "cep" => $this->input->getPost("cep"),
+            "logradouro" => $this->input->getPost("logradouro"),
+            "numero" => $this->input->getPost("numero"),
+            "complemento" => $this->input->getPost("complemento"),
+            "bairro" => $this->input->getPost("bairro"),
+            "cidade" => $this->input->getPost("cidade"),
+            "uf" => $this->input->getPost("uf"),
         );
 
         echo $this->consigaz_model->edit_cliente($entidade, $data);
@@ -912,6 +920,12 @@ class Consigaz extends UNO_Controller
 
         if ($entidade_id) {
             $data['entidade'] = $this->consigaz_model->get_entidade($entidade_id);
+            $fechamento = $this->consigaz_model->get_last_fechamento($entidade_id);
+            if ($fechamento) {
+                $data['fechamento'] = strftime('%b/%Y', strtotime($fechamento->competencia)) . ' <a href="' . $this->url . '/fechamentos/' . $fechamento->id . '/' . $entidade_id . '" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i></a>';
+            } else {
+                $data['fechamento'] = 'Nenhum fechamento encontrado';
+            }
         }
 
         echo view('Consigaz/modals/md_view_cliente', $data);

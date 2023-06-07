@@ -495,7 +495,7 @@ class Consigaz_model extends Base_model
 
         $this->db->table('esm_entidades')
             ->where('id', $entidade)
-            ->update(array('nome' => $data['nome']));
+            ->update($data);
 
         $this->db->transComplete();
 

@@ -171,6 +171,88 @@
         }
     });
 
+    $(document).on('click', '.action-edit', function (e) {
+        // para propagação
+        e.preventDefault();
+
+        // abre modal
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_edit_cliente'},
+            type: 'ajax',
+            modal: true,
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: {
+                        entidade: $(this).data("id")
+                    }
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '#md-edit-cliente .modal-confirm', function () {
+
+        if (!$(".form-edit-cliente").valid())
+            return;
+
+        let $btn = $(this);
+        $btn.trigger("loading-overlay:show");
+
+        // valida formulário
+        if ( $(".form-edit-cliente").valid() ) {
+            // captura dados
+            let data = $(".form-edit-cliente").serializeArray();
+
+            $.ajax({
+                method: 'POST',
+                url: '/consigaz/edit_cliente',
+                dataType: 'json',
+                data: data,
+                success: function (json) {
+                    if (json.status === 'success') {
+                        // mostra sucesso
+                        notifySuccess(json.message);
+                        // fecha a modal
+                        $.magnificPopup.close();
+                        // recarrega tabela
+                        dtEntidades.ajax.reload();
+                    } else {
+                        $("#md-edit-cliente .alert").html(json.message).removeClass("d-none");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // mostra erro
+                    notifyError(error, 'Ajax Error');
+                },
+                complete: function () {
+                    $btn.trigger("loading-overlay:hide");
+                    $("#md-edit-cliente .btn").removeAttr("disabled");
+                }
+            });
+        }
+    });
+
+    $(document).on('click', '.action-view', function (e) {
+        // para propagação
+        e.preventDefault();
+
+        // abre modal
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_view_cliente'},
+            type: 'ajax',
+            modal: true,
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: {
+                        entidade: $(this).data("id")
+                    }
+                }
+            }
+        });
+    });
+
     $.validator.addClassRules("vdate", { dateBR : true });
     $.validator.addClassRules("vcompetencia", { competencia : true });
     $.validator.addClassRules("vnumber", { number : true });

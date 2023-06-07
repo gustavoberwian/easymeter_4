@@ -219,7 +219,7 @@ class Gas extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "PPM", 1, $extra, $footer, $dates);
 
         echo json_encode($config);
     }
@@ -318,7 +318,7 @@ class Gas extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "m³", 0, $extra, $footer, $dates);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "m³", 2, $extra, $footer, $dates);
 
         echo json_encode($config);
     }

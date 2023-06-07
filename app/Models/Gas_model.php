@@ -573,7 +573,7 @@ class Gas_model extends Base_model
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     CONCAT(LPAD(IF(esm_hours.num + 1 > 23, 0, esm_hours.num + 1), 2, '0'), ':00') AS next,
-                    SUM(IF(esm_leituras_detalhes.gas = 65535, 0, esm_leituras_detalhes.gas)) AS value
+                    SUM(IF(esm_leituras_detalhes.gas = 65535, 0, (POW(esm_leituras_detalhes.gas, 2) / 6600))) AS value
                 FROM esm_hours
                 LEFT JOIN esm_medidores ON esm_medidores.id = '$device'
                 LEFT JOIN esm_leituras_detalhes ON 

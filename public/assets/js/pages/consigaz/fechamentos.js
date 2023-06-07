@@ -211,6 +211,11 @@
             items: {src: '#md-gas-include'},
             type: 'inline',
             modal:true,
+            callbacks: {
+                open: function() {
+                    $("#tar-gas-entidade").val($("#sel-entity").val());
+                },
+            }
         });
     });
 

@@ -97,6 +97,38 @@
         });
     });
 
+    $('.form-check-code').on('keypress', function (e) {
+        e.preventDefault();
+
+        let formData = $('.form-check-code').serialize();
+
+        $("#md-pin-check .alert").html("").addClass("d-none");
+
+        $.ajax({
+            method: 'POST',
+            url: '/consigaz/edit_valve_stats',
+            data: formData,
+            dataType: 'json',
+            success: function (json) {
+                if (json.status === "success") {
+                    // recarrega tabela
+                    dtUnidades.ajax.reload(null, false);
+                    // fecha a modal
+                    $.magnificPopup.close();
+                } else {
+                    // mostra erro
+                    $("#md-pin-check .alert").html(json.message).removeClass("d-none");
+                }
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function () {
+            }
+        });
+
+        return false;
+    })
+
     $(document).on('click', '#md-pin-check .modal-confirm', function (e) {
         e.preventDefault();
 
@@ -207,5 +239,67 @@
             }
         });
     })
+
+    $(document).on('click', '.action-edit', function (e) {
+        // para propagação
+        e.preventDefault();
+
+        // abre modal
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_edit_medidor'},
+            type: 'ajax',
+            modal: true,
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: {
+                        medidor: $(this).data("mid")
+                    }
+                }
+            }
+        });
+    });
+
+    $(document).on('click', '#md-edit-medidor .modal-confirm', function () {
+
+        if (!$(".form-edit-medidor").valid())
+            return;
+
+        let $btn = $(this);
+        $btn.trigger("loading-overlay:show");
+
+        // valida formulário
+        if ( $(".form-edit-medidor").valid() ) {
+            // captura dados
+            let data = $(".form-edit-medidor").serializeArray();
+
+            $.ajax({
+                method: 'POST',
+                url: '/consigaz/edit_medidor',
+                dataType: 'json',
+                data: data,
+                success: function (json) {
+                    if (json.status === 'success') {
+                        // mostra sucesso
+                        notifySuccess(json.message);
+                        // fecha a modal
+                        $.magnificPopup.close();
+                        // recarrega tabela
+                        dtUnidades.ajax.reload();
+                    } else {
+                        $("#md-edit-medidor .alert").html(json.message).removeClass("d-none");
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // mostra erro
+                    notifyError(error, 'Ajax Error');
+                },
+                complete: function () {
+                    $btn.trigger("loading-overlay:hide");
+                    $("#md-edit-medidor .btn").removeAttr("disabled");
+                }
+            });
+        }
+    });
 
 }.apply(this, [jQuery]));

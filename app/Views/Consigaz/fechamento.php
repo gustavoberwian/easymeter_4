@@ -29,7 +29,7 @@
                     <td><?= number_format(round($fechamento->leitura_atual - $fechamento->leitura_anterior, 0), 0, ',', '.'); ?></td>
                     <td><?= date('d/m/Y', $fechamento->inicio); ?></td>
                     <td><?= date('d/m/Y', $fechamento->fim); ?></td>
-                    <td><?= round(($fechamento->fim - $fechamento->inicio) / 86400, 0); ?></td>
+                    <td><?= round(($fechamento->fim - $fechamento->inicio) / 86400 + 1, 0); ?></td>
                     <td><?= date('d/m/Y', strtotime($fechamento->cadastro)); ?></td>
                 </tr>
                 </tbody>

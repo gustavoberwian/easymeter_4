@@ -593,7 +593,7 @@ class Shopping extends UNO_Controller
 
         $dvc = 'esm_alertas_' . $m . '.device';
         $join = 'JOIN esm_medidores ON esm_medidores.nome = ' . $dvc;
-
+       
         $dt = $this->datatables->query("
             SELECT 
                 1 AS type, 
@@ -1022,11 +1022,10 @@ class Shopping extends UNO_Controller
         }
         foreach ($this->input->getPost("select_unidades") as $m) {
             $dados['devices'][] = $m;
+            
         }
 
-        if ($this->input->getPost("entrada_id")) {
-            $dados['entrada_id'] = $this->input->getPost("entrada_id") === 'energia' ? 72 : 73;
-        }
+        $dados['entrada_id'] = $this->shopping_model->get_entrada_id($this->user->type->entity_id, $this->input->getPost("entrada_id"));
 
         if ($this->input->getPost("id")) {
             $dados['id'] = $this->input->getPost("id");

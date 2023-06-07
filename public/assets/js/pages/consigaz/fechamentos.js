@@ -4,8 +4,12 @@
 
     let $dtGas = $("#dt-gas");
     let dtGas = $dtGas.DataTable({
-        dom: '<"table-responsive"t>pr',
-        processing: true,
+        dom: '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>pr',
+        processing : true,
+        paging     : true,
+        language   : {
+            sSearch: ""
+        },
         columns: [
             {data: "competencia", class: "dt-body-center"},
             {data: "inicio", class: "dt-body-center" },
@@ -15,15 +19,15 @@
             {data: "action", class: "dt-body-center"},
         ],
         serverSide: true,
-        ordering: false,
+        sorting: [],
         pageLength: 10,
         pagingType: "numbers",
-        searching: false,
+        searching: true,
         ajax: {
             type: 'POST',
             url: $dtGas.data("url"),
-            data: function (d) {
-                d.entidade = $(".content-body").data("entidade");
+            data: function(d){
+                d.entidade = $("#sel-entity").val();
             },
             error: function () {
                 notifyError(
@@ -41,7 +45,11 @@
 
         let data = dtGas.row(this).data();
         // redireciona para o fechamento
-        window.location = "/consigaz/fechamentos/" + $(".content-body").data("entidade") + "/" + data.id;
+        window.location = "/consigaz/fechamentos/" +  data.id + "/" + $("#sel-entity").val();
+    });
+
+    $(document).on('change', '#sel-entity', function () {
+        dtGas.ajax.reload();
     });
 
     $(document).on('click', '.action-gas-delete', function () {
@@ -165,7 +173,7 @@
         $btn.trigger("loading-overlay:show").prop("disabled", true);
 
         // faz a requisição
-        $.post("/gas/download_fechamentos", {id: $('.content-body').data("entidade")}, function (json) {
+        $.post("/gas/download_fechamentos", {id: $("#sel-entity").val()}, function (json) {
 
                 if (json.status === "error") {
 
@@ -203,6 +211,11 @@
             items: {src: '#md-gas-include'},
             type: 'inline',
             modal:true,
+            callbacks: {
+                open: function() {
+                    $("#tar-gas-entidade").val($("#sel-entity").val());
+                },
+            }
         });
     });
 
@@ -228,8 +241,12 @@
             // envia os dados
             $.post('/gas/add_fechamento', data, function(json) {
                 if (json.status === 'success') {
-                    // vai para a pagina do fechamento
-                    window.location = "/" + $(".content-body").data("url") + "/fechamentos/" + $(".content-body").data("entidade") + "/" + json.id;
+                    if ($("#tar-gas-entidade").val() !== 'ALL') {
+                        // vai para a pagina do fechamento
+                        window.location = "/" + $(".content-body").data("url") + "/fechamentos/" + json.id + "/" + json.entidade;
+                    } else {
+                        dtGas.ajax.reload();
+                    }
 
                     // fecha a modal
                     $.magnificPopup.close();

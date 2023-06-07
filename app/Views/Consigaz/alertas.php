@@ -1,7 +1,7 @@
-<section role="main" class="content-body" data-entidade="<?= $entidade->id ?>" data-ramal="<?= $ramal->id ?>">
+<section role="main" class="content-body">
     <!-- start: page -->
     <header class="page-header">
-        <h2><?= $entidade->nome ?> - Alertas</h2>
+        <h2>Alertas</h2>
     </header>
 
     <section class="card card-easymeter mb-4">

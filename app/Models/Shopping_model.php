@@ -5,7 +5,8 @@ namespace App\Models;
 class Shopping_model extends Base_model
 {
     public function get_unidades($group_id)
-    {        $query = "
+    {
+        $query = "
             SELECT
                 esm_unidades.id AS unidade_id,
                 esm_medidores.id as medidor_id,
@@ -146,7 +147,8 @@ class Shopping_model extends Base_model
                 JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_agrupamentos_config.agrupamento_id
                 JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
                 WHERE esm_agrupamentos.id = $group_id
-        ");
+        "
+        );
 
         // verifica se retornou algo
         if ($query->getNumRows() == 0)
@@ -339,7 +341,8 @@ class Shopping_model extends Base_model
         if ($grp) {
             $gr = " GROUP BY type ";
         }
-        $result = $this->db->query("
+        $result = $this->db->query(
+            "
             SELECT
                 esm_alertas_cfg.*
             FROM
@@ -357,7 +360,8 @@ class Shopping_model extends Base_model
 
     public function get_devices($group, $type)
     {
-        $result = $this->db->query("
+        $result = $this->db->query(
+            "
             SELECT
                 esm_alertas_cfg_devices.device
             FROM
@@ -369,7 +373,7 @@ class Shopping_model extends Base_model
 
         if ($result->getNumRows()) {
             $list = array();
-            foreach($result->getResult() as $d) {
+            foreach ($result->getResult() as $d) {
                 $list[] = $d->device;
             }
 
@@ -458,7 +462,8 @@ class Shopping_model extends Base_model
 
     public function get_devices_agrupamento($id)
     {
-        $result = $this->db->query("
+        $result = $this->db->query(
+            "
             SELECT
                 esm_device_groups_entries.device as dvc,
                 esm_unidades.nome
@@ -478,7 +483,8 @@ class Shopping_model extends Base_model
 
     public function get_devices_alert($group, $type)
     {
-        $result = $this->db->query("
+        $result = $this->db->query(
+            "
             SELECT
                 esm_alertas_cfg_devices.device as dvc,
                 esm_unidades.nome as nome
@@ -504,10 +510,12 @@ class Shopping_model extends Base_model
 
         foreach ($dados['tabela'] as $tabela => $campos) {
 
-            if ($this->db->table($tabela)
+            if (
+                $this->db->table($tabela)
 
-                ->where('agrupamento_id', $dados['group_id'])
-                ->get()->getNumRows()) {
+                    ->where('agrupamento_id', $dados['group_id'])
+                    ->get()->getNumRows()
+            ) {
                 $this->db->table($tabela)
                     ->where('agrupamento_id', $dados['group_id'])
                     ->set($campos)
@@ -593,7 +601,7 @@ class Shopping_model extends Base_model
             ->where('agrupamento_id', $group_id)
             ->get();
 
-        if ( $q->getNumRows() > 0 ) {
+        if ($q->getNumRows() > 0) {
             $this->db->table('esm_api_keys')
                 ->where('agrupamento_id', $group_id)
                 ->set(array("token" => $token))
@@ -754,12 +762,14 @@ class Shopping_model extends Base_model
         $this->db->table('esm_alertas_cfg')
             ->where("agrupamento_id", $dados['group_id'])
             ->where("id", $dados['config_id'])
-            ->set(array(
-                'when_type' => $dados['esm_alertas_cfg']['when_type'],
-                'notify_unity' => $dados['esm_alertas_cfg']['notify_unity'],
-                'notify_shopping' => $dados['esm_alertas_cfg']['notify_shopping'],
-                'active' => $dados['esm_alertas_cfg']['active'],
-            ))
+            ->set(
+                array(
+                    'when_type' => $dados['esm_alertas_cfg']['when_type'],
+                    'notify_unity' => $dados['esm_alertas_cfg']['notify_unity'],
+                    'notify_shopping' => $dados['esm_alertas_cfg']['notify_shopping'],
+                    'active' => $dados['esm_alertas_cfg']['active'],
+                )
+            )
             ->update();
 
         $this->db->transComplete();
@@ -877,7 +887,7 @@ class Shopping_model extends Base_model
         return $result->getRow();
     }
 
-    public function get_group_by_fechamento($id) 
+    public function get_group_by_fechamento($id)
     {
         $query = "
         SELECT * 
@@ -910,13 +920,13 @@ class Shopping_model extends Base_model
         return $this->db->query($query)->getRow();
     }
 
-   
+
 
     public function update_user($user_id, $password, $telefone, $celular, $emails)
     {
         $users = model('userModel');
         $user = $users->findById($user_id);
-        
+
 
         $user->fill([
             'password' => $password
@@ -924,8 +934,7 @@ class Shopping_model extends Base_model
         $users->save($user);
 
 
-        if($emails)
-        {
+        if ($emails) {
             foreach ($emails as $e) {
                 $query = $this->db->query("
                     SELECT
@@ -937,17 +946,17 @@ class Shopping_model extends Base_model
                 ");
                 if ($query->getNumRows() == 0) {
                     $this->db->table('esm_user_emails')
-                    ->set('user_id', $user_id)
-                    ->set('email', $e)
-                    ->insert();
+                        ->set('user_id', $user_id)
+                        ->set('email', $e)
+                        ->insert();
                 }
             }
         }
-        if(!$emails) {
+        if (!$emails) {
             $this->db->table("esm_user_emails")
-            ->where("user_id", $user_id)
-            ->delete();
-                
+                ->where("user_id", $user_id)
+                ->delete();
+
         }
         $query = $this->db->query("
             SELECT
@@ -957,9 +966,9 @@ class Shopping_model extends Base_model
         ");
 
         $this->db->table('auth_users')
-        ->where('id', $user_id)
-        ->set('celular', $celular)
-        ->update();
+            ->where('id', $user_id)
+            ->set('celular', $celular)
+            ->update();
 
 
         $query = $this->db->query("
@@ -969,15 +978,15 @@ class Shopping_model extends Base_model
             auth_users
     ");
 
-    $this->db->table('auth_users')
-    ->where('id', $user_id)
-    ->set('telefone', $telefone)
-    ->update();
+        $this->db->table('auth_users')
+            ->where('id', $user_id)
+            ->set('telefone', $telefone)
+            ->update();
 
         return true;
     }
 
-    public function update_avatar($user_id, $img) 
+    public function update_avatar($user_id, $img)
     {
         $query = $this->db->query("
             SELECT
@@ -987,9 +996,9 @@ class Shopping_model extends Base_model
         ");
 
         $this->db->table('auth_users')
-        ->where('id', $user_id)
-        ->set('avatar', $img)
-        ->update();   
+            ->where('id', $user_id)
+            ->set('avatar', $img)
+            ->update();
     }
 
     public function get_user_emails($user_id)
@@ -1055,5 +1064,24 @@ class Shopping_model extends Base_model
         }
 
         return $result->getRow();
+    }
+    public function get_entrada_id($entidade, $type)
+    {
+        $query = "SELECT 
+        esm_entradas.id
+    FROM 
+        esm_entradas
+    WHERE
+        esm_entradas.entidade_id = '$entidade' AND
+        esm_entradas.tipo = '$type'";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows() <= 0) {
+
+            return false;
+        }
+
+        return $result->getRow()->id;
     }
 }

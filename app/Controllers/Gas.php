@@ -40,7 +40,7 @@ class Gas extends UNO_Controller
         $this->datatables = new Datatables(new Codeigniter4Adapter);
     }
 
-    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array())
+    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array(), $events = true)
     {
         $config = array(
             "chart" => array(
@@ -56,7 +56,7 @@ class Gas extends UNO_Controller
                     "enabled" => false
                 ),
                 "events"    => array(
-                    "click" => true
+                    "click" => $events
                 )
             ),
             "series" => $series,
@@ -137,19 +137,18 @@ class Gas extends UNO_Controller
     {
         $period = $this->gas_model->get_battery_consumption($device, $start, $end, true);
 
-        $values  = array();
+        $bateria1  = array();
+        $bateria2  = array();
         $labels  = array();
         $titles  = array();
         $dates   = array();
-
-        $max = -1;
-        $min = 999999999;
 
         $series = array();
 
         if ($period) {
             foreach ($period as $v) {
-                $values[] = $v->value;
+                $bateria1[] = ($v->bateria1 / 1545.66) + 0.3;
+                $bateria2[] = ($v->bateria2 / 1545.66) + 0.2;
                 $labels[] = $v->label;
 
                 if ($start == $end) {
@@ -158,12 +157,63 @@ class Gas extends UNO_Controller
                     $titles[] = $v->label." - ".weekDayName($v->dw);
                     $dates[]  = $v->date;
                 }
-                if ($max < floatval($v->value) && !is_null($v->value)) $max = floatval($v->value);
-                if ($min > floatval($v->value) && !is_null($v->value)) $min = floatval($v->value);
             }
 
             $series[] = array(
-                "name"  => "Bateria",
+                "name"  => "Bateria 1",
+                "data"  => $bateria1,
+                "color" => "#007AB8",
+            );
+            $series[] = array(
+                "name"  => "Bateria 2",
+                "data"  => $bateria2,
+                "color" => "#734BA9",
+            );
+        }
+
+        $extra = array();
+
+        $data = array();
+
+        $footer = $this->chartFooter($data);
+
+        $config = $this->chartConfig("line", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
+
+        $config["annotations"] = array(
+            "yaxis" => [
+                array("y" => 3.0, "borderColor" => "red", "label" => array("text" => "Limite: 3,0 V")),
+            ]
+        );
+
+        echo json_encode($config);
+    }
+
+    public function chart_sensor($device, $compare, $start, $end)
+    {
+        $period = $this->gas_model->get_sensor_consumption($device, $start, $end, true);
+
+        $values  = array();
+        $labels  = array();
+        $titles  = array();
+        $dates   = array();
+
+        $series = array();
+
+        if ($period) {
+            foreach ($period as $v) {
+                $values[] = $v->value == 65535 ? 0 : pow($v->value, 2) / 6600;
+                $labels[] = $v->label;
+
+                if ($start == $end) {
+                    $titles[] = $v->label." - ".$v->next;
+                } else {
+                    $titles[] = $v->label." - ".weekDayName($v->dw);
+                    $dates[]  = $v->date;
+                }
+            }
+
+            $series[] = array(
+                "name"  => "Sensor",
                 "data"  => $values,
                 "color" => "#007AB8",
             );
@@ -175,7 +225,15 @@ class Gas extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("area", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "PPM", 1, $extra, $footer, $dates, false);
+
+        $config["yaxis"] = array("labels" => array("formatter" => "function"), "tickAmount" => 1,"min" => 0,"max" => 10000);
+
+        $config["annotations"] = array(
+            "yaxis" => [
+                array("y" => 1364, "borderColor" => "red", "label" => array("text" => "Limite: 1364,0 PPM")),
+            ]
+        );
 
         echo json_encode($config);
     }
@@ -198,8 +256,7 @@ class Gas extends UNO_Controller
             $this->chart_battery($device, $compare, $start, $end);
             return;
         } elseif ($field === "sensor") {
-            $this->chart_battery($device, $compare, $start, $end);
-            //$this->chart_sensor($device, $compare, $start, $end);
+            $this->chart_sensor($device, $compare, $start, $end);
             return;
         }
 
@@ -275,14 +332,14 @@ class Gas extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "m³", 0, $extra, $footer, $dates);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, "m³", 2, $extra, $footer, $dates);
 
         echo json_encode($config);
     }
 
     public function get_fechamentos_gas()
     {
-        $entidade = $this->input->getPost('entidade');
+        $entidade = empty($this->input->getPost('entidade')) ? 0 : $this->input->getPost('entidade');
 
         // realiza a query via dt
         $dt = $this->datatables->query("SELECT
@@ -343,9 +400,9 @@ class Gas extends UNO_Controller
             ->setCreator('Easymeter')
             ->setLastModifiedBy('Easymeter')
             ->setTitle('Relatório de Consumo')
-            ->setSubject(competencia_nice($fechamento->competencia))
+            ->setSubject(strftime('%b/%Y', strtotime($fechamento->competencia)))
             ->setDescription('Relatório de Consumo - '.$fechamento->nome.' - '.$fechamento->competencia)
-            ->setKeywords($fechamento->nome.' '.competencia_nice($fechamento->competencia))
+            ->setKeywords($fechamento->nome.' '.strftime('%b/%Y', strtotime($fechamento->competencia)))
             ->setCategory('Relatório')->setCompany('Easymeter');
 
         $split = 0;
@@ -388,7 +445,7 @@ class Gas extends UNO_Controller
 
         $writer = new Xlsx($spreadsheet);
 
-        $filename = $fechamento->nome.' Gás - '.competencia_nice($fechamento->competencia, ' ');
+        $filename = $fechamento->nome.' Gás - '. strftime('%b/%Y', strtotime($fechamento->competencia));
 
         ob_start();
         $writer->save("php://output");
@@ -408,12 +465,19 @@ class Gas extends UNO_Controller
     {
         $entidade_id = $this->input->getPost('id');
 
+        // verifica retorno
+        if(!$entidade_id) {
+            // mostra erro
+            echo json_encode(array("status"  => "error", "message" => "Nenhum cliente selecionado"));
+            return;
+        }
+        
         // busca fechamento
         $fechamentos = $this->gas_model->get_fechamentos($entidade_id);
         $entidade    = $this->consigaz_model->get_entidade($entidade_id);
 
         //TODO verificar se usuário tem acesso a esse fechamento
-
+        
         // verifica retorno
         if(!$fechamentos) {
             // mostra erro
@@ -422,7 +486,7 @@ class Gas extends UNO_Controller
         }
 
         foreach($fechamentos as &$f) {
-            $f['competencia'] = competencia_nice($f['competencia']);
+            $f['competencia'] = strftime('%b/%Y', strtotime($f['competencia']));
         }
 
         $spreadsheet = new Spreadsheet();
@@ -523,10 +587,11 @@ class Gas extends UNO_Controller
 
     public function add_fechamento()
     {
-        echo date('Y-m-01', strtotime($this->input->getPost('tar-gas-competencia'), 'm')); return;
-        if (!$this->input->getPost('tar-gas-entidade')) {
+        $competencia = date("Y-m-d", strtotime('01-' . str_replace('/', '-', $this->input->getPost('tar-gas-competencia'))));
+
+        if (!$this->input->getPost('tar-gas-entidade') || $this->input->getPost('tar-gas-entidade') === 'ALL') {
             echo $this->add_fechamento_geral(array(
-                "competencia" => $this->input->getPost('tar-gas-competencia'),
+                "competencia" => $competencia,
                 "inicio"      => $this->input->getPost('tar-gas-data-ini'),
                 "fim"         => $this->input->getPost('tar-gas-data-fim'),
                 "mensagem"    => $this->input->getPost('tar-gas-msg')
@@ -534,7 +599,7 @@ class Gas extends UNO_Controller
             return;
         }
 
-        if (!$this->input->getPost('tar-gas-ramal')) {
+        if (!$this->consigaz_model->get_ramal($this->input->getPost('tar-gas-entidade'), 'gas')) {
             sleep(2);
             echo '{ "status": "message", "field": "", "message" : "Ramal não cadastrado, contate seu administrador"}';
             return;
@@ -542,8 +607,8 @@ class Gas extends UNO_Controller
 
         $data = array(
             "entidade_id" => $this->input->getPost('tar-gas-entidade'),
-            "ramal_id"    => $this->input->getPost('tar-gas-ramal'),
-            "competencia" => $this->input->getPost('tar-gas-competencia'),
+            "ramal_id"    => $this->consigaz_model->get_ramal($this->input->getPost('tar-gas-entidade'), 'gas')->id,
+            "competencia" => $competencia,
             "inicio"      => $this->input->getPost('tar-gas-data-ini'),
             "fim"         => $this->input->getPost('tar-gas-data-fim'),
             "mensagem"    => $this->input->getPost('tar-gas-msg'),

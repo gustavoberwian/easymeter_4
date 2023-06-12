@@ -429,11 +429,8 @@ class Water_model extends Base_model
 
     public function Calculate($data, $config, $group_id)
     {
-        $inicio = date_create_from_format('d/m/Y', $data["inicio"])->format('Y-m-d');
-        $fim = date_create_from_format('d/m/Y', $data["fim"])->format('Y-m-d');
-
-        $data["inicio"] = date_create_from_format('d/m/Y H:i', $data["inicio"] . ' 00:00')->format('U');
-        $data["fim"] = date_create_from_format('d/m/Y H:i', $data["fim"] . ' 00:00')->format('U');
+        $inicio = $data["inicio"];
+        $fim = $data["fim"];
 
         // inicia transação
         $failure = array();

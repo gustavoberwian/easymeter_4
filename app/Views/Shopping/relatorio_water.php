@@ -206,7 +206,11 @@
                                         <div class="row">
                                             <?php if ($equivalencia[0]) : ?>
                                                 <div class="col">
-                                                    <img class="comp-img-fluid" src="<?= base_url( 'assets/img/c0_'.$equivalencia[0] > 12 ? '12' : $equivalencia[0]); ?>.png">
+                                                    <?php if ($equivalencia[0] > 12) : ?>
+                                                        <img class="comp-img-fluid" src="<?= base_url( 'assets/img/c0_12'); ?>.png">
+                                                    <?php else : ?>
+                                                        <img class="comp-img-fluid" src="<?= base_url( 'assets/img/c0_'.$equivalencia[0]); ?>.png">
+                                                    <?php endif; ?>
                                                     <p class="text-1 text-muted my-0"><?= $equivalencia[0]; ?> <?= ($equivalencia[0] == 1) ? 'CAMINHÃO' : 'CAMINHÕES'; ?> DE 10.000 L</p>
                                                 </div>
                                             <?php endif; ?>

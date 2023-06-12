@@ -755,7 +755,7 @@ class Gas extends UNO_Controller
 
         $writer = new Xlsx($spreadsheet);
 
-        $filename = "Resumo Unidades";
+        $filename = "Relatório Consumo";
 
         ob_start();
         $writer->save("php://output");

@@ -264,7 +264,7 @@ class Gas extends UNO_Controller
         $field    = $this->input->getPost('field');
 
         $divisor  = 1;
-        $decimals = 0;
+        $decimals = 2;
         $unidade  = "";
         $type     = "line";
 
@@ -307,7 +307,7 @@ class Gas extends UNO_Controller
                     $values[] = 0;
                 } else {
                     if ($v->value == 0) {
-                        $values[] = $max <= $v->value ? 0.1 : $max * 0.01;
+                        $values[] = $max <= $v->value ? 0.05 : $max * 0.005;
                     } else {
                         $values[] = $v->value;
                     }
@@ -354,19 +354,16 @@ class Gas extends UNO_Controller
             "month"       => number_format(round($month, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
             "prevision"   => number_format(round(($month) / $dias * $dias_t, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
             "day"         => number_format(round(($day) / $dias_m, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>",
+            "max"         => $max
         );
 
         $data = array(
-            array("Máximo", ($max == -1) ? "-" : number_format(round($max), 0, ",", ".") . " <span style='font-size:12px;'>m³</span>", "#268ec3"),
-            array("Mínimo", ($min == 999999999) ? "-" : number_format(round($min), 0, ",", ".") . " <span style='font-size:12px;'>m³</span>", "#268ec3"),
-            array("Médio",  ($min == 999999999) ? "-" : number_format(round(($period_s) / count($period)), 0, ",", ".") . " <span style='font-size:12px;'>m³</span>", "#268ec3"),
+            array("Máximo", ($max == -1) ? "-" : number_format(round($max, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>", "#268ec3"),
+            array("Mínimo", ($min == 999999999) ? "-" : number_format(round($min, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>", "#268ec3"),
+            array("Médio",  ($min == 999999999) ? "-" : number_format(round(($period_s) / count($period), $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>m³</span>", "#268ec3"),
         );
 
         $footer = $this->chartFooter($data);
-
-        if ($max == 0) {
-            $extra["max"] = $max;
-        }
 
         $config = $this->chartConfig("bar", false, $series, $titles, $labels, "m³", 2, $extra, $footer, $dates);
 

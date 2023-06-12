@@ -23,8 +23,8 @@
         ajax: {
             url: $dtAlertas.data("url"),
             method: 'POST',
-            data: {
-                entidade: $(".content-body").data("entidade"),
+            data: function(d){
+                d.entidade = $("#sel-entity").val();
             },
             error: function () {
                 notifyError(

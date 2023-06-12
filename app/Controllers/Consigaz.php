@@ -165,6 +165,8 @@ class Consigaz extends UNO_Controller
         $data['url'] = $this->url;
         $data['monitoria'] = $this->monitoria;
 
+        $data['clientes'] = $this->consigaz_model->get_clientes_by_user($this->user->id);
+
         return $this->render("alertas", $data);
     }
 

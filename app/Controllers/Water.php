@@ -303,7 +303,7 @@ class Water extends UNO_Controller
         $values_c   = array();
         $max_c = -1;
         $min_c = 999999999;
-        $colors = [];
+        $colors = ['#734ba9', '#87a84b', '#a86f4b'];
         if ($compare != "") {
             foreach ($compare as $key => $c) {
                 $comp = $this->water_model->GetConsumption($c, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
@@ -331,7 +331,7 @@ class Water extends UNO_Controller
                     $series[] = array(
                         "name" => ucfirst(mb_strtolower($this->shopping_model->GetUnidadeByDevice($c)->nome)),
                         "data" => $values_c,
-                        "color" => $colors[$key],
+                        "color" => $colors[array_rand($colors)],
                     );
                 }
             }

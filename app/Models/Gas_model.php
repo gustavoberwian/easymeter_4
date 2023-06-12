@@ -614,4 +614,29 @@ class Gas_model extends Base_model
 
         return $this->db->query($query)->getResult();
     }
+
+    public function download_consumo($device, $start, $end, $page)
+    {
+        if ($page === 'Consumo') {
+            $teste = $this->GetConsumption($device, $start, $end);
+            unset($teste[1]);
+            unset($teste[2]);
+        } else if ($page === 'Bateria') {
+            $teste = $this->get_battery_consumption($device, $start, $end, true);
+        } else if ($page === 'Sensor') {
+            $teste = $this->get_sensor_consumption($device, $start, $end, true);
+        } else {
+            return false;
+        }
+
+        return json_decode(json_encode($teste), true);
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows()) {
+            return $result->getResultArray();
+        }
+
+        return false;
+    }
 }

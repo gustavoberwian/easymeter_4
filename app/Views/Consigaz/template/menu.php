@@ -31,7 +31,7 @@
                         </a>
                     </li>
 
-                    <li class="d-none <?php if(in_array($method, array('alertas'))) echo 'nav-active'; ?>">
+                    <li class="<?php if(in_array($method, array('alertas'))) echo 'nav-active'; ?>">
                         <a class="nav-link" href="<?= site_url($url . '/alertas/'); ?>">
                             <span class="float-end badge badge-danger badge-alerta" data-count="<?= $user->alerts; ?>"><?= $user->alerts; ?></span>
                             <i class="fas fa-bell"></i>

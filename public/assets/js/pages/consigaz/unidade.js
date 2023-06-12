@@ -153,4 +153,38 @@
 
     daterange();
 
+    $(document).on('click', '.btn-sheet-consumo', function () {
+        let _self = this;
+        $(_self).html('<i class="fas fa-spinner fa-spin"></i>');
+
+        $.ajax({
+            method   : 'POST',
+            url      : '/gas/download_consumo',
+            dataType : 'json',
+            data     : {
+                device : device,
+                start  : start_last.format("YYYY-MM-DD"),
+                end    : end_last.format("YYYY-MM-DD")
+            },
+            success  :  function (json) {
+                if (json.status !== "success") {
+                    // notifica erro
+                    notifyError(json.message);
+                } else {
+                    let $a = $("<a>");
+                    $a.attr("href", json.file);
+                    $("body").append($a);
+                    $a.attr("download", json.name + '.xlsx');
+                    $a[0].click();
+                    $a.remove();
+                }
+            },
+            error    : function (xhr, status, error) {
+            },
+            complete : function () {
+                $(_self).html('<i class="fas fa-file-download"></i> Gerar Planilha');
+            }
+        });
+    })
+
 }).apply(this, [jQuery]);

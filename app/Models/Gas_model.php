@@ -572,7 +572,7 @@ class Gas_model extends Base_model
                 CONCAT(LPAD(esm_calendar.d, 2, '0'), '/', LPAD(esm_calendar.m, 2, '0')) AS label,
                 esm_calendar.dt AS date,
                 esm_calendar.dw AS dw,
-                SUM(IF(esm_leituras_detalhes.gas = 65535, 0, esm_leituras_detalhes.gas)) AS value
+                SUM(IF(esm_leituras_detalhes.gas = 65535, null, esm_leituras_detalhes.gas)) AS value
             FROM esm_calendar
             LEFT JOIN esm_medidores ON esm_medidores.id = '$device'
             LEFT JOIN esm_leituras_detalhes ON

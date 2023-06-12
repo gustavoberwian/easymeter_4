@@ -147,8 +147,8 @@ class Gas extends UNO_Controller
 
         if ($period) {
             foreach ($period as $v) {
-                $bateria1[] = ($v->bateria1 / 1545.66) + 0.3;
-                $bateria2[] = ($v->bateria2 / 1545.66) + 0.2;
+                $bateria1[] = !is_null($v->bateria1) ? ($v->bateria1 / 1545.66) + 0.3 : null;
+                $bateria2[] = !is_null($v->bateria2) ? ($v->bateria2 / 1545.66) + 0.2 : null;
                 $labels[] = $v->label;
 
                 if ($start == $end) {
@@ -179,7 +179,7 @@ class Gas extends UNO_Controller
 
         $config = $this->chartConfig("line", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
 
-        $config["yaxis"] = array("labels" => array("formatter" => "function"), "tickAmount" => 5,"min" => 0,"max" => 4);
+        $config["yaxis"] = array("labels" => array("formatter" => "function"), "tickAmount" => 5,"min" => 0,"max" => 6);
 
         $config["annotations"] = array(
             "yaxis" => [
@@ -201,9 +201,25 @@ class Gas extends UNO_Controller
 
         $series = array();
 
+        $max = -1;
+        $min = 999999999;
+
         if ($period) {
             foreach ($period as $v) {
-                $values[] = $v->value == 65535 ? 0 : pow($v->value, 2) / 6600;
+                if ($max < floatval($v->value) && !is_null($v->value)) $max = floatval($v->value);
+                if ($min > floatval($v->value) && !is_null($v->value)) $min = floatval($v->value);
+            }
+
+            foreach ($period as $v) {
+                if (is_null($v->value)) {
+                    $values[] = null;
+                } else {
+                    if ($v->value == 0) {
+                        $values[] = $max * 0.05;
+                    } else {
+                        $values[] = $v->value == 65535 ? 0 : pow($v->value, 2) / 6600;
+                    }
+                }
                 $labels[] = $v->label;
 
                 if ($start == $end) {
@@ -221,7 +237,10 @@ class Gas extends UNO_Controller
             );
         }
 
-        $extra = array();
+        $extra = array(
+            "max" => $max,
+            "min" => $min,
+        );
 
         $data = array();
 
@@ -279,7 +298,20 @@ class Gas extends UNO_Controller
 
         if ($period) {
             foreach ($period as $v) {
-                $values[] = $v->value;
+                if ($max < floatval($v->value) && !is_null($v->value)) $max = floatval($v->value);
+                if ($min > floatval($v->value) && !is_null($v->value)) $min = floatval($v->value);
+            }
+
+            foreach ($period as $v) {
+                if (is_null($v->value)) {
+                    $values[] = 0;
+                } else {
+                    if ($v->value == 0) {
+                        $values[] = $max <= $v->value ? 0.1 : $max * 0.01;
+                    } else {
+                        $values[] = $v->value;
+                    }
+                }
                 $labels[] = $v->label;
 
                 if ($start == $end) {
@@ -288,8 +320,6 @@ class Gas extends UNO_Controller
                     $titles[] = $v->label." - ".weekDayName($v->dw);
                     $dates[]  = $v->date;
                 }
-                if ($max < floatval($v->value) && !is_null($v->value)) $max = floatval($v->value);
-                if ($min > floatval($v->value) && !is_null($v->value)) $min = floatval($v->value);
             }
 
             $series[] = array(
@@ -334,7 +364,15 @@ class Gas extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
+        if ($max == 0) {
+            $extra["max"] = $max;
+        }
+
         $config = $this->chartConfig("bar", false, $series, $titles, $labels, "m³", 2, $extra, $footer, $dates);
+
+        if ($max == 0) {
+            $config["yaxis"] = array("labels" => array("formatter" => "function"), "tickAmount" => 5,"min" => 0,"max" => 10);
+        }
 
         echo json_encode($config);
     }

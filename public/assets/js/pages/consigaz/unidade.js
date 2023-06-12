@@ -38,7 +38,10 @@
                 success : function (json) {
 
                     json.yaxis.labels.formatter = function (value) {
-                        return (value === null) ? "" : value.toLocaleString("pt-BR", {minimumFractionDigits: json.extra.decimals, maximumFractionDigits: json.extra.decimals}) + " " + json.extra.unit;
+                        return (value === null) ? "" : value.toLocaleString("pt-BR", {
+                            minimumFractionDigits: json.extra.decimals,
+                            maximumFractionDigits: json.extra.decimals
+                        }) + " " + json.extra.unit;
                     };
 
                     json.tooltip.x.formatter = function (value, {series, seriesIndex, dataPointIndex, w}) {
@@ -46,7 +49,14 @@
                     };
 
                     json.tooltip.y.formatter = function (value) {
-                        return (value === null) ? "" : value.toLocaleString("pt-BR", {minimumFractionDigits: json.extra.tooltip.decimals, maximumFractionDigits: json.extra.tooltip.decimals}) + " " + json.extra.unit;
+                        if (value === json.extra.custom.max * 0.05 || json.extra.custom.max === 0) {
+                            return 0 + " " + json.extra.unit;
+                        } else {
+                            return (value === null) ? "" : value.toLocaleString("pt-BR", {
+                                minimumFractionDigits: json.extra.tooltip.decimals,
+                                maximumFractionDigits: json.extra.tooltip.decimals
+                            }) + " " + json.extra.unit;
+                        }
                     };
 
                     if (json.hasOwnProperty('extra')) {

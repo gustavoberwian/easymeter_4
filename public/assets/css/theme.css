@@ -6611,6 +6611,9 @@ html.sidebar-light:not(.dark) ul.nav-main li .nav-children li a:hover,html.sideb
 	border-color: #ccc #ccc #b3b3b3;
 	color: #fff
 }
+.btn btn-reload-chart {
+	margin-left: 10px;
+}
 
 .btn-primary:hover,.btn-primary.hover {
 	background-color: #dfdfdf;
@@ -11285,7 +11288,9 @@ html.dark .radio-dark input[type=radio]:checked+label:after,.radio-dark input[ty
 }
 
 .select2-container--bootstrap .select2-selection--multiple .select2-selection__rendered {
-	line-height: 1.8
+	line-height: 1.8;
+	min-width: 150px !important;
+	
 }
 
 @media(max-width: 991px) {

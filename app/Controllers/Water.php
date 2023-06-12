@@ -301,18 +301,20 @@ class Water extends UNO_Controller
         }
 
         if ($compare != "") {
-            $values_c   = array();
-            $comp = $this->water_model->GetConsumption($compare, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
-            if ($comp) {
-                foreach ($comp as $v) {
-                    $values_c[] = $v->value;
-                }
+            foreach ($compare as $c) {
+                $values_c   = array();
+                $comp = $this->water_model->GetConsumption($c, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
+                if ($comp) {
+                    foreach ($comp as $v) {
+                        $values_c[] = $v->value / $divisor;
+                    }
 
-                $series[] = array(
-                    "name" => "Comparado", //$this->shopping_model->GetUnidadeByDevice($compare)->nome,
-                    "data" => $values_c,
-                    "color" => "#87c1de",
-                );
+                    $series[] = array(
+                        "name" => ucfirst(mb_strtolower($this->shopping_model->GetUnidadeByDevice($c)->nome)),
+                        "data" => $values_c,
+                        "color" => 'rgb(' . rand(0, 255) . ',' . rand(0, 255) . ',' . rand(0, 255) . ')',
+                    );
+                }
             }
         }
 
@@ -1092,12 +1094,8 @@ class Water extends UNO_Controller
             return number_format($data["value_month"], 0, ",", ".");
         });
 
-        $dt->edit('value_month_open', function ($data) {
-            return number_format($data["value_month_open"], 0, ",", ".");
-        });
-
-        $dt->edit('value_month_closed', function ($data) {
-            return number_format($data["value_month_closed"], 0, ",", ".");
+        $dt->edit('value_last_month', function ($data) {
+            return number_format($data["value_last_month"], 0, ",", ".");
         });
 
         $dt->edit('value_future', function ($data) {
@@ -1130,7 +1128,7 @@ class Water extends UNO_Controller
         // realiza a query via dt
         $dt = $this->datatables->query("
         SELECT 	
-            esm_unidades.nome 					AS name,
+            esm_unidades.nome AS name,
             $value 	
         from esm_alertas
             JOIN esm_medidores 	ON esm_medidores.id = esm_alertas.medidor_id
@@ -1145,7 +1143,15 @@ class Water extends UNO_Controller
         });
 
         $dt->edit('value', function ($data) use ($factor) {
-            return number_format($data["value"] * $factor, 3, ",", ".") . ($factor == 1000 ? " m³" : " L");
+            if ($data['value'] > 999) {
+                $divisor = 1000;
+                $uni_med = ' m³';
+            } else
+            {
+                $divisor = 1;
+                $uni_med = ' L';
+            }
+            return number_format(($data["value"] / $divisor) * $factor, 3, ",", ".") . $uni_med;
         });
 
         $dt->add('percentage', function ($data) use ($total, $factor) {
@@ -1233,16 +1239,13 @@ class Water extends UNO_Controller
 
         // Query que calcula os valores totais e faz a participação em porcentagem
 
-        $station = "";
         $st = "";
         $total = false;
         $factor = 1;
         if ($iud == 1) {
-            $station = "AND ((MOD((d.timestamp), 86400) >= {$this->user->config->ponta_start} AND MOD((d.timestamp), 86400) <= {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)";
             $st = "consumo";
             $total = $this->water_model->GetMonthByStationWater(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group, $this->user->demo);
         } else if ($iud == 2) {
-            $station = "AND (((MOD((d.timestamp), 86400) < {$this->user->config->ponta_start} OR MOD((d.timestamp), 86400) > {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)";
             $st = "vazamento";
             $total = $this->water_model->GetMonthByStationWater(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group, $this->user->demo);
 
@@ -1259,7 +1262,6 @@ class Water extends UNO_Controller
         }
 
         // realiza a query medidor e consumo via dt
-
         $dt = $this->datatables->query("
             SELECT 
                 esm_unidades.nome AS name, 
@@ -1274,7 +1276,6 @@ class Water extends UNO_Controller
                     LEFT JOIN $tabela d ON 
                         (d.timestamp) > (esm_calendar.ts_start) AND 
                         (d.timestamp) <= (esm_calendar.ts_end + 600) 
-                        $station
                     WHERE 
                         esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
                         esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
@@ -1289,12 +1290,17 @@ class Water extends UNO_Controller
         });
 
         $dt->edit('value', function ($data) use ($factor) {
-            return number_format($data["value"] * $factor, 3, ",", ".") . ($factor == 1000 ? " m³" : " L");
+            if ($data["value"] > 999) {
+                $divisor = 1000;
+            } else {
+                $divisor = 1;
+            }
+            return number_format(($data["value"] / $divisor) * $factor, 3, ",", ".") . ($divisor == 10000 ? " m³" : " L");
 
         });
 
-        $dt->add('percentage', function ($data) use ($total, $factor) {
-            $v = round(($data['value'] * $factor) / $total * 100);
+        $dt->add('percentage', function ($data) use ($total, $factor) { 
+            $v = round(($data['value'] * $factor) / ($total) * 100);
             return "<div class=\"progress progress-sm progress-half-rounded m-0 mt-1 light\">
                 <div class=\"progress-bar progress-bar-primary t-$total\" role=\"progressbar\" aria-valuenow=\"100\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $v%;\">
                 </div>

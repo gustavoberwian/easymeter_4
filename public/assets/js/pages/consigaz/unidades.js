@@ -24,6 +24,7 @@
         ],
         serverSide: true,
         ordering  : true,
+        order: [[ 3, 'asc' ]],
         pagingType: "numbers",
         searching : true,
         ajax: {

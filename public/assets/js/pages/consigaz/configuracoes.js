@@ -57,7 +57,7 @@
         });
     });
 
-    $(document).on('click', '.modal-dismiss', function (e) {
+    $(document).on('click', '#md-generate-code .modal-dismiss', function (e) {
         e.preventDefault();
 
         $.magnificPopup.close();
@@ -65,6 +65,30 @@
         setTimeout(function () {
             location.reload();
         }, 300)
+    });
+
+    $(document).on('click', '.request-code', function (e) {
+        // para propagação
+        e.preventDefault();
+
+        // abre modal
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_request_code'},
+            type: 'ajax',
+            modal: true,
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: {}
+                },
+            }
+        });
+    });
+
+    $(document).on('click', '#md-request-code .modal-dismiss', function (e) {
+        e.preventDefault();
+
+        $.magnificPopup.close();
     });
 
 }.apply(this, [jQuery]));

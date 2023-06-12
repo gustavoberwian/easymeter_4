@@ -23,9 +23,9 @@
             {data: "actions", className: "dt-body-center align-middle"},
         ],
         serverSide: true,
-        ordering   : false,
+        ordering  : true,
         pagingType: "numbers",
-        searching: true,
+        searching : true,
         ajax: {
             method: 'POST',
             url: $("#dt-unidades").data("url"),

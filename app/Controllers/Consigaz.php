@@ -165,6 +165,8 @@ class Consigaz extends UNO_Controller
         $data['url'] = $this->url;
         $data['monitoria'] = $this->monitoria;
 
+        $data['clientes'] = $this->consigaz_model->get_clientes_by_user($this->user->id);
+
         return $this->render("alertas", $data);
     }
 
@@ -489,7 +491,7 @@ class Consigaz extends UNO_Controller
                         <a class="dropdown-item reload-table-modal me-1" href="#"><i class="fas fa-rotate" title="Atualizar"></i> Atualizar</a>
                         <a class="dropdown-item me-1" target="_blank" href="' . base_url($this->url . '/unidade/' . $data['u_id'] . '/consumo') . '"><i class="fas fa-eye" title="Consumo"></i> Consumo</a>
                         <a class="dropdown-item sync-leitura-modal me-1" data-mid="' . $data['m_id'] . '" href="#"><i class="fas fa-gear" title="Sincronizar"></i> Sincronizar</a>
-                    </div>
+                    </div>  
                 </div>';
 
             // TODO: btn editar -> <a class="dropdown-item action-edit me-1" data-mid="' . $data['m_id'] . '" href="#"><i class="fas fa-pencil-alt me-1"></i> Editar</a>
@@ -918,19 +920,21 @@ class Consigaz extends UNO_Controller
     {
         $entidade_id = $this->input->getPost('entidade');
 
-        $data['entidade'] = (object) null;
+        $data['entidade'] = $this->consigaz_model->get_entidade($entidade_id);
 
-        $data['entidade']->id = null;
-
-        if ($entidade_id) {
-            $data['entidade'] = $this->consigaz_model->get_entidade($entidade_id);
-            $fechamento = $this->consigaz_model->get_last_fechamento($entidade_id);
-            if ($fechamento) {
-                $data['fechamento'] = strftime('%b/%Y', strtotime($fechamento->competencia)) . ' <a href="' . $this->url . '/fechamentos/' . $fechamento->id . '/' . $entidade_id . '" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i></a>';
-            } else {
-                $data['fechamento'] = 'Nenhum fechamento encontrado';
-            }
+        $fechamento = $this->consigaz_model->get_last_fechamento($entidade_id);
+        if ($fechamento) {
+            $data['fechamento'] = 'Último: ' . strftime('%b/%Y', strtotime($fechamento->competencia)) . ' <a href="' . $this->url . '/fechamentos/' . $fechamento->id . '/' . $entidade_id . '" target="_blank"><i class="fas fa-arrow-up-right-from-square"></i></a>';
+        } else {
+            $data['fechamento'] = 'Nenhum fechamento encontrado';
         }
+
+        $data['unidades_ranking'] = $this->consigaz_model->get_ranking_unidades($entidade_id);
+
+        $data['blocos'] = $this->consigaz_model->get_agrupamentos_by_entidade($entidade_id, true);
+        $data['unidades'] = $this->consigaz_model->get_unidades_by_entidade($entidade_id, true);
+        $data['vazamentos'] = 0;//$this->consigaz_model->get_vazamentos_by_entidade($entidade_id);
+        $data['valvulas'] = $this->consigaz_model->get_valvulas_by_entidade($entidade_id, true);
 
         echo view('Consigaz/modals/md_view_cliente', $data);
     }
@@ -953,5 +957,11 @@ class Consigaz extends UNO_Controller
         }
 
         echo json_encode(array("status" => "success", "message" => "Código válido!", "entidade" => $entidade));
+    }
+
+    public function md_request_code()
+    {
+        $data = array();
+        echo view('Consigaz/modals/md_request_code', $data);
     }
 }

@@ -300,19 +300,38 @@ class Water extends UNO_Controller
             );
         }
 
+        $values_c   = array();
+        $max_c = -1;
+        $min_c = 999999999;
+        $colors = [];
         if ($compare != "") {
-            foreach ($compare as $c) {
-                $values_c   = array();
+            foreach ($compare as $key => $c) {
                 $comp = $this->water_model->GetConsumption($c, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
                 if ($comp) {
+
                     foreach ($comp as $v) {
-                        $values_c[] = $v->value / $divisor;
+                        if ($max_c < floatval($v->value) && !is_null($v->value))
+                            $max_c = floatval($v->value);
+                        if ($min_c > floatval($v->value) && !is_null($v->value))
+                            $min_c = floatval($v->value);
+                    }
+
+                    foreach ($comp as $v) {
+                        if (is_null($v->value)) {
+                            $values_c[] = 0;
+                        } else {
+                            if ($v->value == 0) {
+                                $values_c[] = $max_c <= $v->value ? 0.05 : ($max_c / $divisor) * 0.005;
+                            } else {
+                                $values_c[] = $v->value / $divisor;
+                            }
+                        }
                     }
 
                     $series[] = array(
                         "name" => ucfirst(mb_strtolower($this->shopping_model->GetUnidadeByDevice($c)->nome)),
                         "data" => $values_c,
-                        "color" => 'rgb(' . rand(0, 255) . ',' . rand(0, 255) . ',' . rand(0, 255) . ')',
+                        "color" => $colors[$key],
                     );
                 }
             }
@@ -336,7 +355,8 @@ class Water extends UNO_Controller
             "day" => number_format(round((($day_o + $day_c) / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
             "day_o" => number_format(round(($day_o / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
             "day_c" => number_format(round(($day_c / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
-            "max" => $max
+            "max" => $max / $divisor,
+            "max_c" => $max_c / $divisor
         );
 
         $data = array(

@@ -179,6 +179,8 @@ class Gas extends UNO_Controller
 
         $config = $this->chartConfig("line", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
 
+        $config["yaxis"] = array("labels" => array("formatter" => "function"), "tickAmount" => 5,"min" => 0,"max" => 4);
+
         $config["annotations"] = array(
             "yaxis" => [
                 array("y" => 3.0, "borderColor" => "red", "label" => array("text" => "Limite: 3,0 V")),
@@ -666,5 +668,106 @@ class Gas extends UNO_Controller
         });
 
         echo $dt->generate();
+    }
+
+    public function download_consumo()
+    {
+        $device = $this->input->getPost('device');
+        $start  = $this->input->getPost('start');
+        $end    = $this->input->getPost('end');
+
+        $unidade = $this->consigaz_model->get_unidade_by_medidor($device);
+
+        $spreadsheet = new Spreadsheet();
+
+        $spreadsheet->getProperties()
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório Consumo')
+            ->setSubject(MonthName(date("m")) . "/" . date("Y"))
+            ->setDescription('Relatório Consumo - ' . date("01/m/Y") . ' - ' . date("d/m/Y"))
+            ->setKeywords($unidade->nome . ' Consumo ' . MonthName(date("m")) . "/" . date("Y"))
+            ->setCategory('Relatório')->setCompany('Easymeter');
+
+
+        $pages = ['Consumo', 'Bateria', 'Sensor'];
+
+        $spreadsheet->getActiveSheet()->setTitle($pages[0]);
+
+        for ($i = 1; $i < 3; $i++) {
+            $myWorkSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, $pages[$i]);
+            $spreadsheet->addSheet($myWorkSheet, $i + 1);
+        }
+
+        for ($i = 0; $i < 3; $i++) {
+
+            $spreadsheet->setActiveSheetIndex($i);
+
+            $resume = $this->gas_model->download_consumo($device, $start, $end, $spreadsheet->getActiveSheet()->getTitle());
+
+            $dados = array();
+            foreach ($resume as $r) {
+                unset($r['date']);
+                unset($r['dw']);
+                $dados[] = $r;
+            }
+
+            $spreadsheet->getActiveSheet()->getStyle('A1:G2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getActiveSheet()->setCellValue('A1', 'Unidade: ' . strtoupper($unidade->nome));
+            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Consumo - ' . date("d/m/Y", strtotime($start . " 00:00:00")) . ' a ' . date("d/m/Y", strtotime($end . " 23:59:59")));
+
+            if ($spreadsheet->getActiveSheet()->getTitle() === "Bateria") {
+                $spreadsheet->getActiveSheet()->mergeCells('A1:C1');
+                $spreadsheet->getActiveSheet()->mergeCells('A2:C2');
+                $spreadsheet->getActiveSheet()->setCellValue('B4', 'Bateria 1 - V');
+                $spreadsheet->getActiveSheet()->setCellValue('C4', 'Bateria 2 - V');
+            } else {
+                $spreadsheet->getActiveSheet()->mergeCells('A1:B1');
+                $spreadsheet->getActiveSheet()->mergeCells('A2:B2');
+                if ($spreadsheet->getActiveSheet()->getTitle() === "Consumo") {
+                    $spreadsheet->getActiveSheet()->setCellValue('B4', 'Consumo - m³');
+                } else {
+                    $spreadsheet->getActiveSheet()->setCellValue('B4', 'Consumo - PPM');
+                }
+            }
+
+            $spreadsheet->getActiveSheet()->setCellValue('A4', 'Dia');
+
+            $spreadsheet->getActiveSheet()->getStyle('A1:J4')->getFont()->setBold(true);
+            $spreadsheet->getActiveSheet()->getStyle('A4:G4')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+            $spreadsheet->getActiveSheet()->fromArray($dados, NULL, 'A5');
+
+            $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+            $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(22);
+            $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(22);
+
+            $spreadsheet->getActiveSheet()->getStyle('A5:A'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getActiveSheet()->getStyle('B5:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $spreadsheet->getActiveSheet()->getStyle('C5:C'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+            $spreadsheet->getActiveSheet()->setCellValue('A' . (count($resume) + 7), 'Gerado em ' . date("d/m/Y H:i"));
+
+            $spreadsheet->getActiveSheet()->setSelectedCell('A1');
+        }
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $writer = new Xlsx($spreadsheet);
+
+        $filename = "Resumo Unidades";
+
+        ob_start();
+        $writer->save("php://output");
+        $xlsData = ob_get_contents();
+        ob_end_clean();
+
+        $response =  array(
+            'status' => "success",
+            'name'   => $filename,
+            'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
+        );
+
+        echo json_encode($response);
     }
 }

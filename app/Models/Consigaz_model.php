@@ -506,6 +506,26 @@ class Consigaz_model extends Base_model
         return json_encode(array('status' => 'success', 'message' => 'Cliente atualizado com sucesso!'));
     }
 
+    public function get_ranking_unidades($entidade)
+    {
+        $query = "SELECT 
+                esm_unidades.nome AS unidade,
+                SUM(esm_leituras_bancada_gas.consumo) AS value
+            FROM esm_leituras_bancada_gas
+            JOIN esm_medidores ON esm_medidores.id = esm_leituras_bancada_gas.medidor_id
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id AND esm_agrupamentos.entidade_id = $entidade
+            GROUP BY esm_unidades.id 
+            ORDER BY value DESC LIMIT 3";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows())
+            return $result->getResult();
+
+        return false;
+    }
+
     public function edit_medidor($medidor, $data)
     {
         $this->db->transStart();
@@ -521,5 +541,79 @@ class Consigaz_model extends Base_model
         }
 
         return json_encode(array('status' => 'success', 'message' => 'Unidade atualizada com sucesso!'));
+    }
+
+    public function get_agrupamentos_by_entidade($entidade_id, $count = false)
+    {
+        $query = "SELECT esm_agrupamentos.* FROM esm_agrupamentos WHERE esm_agrupamentos.entidade_id = $entidade_id";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows()) {
+            if ($count) {
+                return $result->getNumRows();
+            } else {
+                return $result->getResult();
+            }
+        }
+
+        return false;
+    }
+
+    public function get_unidades_by_entidade($entidade_id, $count = false)
+    {
+        $query = "SELECT esm_unidades.* FROM esm_unidades JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+                      AND esm_agrupamentos.entidade_id = $entidade_id";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows()) {
+            if ($count) {
+                return $result->getNumRows();
+            } else {
+                return $result->getResult();
+            }
+        }
+
+        return false;
+    }
+
+    /*public function get_vazamentos_by_entidade($entidade_id, $count = false)
+    {
+        $query = "SELECT esm_unidades.* FROM esm_unidades JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+                      AND esm_agrupamentos.entidade_id = $entidade_id";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows()) {
+            if ($count) {
+                return $result->getNumRows();
+            } else {
+                return $result->getResult();
+            }
+        }
+
+        return false;
+    }*/
+
+    public function get_valvulas_by_entidade($entidade_id, $count = false)
+    {
+        $query = "SELECT esm_valves_stats.* FROM esm_valves_stats
+                          JOIN esm_medidores ON esm_medidores.id = esm_valves_stats.medidor_id
+                          JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
+                          JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+                          AND esm_agrupamentos.entidade_id = $entidade_id";
+
+        $result = $this->db->query($query);
+
+        if ($result->getNumRows()) {
+            if ($count) {
+                return $result->getNumRows();
+            } else {
+                return $result->getResult();
+            }
+        }
+
+        return false;
     }
 }

@@ -57,9 +57,9 @@
         <div class="col-md-12 mb-4">
             <section class="card card-easymeter h-100 mb-4">
                 <header class="card-header">
-                    <!--<div class="card-actions buttons">
-                        <button type="button" class="btn btn-primary btn-sheet-consumo">Gerar Planilha</button>
-                    </div>-->
+                    <div class="card-actions buttons">
+                        <button type="button" class="btn btn-primary btn-sheet-consumo"><i class="fas fa-file-download"></i> Gerar Planilha</button>
+                    </div>
                     <h2 class="card-title">Consumo</h2>
                 </header>
                 <div class="card-body chart_activePositive-body" data-loading-overlay data-loading-overlay-options='{ "css": { "backgroundColor": "#00000080" } }'>

@@ -5673,6 +5673,10 @@ html.dark .text-muted {
 	border-color: #ececec!important
 }
 
+.border-color-light-grey-3 {
+	border-color: #0000002d!important
+}
+
 .ib {
 	display: inline-block;
 	vertical-align: top

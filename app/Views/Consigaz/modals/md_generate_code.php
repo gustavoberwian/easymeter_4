@@ -1,4 +1,4 @@
-<div id="md-fechamento-inclui" class="modal-block modal-block-primary">
+<div id="md-generate-code" class="modal-block modal-block-primary">
     <section class="card card-easymeter">
         <header class="card-header">
             <div class="card-actions"></div>

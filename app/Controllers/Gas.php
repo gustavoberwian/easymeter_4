@@ -179,6 +179,8 @@ class Gas extends UNO_Controller
 
         $config = $this->chartConfig("line", false, $series, $titles, $labels, "V", 1, $extra, $footer, $dates);
 
+        $config["yaxis"] = array("labels" => array("formatter" => "function"), "tickAmount" => 5,"min" => 0,"max" => 4);
+
         $config["annotations"] = array(
             "yaxis" => [
                 array("y" => 3.0, "borderColor" => "red", "label" => array("text" => "Limite: 3,0 V")),

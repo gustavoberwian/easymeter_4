@@ -746,11 +746,15 @@ class Water extends UNO_Controller
 
     public function lancamento()
     {
+        $comp = str_replace('/', '-', $this->input->getPost('tar-water-competencia'));
+        $ini = str_replace('/', '-', $this->input->getPost('tar-water-data-ini'));
+        $end = str_replace('/', '-', $this->input->getPost('tar-water-data-fim'));
+
         $data = array(
             "agrupamento_id"    => $this->input->getPost('tar-water-group'),
-            "competencia" => $this->input->getPost('tar-water-competencia'),
-            "inicio" => $this->input->getPost('tar-water-data-ini'),
-            "fim" => $this->input->getPost('tar-water-data-fim'),
+            "competencia" => date('Y-m-d', strtotime('01-' . $comp)),
+            "inicio" => date('Y-m-d', strtotime($ini)),
+            "fim" => date('Y-m-d', strtotime($end)),
             "mensagem" => $this->input->getPost('tar-water-msg'),
         );
 
@@ -770,12 +774,12 @@ class Water extends UNO_Controller
 			return;
 		}
         
-        if (date_create_from_format('d/m/Y', $data["inicio"]) == date_create_from_format('d/m/Y', $data["fim"])) {
+        if ($data["inicio"] == $data["fim"]) {
 			echo '{ "status": "message", "field": "tar-water-data-fim", "message" : "Data final igual a inicial"}';
 			return;
 		}
 
-		if (date_create_from_format('d/m/Y', $data["inicio"]) > date_create_from_format('d/m/Y', $data["fim"])) {
+		if ($data["inicio"] > $data["fim"]) {
 			echo '{ "status": "message", "field": "tar-water-data-fim", "message" : "Data final menor que a inicial"}';
 			return;
 		}

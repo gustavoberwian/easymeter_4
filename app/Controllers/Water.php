@@ -36,7 +36,7 @@ class Water extends UNO_Controller
         $this->datatables = new Datatables(new Codeigniter4Adapter);
     }
 
-    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array())
+    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array(), $decimals_chart = 0)
     {
         $config = array(
             "chart" => array(
@@ -87,7 +87,7 @@ class Water extends UNO_Controller
             "extra" => array(
                 "tooltip" => array(
                     "title" => $titles,
-                    "decimals" => 0,
+                    "decimals" => $decimals_chart,
                 ),
                 "unit" => $unit,
                 "decimals" => $decimals,
@@ -233,7 +233,7 @@ class Water extends UNO_Controller
         }
 
         $divisor = 1;
-        $decimals = 0;
+        $decimals = 3;
         $unidade = "";
         $type = "line";
 
@@ -260,19 +260,29 @@ class Water extends UNO_Controller
 
         $max = -1;
         $min = 999999999;
-        if ($period_o + $period_c > 999) {
-            $unidade_medida = 'm³';
-            $divisor = 1000;
-        } else {
-            $unidade_medida = 'L';
-            $divisor = 1;
-        }
+        $unidade_medida = 'm³';
+        $divisor = 1000;
 
         $series = array();
 
         if ($period) {
             foreach ($period as $v) {
-                $values[] = $v->value / $divisor;
+                if ($max < floatval($v->value) && !is_null($v->value))
+                    $max = floatval($v->value);
+                if ($min > floatval($v->value) && !is_null($v->value))
+                    $min = floatval($v->value);
+            }
+
+            foreach ($period as $v) {
+                if (is_null($v->value)) {
+                    $values[] = 0;
+                } else {
+                    if ($v->value == 0) {
+                        $values[] = $max <= $v->value ? 0.05 : ($max / $divisor) * 0.005;
+                    } else {
+                        $values[] = $v->value / $divisor;
+                    }
+                }
                 $labels[] = $v->label;
 
                 if ($start == $end) {
@@ -281,10 +291,6 @@ class Water extends UNO_Controller
                     $titles[] = $v->label . " - " . weekDayName($v->dw);
                     $dates[] = $v->date;
                 }
-                if ($max < floatval($v->value) && !is_null($v->value))
-                    $max = floatval($v->value);
-                if ($min > floatval($v->value) && !is_null($v->value))
-                    $min = floatval($v->value);
             }
 
             $series[] = array(
@@ -328,6 +334,7 @@ class Water extends UNO_Controller
             "day" => number_format(round((($day_o + $day_c) / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
             "day_o" => number_format(round(($day_o / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
             "day_c" => number_format(round(($day_c / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "max" => $max
         );
 
         $data = array(
@@ -338,7 +345,11 @@ class Water extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, 0, $extra, $footer, $dates);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, 0, $extra, $footer, $dates, $decimals);
+
+        if ($max == 0) {
+            $config["yaxis"] = array("labels" => array("formatter" => "function"), "tickAmount" => 5,"min" => 0,"max" => 10);
+        }
 
         echo json_encode($config);
     }

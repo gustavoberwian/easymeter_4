@@ -44,7 +44,11 @@
                     };
 
                     json.tooltip.y.formatter = function (value) {
-                        return (value === null) ? "" : value.toLocaleString("pt-BR", {minimumFractionDigits: json.extra.tooltip.decimals, maximumFractionDigits: json.extra.tooltip.decimals}) + " " + json.extra.unit;
+                        if (value === json.extra.custom.max * 0.005 || json.extra.custom.max === 0) {
+                            return 0 + " " + json.extra.unit;
+                        } else {
+                            return (value === null) ? "" : value.toLocaleString("pt-BR", {minimumFractionDigits: json.extra.tooltip.decimals, maximumFractionDigits: json.extra.tooltip.decimals}) + " " + json.extra.unit;
+                        }
                     };
 
                     if (json.hasOwnProperty('extra')) {

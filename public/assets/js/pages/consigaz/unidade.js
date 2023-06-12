@@ -49,7 +49,7 @@
                     };
 
                     json.tooltip.y.formatter = function (value) {
-                        if (value === json.extra.custom.max * 0.05 || json.extra.custom.max === 0) {
+                        if (value === json.extra.custom.max * 0.005 || json.extra.custom.max === 0) {
                             return 0 + " " + json.extra.unit;
                         } else {
                             return (value === null) ? "" : value.toLocaleString("pt-BR", {

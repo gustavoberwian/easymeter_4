@@ -6,13 +6,14 @@
         </header>
 
         <div class="card-body">
-            <?= $holder; ?>
+            <div class="alert alert-danger"><b>Atenção</b>: o QR Code estará disponível apenas UMA VEZ, tenha certeza de salvá-lo corretamente.</div>
+            <p class="mb-0">Identificador: <?= $holder ?></p>
             <div class="row justify-content-center">
                 <div class="col-7">
                     <img src="<?= $google2fa_url; ?>" alt="">
                 </div>
             </div>
-            <p>Abra seu aplicativo do Google Authenticator e pressiona o ícone "+", então clique em "Ler código QR" e aponte a câmera para o QRCode</p>
+            <p>Abra seu aplicativo do Google Authenticator e pressiona o ícone "+", então clique em "Ler código QR" e aponte a câmera para o QRCode.</p>
         </div>
 
         <footer class="card-footer">

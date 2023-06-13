@@ -190,3 +190,122 @@ button.nav-link.configs {
 .btn-reload-chart {
 	margin-left: 10px;
 }
+@font-face {
+    font-family: 'Product Sans Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Regular'), url('../fonts/ProductSans-Regular.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Italic';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Italic'), url('../fonts/ProductSans-Italic.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Thin Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Thin Regular'), url('../fonts/ProductSans-Thin.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Light Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Light Regular'), url('../fonts/ProductSans-Light.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Medium Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Medium Regular'), url('../fonts/ProductSans-Medium.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Black Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Black Regular'), url('../fonts/ProductSans-Black.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Thin Italic';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Thin Italic'), url('../fonts/ProductSans-ThinItalic.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Light Italic';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Light Italic'), url('../fonts/ProductSans-LightItalic.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Medium Italic';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Medium Italic'), url('../fonts/ProductSans-MediumItalic.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Bold';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Bold'), url('../fonts/ProductSans-Bold.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Bold Italic';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Bold Italic'), url('../fonts/ProductSans-BoldItalic.woff') format('woff');
+}
+
+
+@font-face {
+    font-family: 'Product Sans Black Italic';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Product Sans Black Italic'), url('../fonts/ProductSans-BlackItalic.woff') format('woff');
+}
+
+.google-logo {
+    height: 24px;
+    width: 75px;
+}
+.google-logo-2 {
+    font-size: 1.375rem;
+    line-height: .9545454545;
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    color: #5f6368;
+    font-family: 'Product Sans Regular',Google Sans,Arial,Helvetica,sans-serif;
+    font-style: normal;
+    font-weight: 400;
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    hyphens: auto;
+    letter-spacing: .25px;
+    overflow-wrap: normal;
+    padding-left: 5px;
+    text-decoration: none;
+    text-rendering: optimizeLegibility;
+    word-wrap: normal;
+}

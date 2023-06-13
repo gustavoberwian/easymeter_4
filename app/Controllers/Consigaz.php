@@ -385,32 +385,35 @@ class Consigaz extends UNO_Controller
         // using CI4 Builder
         $dt->query($builder);
 
-        $data = $dt->generate()->getData();
-
         $totalConsumoAtual = 0;
         $totalConsumoAnterior = 0;
         $totalAbertas = 0;
         $totalFechadas = 0;
         $totalErros = 0;
 
-        foreach ($data as $d) {
-            $consumoAnterior = $this->gas_model->GetConsumption($d['m_id'], date('Y-m-d H:i:s', strtotime('first day of last month')), date('Y-m-d H:i:s', strtotime('last day of last month')), array(), false);
+        $medidores = $this->consigaz_model->get_medidores_by_entidade($entidade);
+        $valvulas = $this->consigaz_model->get_valvulas_by_entidade($entidade);
+
+        foreach ($medidores as $m) {
+            $consumoAnterior = $this->gas_model->GetConsumption($m->id, date('Y-m-d H:i:s', strtotime('first day of last month')), date('Y-m-d H:i:s', strtotime('last day of last month')), array(), false);
             foreach ($consumoAnterior as $c) {
                 $totalConsumoAnterior += $c->value;
             }
 
-            $consumoAtual = $this->gas_model->GetConsumption($d['m_id'], date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
+            $consumoAtual = $this->gas_model->GetConsumption($m->id, date('Y-m-d H:i:s', strtotime('first day of this month')), date('Y-m-d H:i:s'), array(), false);
             foreach ($consumoAtual as $c) {
                 $totalConsumoAtual += $c->value;
             }
+        }
 
-            if ($d['state']) {
+        foreach ($valvulas as $v) {
+            if ($v->state) {
                 $totalAbertas ++;
             } else {
                 $totalFechadas ++;
             }
 
-            if ($d['status'] === 'vermelho') {
+            if ($v->status === 'vermelho') {
                 $totalErros ++;
             }
         }

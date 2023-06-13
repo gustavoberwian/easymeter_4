@@ -59,7 +59,7 @@
                             <?= date('d/m/Y', strtotime($fechamento->cadastro)); ?>
                         </td>
                         <td>
-                            <?= number_format(round($fechamento->consumo_c + $fechamento->consumo_u, 0), 0, ',', '.'); ?>
+                            <?= number_format(round($fechamento->consumo_c + $fechamento->consumo_u, 0), 0, ',', '.') . ' L'; ?>
                         </td>
                     </tr>
                 </tbody>

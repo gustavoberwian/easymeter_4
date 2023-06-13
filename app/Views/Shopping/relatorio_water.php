@@ -94,7 +94,7 @@
                             </tr>
                             <tr>
                                 <td width="50%" class="bg-gray">
-                                    <p class="text-muted font-weight-bold mb-0">Consumo Shopping Aberto</p>
+                                    <p class="text-muted font-weight-bold mb-0">Consumo Aberto</p>
                                 </td>
                                 <td width="50%">
                                     <div class="text-4 text-dark font-weight-bold mb-0 text-center"><?= number_format($unidade->consumo_o, 0, ",", ".")." L"; ?></div>
@@ -102,7 +102,7 @@
                             </tr>
                             <tr>
                                 <td width="50%" class="bg-gray">
-                                    <p class="text-muted font-weight-bold mb-0">Consumo Shopping Fechado</p>
+                                    <p class="text-muted font-weight-bold mb-0">Consumo Fechado</p>
                                 </td>
                                 <td width="50%">
                                     <div class="text-4 text-dark font-weight-bold mb-0 text-center"><?= number_format($unidade->consumo_c, 0, ",", ".")." L"; ?></div>

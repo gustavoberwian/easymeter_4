@@ -74,6 +74,8 @@ class Admin extends UNO_Controller
             $data['central'] = $this->admin_model->get_central_entidade($id);
             $data['data'] = $this->admin_model->get_last_data($data['central']->nome, $data['central']->ultimo_envio);
             $data['erros'] = $this->admin_model->get_error_leitura($id, $data['central']->tabela);
+            $data['x'] = $this->admin_model->get_central_leituras($data['central']->nome, $data['central']->tabela);
+
             $labels = array();
             for ($i = 0; $i < 40; $i++) {
                 $labels[] = date("d/m/Y", strtotime("+$i days", strtotime("-40 days ")));
@@ -382,7 +384,7 @@ class Admin extends UNO_Controller
                 $data['status'] = "<span class=\"badge badge-warning\">" . ucfirst($data['chamado']->status) . "</span>";
 
             $data['replys'] = $this->admin_model->get_chamado_reply($id);
-            $this->render('suporte_reply', $data);
+            return $this->render('suporte_reply', $data);
         } else {
             return $this->render('suporte');
         }
@@ -795,40 +797,41 @@ class Admin extends UNO_Controller
     public function get_chamados_novo()
     {
         // realiza a query via dt
-        $dt = $this->datatables->query("  SELECT
-        esm_tickets.id AS id, 
-        esm_tickets.unidade_id AS Unidade_id, 
-        esm_tickets.nome AS ticket, 
-        esm_tickets.email AS email, 
-        esm_tickets.mensagem AS mensagem, 
-        esm_tickets.STATUS AS status, 
-        DATE_FORMAT( esm_tickets.cadastro, '%d/%m/%Y' ) AS cadastro, 
-        esm_departamentos.nome AS departamento, 
-        esm_entidades.tabela AS entidade, 
-        esm_entidades.nome AS agrupamento, 
-        esm_entidades.classificacao AS classificacao
-    FROM
-        esm_tickets
-        JOIN
-        esm_departamentos
-        ON 
-            esm_tickets.departamento = esm_departamentos.id
-        LEFT JOIN
-        esm_unidades
-        ON 
-            esm_unidades.id = esm_tickets.unidade_id
-        LEFT JOIN
-        esm_agrupamentos
-        ON 
-            esm_agrupamentos.id = esm_unidades.agrupamento_id
-        LEFT JOIN
-        esm_entidades
-        ON 
-            esm_entidades.id = esm_agrupamentos.entidade_id
-    GROUP BY
-        esm_tickets.id
-    ORDER BY
-        COALESCE ( esm_tickets.cadastro ) DESC
+        $dt = $this->datatables->query("
+        SELECT
+            esm_tickets.id AS id, 
+            esm_tickets.unidade_id AS Unidade_id, 
+            esm_tickets.nome AS ticket, 
+            esm_tickets.email AS email, 
+            esm_tickets.mensagem AS mensagem, 
+            esm_tickets.STATUS AS status, 
+            DATE_FORMAT( esm_tickets.cadastro, '%d/%m/%Y' ) AS cadastro, 
+            esm_departamentos.nome AS departamento, 
+            esm_entidades.tabela AS entidade, 
+            esm_entidades.nome AS agrupamento, 
+            esm_entidades.classificacao AS classificacao
+        FROM
+            esm_tickets
+            JOIN
+            esm_departamentos
+            ON 
+                esm_tickets.departamento = esm_departamentos.id
+            LEFT JOIN
+            esm_unidades
+            ON 
+                esm_unidades.id = esm_tickets.unidade_id
+            LEFT JOIN
+            esm_agrupamentos
+            ON 
+                esm_agrupamentos.id = esm_unidades.agrupamento_id
+            LEFT JOIN
+            esm_entidades
+            ON 
+                esm_entidades.id = esm_agrupamentos.entidade_id
+        GROUP BY
+            esm_tickets.id
+        ORDER BY
+           esm_tickets.id DESC
             ");
 
         $dt->add('DT_RowId', function ($data) {
@@ -1945,6 +1948,13 @@ class Admin extends UNO_Controller
                 return "{$data['agrupamentos']}/{$data['unidade']}";
         });
 
+        $dt->edit('unidade_tipo', function ($data) {
+            if (!$data['unidade_tipo'])
+                return '-';
+            else
+                return $data['unidade_tipo'];
+        });
+
         $dt->edit('tipo', function ($data) {
             if ($data['tipo'] == 'agua')
                 return '<span class="badge badge-agua">Água</span>';
@@ -1955,7 +1965,7 @@ class Admin extends UNO_Controller
             elseif ($data['tipo'] == 'nivel')
                 return '<span class="badge badge-nivel" style="background: #5bc0de;color: #FFF;">Nível</span>';
             else
-                return '';
+                return '-';
         });
 
         $dt->edit('sensor', function ($data) use ($central) {
@@ -1986,6 +1996,14 @@ class Admin extends UNO_Controller
                 return '<i class="fas fa-user-secret text-danger"></i>';
             else
                 return '<i class="fas fa-user-secret text-muted"></i>';
+        });
+
+        $dt->edit('fator', function ($data) {
+            if (!$data['fator']) {
+                return '-';
+            } else {
+             return $data['fator'];
+            }
         });
 
         $dt->add('actions', function ($data) {

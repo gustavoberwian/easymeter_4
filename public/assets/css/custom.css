@@ -61,6 +61,13 @@ table thead th {
 .card-actions.buttons {
     top: 10px;
 }
+
+.card-actions.buttons-alerts .btn-primary {
+    background-color: #0088cc;
+    border-color: #0088cc #0088cc #006699;
+    color: #ffffff;
+    padding-bottom: 1px;
+}
 .readonly .bootstrap-tagsinput .badge [data-role="remove"]:after {
     color: #5f9ea0;
     pointer-events: none;

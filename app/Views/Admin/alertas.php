@@ -1,26 +1,34 @@
 
 				<section role="main" class="content-body">
+				<header class="page-header">
+        <h2>Entidades</h2>
+        <div class="right-wrapper text-end">
+            <ol class="breadcrumbs pe-4">
+                <li><a href="<?php echo site_url('admin'); ?>"><i class="fas fa-home"></i></a></li>
+                <li><span>Entidades</span></li>
+            </ol>
+        </div>
+    </header>
 					<!-- start: page -->
 					<section class="card">
-						<header class="card-header mt-2">
-                            <ol class="breadcrumbs">
-								<li><a href="<?php echo site_url('admin'); ?>"><i class="fas fa-home"></i></a></li>
-								<li><span>Alertas</span></li>
-							</ol>
-                            <div class="card-actions buttons alerts">
-                                <span class="vis-group text-3 text-muted d-none d-lg-inline">Filtrar por:</span>
-                                <div class="btn-group btn-group-toggle ml-3 vis-group box-group" data-toggle="buttons">
-                                    <label class="btn btn-primary read active" data-filter="">
-                                        <input type="radio" name="read" id="option7" autocomplete="off" checked> Todos
-                                    </label>
-                                    <label class="btn btn-primary read" data-filter="active">
-                                        <input type="radio" name="read" id="option8" autocomplete="off"> Ativos
-                                    </label>
-                                    <label class="btn btn-primary read" data-filter="ended">
-                                        <input type="radio" name="read" id="option9" autocomplete="off"> Finalizados
-                                    </label>
-                                </div>
-                            </div>
+						<header class="card-header">
+							<div class="card-actions buttons">
+								<div class="text-end buttons-alerts alerts">
+									<span class="text-end vis-group text-3 text-muted d-none d-lg-inline">Filtrar por:</span>
+									<div class="text-end btn-group btn-group-toggle ml-3 vis-group box-group" data-toggle="buttons">
+										<label class="btn btn-primary read active" data-filter="">
+											<input type="radio" name="read" id="option7" autocomplete="off" checked> Todos
+										</label>
+										<label class="btn btn-primary read" data-filter="active">
+											<input type="radio" name="read" id="option8" autocomplete="off"> Ativos
+										</label>
+										<label class="btn btn-primary read" data-filter="ended">
+											<input type="radio" name="read" id="option9" autocomplete="off"> Finalizados
+										</label>
+									</div>
+								</div>
+							</div>
+							<h2 class="card-title">Avisos</h2>
 						</header>
 						<div class="card-body">
 							<table class="table table-hover" id="dt-alertas" style="cursor: auto;" data-url="<?php echo site_url('admin/get_alertas'); ?>">

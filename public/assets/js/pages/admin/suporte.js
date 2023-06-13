@@ -30,14 +30,14 @@ var unidade_validator;
 		pageLength: 10,
 		columns: [
 			{ data: "id", visible: false },
-			{ data: "ticket", className: "dt-body-center" },
-			{ data: "email", className: "dt-body-center" },
+			{ data: "ticket", orderable: false, className: "dt-body-center" },
+			{ data: "email", orderable: false, className: "dt-body-center" },
 			{ data: "mensagem", orderable: false, className: "dt-body-center monitor"},
-			{ data: "status", className: "dt-body-center"},
-            { data: "cadastro", className: "table-one-line" },
-			{ data: "departamento", className: "table-one-line" },
-			{ data: "agrupamento", className: "table-one-line" },
-            { data: "classificacao", className: "dt-body-center"},
+			{ data: "status", orderable: true, className: "dt-body-center"},
+            { data: "cadastro", orderable: true, className: "table-one-line" },
+			{ data: "departamento", orderable: true, className: "table-one-line" },
+			{ data: "agrupamento", orderable: false, className: "table-one-line" },
+            { data: "classificacao", orderable: false, className: "dt-body-center"},
 		],
         serverSide: true,
         pagingType: "numbers",
@@ -86,6 +86,15 @@ var unidade_validator;
 			type: 'ajax',
 			modal: true
 		});
+    });
+
+	$('#dt-suporte tbody').on('click', 'tr', function (event) {
+        // se o clique não foi em uma celula ou na última, retorna
+        if (event.target.cellIndex == undefined) return;
+        // pega dados da linha
+        var data = $dtSuporte.row( this ).data();
+        // redireciona para o fechamento
+        window.location = "/admin/suporte/" + data.DT_RowId;
     });
 
 }).apply(this, [jQuery]);

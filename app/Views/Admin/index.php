@@ -37,7 +37,7 @@
                                 <div class="col-8">
                                     <p class="text-2 text-muted my-0"><?= substr($central->entidade, 0, 20); ?></p>
                                 </div>
-                                <div class="col-4 text-right">
+                                <div class="col-4 text-end">
                                     <span class="badge badge-default"><?= $central->modo; ?></span>
                                 </div>
                             </div>

@@ -185,7 +185,7 @@ class Consigaz extends UNO_Controller
 
     public function get_entidades()
     {
-        $db = Database::connect('easy_com_br');
+        $db = Database::connect();
 
         $builder = $db->table('auth_user_relation');
         $builder->join('esm_entidades', 'esm_entidades.id = auth_user_relation.entidade_id');
@@ -370,7 +370,7 @@ class Consigaz extends UNO_Controller
     {
         $entidade = $this->input->getPost("entidade");
 
-        $db = \Config\Database::connect('easy_com_br');
+        $db = Database::connect();
 
         $builder = $db->table('esm_medidores');
         $builder->join('esm_unidades', 'esm_unidades.id = esm_medidores.unidade_id');
@@ -613,7 +613,7 @@ class Consigaz extends UNO_Controller
     {
         $entidade = $this->input->getPost("entidade");
 
-        $db = \Config\Database::connect('easy_com_br');
+        $db = Database::connect();
 
         $builder = $db->table('esm_medidores');
         $builder->join('esm_unidades', 'esm_unidades.id = esm_medidores.unidade_id');

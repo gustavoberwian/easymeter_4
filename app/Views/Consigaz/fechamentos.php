@@ -29,14 +29,12 @@
             <header class="card-header">
                 <div class="card-actions buttons">
                     <button class="btn btn-primary btn-gas-download" data-loading-overlay><i class="fas fa-file-download mr-3"></i> Baixar Planilha</button>
+                    <button class="btn btn-success btn-gas-incluir">Incluir</button>
                 </div>
                 <h2 class="card-title">Fechamentos</h2>
             </header>
 
             <div class="card-body">
-                <div class="d-flex justify-content-end">
-                    <button class="ml-3 btn btn-success btn-gas-incluir mb-3">Incluir</button>
-                </div>
                 <div class="tab-form faturamento">
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped dataTable table-hover table-click no-footer" id="dt-gas" data-url="/gas/get_fechamentos_gas">

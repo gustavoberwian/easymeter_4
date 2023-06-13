@@ -212,7 +212,7 @@ class Water_model extends Base_model
                 m.value AS value_month,
                 l.value AS value_last,
                 c.value AS value_last_month,
-                CONCAT(FORMAT(m.value_future / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())), 0, 'de_DE'), m.unidade_medida) AS value_future";
+                m.value_future AS value_future";
 
         if ($demo) {
             $values = "RAND() * 10000 AS value_read,
@@ -222,7 +222,7 @@ class Water_model extends Base_model
                 RAND() * 10000 AS value_future";
         }
 
-        $result = $this->db->query("
+        $query = "
             SELECT 
                 esm_medidores.nome AS device, 
                 esm_unidades.nome AS name, 
@@ -231,16 +231,17 @@ class Water_model extends Base_model
             LEFT JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id
             LEFT JOIN esm_unidades_config ON esm_unidades_config.unidade_id = esm_unidades.id
             LEFT JOIN (  
-                SELECT esm_medidores.nome AS device, IF(SUM(consumo) > 999, CONCAT(FORMAT(SUM(consumo) /1000, 0, 'de_DE'), ' m³'), CONCAT(FORMAT(SUM(consumo), 0, 'de_DE'), ' L')) AS value
+                SELECT esm_medidores.nome AS device, 
+                FORMAT(SUM(consumo) / 1000, 3, 'de_DE') AS value
                 FROM esm_leituras_" . $entity->tabela . "_agua
                 JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
                 WHERE timestamp > UNIX_TIMESTAMP() - 86400
                 GROUP BY medidor_id
             ) l ON l.device = esm_medidores.nome
             LEFT JOIN (
-                SELECT esm_medidores.nome as device, IF(SUM(consumo) > 999, CONCAT(FORMAT(SUM(consumo) /1000, 0, 'de_DE'), ' m³'), CONCAT(FORMAT(SUM(consumo), 0, 'de_DE'), ' L'))  AS value, 
-                IF(SUM(consumo) > 999, SUM(consumo) /1000, SUM(consumo)) AS value_future,
-                IF(SUM(consumo) > 999,' m³', ' L') AS unidade_medida
+                SELECT esm_medidores.nome as device, 
+                FORMAT(SUM(consumo) / 1000, 3, 'de_DE') AS value, 
+                FORMAT(SUM(consumo) / 1000 / (DATEDIFF(CURDATE(), DATE_FORMAT(CURDATE() ,'%Y-%m-01')) + 1) * DAY(LAST_DAY(CURDATE())), 3, 'de_DE') AS value_future
                 FROM esm_calendar
                 LEFT JOIN esm_leituras_" . $entity->tabela . "_agua d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
@@ -252,7 +253,7 @@ class Water_model extends Base_model
                 GROUP BY d.medidor_id
             ) m ON m.device = esm_medidores.nome
             LEFT JOIN (
-                SELECT esm_medidores.nome AS device, IF(SUM(consumo) > 999, CONCAT(FORMAT(SUM(consumo) /1000, 0, 'de_DE'), ' m³'), CONCAT(FORMAT(SUM(consumo), 0, 'de_DE'), ' L'))  AS value
+                SELECT esm_medidores.nome AS device, FORMAT(SUM(consumo) / 1000, 3, 'de_DE') AS value
                 FROM esm_leituras_" . $entity->tabela . "_agua
                 JOIN esm_medidores ON esm_medidores.id = esm_leituras_" . $entity->tabela . "_agua.medidor_id
                 WHERE MONTH(FROM_UNIXTIME(timestamp)) = MONTH(CURRENT_DATE - INTERVAL 1 MONTH) AND YEAR(FROM_UNIXTIME(timestamp)) = YEAR(CURRENT_DATE - INTERVAL 1 MONTH)
@@ -263,7 +264,9 @@ class Water_model extends Base_model
                 esm_medidores.tipo = 'agua'
             ORDER BY 
                 esm_unidades_config.type, esm_unidades.nome
-        ");
+        ";
+
+        $result = $this->db->query($query);
 
         if ($result->getNumRows()) {
             return $result->getResultArray();

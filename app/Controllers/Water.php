@@ -367,7 +367,7 @@ class Water extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, 0, $extra, $footer, $dates, $decimals);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, $decimals, $extra, $footer, $dates, $decimals);
 
         if ($max == 0) {
             $config["yaxis"] = array("labels" => array("formatter" => "function"), "tickAmount" => 5,"min" => 0,"max" => 10);
@@ -457,49 +457,20 @@ class Water extends UNO_Controller
             }
         });
 
-
-
         $dt->edit('value_read', function ($data) {
             return str_pad(round($data["value_read"] ), 6, '0', STR_PAD_LEFT);
         });
 
         $dt->edit('value_last', function ($data) {
-            if($data["value_last"] > 999)
-            {
-                $divisor = 1000;
-                $uni_med = ' m³';
-            } else
-            {
-                $divisor = 1;
-                $uni_med = ' L';
-            }
-            return number_format(($data["value_last"] / $divisor), 0, ",", ".") . $uni_med;
+            return number_format(($data["value_last"] / 1000), 3, ",", ".");
         });
 
         $dt->edit('value_month', function ($data) {
-            if($data["value_month"] > 999)
-            {
-                $divisor = 1000;
-                $uni_med = ' m³';
-            } else
-            {
-                $divisor = 1;
-                $uni_med = ' L';
-            }
-            return number_format(($data["value_month"] / $divisor), 0, ",", ".") . $uni_med;
+            return number_format(($data["value_month"] / 1000), 3, ",", ".");
         });
 
         $dt->edit('value_last_month', function ($data) {
-            if($data["value_last_month"] > 999)
-            {
-                $divisor = 1000;
-                $uni_med = ' m³';
-            } else
-            {
-                $divisor = 1;
-                $uni_med = ' L';
-            }
-            return number_format(($data["value_last_month"] / $divisor), 0, ",", ".") . $uni_med;
+            return number_format(($data["value_last_month"] / 1000), 3, ",", ".");
         });
 
         $dt->edit('value_future', function ($data) {
@@ -509,17 +480,7 @@ class Water extends UNO_Controller
             else if ($data["value_future"] > $data["value_last_month"])
                 $icon = "<i class=\"fa fa-level-down-alt text-success ms-2\"></i>";
 
-            if($data["value_future"] > 999)
-            {
-                $divisor = 1000;
-                $uni_med = ' m³';
-            } else
-            {
-                $divisor = 1;
-                $uni_med = ' L';
-            }
-
-            return number_format(($data["value_future"] / $divisor), 0, ",", ".") . $uni_med . $icon;
+            return number_format(($data["value_future"] / 1000), 3, ",", ".") . $icon;
         });
 
         // gera resultados
@@ -590,7 +551,7 @@ class Water extends UNO_Controller
             $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
             $spreadsheet->getActiveSheet()->setCellValue('B4', 'Nome')->mergeCells('B4:B5');
             $spreadsheet->getActiveSheet()->setCellValue('C4', 'Leitura - m³')->mergeCells('C4:C5');
-            $spreadsheet->getActiveSheet()->setCellValue('D4', 'Consumo')->mergeCells('D4:G4');
+            $spreadsheet->getActiveSheet()->setCellValue('D4', 'Consumo - m³')->mergeCells('D4:G4');
 
             $spreadsheet->getActiveSheet()->getStyle('A1:J5')->getFont()->setBold(true);
             $spreadsheet->getActiveSheet()->getStyle('A4:G5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);

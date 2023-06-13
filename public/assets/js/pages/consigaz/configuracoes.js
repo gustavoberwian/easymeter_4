@@ -62,9 +62,8 @@
 
         $.magnificPopup.close();
 
-        setTimeout(function () {
-            location.reload();
-        }, 300)
+        $(".generate-code").remove();
+        $(".request-code-btn").show(300);
     });
 
     $(document).on('click', '.request-code', function (e) {

@@ -232,6 +232,13 @@
         });
     });
 
+    $(document).on('click', '.filt', function(e) {
+        e.preventDefault();
+        var $btn = $(this);
+        $('.filt.active').removeClass('active');
+        $btn.addClass('active');
 
+    })
+    
 
 }).apply(this, [jQuery]);

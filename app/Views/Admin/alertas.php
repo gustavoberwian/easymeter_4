@@ -16,14 +16,14 @@
 								<div class="text-end buttons-alerts alerts">
 									<span class="text-end vis-group text-3 text-muted d-none d-lg-inline">Filtrar por:</span>
 									<div class="text-end btn-group btn-group-toggle ml-3 vis-group box-group" data-toggle="buttons">
-										<label class="btn btn-primary read active" data-filter="">
-											<input type="radio" name="read" id="option7" autocomplete="off" checked> Todos
+										<label class=" filt btn btn-primary read active" data-filter="">
+											<input type="radio" style="display:none;" name="read" id="option7" autocomplete="off" checked> Todos
 										</label>
-										<label class="btn btn-primary read" data-filter="active">
-											<input type="radio" name="read" id="option8" autocomplete="off"> Ativos
+										<label class="filt btn btn-primary read" data-filter="active">
+											<input type="radio" name="read" style="display:none;" id="option8" autocomplete="off"> Ativos
 										</label>
-										<label class="btn btn-primary read" data-filter="ended">
-											<input type="radio" name="read" id="option9" autocomplete="off"> Finalizados
+										<label class=" filt btn btn-primary read" data-filter="ended">
+											<input type="radio" name="read" style="display:none;" id="option9" autocomplete="off"> Finalizados
 										</label>
 									</div>
 								</div>

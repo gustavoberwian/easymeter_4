@@ -31,14 +31,14 @@
                         </a>
                     </li>
 
-                    <li class="nav-parent <?php if (in_array($method, array('relatorios')))
+                    <!-- <li class="nav-parent <?php if (in_array($method, array('relatorios')))
                                                 echo 'nav-expanded nav-active'; ?>">
                         <a class="nav-link" href="<?php echo site_url('admin/relatorios'); ?>">
                             <i class="fas fa-file-alt"></i>
                             <span>Relatórios</span>
                         </a>
 
-                    </li>
+                    </li> -->
 
                     <li class="<?php if ($method == 'users')
                                     echo 'nav-active'; ?>">
@@ -59,7 +59,7 @@
 
                     <li class="<?php if (in_array($method, array('suporte'))) echo 'nav-active'; ?>">
                         <a class="nav-link" href="<?php echo site_url('admin/suporte'); ?>">
-                            <span class="float-right badge badge-danger badge-suporte"></span>
+                            <span class="float-right badge badge-danger badge-suporte" data-count="<?= $chamados_unread; ?>"><?= $chamados_unread; ?></span>
                             <i class="fas fa-ambulance"></i>
                             <span>Suporte</span>
                         </a>

@@ -10,9 +10,7 @@
                     </a>
                 </li>
                 <li><a href="<?= site_url('admin/suporte'); ?>">Suporte</a></li>
-                <li><span>Chamado #
-                        <?= $chamado->id; ?>
-                    </span></li>
+                <li><span>Chamado #<?= $chamado->id; ?></span></li>
             </ol>
         </div>
     </header>

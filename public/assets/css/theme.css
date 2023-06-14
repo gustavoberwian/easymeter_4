@@ -20396,3 +20396,12 @@ html .card-featured-primary {
 .card-featured-start {
     border-left: 3px solid #CCC;
 }
+table.dataTable td {
+	white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width:300px;
+}
+.pt-6 {
+	padding-top: 4rem !important;
+  }

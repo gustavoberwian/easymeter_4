@@ -353,16 +353,29 @@ class Admin_model extends Base_model
 
     public function get_chamado($id)
     {
-        $query = $this->db->query("
-            SELECT esm_tickets.*, auth_users.username AS user_name, esm_entidades.nome AS entidade, esm_agrupamentos.nome AS agrupamento, 
-                esm_unidades.nome AS unidade, user.telefone
-            FROM esm_tickets
-            LEFT JOIN auth_users ON auth_users.id = esm_tickets.fechado_por
-            LEFT JOIN auth_users user ON user.id = esm_tickets.user_id
-            LEFT JOIN esm_unidades ON esm_unidades.id = esm_tickets.unidade_id
-            LEFT JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
-            LEFT JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
-            WHERE esm_tickets.id = $id
+        $db = Database::connect('easy_com_br');
+        $query = $db->query("
+            SELECT 
+                esm_tickets.*,
+                auth_users.nome AS user_name,
+                esm_condominios.nome AS entidade,
+                esm_blocos.nome AS agrupamento, 
+                esm_unidades.nome AS unidade, 
+                user.telefone
+            FROM 
+                esm_tickets
+            LEFT JOIN 
+                auth_users ON auth_users.id = esm_tickets.fechado_por
+            LEFT JOIN 
+                auth_users user ON user.id = esm_tickets.user_id
+            LEFT JOIN 
+                esm_unidades ON esm_unidades.id = esm_tickets.unidade_id
+            LEFT JOIN 
+                esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
+            LEFT JOIN 
+                esm_condominios ON esm_condominios.id = esm_blocos.condo_id
+            WHERE 
+                esm_tickets.id = $id
         ");
         
         // verifica se retornou algo

@@ -12,13 +12,14 @@
 	var dtLog = $('#dt-log').DataTable({
 		dom: '<"table-responsive"t>pr',
 		processing: true,
-        columns: [ {data: "DT_RowClass", visible: false},
+        columns: [ 
+                {data: "id", visible: false},
                 { data: "tipo", class: "dt-body-center" },
                 { data: "enviado_por", class: "dt-body-center d-none d-lg-table-cell" },
                 { data: "mensagem", className: 'table-ellipsis' }, 
                 { data: "cadastro" }, 
                 { data: "actions", className: "actions dt-body-center", orderable: false} ],
-        ordering: false,
+        order: [[0, 'desc']],
         pagingType: "numbers",
         autoWidth: false,
         lengthChange: false,

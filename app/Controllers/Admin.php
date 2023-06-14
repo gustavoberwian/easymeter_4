@@ -797,42 +797,24 @@ class Admin extends UNO_Controller
     public function get_chamados_novo()
     {
         // realiza a query via dt
-        $dt = $this->datatables->query("
-        SELECT
-            esm_tickets.id AS id, 
-            esm_tickets.unidade_id AS Unidade_id, 
-            esm_tickets.nome AS ticket, 
-            esm_tickets.email AS email, 
-            esm_tickets.mensagem AS mensagem, 
-            esm_tickets.STATUS AS status, 
-            DATE_FORMAT( esm_tickets.cadastro, '%d/%m/%Y' ) AS cadastro, 
-            esm_departamentos.nome AS departamento, 
-            esm_entidades.tabela AS entidade, 
-            esm_entidades.nome AS agrupamento, 
-            esm_entidades.classificacao AS classificacao
-        FROM
-            esm_tickets
-            JOIN
-            esm_departamentos
-            ON 
-                esm_tickets.departamento = esm_departamentos.id
-            LEFT JOIN
-            esm_unidades
-            ON 
-                esm_unidades.id = esm_tickets.unidade_id
-            LEFT JOIN
-            esm_agrupamentos
-            ON 
-                esm_agrupamentos.id = esm_unidades.agrupamento_id
-            LEFT JOIN
-            esm_entidades
-            ON 
-                esm_entidades.id = esm_agrupamentos.entidade_id
-        GROUP BY
-            esm_tickets.id
-        ORDER BY
-           esm_tickets.id DESC
-            ");
+        $query = "SELECT esm_tickets.id, esm_tickets.unidade_id, esm_tickets.nome, esm_tickets.email, esm_tickets.mensagem,
+        esm_tickets.status, DATE_FORMAT(esm_tickets.cadastro,'%d/%m/%Y') AS cadastro, 
+        esm_departamentos.nome AS departamento, MAX(DATE_FORMAT(COALESCE(esm_tickets.fechado_em, 
+        esm_tickets_reply.cadastro),'%d/%m/%Y')) AS movimento,
+        DATE_FORMAT(esm_tickets.fechado_em,'%d/%m/%Y') AS fechado_em, esm_condominios.tabela AS entidade, 
+        esm_blocos.nome AS bloco, esm_unidades.nome AS apto
+        FROM esm_tickets
+        JOIN esm_departamentos ON esm_tickets.departamento = esm_departamentos.id
+        LEFT JOIN esm_tickets_reply ON esm_tickets_reply.ticket_id = esm_tickets.id
+        LEFT JOIN esm_unidades ON esm_unidades.id = esm_tickets.unidade_id
+        LEFT JOIN esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
+        LEFT JOIN esm_condominios ON esm_condominios.id = esm_blocos.condo_id
+        GROUP BY esm_tickets.id ORDER BY COALESCE(esm_tickets_reply.cadastro, esm_tickets.cadastro) DESC";
+
+        $db = Database::connect('easy_com_br');
+        $dt = new Datatables(new Codeigniter4Adapter);
+        $dt->db->db = $db;
+        $dt->query($query);
 
         $dt->add('DT_RowId', function ($data) {
             return $data['id'];
@@ -840,10 +822,6 @@ class Admin extends UNO_Controller
 
         $dt->edit('entidade', function ($data) {
             return ucfirst($data['entidade']);
-        });
-
-        $dt->edit('classificacao', function ($data) {
-            return '<span class="badge badge-primary">' . ucfirst($data['classificacao']) . '</span>';
         });
 
         $dt->edit('status', function ($data) {
@@ -1666,24 +1644,26 @@ class Admin extends UNO_Controller
         if ($tipo > -1) {
             $aux = "WHERE esm_log.tipo = $tipo";
         }
-
+        
         // realiza a query via dt
-        $dt = $this->datatables->query("
-        SELECT
-            esm_log.id,
-            esm_log.mensagem,
-            esm_log.tipo,
-            DATE_FORMAT( esm_log.cadastro, '%d/%m/%Y %H:%i:%s' ) AS cadastro,
-            esm_log.lido,
-            auth_users.username,
-            auth_users.avatar 
-        FROM
-            esm_log
-            JOIN auth_users ON auth_users.id = esm_log.user_id 
-            $aux
-        ORDER BY
-            esm_log.cadastro DESC
-        ");
+        $query = "
+            SELECT
+                esm_log.id,
+                esm_log.mensagem,
+                esm_log.tipo,
+                DATE_FORMAT( esm_log.cadastro, '%d/%m/%Y %H:%i:%s' ) AS cadastro,
+                esm_log.lido,
+                auth_users.username,
+                auth_users.avatar 
+            FROM
+                esm_log
+                JOIN auth_users ON auth_users.id = esm_log.user_id
+                $aux 
+            ORDER BY
+                esm_log.cadastro DESC
+            ";
+
+        $dt= $this->datatables->query($query);
 
         // icone do remetente
         $dt->add('enviado_por', function ($data) {

@@ -1,4 +1,13 @@
 <section role="main" class="content-body">
+<header class="page-header">
+		<h2>Chamados</h2>
+		<div class="right-wrapper text-end">
+			<ol class="breadcrumbs">
+				<li><a href="<?php echo site_url('admin'); ?>"><i class="fas fa-home"></i></a></li>
+				<li><span>Chamados</span></li>
+			</ol>
+		</div>
+	</header>
 	<!-- start: page -->
 	<section class="card">
 		<header class="card-header">
@@ -13,14 +22,12 @@
 				<thead>
 					<tr role="row">
 						<th width="10%">Unidade</th>
-						<th width="25%">Nome</th>
+						<th width="15%">Nome</th>
+						<th width="5%">Status</th>
+						<th width="30%">Mensagem</th>
 						<th width="10%">Email</th>
-						<th width="15%">Mensagem</th>
-						<th width="15%">Status</th>
-						<th width="15%">Cadastro</th>
-						<th width="15%">Departamento</th>
-						<th width="15%">Agrupamento</th>
-						<th width="15%">Classificação</th>
+						<th width="5%">Cadastro</th>
+						<th width="5%">Departamento</th>
 					</tr>
 				</thead>
 

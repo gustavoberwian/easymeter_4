@@ -25,20 +25,20 @@ var unidade_validator;
     // * Inicializa datatable
     // **
 	let $dtSuporte = $('#dt-suporte').DataTable({
-		dom: '<"row"<"col-lg-6"l><"col-lg-6 text-right"f>><"table-responsive"t>pr',
+		dom: '<"row"<"col-lg-6"><"col-lg-6 text-right"f>><"table-responsive"t><"row"<"col-lg-6 pt-4"l><"col-lg-6 text-right"pr>>',
 		processing: true,
 		pageLength: 10,
 		columns: [
 			{ data: "id", visible: false },
-			{ data: "ticket", orderable: false, className: "dt-body-center" },
+			{ data: "nome", orderable: false, className: "dt-body-center" },
+			{ data: "status", orderable: true, className: "dt-body-center monitor"},
+			{ data: "mensagem", orderable: false },
 			{ data: "email", orderable: false, className: "dt-body-center" },
-			{ data: "mensagem", orderable: false, className: "dt-body-center monitor"},
-			{ data: "status", orderable: true, className: "dt-body-center"},
             { data: "cadastro", orderable: true, className: "table-one-line" },
 			{ data: "departamento", orderable: true, className: "table-one-line" },
-			{ data: "agrupamento", orderable: false, className: "table-one-line" },
-            { data: "classificacao", orderable: false, className: "dt-body-center"},
 		],
+        order: [[0, 'desc']],
+        language: {search: ''},
         serverSide: true,
         pagingType: "numbers",
 		ajax: {

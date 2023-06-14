@@ -12,7 +12,7 @@ var dtEnvios;
     // * Inicializa datatable
     // **
 	dtCentrais = $('#dt-centrais').DataTable({
-		dom: '<"table-responsive"t><"row"<"col-lg-6"l><"col-lg-6"p>>r',
+		dom: '<"table-responsive"t><"row"<"col-lg-6 pt-6"l><"col-lg-6 pt-5"pr>>',
 		processing: true,
         columns: [  
                     { data: "status", orderable: false, class: "dt-body-center" },
@@ -38,7 +38,7 @@ var dtEnvios;
                    { data: "tamanho", class: "dt-body-center" } ],
 		order:[],
         serverSide: true,
-        pageLength: 16,
+        pageLength: 14,
         pagingType: "numbers",
 		ajax: { url: $('#dt-postagens').data('url') }
     });

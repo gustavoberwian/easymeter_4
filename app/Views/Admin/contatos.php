@@ -1,8 +1,8 @@
 <section role="main" class="content-body">
     <header class="page-header">
         <h2>Contatos</h2>
-        <div class="right-wrapper text-right">
-            <ol class="breadcrumbs">
+        <div class="right-wrapper text-end">
+            <ol class="breadcrumbs pe-4">
                 <li><a href="<?php echo site_url('admin'); ?>"><i class="fas fa-home"></i></a></li>
                 <li><span>Contatos</span></li>
             </ol>

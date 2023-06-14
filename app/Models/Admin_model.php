@@ -351,29 +351,6 @@ class Admin_model extends Base_model
         return $query->getResult();
     }
 
-    //  public function get_chamados_novo($status = false, $limit = 0)
-    // {
-    //     // aplica filtro pelo status
-    //     if ($status)
-    //         $this->db->where('status', $status);
-
-    //     // aplica limite
-    //     if ($limit > 0)
-    //          $this->db->limit($limit);
-
-    // //     // ordena por data
-    //     $this->db->orderBy('cadastro', 'DESC');
-
-    //     // realiza a consulta       
-    //     $query = $this->db->getPost('esm_tickets');
-
-    //    // verifica se retornou algo
-    //      if ($query->getNumRows() == 0)
-    //          return false;
-
-    //     return $query->getResult();
-    //  }
-
     public function get_chamado($id)
     {
         $query = $this->db->query("

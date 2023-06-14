@@ -20381,3 +20381,18 @@ html.dark .mailbox-compose .bootstrap-tagsinput>input {
 	margin-right: 10px!important;
 	margin-top: 2px!important;
 }
+.card-central.disabled .card-body {
+    background: #b22222;
+}
+.card-central.disabled .text-muted{
+	color: #F6F6F6!important;
+}
+.card-central.disabled .text-primary{
+	color: #F6F6F6!important;
+}
+html .card-featured-primary {
+    border-color: #0088cc;
+}
+.card-featured-start {
+    border-left: 3px solid #CCC;
+}

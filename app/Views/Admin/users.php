@@ -1,5 +1,4 @@
 <section role="main" class="content-body">
-
     <header class="page-header">
         <h2>Usuários</h2>
         <div class="right-wrapper text-end">

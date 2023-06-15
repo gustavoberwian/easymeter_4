@@ -452,11 +452,16 @@
         if (event.target.cellIndex == undefined) return;
 
         let data = dtResume.row(this).data();
-        $("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
-        $('#sel-device').trigger('change');
-        $('button[data-bs-target="#charts"]').trigger('click');
-        $('button[data-bs-target="#data"]').removeClass("disabled");
-        $('button[data-bs-target="#analysis"]').removeClass("disabled");
+        let newWindow = window.open(window.location);
+        newWindow.control = 1;
+        newWindow.onload = function() {
+            newWindow.$("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
+            newWindow.$('#sel-device').trigger('change');
+            newWindow.$('button[data-bs-target="#charts"]').trigger('click');
+            newWindow.$('button[data-bs-target="#data"]').removeClass("disabled");
+            newWindow.$('button[data-bs-target="#analysis"]').removeClass("disabled"); 
+        };
+        
     });
 
     $(document).on("click", ".btn-download-abnormal", function () {
@@ -500,7 +505,12 @@
             });
     });
 
+    if(!window.control){
+        window.control = 0;
+    }
 
-    $('#sel-device').trigger('change');
+    if(window.control == 0){
+        $('#sel-device').trigger('change');
+    }
 
 }).apply(this, [jQuery]);

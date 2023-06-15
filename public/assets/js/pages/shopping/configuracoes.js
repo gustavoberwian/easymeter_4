@@ -282,7 +282,7 @@
                                 url: '/shopping/get_subtipo_cliente_config',
                                 data: {
                                     group: $(".page-header").data("group"),
-                                    uid: $row.data('item-id')
+                                    tipo: _self.$table.data("tipo")
                                 },
                                 success: function (response) {
                                     options = [1, 2];
@@ -553,7 +553,7 @@
             [
                 {class: "d-none id"},
                 {class: "dt-body-left align-middle medidor"},
-                {class: "dt-body-center align-middle luc"},
+                {class: "dt-body-center align-middle luc static"},
                 {class: "dt-body-center align-middle select subtipo"},
                 {class: "dt-body-center align-middle select tipo"},
                 {class: "dt-body-center align-middle identificador"},
@@ -580,7 +580,7 @@
             [
                 {class: "d-none id"},
                 {class: "dt-body-left align-middle medidor"},
-                {class: "dt-body-center align-middle luc"},
+                {class: "dt-body-center align-middle luc static"},
                 {class: "dt-body-center align-middle select subtipo"},
                 {class: "dt-body-center align-middle identificador"},
                 {class: "dt-body-center align-middle localizador"},

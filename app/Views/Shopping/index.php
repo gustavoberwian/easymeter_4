@@ -32,23 +32,23 @@
                         </tr>
                         </thead>
                         <tbody>
-                            <?php for ($i = 0; $i < count($groups); $i++): ?>
-                                <tr role="row" class="<?= ($i % 2 == 0) ? "odd" : "" ?>" data-group="<?= $groups[$i]->agrupamento_id; ?>">
-                                    <td class="dt-body-center"><?= $groups[$i]->nome; ?></td>
-                                    <td class="dt-body-center"><?= $groups[$i]->tipo; ?></td>
-                                    <td class="dt-body-center">
-                                        <?= ($groups[$i]->m_energia) ? '<i class="fas fa-bolt text-warning"></i>' : '' ?>
-                                        <?= ($groups[$i]->m_agua) ? '<i class="fas fa-tint text-primary"></i>' : '' ?>
-                                        <?= ($groups[$i]->m_gas) ? '<i class="fas fa-fire text-success"></i>' : '' ?>
-                                        <?= ($groups[$i]->m_nivel) ? '<i class="fas fa-ruler-vertical text-info"></i>' : '' ?>
-                                    </td>
-                                    <td class="dt-body-center"><?= $groups[$i]->endereco; ?></td>
-                                    <td class="dt-body-center"><?= $groups[$i]->municipio; ?></td>
-                                    <td class="dt-body-center">
-                                        <a class="action-visualiza text-center text-primary"><i class="fas fa-eye"></i></a>
-                                    </td>
-                                </tr>
-                            <?php endfor; ?>
+                        <?php for ($i = 0; $i < count($groups); $i++): ?>
+                            <tr role="row" class="<?= ($i % 2 == 0) ? "odd" : "" ?>" data-group="<?= $groups[$i]->agrupamento_id; ?>">
+                                <td class="dt-body-center"><?= $groups[$i]->nome; ?></td>
+                                <td class="dt-body-center"><?= $groups[$i]->tipo; ?></td>
+                                <td class="dt-body-center">
+                                    <?= ($groups[$i]->m_energia) ? '<i class="fas fa-bolt text-warning"></i>' : '' ?>
+                                    <?= ($groups[$i]->m_agua) ? '<i class="fas fa-tint text-primary"></i>' : '' ?>
+                                    <?= ($groups[$i]->m_gas) ? '<i class="fas fa-fire text-success"></i>' : '' ?>
+                                    <?= ($groups[$i]->m_nivel) ? '<i class="fas fa-ruler-vertical text-info"></i>' : '' ?>
+                                </td>
+                                <td class="dt-body-center"><?= $groups[$i]->endereco; ?></td>
+                                <td class="dt-body-center"><?= $groups[$i]->municipio; ?></td>
+                                <td class="dt-body-center">
+                                    <a class="action-visualiza text-center text-primary"><i class="fas fa-eye"></i></a>
+                                </td>
+                            </tr>
+                        <?php endfor; ?>
                         </tbody>
                     </table>
                 </div>
@@ -80,25 +80,25 @@
                                         <div class="col-md-3">
                                             <h6 class="card-body-title mb-0 text-primary"><?= $area_comum[$i]; ?></br> Consumo Mês</h6>
                                             <div class="row">
-                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->inGroup('demo')) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["consum"]; ?></span></div>
+                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->inGroup('demo')) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["consum"]; ?></span> <?= $user->demo ? '<small>kWh</small>' : ''; ?></div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <h6 class="card-body-title mb-0 text-primary"></br>Previsão</h6>
                                             <div class="row">
-                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["prevision"] ?></span></div>
+                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_c[$i]["prevision"] ?></span> <?= $user->demo ? '<small>kWh</small>' : ''; ?></div>
                                             </div>
                                         </div>
                                         <div class="col-md-3" style="border-left: 1px solid #777;">
                                             <h6 class="card-body-title mb-0 text-primary">Unidades</br>Consumo Mês</h6>
                                             <div class="row">
-                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["consum"]; ?></span></div>
+                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["consum"]; ?></span> <?= $user->demo ? '<small>kWh</small>' : ''; ?></div>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <h6 class="card-body-title mb-0 text-primary"></br>Previsão</h6>
                                             <div class="row">
-                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["prevision"] ?></span></div>
+                                                <div class="h5 m0 color-f1"><span class="main"><?= ($user->demo) ? number_format(mt_rand(10000, 100000), 0, ',', '.') : $overall_l[$i]["prevision"] ?></span> <?= $user->demo ? '<small>kWh</small>' : ''; ?></div>
                                             </div>
                                         </div>
                                     </div>

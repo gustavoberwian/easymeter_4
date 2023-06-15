@@ -401,6 +401,7 @@ class Admin_model extends Base_model
 
         return $query->getResult();
     }
+  
     public function chamado_close($id, $user)
     {
         return $this->db->update('esm_tickets', array(
@@ -1224,30 +1225,32 @@ class Admin_model extends Base_model
     {
         //Query de grupos adicionais
         $query = $this->db->query("
-        SELECT
-            auth_groups_users.group 
-        FROM
-            auth_groups_users 
-        WHERE
-            auth_groups_users.user_id = $user_id 
-        AND 
-            auth_groups_users.group != 'agua' 
-        AND 
-            auth_groups_users.group != 'energia'
-        AND 
-            auth_groups_users.group != 'gas'
-        AND 
-            auth_groups_users.group != 'nivel'
-        AND 
-            auth_groups_users.group != 'shopping'
-        AND 
-            auth_groups_users.group != 'condominio'
-        AND 
-            auth_groups_users.group != 'unity'
-        AND 
-            auth_groups_users.group != 'admin'
-        AND 
-            auth_groups_users.group != 'group'
+            SELECT
+                auth_groups_users.group 
+            FROM
+                auth_groups_users 
+            WHERE
+                auth_groups_users.user_id = $user_id 
+            AND 
+                auth_groups_users.group != 'agua' 
+            AND 
+                auth_groups_users.group != 'energia'
+            AND 
+                auth_groups_users.group != 'gas'
+            AND 
+                auth_groups_users.group != 'nivel'
+            AND 
+                auth_groups_users.group != 'shopping'
+            AND 
+                auth_groups_users.group != 'condominio'
+            AND 
+                auth_groups_users.group != 'industria'
+            AND 
+                auth_groups_users.group != 'unity'
+            AND 
+                auth_groups_users.group != 'admin'
+            AND 
+                auth_groups_users.group != 'group'
         ");
 
         if ($query->getNumRows() == 0)
@@ -1256,8 +1259,64 @@ class Admin_model extends Base_model
         foreach ($query->getResult() as $q) {
             $values[] = $q->group;
         }
-
         return $values;
+    }
+    public function get_class_by_entity($id)
+    {
+        $query = $this->db->query("
+        SELECT
+            esm_entidades.classificacao
+        FROM
+            esm_entidades
+        WHERE
+            esm_entidades.id = $id
+        ");
+        return $query->getRow()->classificacao;
+    }
+    public function get_entity_by_id($type, $id)
+    {
+        // seleciona todos os campos
+        if ($type == 'agrupamentos') {
+            $query = $this->db->query("
+        SELECT
+            esm_entidades.id
+        FROM
+            esm_entidades
+        LEFT JOIN
+            esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id
+        WHERE
+            esm_agrupamentos.id = $id
+        ");
+
+            // verifica se retornou algo
+            if ($query->getNumRows() == 0)
+                return false;
+
+            return $query->getRow()->id;
+
+        } else {
+            $query = $this->db->query("
+                SELECT
+                    esm_entidades.id
+                FROM
+                    esm_entidades
+                    LEFT JOIN
+                    esm_agrupamentos
+                    ON 
+                        esm_agrupamentos.entidade_id = esm_entidades.id
+                    INNER JOIN
+                    esm_unidades
+                    ON 
+                        esm_agrupamentos.id = esm_unidades.agrupamento_id
+                WHERE
+                    esm_unidades.id = $id
+                ");
+
+            if ($query->getNumRows() == 0)
+                return false;
+          
+          return $query->getRow()->id;
+        }
     }
 
     public function get_chamados($status = false, $limit = 0)

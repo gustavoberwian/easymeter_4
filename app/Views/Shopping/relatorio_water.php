@@ -94,7 +94,7 @@
                             </tr>
                             <tr>
                                 <td width="50%" class="bg-gray">
-                                    <p class="text-muted font-weight-bold mb-0">Consumo Shopping Aberto</p>
+                                    <p class="text-muted font-weight-bold mb-0">Consumo Aberto</p>
                                 </td>
                                 <td width="50%">
                                     <div class="text-4 text-dark font-weight-bold mb-0 text-center"><?= number_format($unidade->consumo_o, 0, ",", ".")." L"; ?></div>
@@ -102,7 +102,7 @@
                             </tr>
                             <tr>
                                 <td width="50%" class="bg-gray">
-                                    <p class="text-muted font-weight-bold mb-0">Consumo Shopping Fechado</p>
+                                    <p class="text-muted font-weight-bold mb-0">Consumo Fechado</p>
                                 </td>
                                 <td width="50%">
                                     <div class="text-4 text-dark font-weight-bold mb-0 text-center"><?= number_format($unidade->consumo_c, 0, ",", ".")." L"; ?></div>
@@ -206,7 +206,11 @@
                                         <div class="row">
                                             <?php if ($equivalencia[0]) : ?>
                                                 <div class="col">
-                                                    <img class="comp-img-fluid" src="<?= base_url( 'assets/img/c0_'.$equivalencia[0]); ?>.png">
+                                                    <?php if ($equivalencia[0] > 12) : ?>
+                                                        <img class="comp-img-fluid" src="<?= base_url( 'assets/img/c0_12'); ?>.png">
+                                                    <?php else : ?>
+                                                        <img class="comp-img-fluid" src="<?= base_url( 'assets/img/c0_'.$equivalencia[0]); ?>.png">
+                                                    <?php endif; ?>
                                                     <p class="text-1 text-muted my-0"><?= $equivalencia[0]; ?> <?= ($equivalencia[0] == 1) ? 'CAMINHÃO' : 'CAMINHÕES'; ?> DE 10.000 L</p>
                                                 </div>
                                             <?php endif; ?>

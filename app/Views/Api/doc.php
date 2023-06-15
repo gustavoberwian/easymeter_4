@@ -33,8 +33,8 @@
                                 <td>Filtra a lista pelo tipo: 1: Área Comum 2: Unidade</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             </tbody>
@@ -91,8 +91,8 @@
                                 <td>Filtra a lista pelo tipo: 1: Área Comum 2: Unidade</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             </tbody>
@@ -114,8 +114,8 @@
             "type": 1,                  <span class="text-success">// 1: Área Comum 2: Unidade</span>
             "current": "028941",        <span class="text-success">// Leitura atual do medidor - kWh</span>
             "month":5341.834,           <span class="text-success">// Consumo no mês - kWh</span>
-            "month_opened":4147.885,    <span class="text-success">// Consumo com o shopping aberto - kWh</span>
-            "month_closed":1193.949,    <span class="text-success">// Consumo com o shopping fechado - kWh</span>
+            "month_opened":4147.885,    <span class="text-success">// Consumo no mês aberto - kWh</span>
+            "month_closed":1193.949,    <span class="text-success">// Consumo no mês fechado - kWh</span>
             "ponta":1023.023,           <span class="text-success">// Consumo em horário de ponta - kWh</span>
             "fora":4318.811,            <span class="text-success">// Consumo em horário fora de ponta - kWh</span>
             "last":501.680,             <span class="text-success">// Consumo nas últimas 24 horas - kWh</span>
@@ -150,22 +150,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -226,22 +226,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -302,22 +302,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -378,22 +378,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -447,22 +447,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -530,22 +530,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -613,22 +613,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -696,22 +696,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -779,22 +779,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -863,22 +863,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -946,22 +946,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -1032,8 +1032,8 @@
                                 <td>Página a ser obtida. Se não informado, retorna os últimos 10 registros</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             </tbody>
@@ -1091,12 +1091,12 @@
                             </tr>
                             <tr>
                                 <td><code>i</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Id do lançamento</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             </tbody>
@@ -1152,17 +1152,17 @@
                             </tr>
                             <tr>
                                 <td><code>c</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Competência do lançamento no formato DD-YYYY</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do lançamento no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do lançamento no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
@@ -1171,8 +1171,8 @@
                                 <td>Mensagem a ser inserida no lançamento</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
 
@@ -1223,8 +1223,8 @@
                                 <td>Filtra a lista pelo tipo: 1: Área Comum 2: Unidade</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             </tbody>
@@ -1281,8 +1281,8 @@
                                 <td>Filtra a lista pelo tipo: 1: Área Comum 2: Unidade</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             </tbody>
@@ -1304,8 +1304,8 @@
             "type": 1,                  <span class="text-success">// 1: Área Comum 2: Unidade</span>
             "current": "028941",        <span class="text-success">// Leitura atual do medidor - L</span>
             "month":5341.834,           <span class="text-success">// Consumo no mês - L</span>
-            "month_opened":4147.885,    <span class="text-success">// Consumo com o shopping aberto - L</span>
-            "month_closed":1193.949,    <span class="text-success">// Consumo com o shopping fechado - L</span>
+            "month_opened":4147.885,    <span class="text-success">// Consumo no mês aberto - L</span>
+            "month_closed":1193.949,    <span class="text-success">// Consumo no mês fechado - L</span>
             "ponta":1023.023,           <span class="text-success">// Consumo em horário de ponta - L</span>
             "fora":4318.811,            <span class="text-success">// Consumo em horário fora de ponta - L</span>
             "last":501.680,             <span class="text-success">// Consumo nas últimas 24 horas - L</span>
@@ -1339,22 +1339,22 @@
                             </tr>
                             <tr>
                                 <td><code>d</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Código identificador do medidor</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do período desejado no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             <tr>
@@ -1407,8 +1407,8 @@
                                 <td>Página a ser obtida. Se não informado, retorna os últimos 10 registros</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             </tbody>
@@ -1430,8 +1430,8 @@
             "start":"2022-01-31",
             "end":"2022-02-15",
             "consumption":30810,            <span class="text-success">// Consumo no mês - L</span>
-            "consumption_opened":20042,     <span class="text-success">// Consumo com o shopping aberto - L</span>
-            "consumption_closed":10868,     <span class="text-success">// Consumo com o shopping fechado - L</span>
+            "consumption_opened":20042,     <span class="text-success">// Consumo no mês aberto - L</span>
+            "consumption_closed":10868,     <span class="text-success">// Consumo no mês fechado - L</span>
             "date":"2022-02-17",            <span class="text-success">// Data de emissão</span>
         },
         ...
@@ -1461,12 +1461,12 @@
                             </tr>
                             <tr>
                                 <td><code>i</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Id do lançamento</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
                             </tbody>
@@ -1488,8 +1488,8 @@
             "previous_read":"012266",       <span class="text-success">// Leitura anterior</span>
             "current_read":"018783",        <span class="text-success">// Leitura atual</span>
             "consumption":6517,             <span class="text-success">// Consumo no mês - L</span>
-            "consumption_opened":3477,      <span class="text-success">// Consumo com o shopping aberto - L</span>
-            "consumption_closed":3040,      <span class="text-success">// Consumo com o shopping fechado - L</span>
+            "consumption_opened":3477,      <span class="text-success">// Consumo no mês aberto - L</span>
+            "consumption_closed":3040,      <span class="text-success">// Consumo no mês fechado - L</span>
         },
         ...
     ],
@@ -1519,17 +1519,17 @@
                             </tr>
                             <tr>
                                 <td><code>c</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Competência do lançamento no formato DD-YYYY</td>
                             </tr>
                             <tr>
                                 <td><code>s</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data inicial do lançamento no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
                                 <td><code>e</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Data final do lançamento no formato YYYY-MM-DD</td>
                             </tr>
                             <tr>
@@ -1538,8 +1538,8 @@
                                 <td>Mensagem a ser inserida no lançamento</td>
                             </tr>
                             <tr>
-                                <td><code>key</code></td>
-                                <td><span class="sub">obrigatório</span></td>
+                                <td width="8%"><code>key</code></td>
+                                <td width="16%"><span class="sub">obrigatório</span></td>
                                 <td>Sua chave única (ela encontra-se no seu painel, no item configurações)</td>
                             </tr>
 

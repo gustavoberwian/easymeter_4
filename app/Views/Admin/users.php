@@ -54,7 +54,7 @@
 <?php
 $data['modal_id'] = 'modalExclui';
 $data['modal_title'] = 'Você tem certeza?';
-$data['modal_message'] = 'Deseja realmente excluir este Condomínio?';
+$data['modal_message'] = 'Deseja realmente excluir este Usuário?';
 $data['button'] = array('Excluir', 'Cancelar');
 echo view('Admin/modals/confirm', $data);
 ?>

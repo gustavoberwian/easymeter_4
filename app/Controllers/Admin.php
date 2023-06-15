@@ -10,9 +10,6 @@ use Viacep;
 use CodeIgniter\Shield\Entities\User;
 use Config\Database;
 
-
-
-
 class Admin extends UNO_Controller
 {
     private $controller_folder;
@@ -56,12 +53,10 @@ class Admin extends UNO_Controller
 
         // set variables
         $this->url = service('uri')->getSegment(1);
-
-
+      
         $this->db = Database::connect();
 
         $this->db2 = Database::connect('easy_com_br');
-
     }
 
     public function index(): string
@@ -208,13 +203,12 @@ class Admin extends UNO_Controller
             $data['classificacao'] = $groups['classificacao'];
             $data['groups'] = $this->admin_model->get_groups_for_user($param1);
 
-
-
             if ($data['classificacao'] == 'entidades') {
                 $data['val'] = $this->admin_model->get_name_by_id($data['classificacao'], $this->admin_model->get_user_relations($param1, 'entidade'));
 
             } elseif ($data['classificacao'] == 'agrupamentos') {
                 $data['val'] = $this->admin_model->get_name_by_id($data['classificacao'], $this->admin_model->get_user_relations($param1, 'agrupamento'));
+
             } elseif ($data['classificacao'] == 'unidade') {
                 $data['val'] = $this->admin_model->get_code_by_unity_id($this->admin_model->get_user_relations($param1, $data['classificacao']));
             } else {
@@ -306,10 +300,7 @@ class Admin extends UNO_Controller
                         'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
                         'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
                     ];
-
-                };
-
-
+                }
 
                 $emails = null;
                 if ($this->input->getPost('emails') != '') {
@@ -326,8 +317,6 @@ class Admin extends UNO_Controller
                     $telefone = $this->input->getPost('telefone');
 
                     $celular = $this->input->getPost('celular');
-
-
 
                     // atualiza dados
                     if (!$this->admin_model->update_user($user_id, $password, $telefone, $celular, $emails)) {
@@ -1446,7 +1435,6 @@ class Admin extends UNO_Controller
         $dados['groups-user'] = array_map('trim', explode(",", $this->input->getPost('groups-user') ?? ''));
 
         if ($dados['page'] === '') {
-
             if ($dados['entity-user'] != '') {
                 $dados['page'] = $this->get_entity_class('entidades', $dados['entity-user']);
 
@@ -1504,17 +1492,16 @@ class Admin extends UNO_Controller
         if (!$this->admin_model->update_active($this->input->getPost('id'))) {
             return false;
         }
-
     }
 
     public function historico($sub = '', $id = '')
-	{
-		if ($sub == 'boletim') {
-			return $this->render('boletim');	
-		} else {
-			return $this->render('historico');	
-		}
-	}
+    {
+        if ($sub == 'boletim') {
+            return $this->render('boletim');	
+        } else {
+            return $this->render('historico');	
+        }
+    }
 
     public function set_log_state()
     {
@@ -1617,7 +1604,6 @@ class Admin extends UNO_Controller
             $dados['group']['energia'] = '';
         }
 
-
         if ($this->input->getPost('user-nivel') === 'on') {
             $dados['group']['nivel'] = 'nivel';
         } else {
@@ -1632,7 +1618,6 @@ class Admin extends UNO_Controller
         echo $this->admin_model->edit_user($dados);
     }
 
-
     public function contatos()
     {
         $data['total'] = $this->admin_model->count_contato(0);
@@ -1640,20 +1625,15 @@ class Admin extends UNO_Controller
     }
 
     public function configuracoes($op = '')
-	{
-    
-        return $this->render('configuracoes', array(
-           
-        ));
-        
-	}
+	  {
+        return $this->render('configuracoes', array());
+    }
 
     public function calibradora($processo = 0)
-	{
+	  {
         $p = $this->admin_model->get_calibracao_processo($processo);
-
-		return $this->render('calibradora', array('processo' => $p));
-	}
+        return $this->render('calibradora', array('processo' => $p));
+	  }
 
     public function get_log()
     {
@@ -1776,6 +1756,7 @@ class Admin extends UNO_Controller
         // gera resultados
         echo $dt->generate();
     }
+  
     public function set_contact_state()
     {
         // pega id do post
@@ -1787,29 +1768,30 @@ class Admin extends UNO_Controller
         // retorna json
         echo json_encode($return);
     }
+  
     public function get_centrais()
     {
         // realiza a query via dt
         $dt = $this->datatables->query("
-        SELECT 
-            esm_condominios_centrais.nome as DT_RowId, 
-            esm_condominios_centrais.nome, 
-            esm_condominios_centrais.modo, 
-            esm_condominios.nome AS condo, 
-            esm_condominios_centrais.simcard, 
-            esm_condominios.tabela, 
-            esm_condominios_centrais.auto_ok, 
-            esm_central_data.hardware,
-            esm_central_data.software,
-            esm_central_data.fonte,
-            esm_central_data.tensao,
-            esm_central_data.fraude_hi,
-            esm_central_data.fraude_low
-        FROM esm_condominios_centrais 
-        JOIN esm_condominios ON esm_condominios.id = esm_condominios_centrais.condo_id
-        LEFT JOIN esm_central_data ON esm_central_data.nome = esm_condominios_centrais.nome AND esm_central_data.timestamp = esm_condominios_centrais.ultimo_envio
-        ORDER BY esm_condominios_centrais.nome
-    ");
+            SELECT 
+                esm_condominios_centrais.nome as DT_RowId, 
+                esm_condominios_centrais.nome, 
+                esm_condominios_centrais.modo, 
+                esm_condominios.nome AS condo, 
+                esm_condominios_centrais.simcard, 
+                esm_condominios.tabela, 
+                esm_condominios_centrais.auto_ok, 
+                esm_central_data.hardware,
+                esm_central_data.software,
+                esm_central_data.fonte,
+                esm_central_data.tensao,
+                esm_central_data.fraude_hi,
+                esm_central_data.fraude_low
+            FROM esm_condominios_centrais 
+            JOIN esm_condominios ON esm_condominios.id = esm_condominios_centrais.condo_id
+            LEFT JOIN esm_central_data ON esm_central_data.nome = esm_condominios_centrais.nome AND esm_central_data.timestamp = esm_condominios_centrais.ultimo_envio
+            ORDER BY esm_condominios_centrais.nome
+        ");
 
         $dt->edit('modo', function ($data) {
 
@@ -1876,6 +1858,7 @@ class Admin extends UNO_Controller
         // gera resultados
         echo $dt->generate();
     }
+  
     public function get_postagens()
     {
         $db2 = Database::connect('easy_com_br');
@@ -1894,6 +1877,7 @@ class Admin extends UNO_Controller
         // gera resultados
         echo $dt->generate();
     }
+  
     public function get_central_detail($central)
     {
         if (substr($central, 0, 2) == "43" || substr($central, 0, 2) == "53" || substr($central, 0, 2) == "63") {
@@ -2012,6 +1996,7 @@ class Admin extends UNO_Controller
         // gera resultados
         echo $dt->generate();
     }
+  
     public function get_central_envios($central)
     {
         $db2 = Database::connect('easy_com_br');
@@ -2046,6 +2031,7 @@ class Admin extends UNO_Controller
         echo $dt->generate();
     
     }
+  
     public function md_envio()
     {
         $id = $this->input->getPost('id');
@@ -2069,7 +2055,8 @@ class Admin extends UNO_Controller
         $data['hea'] = $post->header;
 
         return view('admin/modals/envio', $data);
-    }    
+    } 
+  
     private function hex_dump($data, $newline = "\n")
     {
         static $from = '';
@@ -2218,7 +2205,6 @@ class Admin extends UNO_Controller
             echo json_encode(array('status' => 'error', 'message' => 'Não foi possível salvar os valores de calibração.'));
     }
 
-
     public function add_sensores()
     {
         $processo = $this->input->getPost('processo');
@@ -2271,5 +2257,4 @@ class Admin extends UNO_Controller
 
         echo json_encode($output);
     }
-
 }

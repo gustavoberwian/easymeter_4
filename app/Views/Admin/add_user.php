@@ -19,7 +19,6 @@
                     </header>
                     <div class="card-body">
                         <div class="tab-form cadastro">
-
                             <div class="form-group row">
                                 <label for="classificacao-user"
                                     class="col-lg-3 control-label text-lg-right pt-2">Classificação do usuário <span
@@ -44,8 +43,8 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="select-wrap">
-                                            <select id="entity-user" name="entity-user" class="form-control" required>
-                                                <option selected disabled value="">Entidade do usuário</option>
+                                            <select id="entity-user" name="entity-user" class="form-control">
+                                                <option selected disabled value="">Carregando...</option>
                                             </select>
                                         </div>
                                     </div>
@@ -56,8 +55,7 @@
                                 <label for="unity-user" class="col-lg-3 control-label text-lg-right pt-2">Código da
                                     unidade <span class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <input id="unity-user" name="unity-user" type="text" value="" class="form-control"
-                                        placeholder="Código da unidade">
+                                    <input id="unity-user" name="unity-user" type="text" value="" class="form-control" placeholder="Código da unidade">
                                 </div>
                             </div>
 
@@ -69,7 +67,7 @@
                                     <div class="row">
                                         <div class="select-wrap">
                                             <select id="group-user" name="group-user" class="form-control">
-                                                <option selected disabled value="">Agrupamento do usuário</option>
+                                                <option selected disabled value="">Carregando...</option>
                                             </select>
                                         </div>
                                     </div>
@@ -86,8 +84,7 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="email-user" class="col-lg-3 control-label text-lg-right pt-2">Email <span
-                                        class="required">*</span></label></label>
+                                <label for="email-user" class="col-lg-3 control-label text-lg-right pt-2">Email <span class="required">*</span></label>
                                 <div class="col-lg-6">
                                     <input id="email-user" name="email-user" type="text" value=""
                                         class="form-control vemail" placeholder="Email">
@@ -95,8 +92,7 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="senha-user" class="col-lg-3 control-label text-lg-right pt-2">Senha <span
-                                        class="required">*</span></label></label>
+                                <label for="senha-user" class="col-lg-3 control-label text-lg-right pt-2">Senha <span class="required">*</span></label>
                                 <div class="col-lg-6">
                                     <input id="senha-user" name="senha-user" type="password" value=""
                                         class="form-control vsenha" placeholder="Senha" autocomplete="new-password">
@@ -104,8 +100,7 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="confirm-user" class="col-lg-3 control-label text-lg-right pt-2">Confirme a
-                                    Senha <span class="required">*</span></label></label>
+                                <label for="confirm-user" class="col-lg-3 control-label text-lg-right pt-2">Confirme a Senha <span class="required">*</span></label>
                                 <div class="col-lg-6">
                                     <input id="confirm-user" name="confirm-user" type="password" value=""
                                         class="form-control vconfirma" placeholder="Confirme">
@@ -113,8 +108,7 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="page-user" class="col-lg-3 control-label text-lg-right pt-2">Página do
-                                    usuário <span class="required">*</span></label></label>
+                                <label for="page-user" class="col-lg-3 control-label text-lg-right pt-2">Página do usuário </span></label></label> 
                                 <div class="col-lg-6">
                                     <input id="page-user" name="page-user" type="text" value=""
                                         class="form-control vpage" placeholder="Página do usuário">
@@ -159,8 +153,7 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="page-user" class="col-lg-3 control-label text-lg-right pt-2">Grupos
-                                    adicionais <span class="required">*</span></label></label>
+                                <label for="page-user" class="col-lg-3 control-label text-lg-right pt-2">Grupos adicionais</label> 
                                 <div class="col-lg-6">
                                     <input id="groups-user" name="groups-user" type="text" value=""
                                         class="form-control " placeholder="Grupos do usuário">

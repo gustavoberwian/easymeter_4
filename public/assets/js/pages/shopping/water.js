@@ -24,7 +24,7 @@
                 start   : start.format("YYYY-MM-DD"),
                 end     : end.format("YYYY-MM-DD"),
                 field   : el.data("field"),
-                compare : $('#compare').find(':selected').val(),
+                compare : $('#compare').val(),
                 shopping_id : $('.content-body').data('group')
             };
 
@@ -44,7 +44,13 @@
                     };
 
                     json.tooltip.y.formatter = function (value) {
-                        return (value === null) ? "" : value.toLocaleString("pt-BR", {minimumFractionDigits: json.extra.tooltip.decimals, maximumFractionDigits: json.extra.tooltip.decimals}) + " " + json.extra.unit;
+                        if (value === json.extra.custom.max * 0.005 || json.extra.custom.max === 0) {
+                            return 0 + " " + json.extra.unit;
+                        } else if (value === json.extra.custom.max_c * 0.005 || json.extra.custom.max_c === 0) {
+                            return 0 + " " + json.extra.unit;
+                        } else {
+                            return (value === null) ? "" : value.toLocaleString("pt-BR", {minimumFractionDigits: json.extra.tooltip.decimals, maximumFractionDigits: json.extra.tooltip.decimals}) + " " + json.extra.unit;
+                        }
                     };
 
                     if (json.hasOwnProperty('extra')) {
@@ -201,6 +207,8 @@
             $("#compare option").prop('disabled', false);
             $("#compare option[value='" + device + "']").prop('disabled', true);
             $('#compare').select2('destroy').select2({"theme": "bootstrap", "placeholder": "Comparar", "allowClear": true});
+            $('.select2-container--bootstrap').attr('style', 'width: auto;')
+
         }
 
         apexchart(start_last, end_last);
@@ -248,14 +256,20 @@
         },
     });
 
+    
     $("#dt-resume tbody").on("click", "tr", function (event) {
         // se o clique não foi em uma celula ou na última, retorna
         if (event.target.cellIndex == undefined) return;
+        
 
-        let data = dtResume.row(this).data();
-        $("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
-        $('#sel-device').trigger('change');
-        $('.nav-pills button[data-bs-target="#charts"]').tab('show');
+        let data = dtResume.row(this).data();         
+        let newWindow = window.open(window.location);
+        newWindow.control = 1;
+        newWindow.onload = function () {
+            newWindow.$("#sel-device option[value=" + data.device + "]").attr('selected', 'selected');
+            newWindow.$('#sel-device').trigger('change');
+            newWindow.$('.nav-pills button[data-bs-target="#charts"]').tab('show');
+        };
     });
 
     $(document).on("click", ".btn-download", function () {
@@ -305,9 +319,10 @@
         }
     });
 
-    /**
-     * Handler on change select value
-     */
+    $(document).on("click", ".btn-reload-chart", function () {
+        apexchart(start, end);
+    });
+
     $('#compare').on('change', function () {
         apexchart(start_last, end_last);
     })
@@ -330,8 +345,14 @@
                 $(this).data('unselecting2', false);
             }
         }
-    });    
+    });
 
-    $('#sel-device').trigger('change');
+    if(!window.control){
+        window.control = 0;
+    }
 
+    if(window.control == 0){
+        $('#sel-device').trigger('change');
+    }
+    
 }).apply(this, [jQuery]);

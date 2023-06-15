@@ -1115,5 +1115,5 @@
             window.location = "/shopping/relatorio/energia/" + $(".btn-download-unity").data("group")  + "/" + $(".action-download-unity").data("fid") + "/" + $(".action-download-unity").data("eid");
         } 
     });
-
+    
 }).apply(this, [jQuery]);

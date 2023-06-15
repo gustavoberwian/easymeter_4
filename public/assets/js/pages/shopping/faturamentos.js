@@ -189,7 +189,7 @@
 			$.post('/water/lancamento', data, function(json) {
 				if (json.status == 'success') {
                     // vai para a pagina do fechamento
-                    window.location = "/" + $(".page-header").data("url") + "/lancamento/agua/" + $("#dt-faturamentos").data("group") + "/" + json.id;
+                    window.location = "/" + $(".page-header").data("url") + "/lancamento/agua/" + $("#dt-water").data("group") + "/" + json.id;
                     
                     // fecha a modal
                     $.magnificPopup.close();

@@ -5673,6 +5673,10 @@ html.dark .text-muted {
 	border-color: #ececec!important
 }
 
+.border-color-light-grey-3 {
+	border-color: #0000002d!important
+}
+
 .ib {
 	display: inline-block;
 	vertical-align: top
@@ -6606,6 +6610,9 @@ html.sidebar-light:not(.dark) ul.nav-main li .nav-children li a:hover,html.sideb
 	background-color: #ccc;
 	border-color: #ccc #ccc #b3b3b3;
 	color: #fff
+}
+.btn btn-reload-chart {
+	margin-left: 10px;
 }
 
 .btn-primary:hover,.btn-primary.hover {
@@ -11281,7 +11288,9 @@ html.dark .radio-dark input[type=radio]:checked+label:after,.radio-dark input[ty
 }
 
 .select2-container--bootstrap .select2-selection--multiple .select2-selection__rendered {
-	line-height: 1.8
+	line-height: 1.8;
+	min-width: 150px !important;
+	
 }
 
 @media(max-width: 991px) {
@@ -11712,6 +11721,11 @@ h1.text-shadow,h2.text-shadow,h3.text-shadow,h4.text-shadow,h5.text-shadow,h6.te
 
 .switch.switch-dark .ios-switch .on-background {
 	background: #171717
+}
+
+.switch.switch-white .ios-switch .on-background {
+	background: #fff;
+	border: 2px solid #E5E5E5;
 }
 
 .switch.switch-lg .ios-switch {
@@ -20375,6 +20389,12 @@ html.dark .mailbox-compose .bootstrap-tagsinput {
 
 html.dark .mailbox-compose .bootstrap-tagsinput>input {
 	color: #fff
+}
+
+td .table-one-line, tr .table-one-line{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 .buttons .select2-container {

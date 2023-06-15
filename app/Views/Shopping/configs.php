@@ -8,6 +8,7 @@
     <div class="row">
         <div class="col-8">
             <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
+            <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back" type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <li class="nav-item configs" role="presentation">
                     <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#geral" type="button" aria-selected="true" role="tab">Geral</button>
                 </li>
@@ -24,7 +25,7 @@
                     <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#alertas" type="button" aria-selected="false" tabindex="-1" role="tab">Alertas</button>
                 </li>
                 <li class="nav-item configs" role="presentation">
-                    <button class="nav-link configs right" data-bs-toggle="pill" data-bs-target="#api" type="button" aria-selected="false" tabindex="-1" role="tab">API</button>
+                    <button class="nav-link configs " data-bs-toggle="pill" data-bs-target="#api" type="button" aria-selected="false" tabindex="-1" role="tab">API</button>
                 </li>
             </ul>
         </div>

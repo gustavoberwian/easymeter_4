@@ -2,19 +2,34 @@
 
 namespace App\Controllers;
 
+use App\Models\Api_model;
+
 class Api extends UNO_Controller {
 
-    public $central;
     /**
-     * @var \api_model|mixed|null
+     * @var $central
      */
-    private $api_model;
+    public $central;
+
+    /**
+     * @var Api_model
+     */
+    private Api_model $api_model;
+
+    /**
+     * @var $input
+     */
+    protected $input;
 
     public function __construct()
     {
         parent::__construct();
 
-        $this->api_model = model('api_model');
+        // load requests
+        $this->input = \Config\Services::request();
+
+        // load models
+        $this->api_model = new Api_model();
     }
 
     public function doc()
@@ -39,7 +54,7 @@ class Api extends UNO_Controller {
             return;
         }
 
-        $auth = $this->input->get('key');
+        $auth = $this->input->getGet('key');
         if (is_null($auth)) {
             echo json_encode(array("status" => "error", "message" => "Invalid API key"));
             return;
@@ -56,11 +71,11 @@ class Api extends UNO_Controller {
 
             $cfg = $this->api_model->GetClientConfig($client->group_id);
 
-            $cmd = $this->input->get('q');
+            $cmd = $this->input->getGet('q');
 
             if ($cmd == "list") {
 
-                $type = $this->input->get('t');
+                $type = $this->input->getGet('t');
 
                 if (!is_null($type) && (intval($type) != 1 && intval($type) != 2)) {
                     echo json_encode(array("status" => "error", "message" => "Invalid t parameter"));
@@ -71,7 +86,7 @@ class Api extends UNO_Controller {
 
             } else if ($cmd == "resume") {
 
-                $type = $this->input->get('t');
+                $type = $this->input->getGet('t');
 
                 if (!is_null($type) && (intval($type) != 1 && intval($type) != 2)) {
                     echo json_encode(array("status" => "error", "message" => "Invalid t parameter"));
@@ -84,9 +99,9 @@ class Api extends UNO_Controller {
                 "instant_voltage", "instant_power", "instant_load", "instant_reactive", "instant_factor",
                 "instant_consumption"))) {
 
-                $device = $this->input->get('d');
-                $start  = $this->input->get('s');
-                $end    = $this->input->get('e');
+                $device = $this->input->getGet('d');
+                $start  = $this->input->getGet('s');
+                $end    = $this->input->getGet('e');
 
                 if (is_null($device)) {
                     echo json_encode(array("status" => "error", "message" => "Invalid d parameter"));
@@ -110,7 +125,7 @@ class Api extends UNO_Controller {
 
             } else if ($cmd == "accountings") {
 
-                $pag = $this->input->get('p');
+                $pag = $this->input->getGet('p');
 
                 if (is_null($pag)) {
                     $pag = 0;
@@ -125,7 +140,7 @@ class Api extends UNO_Controller {
 
             } else if ($cmd == "accounting") {
 
-                $fid = $this->input->get('i');
+                $fid = $this->input->getGet('i');
 
                 if (is_null($fid)) {
                     echo json_encode(array("status" => "error", "message" => "Invalid i parameter"));
@@ -143,10 +158,10 @@ class Api extends UNO_Controller {
 
             } else if ($cmd == "add_accounting") {
 
-                $competencia = $this->input->get('c');
-                $start       = $this->input->get('s');
-                $end         = $this->input->get('e');
-                $message     = $this->input->get('m');
+                $competencia = $this->input->getGet('c');
+                $start       = $this->input->getGet('s');
+                $end         = $this->input->getGet('e');
+                $message     = $this->input->getGet('m');
 
                 if (is_null($competencia)) {
                     echo json_encode(array("status" => "error", "message" => "Invalid c parameter"));
@@ -195,13 +210,15 @@ class Api extends UNO_Controller {
 
         } else if ($param == "water" && !is_null($client->agua_id)) {
 
-            $cfg = $this->api_model->GetClientConfig($client->group_id);
+            $cfg = $this->api_model->GetClientConfig($client->agrupamento_id);
 
-            $cmd = $this->input->get('q');
+            $cmd = $this->input->getGet('q');
+
+            $key = $this->input->getGet('key');
 
             if ($cmd == "list") {
 
-                $type = $this->input->get('t');
+                $type = $this->input->getGet('t');
 
                 if (!is_null($type) && (intval($type) != 1 && intval($type) != 2)) {
                     echo json_encode(array("status" => "error", "message" => "Invalid t parameter"));
@@ -212,20 +229,20 @@ class Api extends UNO_Controller {
 
             } else if ($cmd == "resume") {
 
-                $type = $this->input->get('t');
+                $type = $this->input->getGet('t');
 
                 if (!is_null($type) && (intval($type) != 1 && intval($type) != 2)) {
                     echo json_encode(array("status" => "error", "message" => "Invalid t parameter"));
                     return;
                 }
 
-                echo json_encode(array("status" => "success", "data" => $this->api_model->water_resume($cfg, $type), "unity" => "L"));
+                echo json_encode(array("status" => "success", "data" => $this->api_model->water_resume($key, $cfg, $type), "unity" => "L"));
 
             } else if ($cmd == "consumption") {
 
-                $device = $this->input->get('d');
-                $start  = $this->input->get('s');
-                $end    = $this->input->get('e');
+                $device = $this->input->getGet('d');
+                $start  = $this->input->getGet('s');
+                $end    = $this->input->getGet('e');
 
                 if (is_null($device)) {
                     echo json_encode(array("status" => "error", "message" => "Invalid d parameter"));
@@ -245,11 +262,11 @@ class Api extends UNO_Controller {
                     return;
                 }
 
-                echo json_encode($this->water_data($device, $start, $end));
+                echo json_encode($this->water_data($key, $device, $start, $end));
 
             } else if ($cmd == "accountings") {
 
-                $pag = $this->input->get('p');
+                $pag = $this->input->getGet('p');
 
                 if (is_null($pag)) {
                     $pag = 0;
@@ -260,11 +277,11 @@ class Api extends UNO_Controller {
                     return;
                 }
 
-                echo json_encode(array("status" => "success", "data" => $this->api_model->api_get_lancamentos('agua', $client->group_id, $pag * 10)));
+                echo json_encode(array("status" => "success", "data" => $this->api_model->api_get_lancamentos('agua', $client->agrupamento_id, $pag * 10)));
 
             } else if ($cmd == "accounting") {
 
-                $fid = $this->input->get('i');
+                $fid = $this->input->getGet('i');
 
                 if (is_null($fid)) {
                     echo json_encode(array("status" => "error", "message" => "Invalid i parameter"));
@@ -281,10 +298,10 @@ class Api extends UNO_Controller {
 
             } else if ($cmd == "add_accounting") {
 
-                $competencia = $this->input->get('c');
-                $start       = $this->input->get('s');
-                $end         = $this->input->get('e');
-                $message     = $this->input->get('m');
+                $competencia = $this->input->getGet('c');
+                $start       = $this->input->getGet('s');
+                $end         = $this->input->getGet('e');
+                $message     = $this->input->getGet('m');
 
                 if (is_null($competencia)) {
                     echo json_encode(array("status" => "error", "message" => "Invalid c parameter"));
@@ -663,9 +680,9 @@ class Api extends UNO_Controller {
         return array("status" => "success", "data" => $series);
     }
 
-    public function water_data($device, $start, $end)
+    public function water_data($key, $device, $start, $end)
     {
-        $period   = $this->api_model->GetConsumption($device, $start, $end);
+        $period   = $this->api_model->GetConsumption($key, $device, $start, $end);
         $values   = array();
         $series   = array();
 
@@ -683,7 +700,6 @@ class Api extends UNO_Controller {
 
         return array("status" => "success", "name" => "Consumo", "data" => $values);
     }
-
 
     private function verifica_alertas($central)
     {
@@ -703,5 +719,15 @@ class Api extends UNO_Controller {
             }
         }
         
+    }
+
+    public function tamper()
+    {
+        return $this->response->setStatusCode(200)->setBody(
+            json_encode(array(
+                "s" => 1,
+                "ts" => intval(gmdate('U'))
+            ), JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)
+        );
     }
 }

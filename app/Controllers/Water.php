@@ -36,7 +36,7 @@ class Water extends UNO_Controller
         $this->datatables = new Datatables(new Codeigniter4Adapter);
     }
 
-    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array())
+    private function chartConfig($type, $stacked, $series, $titles, $labels, $unit, $decimals, $extra = array(), $footer = "", $dates = array(), $decimals_chart = 0)
     {
         $config = array(
             "chart" => array(
@@ -87,7 +87,7 @@ class Water extends UNO_Controller
             "extra" => array(
                 "tooltip" => array(
                     "title" => $titles,
-                    "decimals" => 0,
+                    "decimals" => $decimals_chart,
                 ),
                 "unit" => $unit,
                 "decimals" => $decimals,
@@ -233,7 +233,7 @@ class Water extends UNO_Controller
         }
 
         $divisor = 1;
-        $decimals = 0;
+        $decimals = 3;
         $unidade = "";
         $type = "line";
 
@@ -260,19 +260,29 @@ class Water extends UNO_Controller
 
         $max = -1;
         $min = 999999999;
-        if ($period_o + $period_c > 999) {
-            $unidade_medida = 'm³';
-            $divisor = 1000;
-        } else {
-            $unidade_medida = 'L';
-            $divisor = 1;
-        }
+        $unidade_medida = 'm³';
+        $divisor = 1000;
 
         $series = array();
 
         if ($period) {
             foreach ($period as $v) {
-                $values[] = $v->value / $divisor;
+                if ($max < floatval($v->value) && !is_null($v->value))
+                    $max = floatval($v->value);
+                if ($min > floatval($v->value) && !is_null($v->value))
+                    $min = floatval($v->value);
+            }
+
+            foreach ($period as $v) {
+                if (is_null($v->value)) {
+                    $values[] = 0;
+                } else {
+                    if ($v->value == 0) {
+                        $values[] = $max <= $v->value ? 0.05 : ($max / $divisor) * 0.005;
+                    } else {
+                        $values[] = $v->value / $divisor;
+                    }
+                }
                 $labels[] = $v->label;
 
                 if ($start == $end) {
@@ -281,10 +291,6 @@ class Water extends UNO_Controller
                     $titles[] = $v->label . " - " . weekDayName($v->dw);
                     $dates[] = $v->date;
                 }
-                if ($max < floatval($v->value) && !is_null($v->value))
-                    $max = floatval($v->value);
-                if ($min > floatval($v->value) && !is_null($v->value))
-                    $min = floatval($v->value);
             }
 
             $series[] = array(
@@ -294,19 +300,40 @@ class Water extends UNO_Controller
             );
         }
 
+        $values_c   = array();
+        $max_c = -1;
+        $min_c = 999999999;
+        $colors = ['#734ba9', '#87a84b', '#a86f4b'];
         if ($compare != "") {
-            $values_c   = array();
-            $comp = $this->water_model->GetConsumption($compare, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
-            if ($comp) {
-                foreach ($comp as $v) {
-                    $values_c[] = $v->value;
-                }
+            foreach ($compare as $key => $c) {
+                $comp = $this->water_model->GetConsumption($c, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
+                if ($comp) {
 
-                $series[] = array(
-                    "name" => "Comparado", //$this->shopping_model->GetUnidadeByDevice($compare)->nome,
-                    "data" => $values_c,
-                    "color" => "#87c1de",
-                );
+                    foreach ($comp as $v) {
+                        if ($max_c < floatval($v->value) && !is_null($v->value))
+                            $max_c = floatval($v->value);
+                        if ($min_c > floatval($v->value) && !is_null($v->value))
+                            $min_c = floatval($v->value);
+                    }
+
+                    foreach ($comp as $v) {
+                        if (is_null($v->value)) {
+                            $values_c[] = 0;
+                        } else {
+                            if ($v->value == 0) {
+                                $values_c[] = $max_c <= $v->value ? 0.05 : ($max_c / $divisor) * 0.005;
+                            } else {
+                                $values_c[] = $v->value / $divisor;
+                            }
+                        }
+                    }
+
+                    $series[] = array(
+                        "name" => ucfirst(mb_strtolower($this->shopping_model->GetUnidadeByDevice($c)->nome)),
+                        "data" => $values_c,
+                        "color" => $colors[array_rand($colors)],
+                    );
+                }
             }
         }
 
@@ -328,6 +355,8 @@ class Water extends UNO_Controller
             "day" => number_format(round((($day_o + $day_c) / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
             "day_o" => number_format(round(($day_o / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
             "day_c" => number_format(round(($day_c / $dias_m) / $divisor, $decimals), $decimals, ",", ".") . " <span style='font-size:12px;'>$unidade_medida</span>",
+            "max" => $max / $divisor,
+            "max_c" => $max_c / $divisor
         );
 
         $data = array(
@@ -338,7 +367,11 @@ class Water extends UNO_Controller
 
         $footer = $this->chartFooter($data);
 
-        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, 0, $extra, $footer, $dates);
+        $config = $this->chartConfig("bar", false, $series, $titles, $labels, $unidade_medida, $decimals, $extra, $footer, $dates, $decimals);
+
+        if ($max == 0) {
+            $config["yaxis"] = array("labels" => array("formatter" => "function"), "tickAmount" => 5,"min" => 0,"max" => 10);
+        }
 
         echo json_encode($config);
     }
@@ -424,49 +457,20 @@ class Water extends UNO_Controller
             }
         });
 
-
-
         $dt->edit('value_read', function ($data) {
             return str_pad(round($data["value_read"] ), 6, '0', STR_PAD_LEFT);
         });
 
         $dt->edit('value_last', function ($data) {
-            if($data["value_last"] > 999)
-            {
-                $divisor = 1000;
-                $uni_med = ' m³';
-            } else
-            {
-                $divisor = 1;
-                $uni_med = ' L';
-            }
-            return number_format(($data["value_last"] / $divisor), 0, ",", ".") . $uni_med;
+            return number_format(($data["value_last"] / 1000), 3, ",", ".");
         });
 
         $dt->edit('value_month', function ($data) {
-            if($data["value_month"] > 999)
-            {
-                $divisor = 1000;
-                $uni_med = ' m³';
-            } else
-            {
-                $divisor = 1;
-                $uni_med = ' L';
-            }
-            return number_format(($data["value_month"] / $divisor), 0, ",", ".") . $uni_med;
+            return number_format(($data["value_month"] / 1000), 3, ",", ".");
         });
 
         $dt->edit('value_last_month', function ($data) {
-            if($data["value_last_month"] > 999)
-            {
-                $divisor = 1000;
-                $uni_med = ' m³';
-            } else
-            {
-                $divisor = 1;
-                $uni_med = ' L';
-            }
-            return number_format(($data["value_last_month"] / $divisor), 0, ",", ".") . $uni_med;
+            return number_format(($data["value_last_month"] / 1000), 3, ",", ".");
         });
 
         $dt->edit('value_future', function ($data) {
@@ -476,17 +480,7 @@ class Water extends UNO_Controller
             else if ($data["value_future"] > $data["value_last_month"])
                 $icon = "<i class=\"fa fa-level-down-alt text-success ms-2\"></i>";
 
-            if($data["value_future"] > 999)
-            {
-                $divisor = 1000;
-                $uni_med = ' m³';
-            } else
-            {
-                $divisor = 1;
-                $uni_med = ' L';
-            }
-
-            return number_format(($data["value_future"] / $divisor), 0, ",", ".") . $uni_med . $icon;
+            return number_format(($data["value_future"] / 1000), 3, ",", ".") . $icon;
         });
 
         // gera resultados
@@ -557,7 +551,7 @@ class Water extends UNO_Controller
             $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
             $spreadsheet->getActiveSheet()->setCellValue('B4', 'Nome')->mergeCells('B4:B5');
             $spreadsheet->getActiveSheet()->setCellValue('C4', 'Leitura - m³')->mergeCells('C4:C5');
-            $spreadsheet->getActiveSheet()->setCellValue('D4', 'Consumo')->mergeCells('D4:G4');
+            $spreadsheet->getActiveSheet()->setCellValue('D4', 'Consumo - m³')->mergeCells('D4:G4');
 
             $spreadsheet->getActiveSheet()->getStyle('A1:J5')->getFont()->setBold(true);
             $spreadsheet->getActiveSheet()->getStyle('A4:G5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
@@ -713,12 +707,15 @@ class Water extends UNO_Controller
 
     public function lancamento()
     {
+        $comp = str_replace('/', '-', $this->input->getPost('tar-water-competencia'));
+        $ini = str_replace('/', '-', $this->input->getPost('tar-water-data-ini'));
+        $end = str_replace('/', '-', $this->input->getPost('tar-water-data-fim'));
+
         $data = array(
-            "agrupamento_id" => $this->input->getPost('tar-water-group'),
-            "entrada_id" => 73,
-            "competencia" => $this->input->getPost('tar-water-competencia'),
-            "inicio" => $this->input->getPost('tar-water-data-ini'),
-            "fim" => $this->input->getPost('tar-water-data-fim'),
+            "agrupamento_id"    => $this->input->getPost('tar-water-group'),
+            "competencia" => date('Y-m-d', strtotime('01-' . $comp)),
+            "inicio" => date('Y-m-d', strtotime($ini)),
+            "fim" => date('Y-m-d', strtotime($end)),
             "mensagem" => $this->input->getPost('tar-water-msg'),
         );
 
@@ -733,17 +730,17 @@ class Water extends UNO_Controller
             );
         }
 
-        if ($this->water_model->VerifyCompetencia($data["entrada_id"], $data["competencia"])) {
+        if ($this->water_model->VerifyCompetencia($data["agrupamento_id"], $data["competencia"])) {
 			echo '{ "status": "message", "field": "tar-water-competencia", "message" : "Competência já possui lançamento"}';
 			return;
 		}
         
-        if (date_create_from_format('d/m/Y', $data["inicio"]) == date_create_from_format('d/m/Y', $data["fim"])) {
+        if ($data["inicio"] == $data["fim"]) {
 			echo '{ "status": "message", "field": "tar-water-data-fim", "message" : "Data final igual a inicial"}';
 			return;
 		}
 
-		if (date_create_from_format('d/m/Y', $data["inicio"]) > date_create_from_format('d/m/Y', $data["fim"])) {
+		if ($data["inicio"] > $data["fim"]) {
 			echo '{ "status": "message", "field": "tar-water-data-fim", "message" : "Data final menor que a inicial"}';
 			return;
 		}
@@ -1082,12 +1079,8 @@ class Water extends UNO_Controller
             return number_format($data["value_month"], 0, ",", ".");
         });
 
-        $dt->edit('value_month_open', function ($data) {
-            return number_format($data["value_month_open"], 0, ",", ".");
-        });
-
-        $dt->edit('value_month_closed', function ($data) {
-            return number_format($data["value_month_closed"], 0, ",", ".");
+        $dt->edit('value_last_month', function ($data) {
+            return number_format($data["value_last_month"], 0, ",", ".");
         });
 
         $dt->edit('value_future', function ($data) {
@@ -1120,7 +1113,7 @@ class Water extends UNO_Controller
         // realiza a query via dt
         $dt = $this->datatables->query("
         SELECT 	
-            esm_unidades.nome 					AS name,
+            esm_unidades.nome AS name,
             $value 	
         from esm_alertas
             JOIN esm_medidores 	ON esm_medidores.id = esm_alertas.medidor_id
@@ -1135,7 +1128,15 @@ class Water extends UNO_Controller
         });
 
         $dt->edit('value', function ($data) use ($factor) {
-            return number_format($data["value"] * $factor, 3, ",", ".") . ($factor == 1000 ? " m³" : " L");
+            if ($data['value'] > 999) {
+                $divisor = 1000;
+                $uni_med = ' m³';
+            } else
+            {
+                $divisor = 1;
+                $uni_med = ' L';
+            }
+            return number_format(($data["value"] / $divisor) * $factor, 3, ",", ".") . $uni_med;
         });
 
         $dt->add('percentage', function ($data) use ($total, $factor) {
@@ -1223,16 +1224,13 @@ class Water extends UNO_Controller
 
         // Query que calcula os valores totais e faz a participação em porcentagem
 
-        $station = "";
         $st = "";
         $total = false;
         $factor = 1;
         if ($iud == 1) {
-            $station = "AND ((MOD((d.timestamp), 86400) >= {$this->user->config->ponta_start} AND MOD((d.timestamp), 86400) <= {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)";
             $st = "consumo";
             $total = $this->water_model->GetMonthByStationWater(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group, $this->user->demo);
         } else if ($iud == 2) {
-            $station = "AND (((MOD((d.timestamp), 86400) < {$this->user->config->ponta_start} OR MOD((d.timestamp), 86400) > {$this->user->config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)";
             $st = "vazamento";
             $total = $this->water_model->GetMonthByStationWater(array($st, $this->user->config->ponta_start, $this->user->config->ponta_end), $group, $this->user->demo);
 
@@ -1249,7 +1247,6 @@ class Water extends UNO_Controller
         }
 
         // realiza a query medidor e consumo via dt
-
         $dt = $this->datatables->query("
             SELECT 
                 esm_unidades.nome AS name, 
@@ -1264,7 +1261,6 @@ class Water extends UNO_Controller
                     LEFT JOIN $tabela d ON 
                         (d.timestamp) > (esm_calendar.ts_start) AND 
                         (d.timestamp) <= (esm_calendar.ts_end + 600) 
-                        $station
                     WHERE 
                         esm_calendar.dt >= DATE_FORMAT(CURDATE() ,'%Y-%m-01') AND 
                         esm_calendar.dt <= DATE_FORMAT(CURDATE() ,'%Y-%m-%d') 
@@ -1279,12 +1275,17 @@ class Water extends UNO_Controller
         });
 
         $dt->edit('value', function ($data) use ($factor) {
-            return number_format($data["value"] * $factor, 3, ",", ".") . ($factor == 1000 ? " m³" : " L");
+            if ($data["value"] > 999) {
+                $divisor = 1000;
+            } else {
+                $divisor = 1;
+            }
+            return number_format(($data["value"] / $divisor) * $factor, 3, ",", ".") . ($divisor == 10000 ? " m³" : " L");
 
         });
 
-        $dt->add('percentage', function ($data) use ($total, $factor) {
-            $v = round(($data['value'] * $factor) / $total * 100);
+        $dt->add('percentage', function ($data) use ($total, $factor) { 
+            $v = round(($data['value'] * $factor) / ($total) * 100);
             return "<div class=\"progress progress-sm progress-half-rounded m-0 mt-1 light\">
                 <div class=\"progress-bar progress-bar-primary t-$total\" role=\"progressbar\" aria-valuenow=\"100\" aria-valuemin=\"0\" aria-valuemax=\"100\" style=\"width: $v%;\">
                 </div>

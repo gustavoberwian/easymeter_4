@@ -20,6 +20,9 @@
         <script src="<?php echo base_url('vendor/daterangepicker/daterangepicker.js'); ?>"></script>
         <script src="<?php echo base_url('vendor/apexcharts/dist/apexcharts.js'); ?>"></script>
 
+        <script src="<?php echo base_url('vendor/datatables/responsive/js/dataTables.responsive.min.js'); ?>"></script>
+        <script src="<?php echo base_url('vendor/datatables/responsive/js/responsive.bootstrap5.min.js'); ?>"></script>
+
 
         <!--<script src="<?php /*echo base_url('vendor/datatables/DataTables-1.10.18/js/jquery.dataTables.min.js'); */?>"></script>
         <script src="<?php /*echo base_url('vendor/datatables/examples.datatables.editable.js'); */?>"></script>-->

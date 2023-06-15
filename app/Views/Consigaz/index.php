@@ -2,7 +2,7 @@
 <section role="main" class="content-body" data-url="<?= $url ?>" data-monitoria="<?= $monitoria ?>">
 
     <!-- start: page -->
-    <div class="row pt-0">
+    <div class="row pt-4">
         <div class="col-md-4">
             <section class="card card-easymeter mb-4">
                 <div class="card-body">
@@ -66,22 +66,17 @@
         <section class="card card-easymeter mb-4">
             <header class="card-header">
                 <div class="card-actions buttons">
-                    <button type="button" class="btn btn-primary btn-sheet-condos"><i class="fas fa-file-download"></i> Baixar Planilha</button>
-                    <button type="button" class="btn btn-success btn-inclui-all-fechamentos"><i class="fas fa-file-import"></i> Faturar Todos</button>
+                    <button type="button" class="btn btn-primary btn-sheet-condos"><i class="fas fa-file-download"></i> <span class="d-none d-sm-inline">Baixar Planilha</span></button>
+                    <button type="button" class="btn btn-success btn-inclui-all-fechamentos"><i class="fas fa-file-import"></i> <span class="d-none d-sm-inline">Faturar Todos</span></button>
                 </div>
                 <h2 class="card-title">Clientes</h2>
             </header>
             <div class="card-body">
-                <table class="table table-bordered table-striped table-hover table-click dataTable no-footer" id="dt-entidades" data-url="/consigaz/get_entidades">
+                <table class="table table-bordered table-striped table-hover table-click dataTable no-footer display responsive nowrap" id="dt-entidades" data-url="/consigaz/get_entidades">
                     <thead>
                     <tr role="row">
-                        <th rowspan="2" class="text-center">Cliente</th>
-                        <th rowspan="2" class="text-center">Competência do último fechamento</th>
-                        <th colspan="5" class="text-center">Válvulas</th>
-                        <th colspan="3" class="text-center">Consumo</th>
-                        <th rowspan="2" class="text-center">Ações</th>
-                    </tr>
-                    <tr>
+                        <th class="text-center" data-priority="1">Cliente</th>
+                        <th class="text-center">Competência do último fechamento</th>
                         <th class="text-center">Abertas</th>
                         <th class="text-center">Fechadas</th>
                         <th class="text-center">Erros</th>
@@ -90,6 +85,7 @@
                         <th class="text-center">Último mês</th>
                         <th class="text-center">Mês atual</th>
                         <th class="text-center">Previsão</th>
+                        <th class="text-center" data-priority="2">Ações</th>
                     </tr>
                     </thead>
                     <tbody>

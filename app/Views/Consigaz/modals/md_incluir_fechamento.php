@@ -35,10 +35,10 @@
                     <label class="col-lg-3 control-label text-lg-right pt-2">Período <span class="required">*</span></label>
                     <div class="col-lg-9">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-6">
                                 <input type="text" class="form-control vdate" id="tar-gas-data-ini" name="tar-gas-data-ini" value="" placeholder="Data inicial" required tabIndex="2">
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-6">
                                 <input type="text" class="form-control vdate" id="tar-gas-data-fim" name="tar-gas-data-fim" value="" placeholder="Data final" required tabIndex="3">
                             </div>
                         </div>
@@ -56,9 +56,6 @@
 
         <footer class="card-footer">
             <div class="row">
-                <div class="col-md-6">
-                    <button class="btn btn-primary btn-cfg" href="<?= site_url('shopping/configuracoes/'.$entidade->id.'#unidades'); ?>" tabIndex="8">Configurar Unidades</button>
-                </div>
                 <div class="col-md-6 text-end">
                     <button class="btn btn-primary modal-confirm overlay-small" data-loading-overlay data-loading-overlay-options='{ "css": { "backgroundColor": "#00000080" } }' tabIndex="8">Incluir</button>
                     <button class="btn btn-default modal-dismiss" tabIndex="9">Cancelar</button>

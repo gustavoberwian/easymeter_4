@@ -55,7 +55,7 @@
             </section>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-4 pt-md-0 pt-4">
             <section class="card card-easymeter h-100">
                 <div class="card-body">
                     <h6 class="card-body-title mb-3 mt-0 text-primary">Consumo <i class="float-end fas fa-calendar"></i></h6>
@@ -73,7 +73,7 @@
             </section>
         </div>
 
-        <div class="col-md-4">
+        <div class="col-md-4 pt-md-0 pt-4">
             <section class="card card-easymeter h-100">
                 <div class="card-body">
                     <h6 class="card-body-title mb-3 mt-0 text-success">Válvulas <i class="float-end fas fa-life-ring"></i></h6>
@@ -105,17 +105,9 @@
                 <h2 class="card-title">Unidades</h2>
             </header>
             <div class="card-body">
-                <table class="table table-bordered table-striped table-hover dataTable no-footer" id="dt-unidades" data-url="/consigaz/get_unidades">
+                <table class="table table-bordered table-striped table-hover table-click dataTable no-footer display responsive nowrap" id="dt-unidades" data-url="/consigaz/get_unidades">
                     <thead>
                     <tr role="row">
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th></th>
-                        <th colspan="3" class="text-center">Consumo</th>
-                        <th></th>
-                    </tr>
-                    <tr>
                         <th class="text-center">Medidor</th>
                         <th class="text-center">Dispositivo</th>
                         <th class="text-center">Bloco</th>

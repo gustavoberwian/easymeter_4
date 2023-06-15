@@ -3,7 +3,6 @@
 namespace App\Controllers;
 
 use App\Models\Admin_model;
-use App\Models\Painel_model;
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\Codeigniter4Adapter;
 use Viacep;
@@ -15,8 +14,6 @@ class Admin extends UNO_Controller
     private $controller_folder;
 
     private Admin_model $admin_model;
-
-    private Painel_model $painel_model;
 
     protected $input;
 
@@ -44,8 +41,6 @@ class Admin extends UNO_Controller
 
         // load models
         $this->admin_model = new Admin_model();
-
-        $this->painel_model = new Painel_model();
 
         // load libraries
         $this->datatables = new Datatables(new Codeigniter4Adapter);
@@ -387,7 +382,6 @@ class Admin extends UNO_Controller
         $box = $this->input->getGet('box');
         $monitoramento = $this->input->getGet('monitoramento');
         $user_id = $this->user->id;
-        $count = $this->painel_model->count_alerta_nao_lido($user_id);
 
         //trata filtro pelo monitoramento
         $m = ($monitoramento == 'todos') ? '' : "AND esm_alertas.monitoramento = '$monitoramento'";
@@ -573,7 +567,7 @@ class Admin extends UNO_Controller
         $box = $this->input->getPost('box');
         $adm = $this->input->getPost('adm');
 
-        echo $this->painel_model->delete_alerta($id, $box, $adm);
+        echo $this->admin_model->delete_alerta($id, $box, $adm);
     }
 
     // POST PART FILE

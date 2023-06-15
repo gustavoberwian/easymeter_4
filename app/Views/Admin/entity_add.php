@@ -21,11 +21,14 @@
                         <div class="tab-form cadastro">
 
                             <div class="form-group row">
-                                <label for="classificacao-entity" class="col-lg-3 control-label text-lg-right pt-2">Classificação da Entidade <span class="required">*</span></label>
+                                <label for="classificacao-entity"
+                                    class="col-lg-3 control-label text-lg-right pt-2">Classificação da Entidade <span
+                                        class="required">*</span></label>
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="select-wrap">
-                                            <select id="classificacao-entity" name="classificacao-entity" class="form-control" required>
+                                            <select id="classificacao-entity" name="classificacao-entity"
+                                                class="form-control" required>
                                                 <option selected disabled value="">Classificação da Entidade</option>
                                                 <option value="condominio">Condomínio</option>
                                                 <option value="shopping">Shopping</option>
@@ -37,9 +40,11 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="nome-entity" class="col-lg-3 control-label text-lg-right pt-2">Nome <span class="required">*</span></label>
+                                <label for="nome-entity" class="col-lg-3 control-label text-lg-right pt-2">Nome <span
+                                        class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <input id="nome-entity" name="nome-entity" type="text" value="" class="form-control vnome" placeholder="Nome da entidade" required>
+                                    <input id="nome-entity" name="nome-entity" type="text" value=""
+                                        class="form-control vnome" placeholder="Nome da entidade" required>
                                 </div>
                             </div>
 
@@ -48,7 +53,8 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="cnpj-entity" name="cnpj-entity" value="" placeholder="___.___.___/____-__" class="form-control vcnpj">
+                                            <input id="cnpj-entity" name="cnpj-entity" value=""
+                                                placeholder="___.___.___/____-__" class="form-control vcnpj">
                                         </div>
                                         <div class="col-md-6">
                                             <div class="select-wrap">
@@ -69,16 +75,21 @@
                                 <label for="cep-entity" class="col-lg-3 control-label text-lg-right pt-2">CEP</label>
                                 <div class="col-lg-3">
                                     <div class="input-group">
-                                        <input id="cep-entity" name="cep-entity" type="text" value="" placeholder="_____-___" class="form-control vcep" aria-describedby="complete-cep-button">
-                                        <button class="btn btn-success btn-busca overlay-small" type="button" id="complete-cep-button" data-loading-overlay disabled>Completar</button>
+                                        <input id="cep-entity" name="cep-entity" type="text" value=""
+                                            placeholder="_____-___" class="form-control vcep"
+                                            aria-describedby="complete-cep-button">
+                                        <button class="btn btn-success btn-busca overlay-small" type="button"
+                                            id="complete-cep-button" data-loading-overlay disabled>Completar</button>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label for="logradouro-entity" class="col-lg-3 control-label text-lg-right pt-2">Logradouro</label>
+                                <label for="logradouro-entity"
+                                    class="col-lg-3 control-label text-lg-right pt-2">Logradouro</label>
                                 <div class="col-lg-6">
-                                    <input id="logradouro-entity" name="logradouro-entity" type="text" value="" class="form-control" placeholder="Nome da rua/avenida">
+                                    <input id="logradouro-entity" name="logradouro-entity" type="text" value=""
+                                        class="form-control" placeholder="Nome da rua/avenida">
                                 </div>
                             </div>
 
@@ -87,19 +98,23 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="numero-entity" name="numero-entity" value="" placeholder="Número" class="form-control">
+                                            <input id="numero-entity" name="numero-entity" value="" placeholder="Número"
+                                                class="form-control">
                                         </div>
                                         <div class="col-md-6">
-                                            <input id="complemento-entity" name="complemento-entity" value="" placeholder="Complemento" class="form-control">
+                                            <input id="complemento-entity" name="complemento-entity" value=""
+                                                placeholder="Complemento" class="form-control">
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label for="bairro-entity" class="col-lg-3 control-label text-lg-right pt-2">Bairro</label>
+                                <label for="bairro-entity"
+                                    class="col-lg-3 control-label text-lg-right pt-2">Bairro</label>
                                 <div class="col-lg-6">
-                                    <input id="bairro-entity" name="bairro-entity" type="text" value="" class="form-control" placeholder="Nome do bairro" required>
+                                    <input id="bairro-entity" name="bairro-entity" type="text" value=""
+                                        class="form-control" placeholder="Nome do bairro" required>
                                 </div>
                             </div>
 
@@ -108,11 +123,13 @@
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="cidade-entity" name="cidade-entity" value="" placeholder="Cidade" class="form-control" required>
+                                            <input id="cidade-entity" name="cidade-entity" value="" placeholder="Cidade"
+                                                class="form-control" required>
                                         </div>
                                         <div class="col-md-6">
                                             <div class="select-wrap">
-                                                <select id="estado-entity" name="estado-entity" class="form-control" required>
+                                                <select id="estado-entity" name="estado-entity" class="form-control"
+                                                    required>
                                                     <option selected disabled value="">Estado</option>
                                                     <option value="AC">Acre</option>
                                                     <option value="AL">Alagoas</option>
@@ -149,60 +166,72 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="select-adm" class="col-lg-3 control-label text-lg-right pt-2">Administradora</label>
+                                <label for="select-adm"
+                                    class="col-lg-3 control-label text-lg-right pt-2">Administradora</label>
                                 <div class="col-lg-6">
-                                    <select id="select-adm" name="select-adm" class="form-control populate" data-url="<?php echo site_url('admin/get_admnistadoras'); ?>">
+                                    <select id="select-adm" name="select-adm" class="form-control populate"
+                                        data-url="<?php echo site_url('admin/get_admnistadoras'); ?>">
                                     </select>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label for="select-gestor" class="col-lg-3 control-label text-lg-right pt-2">Gestor <span class="required">*</span></label>
+                                <label for="select-gestor" class="col-lg-3 control-label text-lg-right pt-2">Gestor
+                                    <span class="required">*</span></label>
                                 <div class="col-lg-6">
-                                    <select id="select-gestor" name="select-gestor" class="form-control populate" data-url="<?php echo site_url('admin/get_gestor'); ?>" required>
+                                    <select id="select-gestor" name="select-gestor" class="form-control populate"
+                                        data-url="<?php echo site_url('admin/get_gestor'); ?>" required>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Inicio e Fim do Mandato <span class="required">*</span></label>
+                                <label class="col-lg-3 control-label text-lg-right pt-2">Inicio e Fim do Mandato <span
+                                        class="required">*</span></label>
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
-                                            <input id="inicio-entity" name="inicio-entity" value="" placeholder="__/__/____" class="form-control vdate" required>
+                                            <input id="inicio-entity" name="inicio-entity" value=""
+                                                placeholder="__/__/____" class="form-control vdate" required>
                                         </div>
                                         <div class="col-md-6">
-                                            <input id="fim-entity" name="fim-entity" value="" placeholder="__/__/____" class="form-control vdate" required>
+                                            <input id="fim-entity" name="fim-entity" value="" placeholder="__/__/____"
+                                                class="form-control vdate" required>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Monitoramento<span class="required">*</span></label>
+                                <label class="col-lg-3 control-label text-lg-right pt-2">Monitoramento<span
+                                        class="required">*</span></label>
                                 <div class="col-lg-6 align-self-center">
                                     <div class="row">
                                         <div class="col-md-3">
                                             <div class="checkbox-custom checkbox-primary">
-                                                <input class="require-one" type="checkbox" id="agua-entity" name="agua-entity">
+                                                <input class="require-one" type="checkbox" id="agua-entity"
+                                                    name="agua-entity">
                                                 <label for="agua-entity">Água</label>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="checkbox-custom checkbox-success">
-                                                <input class="require-one" type="checkbox" id="gas-entity" name="gas-entity">
+                                                <input class="require-one" type="checkbox" id="gas-entity"
+                                                    name="gas-entity">
                                                 <label for="gas-entity">Gás</label>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="checkbox-custom checkbox-warning">
-                                                <input class="require-one" type="checkbox" id="energia-entity" name="energia-entity">
+                                                <input class="require-one" type="checkbox" id="energia-entity"
+                                                    name="energia-entity">
                                                 <label for="energia-entity">Energia</label>
                                             </div>
                                         </div>
                                         <div class="col-md-3">
                                             <div class="checkbox-custom checkbox-info">
-                                                <input class="require-one" type="checkbox" id="nivel-entity" name="nivel-entity">
+                                                <input class="require-one" type="checkbox" id="nivel-entity"
+                                                    name="nivel-entity">
                                                 <label for="nivel-entity">Nível</label>
                                             </div>
                                         </div>
@@ -216,15 +245,18 @@
                                 <div class="col-lg-6 align-self-center">
                                     <div class="checkbox-custom checkbox-default">
                                         <input type="checkbox" id="fracao-entity" name="fracao-entity">
-                                        <label for="fracao-entity">Cadastrar as Frações Ideais das unidades para permitir rateio de valores da inadimplência?</label>
+                                        <label for="fracao-entity">Cadastrar as Frações Ideais das unidades para
+                                            permitir rateio de valores da inadimplência?</label>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label for="textareaAutosize" class="col-lg-3 control-label text-lg-right pt-2">Observações</label>
+                                <label for="textareaAutosize"
+                                    class="col-lg-3 control-label text-lg-right pt-2">Observações</label>
                                 <div class="col-lg-6">
-                                    <textarea class="form-control" rows="3" id="textareaAutosize" data-plugin-textarea-autosize></textarea>
+                                    <textarea class="form-control" rows="3" id="textareaAutosize"
+                                        data-plugin-textarea-autosize></textarea>
                                 </div>
                             </div>
 
@@ -233,7 +265,8 @@
                                 <div class="col-lg-6">
 
                                     <div class="switch switch-sm switch-primary" title="Desativar Entidade">
-                                        <input type="checkbox" name="switch" id="switch" checked="checked" data-plugin-ios-switch />
+                                        <input type="checkbox" name="switch" id="switch" checked="checked"
+                                            data-plugin-ios-switch />
                                     </div>
                                 </div>
                             </div>

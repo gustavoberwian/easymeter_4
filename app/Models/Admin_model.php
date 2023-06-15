@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Config\Database;
+
 class Admin_model extends Base_model
 {
     public function get_all_centrais()
@@ -21,6 +23,61 @@ class Admin_model extends Base_model
         return $query->getResult();
     }
 
+    public function get_central_entidade($id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+        SELECT
+            esm_entidades.nome AS entidade_nome,
+            esm_entidades_centrais.nome AS DT_RowId,
+            esm_entidades_centrais.nome,
+            esm_entidades_centrais.modo,
+            esm_entidades_centrais.board,
+            esm_entidades_centrais.firmware,
+            esm_entidades_centrais.simcard,
+            esm_entidades.nome AS entidade,
+            esm_entidades.tabela,
+            esm_entidades_centrais.parent,
+            esm_entidades_centrais.auto_ok,
+            esm_entidades_centrais.ultimo_envio,
+            esm_entidades_centrais.localizador 
+        FROM
+            esm_entidades_centrais
+            JOIN esm_entidades ON esm_entidades.id = esm_entidades_centrais.entidade_id 
+        WHERE
+            esm_entidades_centrais.nome = '$id'
+        ");
+
+        if ($query->getNumRows() == 0) {
+            $db = Database::connect('easy_com_br');
+            $query = $db->query("
+            SELECT 
+                esm_condominios.nome AS entidade_nome,
+                esm_condominios_centrais.nome as DT_RowId,
+                esm_condominios_centrais.nome,
+                esm_condominios_centrais.modo,
+                esm_condominios_centrais.board, 
+                esm_condominios_centrais.firmware,
+                esm_condominios_centrais.simcard,
+                esm_condominios.nome AS condo,
+                esm_condominios.tabela, 
+                esm_condominios_centrais.parent,
+                esm_condominios_centrais.auto_ok,
+                esm_condominios_centrais.ultimo_envio,
+                esm_condominios_centrais.localizador
+            FROM 
+                esm_condominios_centrais 
+            JOIN
+                esm_condominios ON esm_condominios.id = esm_condominios_centrais.condo_id
+            WHERE 
+                esm_condominios_centrais.nome = '$id'
+            ");
+        }
+
+
+        return $query->getRow();
+    }
+
     public function get_entity($id)
     {
         // seleciona todos os campos
@@ -35,6 +92,85 @@ class Admin_model extends Base_model
         // verifica se retornou algo
         if ($query->getNumRows() == 0)
             return false;
+
+        return $query->getRow();
+    }
+
+    public function get_last_data($central, $stamp)
+    {
+        if (!$stamp) {
+            $query = $this->db->query("
+            SELECT *
+            FROM esm_central_data
+            WHERE nome = '$central'
+        ");
+        } else {
+            $query = $this->db->query("
+            SELECT *
+            FROM esm_central_data
+            WHERE nome = '$central' AND timestamp = $stamp
+        ");
+        }
+
+        // verifica se retornou algo
+        if (!$query) {
+            $db = Database::connect('easy_com_br');
+            if (!$stamp) {
+                $query = $db->query("
+                SELECT *
+                FROM esm_central_data
+                WHERE nome = '$central'
+            ");
+            } else {
+                $query = $db->query("
+                SELECT *
+                FROM esm_central_data
+                WHERE nome = '$central' AND timestamp = $stamp
+            ");
+            }
+        }
+        if (!$query)
+            return 0;
+            
+
+        return $query->getRow();
+    }
+
+    public function get_error_leitura($central, $tabela)
+    {
+        $medidor = $this->db->query("
+            SELECT id 
+            FROM esm_medidores
+            WHERE central = '$central'
+            LIMIT 1
+        ");
+
+        // verifica se retornou algo
+        if ($medidor->getNumRows() == 0)
+            return false;
+
+        $db = Database::connect('easy_com_br');
+
+        $query = $this->db->query("SHOW TABLES LIKE 'esm_leituras_{$tabela}_agua'");
+
+        // 604800 = ultimos 7 dias
+        if ($query->getNumRows() != 0) {
+            $query = $this->db->query("
+            SELECT COUNT(timestamp) AS realizadas, ( UNIX_TIMESTAMP() - MOD(UNIX_TIMESTAMP(), 3600) - MIN(timestamp) ) / 3600 + 1 AS total
+            FROM esm_leituras_{$tabela}_agua 
+            WHERE medidor_id = {$medidor->getRow()->id}  AND timestamp > (UNIX_TIMESTAMP() - 604800)
+        ");
+        } else {
+            $query = $db->query("
+            SELECT COUNT(timestamp) AS realizadas, ( UNIX_TIMESTAMP() - MOD(UNIX_TIMESTAMP(), 3600) - MIN(timestamp) ) / 3600 + 1 AS total
+            FROM esm_leituras_{$tabela}_agua 
+            WHERE medidor_id = {$medidor->getRow()->id}  AND timestamp > (UNIX_TIMESTAMP() - 604800)
+        ");
+        }
+
+        // verifica se retornou algo
+        if (!$query)
+            return 0;
 
         return $query->getRow();
     }
@@ -152,6 +288,11 @@ class Admin_model extends Base_model
         }
     }
 
+    public function get_centrais_count()
+    {
+        return $this->db->query("SELECT COUNT(*) AS total FROM esm_condominios_centrais")->getRow()->total;
+    }
+
     public function get_entradas($entidade_id)
     {
         $query = $this->db->query("
@@ -166,12 +307,21 @@ class Admin_model extends Base_model
 
     public function get_central_leituras($central, $tabela)
     {
+        $db = Database::connect('easy_com_br');
         $query = $this->db->query("
             SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
             FROM esm_leituras_{$tabela}_agua
             WHERE timestamp >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY)) AND medidor_id = (SELECT id FROM esm_medidores WHERE central = '$central' LIMIT 1)
             GROUP BY year(FROM_UNIXTIME(`timestamp`)), month(FROM_UNIXTIME(`timestamp`)), day(FROM_UNIXTIME(`timestamp`))
         ");
+        if ($query) {
+            $query = $db->query("
+            SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
+            FROM esm_leituras_{$tabela}_agua
+            WHERE timestamp >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY)) AND medidor_id = (SELECT id FROM esm_medidores WHERE central = '$central' LIMIT 1)
+            GROUP BY year(FROM_UNIXTIME(`timestamp`)), month(FROM_UNIXTIME(`timestamp`)), day(FROM_UNIXTIME(`timestamp`))
+        ");
+        }
 
         $values = array();
         if ($query->getNumRows() == 0)
@@ -182,6 +332,83 @@ class Admin_model extends Base_model
         }
 
         return $values;
+    }
+
+    public function get_competencias($entity_id, $ramal_id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+            SELECT *
+            FROM esm_fechamentos
+            WHERE entidade_id = $entity_id AND ramal_id = $ramal_id
+            ORDER BY id DESC
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getResult();
+    }
+
+    public function get_chamado($id)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->query("
+            SELECT 
+                esm_tickets.*,
+                auth_users.nome AS user_name,
+                esm_condominios.nome AS entidade,
+                esm_blocos.nome AS agrupamento, 
+                esm_unidades.nome AS unidade, 
+                user.telefone
+            FROM 
+                esm_tickets
+            LEFT JOIN 
+                auth_users ON auth_users.id = esm_tickets.fechado_por
+            LEFT JOIN 
+                auth_users user ON user.id = esm_tickets.user_id
+            LEFT JOIN 
+                esm_unidades ON esm_unidades.id = esm_tickets.unidade_id
+            LEFT JOIN 
+                esm_blocos ON esm_blocos.id = esm_unidades.bloco_id
+            LEFT JOIN 
+                esm_condominios ON esm_condominios.id = esm_blocos.condo_id
+            WHERE 
+                esm_tickets.id = $id
+        ");
+        
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow();
+    }
+
+    public function get_chamado_reply($id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+        SELECT esm_tickets_reply.*, auth_users.username 
+        FROM esm_tickets_reply
+        LEFT JOIN auth_users ON auth_users.id = esm_tickets_reply.user_id
+        WHERE esm_tickets_reply.ticket_id = $id    
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getResult();
+    }
+  
+    public function chamado_close($id, $user)
+    {
+        return $this->db->update('esm_tickets', array(
+            'status' => 'fechado',
+            'fechado_em' => date("Y/m/d H:i:s"),
+            'fechado_por' => $user
+        ), array('id' => $id));
     }
 
     public function get_medidores_unidade($unidade_id)
@@ -196,6 +423,105 @@ class Admin_model extends Base_model
         ");
 
         return $query->getResult();
+    }
+
+    public function get_fechamentos()
+    {
+        $entity_id = $this->input->getGet('entity');
+        $this->user = auth()->user();
+        if (is_null($entity_id))
+            $entity_id = $this->user->entity->id;
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT esm_fechamentos.id AS DT_RowId, esm_fechamentos.competencia,
+			DATE_FORMAT(FROM_UNIXTIME(esm_fechamentos.data_inicio),'%d/%m/%Y') AS data_inicio,
+			DATE_FORMAT(FROM_UNIXTIME(esm_fechamentos.data_fim),'%d/%m/%Y') AS data_fim, 
+            LPAD(esm_fechamentos.leitura_anterior, 6, '0') AS leitura_anterior, LPAD(esm_fechamentos.leitura_atual, 6, '0') AS leitura_atual, 
+            CONCAT(esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior, ' m<sup>3</sup>') AS consumo,
+            CONCAT('<span class=\"float-left\">R$</span> ', FORMAT(esm_fechamentos.v_concessionaria, 2, 'de_DE')) AS v_concessionaria, 
+            DATE_FORMAT(esm_fechamentos.cadastro,'%d/%m/%Y') AS cadastro, esm_ramais.nome AS ramal,
+            (SELECT IFNULL(GROUP_CONCAT(DATE_FORMAT(data, '%d/%m/%Y') SEPARATOR '<br/>'), 'Não Enviados') FROM esm_fechamentos_envios WHERE fechamento_id = esm_fechamentos.id) AS envios
+            FROM esm_fechamentos
+			LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
+            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
+            WHERE esm_entidades.id = $entity_id AND esm_ramais.tipo = 'agua' ORDER BY esm_fechamentos.id DESC
+        ");
+
+        $dt->edit('envios', function ($data) {
+            if ($data['envios'] == 'Não Enviados')
+                return '<span class="badge badge-warning">Não Enviados</span>';
+            else
+                return '<span class="badge badge-success" title="' . $data['envios'] . '" data-toggle="tooltip" data-html="true">Enviados</span>';
+        });
+
+        $dt->edit('competencia', function ($data) {
+            return competencia_nice($data['competencia']);
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            $dis = "";
+            if ($this->user->inGroup('demo')) {
+                $dis = " disabled";
+            }
+
+            return '<a href="#" class="action-download-agua ' . $dis . '" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>
+				<a href="#" class="action-delete ' . $dis . '" data-id="' . $data['DT_RowId'] . '"><i class="fas fa-trash" title="Excluir"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function get_leituras()
+    {
+        $entity_id = $this->input->getGet('condo');
+        $this->user = auth()->user();
+        if (is_null($entity_id))
+            $entity_id = $this->user->entity->id;
+
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+            SELECT 
+                UNIX_TIMESTAMP(STR_TO_DATE(CONCAT('01/', competencia), '%d/%m/%Y')) AS competencia,
+                esm_fechamentos.data_inicio,
+                esm_fechamentos.data_fim, 
+                esm_fechamentos.leitura_atual - esm_fechamentos.leitura_anterior AS consumo,
+                esm_fechamentos.cadastro AS leitura,
+                esm_fechamentos.id AS DT_RowId
+            FROM esm_fechamentos
+            LEFT JOIN esm_ramais ON esm_fechamentos.ramal_id = esm_ramais.id
+            LEFT JOIN esm_entidades ON esm_ramais.entidade_id = esm_entidades.id
+            WHERE esm_entidades.id = $entity_id AND esm_ramais.nome LIKE \"G%\" ORDER BY esm_fechamentos.id DESC
+        ");
+
+        $dt->edit('competencia', function ($data) {
+            return competencia_nice(date("m/Y", $data['competencia']));
+        });
+
+        $dt->edit('data_inicio', function ($data) {
+            return date("d/m/Y", $data['data_inicio']);
+        });
+
+        $dt->edit('data_fim', function ($data) {
+            return date("d/m/Y", $data['data_fim']);
+        });
+
+        $dt->edit('leitura', function ($data) {
+            return date_format(date_create($data['leitura']), "d/m/Y");
+        });
+
+        $dt->edit('consumo', function ($data) {
+            return number_format($data['consumo'] / 1000, 3, ',', '.') . ' m<sup>3</sup>';
+        });
+
+        // inclui actions
+        $dt->add('action', function ($data) {
+            return '<a href="#" class="action-download-gas" data-id="' . $data['DT_RowId'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
     }
 
     public function delete_entity($id)
@@ -899,32 +1225,32 @@ class Admin_model extends Base_model
     {
         //Query de grupos adicionais
         $query = $this->db->query("
-        SELECT
-            auth_groups_users.group 
-        FROM
-            auth_groups_users 
-        WHERE
-            auth_groups_users.user_id = $user_id 
-        AND 
-            auth_groups_users.group != 'agua' 
-        AND 
-            auth_groups_users.group != 'energia'
-        AND 
-            auth_groups_users.group != 'gas'
-        AND 
-            auth_groups_users.group != 'nivel'
-        AND 
-            auth_groups_users.group != 'shopping'
-        AND 
-            auth_groups_users.group != 'condominio'
-        AND 
-            auth_groups_users.group != 'industria'
-        AND 
-            auth_groups_users.group != 'unity'
-        AND 
-            auth_groups_users.group != 'admin'
-        AND 
-            auth_groups_users.group != 'group'
+            SELECT
+                auth_groups_users.group 
+            FROM
+                auth_groups_users 
+            WHERE
+                auth_groups_users.user_id = $user_id 
+            AND 
+                auth_groups_users.group != 'agua' 
+            AND 
+                auth_groups_users.group != 'energia'
+            AND 
+                auth_groups_users.group != 'gas'
+            AND 
+                auth_groups_users.group != 'nivel'
+            AND 
+                auth_groups_users.group != 'shopping'
+            AND 
+                auth_groups_users.group != 'condominio'
+            AND 
+                auth_groups_users.group != 'industria'
+            AND 
+                auth_groups_users.group != 'unity'
+            AND 
+                auth_groups_users.group != 'admin'
+            AND 
+                auth_groups_users.group != 'group'
         ");
 
         if ($query->getNumRows() == 0)
@@ -988,8 +1314,527 @@ class Admin_model extends Base_model
 
             if ($query->getNumRows() == 0)
                 return false;
-
-            return $query->getRow()->id;
+          
+          return $query->getRow()->id;
         }
     }
+
+    public function get_chamados($status = false, $limit = 0)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->table('esm_tickets');
+        // aplica filtro pelo status
+        if ($status)
+            $query->where('status', $status);
+
+        // aplica limite
+        if ($limit > 0)
+            $query->limit($limit);
+
+        // ordena por data
+        $query->orderBy('cadastro', 'DESC');
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // verifica se retornou algo
+        if ($result->getNumRows() == 0)
+            return false;
+
+        return $result->getResult();
+    }
+
+    public function get_chamados_novos(){
+        // realiza a query via dt
+        $dt = $this->datatables->query("
+        SELECT
+            esm_tickets.id,
+            esm_tickets.unidade_id,
+            esm_tickets.nome,
+            esm_tickets.email,
+            esm_tickets.mensagem,
+            esm_tickets.STATUS,
+            DATE_FORMAT( esm_tickets.cadastro, '%d/%m/%Y' ) AS cadastro,
+            esm_departamentos.nome AS departamento,
+            MAX(
+            DATE_FORMAT( COALESCE ( esm_tickets.fechado_em ), '%d/%m/%Y' )) AS movimento,
+            DATE_FORMAT( esm_tickets.fechado_em, '%d/%m/%Y' ) AS fechado_em,
+            esm_entidades.tabela AS entidade,
+            esm_entidades.nome AS agrupamento,
+            esm_unidades.nome AS apto 
+        FROM
+            esm_tickets
+            JOIN esm_departamentos ON esm_tickets.departamento = esm_departamentos.id
+            LEFT JOIN esm_unidades ON esm_unidades.id = esm_tickets.unidade_id
+            LEFT JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+            LEFT JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id 
+        GROUP BY
+            esm_tickets.id 
+        ORDER BY
+            COALESCE ( esm_tickets.cadastro ) DESC
+        ");
+
+        $dt->add('DT_RowId', function ($data) {
+            return $data['id'];
+        });
+
+        $dt->add('unidade', function ($data) {
+            if (is_null($data['agrupamento'])) {
+                return $data['apto'];
+            } else {
+                return $data['agrupamento'] . "/" . $data['apto'];
+            }
+        });
+
+        $dt->edit('id', function ($data) {
+            return str_pad($data['id'], 5, "0", STR_PAD_LEFT);
+        });
+
+        $dt->edit('entidade', function ($data) {
+            return ucfirst($data['entidade']);
+        });
+
+        $dt->edit('movimento', function ($data) {
+            if ($data['status'] == 'fechado')
+                return $data['fechado_em'];
+            else
+                return $data['movimento'];
+        });
+
+        $dt->edit('status', function ($data) {
+            if ($data['status'] == 'aberto')
+                return "<span class=\"badge badge-danger\" style=\"width: 70px;\">Aberto</span>";
+            elseif ($data['status'] == 'fechado')
+                return "<span class=\"badge badge-success\" style=\"width: 70px;\">Fechado</span>";
+            else
+                return "<span class=\"badge badge-warning\" style=\"width: 70px;\">" . ucfirst($data['status']) . "</span>";
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function get_suporte_now()
+    {
+     $query = $this->db->query
+        ("
+        SELECT
+            Entidade.classificacao, 
+            Entidade.nome AS Entidade, 
+            esm_agrupamentos.entidade_id, 
+            esm_unidades.agrupamento_id, 
+            esm_tickets.id, 
+            esm_tickets.nome, 
+            esm_tickets.email, 
+            esm_tickets.departamento, 
+            esm_tickets.assunto, 
+            esm_tickets.mensagem, 
+            esm_tickets.status, 
+            esm_tickets.cadastro, 
+            esm_tickets.fechado_por
+        FROM
+            esm_tickets,
+            esm_entidades AS Entidade
+            INNER JOIN
+            esm_agrupamentos
+            ON 
+                Entidade.id = esm_agrupamentos.entidade_id
+            INNER JOIN
+            esm_unidades
+            ON 
+                esm_agrupamentos.id = esm_unidades.agrupamento_id
+    ");
+
+
+    $result = $query->get();
+
+        // verifica se retornou algo
+        return $result->getNumRows();
+    }
+
+    
+
+    // **
+    // Busca Bloco para Visualizaçao em Modal
+    // [post] id do bloco OU 0 para incluir
+    // [out] Conteúdo HTML para modal
+    // **
+
+    public function new_chamado($user, $assunto, $message)
+    {
+        $a = '';
+        if ($assunto == 's')     $a = 'Sugestão';
+        elseif ($assunto == 'd') $a = 'Dúvida';
+        elseif ($assunto == 'r') $a = 'Revisão';
+        elseif ($assunto == 'v') $a = 'Visita Técnica';
+    
+        if (empty($user->unidade))
+        {
+            $uid = 0;
+        } else
+        {
+            $uid = $user->unidade->id;
+        }
+    
+        $data = [
+            'user_id' => $user->id,
+            'unidade_id' => $uid,
+            'departamento' => 2,
+            'assunto' => $a,
+            'mensagem' => $message
+        ];
+    
+        $this->db->table('esm_tickets')->insert($data);
+    
+        if ($this->db->affectedRows() > 0)
+        {
+            $insertId = $this->db->insertID();
+            return [
+                "status"  => "success",
+                "id"      => $insertId,
+                "assunto"  => $a,
+                "message" => "<strong>Chamado criado com sucesso.</strong><br/>Em até 48hrs entraremos em contato pelo e-mail."
+            ];
+        } else {
+            return [
+                "status"  => "error",
+                "message" => $this->db->error()
+            ];
+        }
+    }
+
+    public function count_chamados($status = false)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->table('esm_tickets');
+        // aplica filtro pelo status
+        if ($status)
+            $query->where('status', $status);
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // verifica se retornou algo
+        return $result->getNumRows();
+    }
+
+    public function get_log($status = false, $limit = 0)
+    {
+
+        $db = Database::connect('easy_com_br');
+        $query = $db->table('esm_log');
+        // aplica filtro pelo status
+        if ($status)
+            $query->where('lido', $status);
+
+        // aplica limite
+        if ($limit > 0)
+            $query->limit($limit);
+
+        // ordena por data
+        $query->orderBy('cadastro', 'DESC');
+
+        $result = $query->get();
+        // verifica se retornou algo
+        if ($result->getNumRows() == 0)
+            return false;
+
+        return $result->getNumRows();
+    }
+
+    public function count_log($status = -1)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->table('esm_log');
+        // aplica filtro pelo status
+        if ($status != -1)
+            $query->where('lido', $status);
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // verifica se retornou algo
+        return $result->getNumRows();
+    }
+    
+
+    public function change_log_state($id)
+    {
+        $db = Database::connect('easy_com_br');
+
+        if ($id == 0) {
+            if ($this->db->query("UPDATE esm_log SET lido = 1"))
+                return array("status"  => "success", "message" => "Entradas marcadas com sucesso");
+            else
+                return array("status"  => "error", "message" => $this->db->error()['message']);
+        } else {
+            if ($this->db->query("UPDATE esm_log SET lido = IF(lido = 1, 0, 1) WHERE id = $id"))
+                return array("status"  => "success", "message" => "Entrada marcada com sucesso");
+            else
+                return array("status"  => "error", "message" => $this->db->error()['message']);
+        }
+    }
+
+    public function change_contact_state($id)
+    {
+
+        $db = Database::connect('easy_com_br');
+
+        $res = $db->table('esm_contatos')->where('esm_contatos.id', $id)->select('esm_contatos.status')->get()->getRow()->status;
+        $result = (intval($res) == 1 ? 0 : 1);
+
+        if (!$db->table('esm_contatos')->set(array('status' => $result))->where('id', $id)->update())
+            return array("status" => "error", "message" => $db->error());
+        else
+            return array("status" => "success", "message" => "Entrada marcada com sucesso");
+    }
+
+
+    public function count_contato($status = -1)
+    {
+
+        $db = Database::connect('easy_com_br');
+        $query = $db->table('esm_contatos');
+        // aplica filtro pelo status
+        if ($status != -1)
+            $query->where('status', $status);
+
+        // realiza a consulta
+        $result = $query->get();
+
+        // verifica se retornou algo
+        return $result->getNumRows();
+    }
+    public function get_ultima_leitura($central, $tabela)
+    {
+        $db = Database::connect('easy_com_br');
+
+        $query = $db->query("
+            SELECT IFNULL(DATE_FORMAT(FROM_UNIXTIME(MAX(timestamp)), '%d/%m/%Y %H:%i:%s'), '-') AS ultima_leitura
+            FROM esm_leituras_{$tabela}_agua
+            WHERE medidor_id = (SELECT id FROM esm_medidores WHERE central = '$central' LIMIT 1)
+        ");
+
+        return $query->getRow()->ultima_leitura;
+    }
+    public function get_last_leitura($central, $tabela)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->query("
+            SELECT MAX(timestamp) AS leitura 
+            FROM esm_leituras_{$tabela}_agua 
+            WHERE medidor_id = (SELECT id 
+                FROM esm_medidores
+                WHERE central = '$central'
+                LIMIT 1)
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow()->leitura;
+    }
+    public function get_bateria($id)
+    {
+        $query = $this->db->query("
+            SELECT tensao
+            FROM esm_bateria
+            WHERE medidor_id = $id
+            ORDER BY timestamp
+            LIMIT 10
+        ");
+
+        if ($query->getNumRows() == 0)
+            return "";
+
+        foreach (($query->getResult()) as $r) {
+            $res[] = number_format($r->tensao * 4 / 1023, 2);
+        }
+
+        return implode(",", $res);
+    }
+    public function get_post($id)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->query("
+            SELECT text, header
+            FROM post
+            WHERE id = $id
+        ");
+
+        return $query->getRow();
+    }
+    public function get_data_raw($id)
+    {
+        $db = Database::connect('easy_com_br');
+        $query = $db->query("
+            SELECT 
+                payload AS text, 
+                header
+            FROM post_raw
+            WHERE id = $id
+        ");
+
+        return $query->getRow();
+    }
+    public function get_medidores_central($central)
+    {
+        $query = $this->db->query("
+            SELECT LPAD(id, 6, '0') AS id, posicao
+            FROM esm_medidores
+            WHERE central = '$central'
+            ORDER BY posicao
+        ");
+
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getResult();
+    }
+    public function add_calibracao_fase($processo, $fase, $data)
+    {
+        $failure = array();
+        $this->db->transStart();
+
+        foreach ($data as $k => $d) {
+            if (!$this->db->table('esm_calibracao')->set(array('leitura' . $fase => $d), array('processo' => $processo, 'porta' => $k))->update()) {
+                $failure[] = $this->db->error();
+            }
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === FALSE) {
+            return json_encode(array("status"  => "error", "message" => $failure[0]));
+        } else {
+            return json_encode(array("status"  => "success", "message" => "Fase cadastrada com sucesso!"));
+        }
+    }
+
+    public function save_calibracao($processo, $sensores)
+    {
+        $failure = array();
+        $this->db->transStart();
+
+        $sensor = $this->db->query("SELECT MAX(id) AS id FROM esm_sensores_agua")->getRow()->id + 1;
+
+        foreach ($sensores as $s) {
+
+            $res = $this->db->query("
+                UPDATE esm_calibracao
+                SET serial = $sensor, fator = (leitura1a + leitura1b + leitura1c + leitura2a + leitura2b + leitura2c + leitura3a + leitura3b + leitura3c + leitura4a + leitura4b + leitura4c + leitura5a + leitura5b + leitura5c) / 15, cadastro = " . date("Y-m-d H:i:s", strtotime()) . "
+                WHERE processo = $processo AND porta = $s
+            ");
+
+            if (!$res) {
+                $failure[] = $this->db->error();
+            }
+            $sensor++;
+        }
+
+        // coloca 0 no sensor que não foi serializado
+        if (!$this->db->table('esm_calibracao'->set(array('serial' => 0), array('processo' => $processo, 'serial' => null)))->update())
+            $failure[] = $this->db->error();
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === FALSE) {
+            return json_encode(array("status"  => "error", "message" => $failure[0]));
+        } else {
+            return json_encode(array("status"  => "success", "message" => "mmmm"));
+        }
+    }
+
+    public function get_calibracao_processo($processo)
+    {
+        $query = $this->db->query("
+            SELECT *
+            FROM esm_calibracao
+            WHERE processo = $processo
+            LIMIT 1
+        ");
+
+        return $query->getRow();
+    }
+
+    public function get_calibracao_fase($processo)
+    {
+        $fases = array('1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c', '4a', '4b', '4c', '5a', '5b', '5c');
+        $query = $this->db->query("
+            SELECT *
+            FROM esm_calibracao
+            WHERE processo = $processo
+            LIMIT 1
+        ")->getRowArray();
+
+        foreach ($fases as $f) {
+            if (is_null($query['leitura' . $f]))
+                return $f;
+        }
+
+        // acabou ciclo
+        return false;
+    }
+
+    public function get_calibracao($processo)
+    {
+        $query = $this->db->query("
+            SELECT *
+            FROM esm_calibracao
+            WHERE processo = $processo
+            ORDER BY porta
+        ");
+
+        return $query->getResult();
+    }
+
+    public function start_calibracao()
+    {
+        $processo = $this->db->query("SELECT MAX(processo) AS processo FROM esm_calibracao WHERE cadastro IS NOT NULL")->getRow()->processo;
+        $processo++;
+
+        $failure = array();
+        $this->db->transStart();
+
+        for ($i = 1; $i < 65; $i++) {
+            if (!$this->db->table('esm_calibracao')->set(array('processo' => $processo, 'porta' => $i))->insert()) {
+                $failure[] = $this->db->error();
+            }
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === FALSE) {
+            return json_encode(array("status"  => "error", "message" => $failure[0]));
+        } else {
+            return json_encode(array("status"  => "success", "message" => "Calibração Iniciada", "processo" => $processo));
+        }
+    }
+
+    // public function finish_calibracao($processo)
+    // {
+    //     $failure = array();
+    //     $this->db->transStart();
+
+    //     $sensores = $this->db->query("
+    //         SELECT serial AS id, fator, NOW() AS calibracao 
+    //         FROM esm_calibracao
+    //         WHERE processo = $processo AND serial != 0
+    //         ORDER BY serial
+    //     ")->getResult();
+
+    //     if (!$this->db->insert_batch('esm_sensores_agua', $sensores)) {
+    //         $failure[] = $this->db->error();
+    //     }
+
+    //     $this->db->transComplete();
+
+    //     if ($this->db->transStatus() === FALSE) {
+    //         return json_encode(array("status"  => "error", "message" => $failure[0]));
+    //     } else {
+    //         return json_encode(array("status"  => "success", "message" => "Sensores salvos", "data" => $sensores));
+    //     }
+    // }
+
 }

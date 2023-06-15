@@ -1812,6 +1812,45 @@ class Admin_model extends Base_model
         }
     }
 
+    public function delete_alerta($id, $box, $adm)
+    {
+        if ($box == 'in') {
+            if ($adm) {
+                if (!$this->db->update('esm_alertas', array('visibility' => 'delbyadmin'), array('id' => $id))) {
+                    echo json_encode(array("status"  => "error", "message" => $this->db->error()));
+                    return;
+                }
+            } else {
+                if (!$this->db->update('esm_alertas_envios', array('visibility' => 'delbyuser'), array('id' => $id))) {
+                    echo json_encode(array("status"  => "error", "message" => $this->db->error()));
+                    return;
+                }
+            }
+            echo json_encode(array("status"  => "success", "message" => "Alerta excluído com sucesso."));
+        } else if ($box == 'out') {
+            //verifica se é para apagar ou marcar registro
+            $query = $this->db->query("SELECT id FROM esm_alertas WHERE id = $id AND enviada IS NULL")->getNumRows();
+
+            if ($query > 0) {
+                // apagar
+                if (!$this->db->delete('esm_alertas', array('id' => $id, 'enviada' => NULL))) {
+                    echo json_encode(array("status"  => "error", "message" => $this->db->error()));
+                    return;
+                }
+                echo json_encode(array("status"  => "success", "message" => "Alerta excluído com sucesso"));
+            } else {
+                // marcar como excluido
+                if (!$this->db->update('esm_alertas', array('visibility' => 'delbyuser'), array('id' => $id))) {
+                    echo json_encode(array("status"  => "error", "message" => $this->db->error()));
+                    return;
+                }
+                echo json_encode(array("status"  => "success", "message" => "Alerta excluído com sucesso"));
+            }
+        } else {
+            echo json_encode(array("status"  => "error", "message" => 'Parâmetro incorreto.'));
+        }
+    }
+
     // public function finish_calibracao($processo)
     // {
     //     $failure = array();

@@ -7831,7 +7831,6 @@ html .card-dark .card-actions a,html .card-dark .card-title {
 	.card-actions {
 		float:none;
 		margin-bottom: 15px;
-		position: static;
 		text-align: right
 	}
 

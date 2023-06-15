@@ -353,7 +353,7 @@ class Consigaz extends UNO_Controller
 
         $dt->add("actions", function ($data) {
             return '
-                <div class="dropdown">
+                <div class="dropdown dropup">
                     <a class="" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars" title="Ações"></i></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" data-popper-placement="top-end">
                         <a class="dropdown-item action-view" data-id="' . $data['id'] . '"><i class="fas fa-eye me-1" title="Ver"></i> Detalhes</a>

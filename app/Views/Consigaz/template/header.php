@@ -21,6 +21,7 @@
 
 		<!-- Vendor CSS -->
         <link rel="stylesheet" href="<?= base_url('vendor/datatables/media/css/dataTables.bootstrap5.css'); ?>" />
+        <link rel="stylesheet" href="<?= base_url('vendor/datatables/responsive/css/responsive.bootstrap5.min.css'); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/bootstrap/css/bootstrap.css"); ?>" />
 		<link rel="stylesheet" href="<?php echo base_url("vendor/animate/animate.compat.css"); ?>">
 		<link rel="stylesheet" href="<?php echo base_url("vendor/font-awesome/css/all.min.css"); ?>" />

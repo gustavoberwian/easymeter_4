@@ -25,7 +25,9 @@
         serverSide: true,
         ordering  : true,
         order: [[ 3, 'asc' ]],
+        pageLength: 25,
         pagingType: "numbers",
+        responsive: false,
         searching : true,
         ajax: {
             method: 'POST',

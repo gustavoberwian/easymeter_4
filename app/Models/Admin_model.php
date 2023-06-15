@@ -1848,11 +1848,9 @@ class Admin_model extends Base_model
 
     public function add_aviso($titulo, $texto, $email)
     {
+        $this->user = auth()->user();
         // user id
-        $user_id = $this->ion_auth->user()->row()->id;
-        // busca condo id
-        $condo_id =  $this->get_user_entidade($user_id)->id;
-
+        $user_id = $this->user->id;
         // cria registro do aviso
         $data = array(
             "tipo"        => 'aviso',

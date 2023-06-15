@@ -1633,4 +1633,149 @@ class Admin_model extends Base_model
 
         return $query->getResult();
     }
+    public function add_calibracao_fase($processo, $fase, $data)
+    {
+        $failure = array();
+        $this->db->transStart();
+
+        foreach ($data as $k => $d) {
+            if (!$this->db->table('esm_calibracao')->set(array('leitura' . $fase => $d), array('processo' => $processo, 'porta' => $k))->update()) {
+                $failure[] = $this->db->error();
+            }
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === FALSE) {
+            return json_encode(array("status"  => "error", "message" => $failure[0]));
+        } else {
+            return json_encode(array("status"  => "success", "message" => "Fase cadastrada com sucesso!"));
+        }
+    }
+
+    public function save_calibracao($processo, $sensores)
+    {
+        $failure = array();
+        $this->db->transStart();
+
+        $sensor = $this->db->query("SELECT MAX(id) AS id FROM esm_sensores_agua")->getRow()->id + 1;
+
+        foreach ($sensores as $s) {
+
+            $res = $this->db->query("
+                UPDATE esm_calibracao
+                SET serial = $sensor, fator = (leitura1a + leitura1b + leitura1c + leitura2a + leitura2b + leitura2c + leitura3a + leitura3b + leitura3c + leitura4a + leitura4b + leitura4c + leitura5a + leitura5b + leitura5c) / 15, cadastro = " . date("Y-m-d H:i:s", strtotime()) . "
+                WHERE processo = $processo AND porta = $s
+            ");
+
+            if (!$res) {
+                $failure[] = $this->db->error();
+            }
+            $sensor++;
+        }
+
+        // coloca 0 no sensor que não foi serializado
+        if (!$this->db->table('esm_calibracao'->set(array('serial' => 0), array('processo' => $processo, 'serial' => null)))->update())
+            $failure[] = $this->db->error();
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === FALSE) {
+            return json_encode(array("status"  => "error", "message" => $failure[0]));
+        } else {
+            return json_encode(array("status"  => "success", "message" => "mmmm"));
+        }
+    }
+
+    public function get_calibracao_processo($processo)
+    {
+        $query = $this->db->query("
+            SELECT *
+            FROM esm_calibracao
+            WHERE processo = $processo
+            LIMIT 1
+        ");
+
+        return $query->getRow();
+    }
+
+    public function get_calibracao_fase($processo)
+    {
+        $fases = array('1a', '1b', '1c', '2a', '2b', '2c', '3a', '3b', '3c', '4a', '4b', '4c', '5a', '5b', '5c');
+        $query = $this->db->query("
+            SELECT *
+            FROM esm_calibracao
+            WHERE processo = $processo
+            LIMIT 1
+        ")->getRowArray();
+
+        foreach ($fases as $f) {
+            if (is_null($query['leitura' . $f]))
+                return $f;
+        }
+
+        // acabou ciclo
+        return false;
+    }
+
+    public function get_calibracao($processo)
+    {
+        $query = $this->db->query("
+            SELECT *
+            FROM esm_calibracao
+            WHERE processo = $processo
+            ORDER BY porta
+        ");
+
+        return $query->getResult();
+    }
+
+    public function start_calibracao()
+    {
+        $processo = $this->db->query("SELECT MAX(processo) AS processo FROM esm_calibracao WHERE cadastro IS NOT NULL")->getRow()->processo;
+        $processo++;
+
+        $failure = array();
+        $this->db->transStart();
+
+        for ($i = 1; $i < 65; $i++) {
+            if (!$this->db->table('esm_calibracao')->set(array('processo' => $processo, 'porta' => $i))->insert()) {
+                $failure[] = $this->db->error();
+            }
+        }
+
+        $this->db->transComplete();
+
+        if ($this->db->transStatus() === FALSE) {
+            return json_encode(array("status"  => "error", "message" => $failure[0]));
+        } else {
+            return json_encode(array("status"  => "success", "message" => "Calibração Iniciada", "processo" => $processo));
+        }
+    }
+
+    // public function finish_calibracao($processo)
+    // {
+    //     $failure = array();
+    //     $this->db->transStart();
+
+    //     $sensores = $this->db->query("
+    //         SELECT serial AS id, fator, NOW() AS calibracao 
+    //         FROM esm_calibracao
+    //         WHERE processo = $processo AND serial != 0
+    //         ORDER BY serial
+    //     ")->getResult();
+
+    //     if (!$this->db->insert_batch('esm_sensores_agua', $sensores)) {
+    //         $failure[] = $this->db->error();
+    //     }
+
+    //     $this->db->transComplete();
+
+    //     if ($this->db->transStatus() === FALSE) {
+    //         return json_encode(array("status"  => "error", "message" => $failure[0]));
+    //     } else {
+    //         return json_encode(array("status"  => "success", "message" => "Sensores salvos", "data" => $sensores));
+    //     }
+    // }
+
 }

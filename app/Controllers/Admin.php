@@ -15,6 +15,8 @@ use Config\Database;
 
 class Admin extends UNO_Controller
 {
+    private $controller_folder;
+
     private Admin_model $admin_model;
 
     private Painel_model $painel_model;
@@ -1637,6 +1639,22 @@ class Admin extends UNO_Controller
         return $this->render('contatos', $data);
     }
 
+    public function configuracoes($op = '')
+	{
+    
+        return $this->render('configuracoes', array(
+           
+        ));
+        
+	}
+
+    public function calibradora($processo = 0)
+	{
+        $p = $this->admin_model->get_calibracao_processo($processo);
+
+		return $this->render('calibradora', array('processo' => $p));
+	}
+
     public function get_log()
     {
         $tipo = $this->input->getGet('tipo');
@@ -1687,13 +1705,13 @@ class Admin extends UNO_Controller
         // tipo do log
         $dt->edit('tipo', function ($data) {
             if ($data['tipo'] == 2)
-                return '<span class="badge badge-danger" style="width: 60px;">Erro</span>';
+                return '<span class="badge badge-danger" style="width: auto;">Erro</span>';
             if ($data['tipo'] == 1)
-                return '<span class="badge badge-info" style="width: 60px;">Informação</span>';
+                return '<span class="badge badge-info" style="width: auto;">Informação</span>';
             if ($data['tipo'] == 3)
-                return '<span class="badge badge-warning" style="width: 60px;">Verificar</span>';
+                return '<span class="badge badge-warning" style="width: auto;">Verificar</span>';
             else
-                return '<span class="badge badge-primary" style="width: 60px;">Indefinido</span>';
+                return '<span class="badge badge-primary" style="width: auto;">Indefinido</span>';
         });
 
 
@@ -2158,4 +2176,100 @@ class Admin extends UNO_Controller
 
         return array($ret, $count);
     }
+
+    public function put_calibradora()
+    {
+        $processo = $this->input->getPost('processo');
+        $fase = $this->admin_model->get_calibracao_fase($processo);
+        $data = array_map("chr", $this->input->getPost('data'));
+
+        $medidas = unpack("V*", join($data));
+
+        echo $this->admin_model->add_calibracao_fase($processo, $fase, $medidas);
+    }
+
+    public function start_calibradora()
+    {
+        echo $this->admin_model->start_calibracao();
+    }
+
+    public function next_calibradora()
+    {
+        $processo = $this->input->getPost('processo');
+
+        $next = $this->admin_model->get_calibracao_fase($processo);
+
+        if (!$next) {
+            // acabou o processo
+            echo json_encode(array('status' => 'finished', 'message' => 'Processo de Calibração Concluído.'));
+        } else {
+            echo json_encode(array('status' => 'success', 'fase' => $next));
+        }
+    }
+
+    public function calcula_calibradora()
+    {
+        $processo = $this->input->getPost('processo');
+
+        //salva os seriais
+        if ($this->admin_model->save_calibracao($processo, $this->input->getPost('sensores')))
+            echo json_encode(array('status' => 'success', 'message' => 'Processo de Calibração Concluído.'));
+        else
+            echo json_encode(array('status' => 'error', 'message' => 'Não foi possível salvar os valores de calibração.'));
+    }
+
+
+    public function add_sensores()
+    {
+        $processo = $this->input->getPost('processo');
+
+        echo $this->admin_model->finish_calibracao($processo);
+    }
+
+    public function get_sensores()
+    {
+        $draw = intval($this->input->getGet("draw"));
+        $processo = intval($this->input->getGet("processo"));
+
+        //$last = $this->admin_model->get_last_sensor();
+        $last = 50;
+
+        $leituras = $this->admin_model->get_calibracao($processo);
+
+        $data = array();
+        foreach ($leituras as $l) {
+            $row = array();
+            $chk = (is_null($l->serial) || $l->serial != 0) ? 'checked' : '';
+            $row['porta'] = '<div class="checkbox-custom checkbox-text-primary ib"><input type="checkbox" value="' . $l->porta . '" name="mail[' . $l->porta . ']" ' . $chk . '><label>' . $l->porta . '</label></div>';
+            $row['serial'] = $l->serial == 0 ? '' : $l->serial;
+            $row['l1a'] = is_null($l->leitura1a) ? '' : ($l->leitura1a == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura1a);
+            $row['l1b'] = is_null($l->leitura1b) ? '' : ($l->leitura1b == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura1b);
+            $row['l1c'] = is_null($l->leitura1c) ? '' : ($l->leitura1c == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura1c);
+            $row['l2a'] = is_null($l->leitura2a) ? '' : ($l->leitura2a == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura2a);
+            $row['l2b'] = is_null($l->leitura2b) ? '' : ($l->leitura2b == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura2b);
+            $row['l2c'] = is_null($l->leitura2c) ? '' : ($l->leitura2c == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura2c);
+            $row['l3a'] = is_null($l->leitura3a) ? '' : ($l->leitura3a == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura3a);
+            $row['l3b'] = is_null($l->leitura3b) ? '' : ($l->leitura3b == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura3b);
+            $row['l3c'] = is_null($l->leitura3c) ? '' : ($l->leitura3c == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura3c);
+            $row['l4a'] = is_null($l->leitura4a) ? '' : ($l->leitura4a == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura4a);
+            $row['l4b'] = is_null($l->leitura4b) ? '' : ($l->leitura4b == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura4b);
+            $row['l4c'] = is_null($l->leitura4c) ? '' : ($l->leitura4c == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura4c);
+            $row['l5a'] = is_null($l->leitura5a) ? '' : ($l->leitura5a == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura5a);
+            $row['l5b'] = is_null($l->leitura5b) ? '' : ($l->leitura5b == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura5b);
+            $row['l5c'] = is_null($l->leitura5c) ? '' : ($l->leitura5c == 0 ? '<span class="text-danger"><strong>0</strong></span>' : $l->leitura5c);
+            $row['fator'] = $l->fator;
+
+            $data[] = $row;
+        }
+
+        $output = array(
+            "draw" => $draw,
+            "recordsTotal" => 64,
+            "recordsFiltered" => 64,
+            "data" => $data
+        );
+
+        echo json_encode($output);
+    }
+
 }

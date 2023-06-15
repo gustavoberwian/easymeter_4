@@ -51,7 +51,7 @@
                     <li class="<?php if (in_array($method, array('contatos')))
                                     echo 'nav-active'; ?>">
                         <a class="nav-link" href="<?php echo site_url('admin/contatos'); ?>">
-                            <span class="float-right badge badge-danger badge-contato" data-count="<?= $chamados_unread; ?>"><?= $chamados_unread; ?></span>
+                            <span class="float-right badge badge-danger badge-contato" data-count="<?= $contato_unread; ?>"><?= $contato_unread; ?></span>
                             <i class="fas fa-envelope-open-text"></i>
                             <span>Contatos</span>
                         </a>
@@ -66,19 +66,33 @@
                     </li>
 
                     <li class="<?php if(in_array($method, array('alertas'))) echo 'nav-active'; ?>">
-                                        <a class="nav-link" href="<?php echo site_url('admin/alertas'); ?>">
-                                            <i class="fas fa-bell"></i>
-                                            <span>Alertas</span>
-                                        </a>
-                                    </li>
+                        <a class="nav-link" href="<?php echo site_url('admin/alertas'); ?>">
+                            <i class="fas fa-bell"></i>
+                            <span>Alertas</span>
+                        </a>
+                    </li>
 
                     <li class="<?php if (in_array($method, array('historico'))) echo 'nav-active'; ?>">
                         <a class="nav-link" href="<?php echo site_url('admin/historico'); ?>">
-                            <span class="float-right badge badge-danger badge-log" data-count="<?= $log_unread; ?>"><?= $log_unread; ?></span>
                             <i class="fas fa-history"></i>
                             <span>Log</span>
                         </a>
                     </li>
+                    
+                    <li class="<?php if(in_array($method, array('calibradora'))) echo 'nav-active'; ?>">
+                        <a class="nav-link" href="<?php echo site_url('admin/calibradora', 'http'); ?>">
+                            <i class="fas fa-tools"></i>
+                            <span>Calibradora</span>
+                        </a>
+                    </li>
+
+                    <!-- <li class="<?php if(in_array($method, array('configuracoes'))) echo 'nav-active'; ?>">
+                        <a class="nav-link" href="<?php echo site_url('admin/configuracoes'); ?>">
+                            <i class="fas fa-cogs"></i>
+                            <span>Configurações</span>
+                        </a>
+                    </li> -->
+
                 </ul>
             </nav>
         </div>

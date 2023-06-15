@@ -265,7 +265,82 @@
 						</li>
 					</ul>-->
 
-					<span class="separator"></span>
+
+
+					<div class="header-right">
+            
+			<span class="separator"></span>
+	
+			<ul class="notifications">
+<?php /*
+				<li>
+					<a href="#" class="dropdown-toggle notification-icon" data-toggle="dropdown">
+						<i class="fas fa-history"></i>
+						<span class="badge">3</span>
+					</a>
+	
+					<div class="dropdown-menu notification-menu">
+						<div class="notification-title">Log</div>
+						<div class="content">
+							<ul>
+								<li>
+									<a href="#" class="clearfix">
+										<div class="image">
+											<i class="fas fa-newspaper bg-success text-light"></i>
+										</div>
+										<span class="title">Boletim Semanal enviado.</span>
+										<span class="message">10/09/2018</span>
+									</a>
+								</li>
+							</ul>
+							<hr />
+							<div class="text-right">
+								<a href="<?php echo site_url('admin/alertas'); ?>" class="view-more">Ver todos</a>
+							</div>
+						</div>
+					</div>
+				</li>
+*/ ?>
+				<li>
+					<a href="#" class="dropdown-toggle notification-icon" data-bs-toggle="dropdown" aria-expanded="false">
+						<i class="fas fa-ambulance"></i>
+						<span class="badge badge-alerta" data-count="<?= $chamados_unread; ?>"><?= $chamados_unread; ?></span>
+					</a>
+	
+					<div class="dropdown-menu notification-menu">
+						<div class="notification-title">
+							<span class="float-end badge badge-default"><?= $chamados_count; ?></span>
+							Chamados
+						</div>
+	
+						<div class="content">
+							<ul>
+								<?php if($chamados) : ?>
+									<?php foreach($chamados as $c) { ?>
+									<li>
+										<a href="<?= site_url('admin/suporte/'.$c->id); ?>" class="clearfix">
+											<figure class="image">
+												<img src="<?php echo base_url('assets/img/user.png'); ?>" class="rounded-circle" style="width: 35px;"/>
+											</figure>
+											<span class="title truncate"><?= $c->nome; ?></span>
+											<span class="message truncate"><?= $c->mensagem; ?></span>
+										</a>
+									</li>
+									<?php } ?>
+								<?php else: ?>
+									<li class="text-center text-muted p-3 text-1">Nenhum chamado pendente</li>
+								<?php endif; ?>
+							</ul>
+							<hr />
+							<div class="text-right">
+								<a href="<?= site_url('admin/suporte'); ?>" class="view-more"><?= ($chamados_unread > 5) ? '(+'.($chamados_unread - 5).')' : ''; ?> Ver todos</a>
+							</div>
+						</div>
+					</div>
+				</li>
+			</ul>
+	
+			<span class="separator"></span>
 
 					<div id="userbox" class="userbox" data-uid="<?= md5("easymeter" . $user->id . "123456"); ?>" data-id="<?= $user->id; ?>">
 						<a href="#" data-bs-toggle="dropdown">

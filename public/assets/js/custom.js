@@ -252,3 +252,9 @@ if (!document.querySelector('#btn-back-last')) {
     $(".nav-pills").children().eq(1).children().addClass('active left');
     $(".nav-pills").children().last().children().addClass('right')
 }
+
+$('.nav-sel').on('change', function() {
+    var $val = $('.nav-sel').val();
+
+    $("button[data-bs-target='#"+$val+"']").trigger('click');
+})

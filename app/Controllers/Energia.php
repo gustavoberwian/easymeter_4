@@ -53,7 +53,7 @@ class Energia extends UNO_Controller
                     "enabled" => false
                 ),
                 "events"    => array(
-                    "click" => true
+                    "click" => true,
                 )
             ),
             "series" => $series,
@@ -3818,4 +3818,6 @@ class Energia extends UNO_Controller
         // gera resultados
         echo $dt->generate();
     }
+
+    
 }

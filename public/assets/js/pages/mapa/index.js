@@ -62,18 +62,19 @@
             }, material);
 
             //tooltip test
-            mesh.setToolTip(g.properties.height, {
+            mesh.setToolTip('Nível: ' + g.properties.height, {
                 showTimeout: 0,
                 eventsPropagation: true,
-                dx: 10
+                dx: 10,
             });
 
             //infowindow test
             mesh.setInfoWindow({
-                content: 'Nome do Reservatorio, Nivel:' + g.properties.height,
+                content: 'Nome do Reservatorio<br/>Nivel: ' + g.properties.height,
                 title: 'Detalhes',
                 animationDuration: 0,
-                autoOpenOn: false
+                autoOpenOn: false,
+                cssClass: 'custom-tooltip'
             });
 
             // mesh.getInfoWindow().addTo(map);

@@ -3,7 +3,8 @@
 
 <head>
     <title>osm buildings demo</title>
-    <link type="text/css" rel="stylesheet" href="<?= base_url('maptalks/maptalks.css'); ?>" />
+    <link type="text/css" rel="stylesheet" href="<?= base_url('vendor/maptalks/maptalks.css'); ?>" />
+    <link type="text/css" rel="stylesheet" href="<?= base_url('assets/css/maptalks/custom.css'); ?>" />
     <style>
         html,
         body {

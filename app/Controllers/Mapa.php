@@ -26,7 +26,10 @@ class Mapa extends UNO_Controller {
     {
         $buildings = $this->mapa_model->get_buildings();
 
-        $coordenadas = $this->calculaCirculo();
+        $longitude = -51.146157378351745;
+        $latitude = -29.670586757512122;
+
+        $coordenadas = $this->calculaCirculo(array($longitude, $latitude), 10);
 
         $dados = [
             array(
@@ -98,11 +101,11 @@ class Mapa extends UNO_Controller {
         return $coordinates;
     }
 
-    public function calculaCirculo()
+    public function calculaCirculo($coord, $diametro)
     {
         // Exemplo de uso:
-        $center = array(-51.146157378351745, -29.670586757512122);
-        $radius = 10;
+        $center = $coord;
+        $radius = $diametro;
         $segments = 360;
 
         $circleCoordinates = $this->generateCircleCoordinates($center, $radius, $segments);
@@ -111,37 +114,6 @@ class Mapa extends UNO_Controller {
 
         foreach ($circleCoordinates as $ponto) {
             $response[] = [$ponto[0], $ponto[1]];
-        }
-
-        return $response;
-
-        foreach ($circleCoordinates as $ponto) {
-            echo "[{$ponto[1]}, {$ponto[0]}],\n";
-        }
-
-        return;
-
-        // Coordenadas centrais
-        $x_centro = 40.545368;
-        $y_centro = -74.243698;
-
-        // Coordenadas da borda do círculo
-        $x_borda = 40.545369;
-        $y_borda = -74.243883;
-
-        // Calcula o raio
-        $raio = sqrt(pow($x_borda - $x_centro, 2) + pow($y_borda - $y_centro, 2));
-
-        // Número de pontos desejado
-        $num_pontos = 46;
-
-        // Calcula os pontos do círculo com o número desejado de coordenadas
-        $pontos_do_circulo = $this->calcularPontosDoCirculo($x_centro, $y_centro, $raio, $num_pontos);
-
-        $response = array();
-
-        foreach ($pontos_do_circulo as $ponto) {
-            $response[] = [$ponto[1], $ponto[0]];
         }
 
         return $response;

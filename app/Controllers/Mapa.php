@@ -1,10 +1,12 @@
 <?php
 
+
 namespace App\Controllers;
 
 use App\Models\Mapa_model;
 
-class Mapa extends UNO_Controller {
+class Mapa extends UNO_Controller
+{
 
     private Mapa_model $mapa_model;
 
@@ -26,20 +28,20 @@ class Mapa extends UNO_Controller {
     {
         $buildings = $this->mapa_model->get_buildings();
 
-        $longitude = -51.146157378351745;
-        $latitude = -29.670586757512122;
+        $dados = array();
+        foreach ($buildings as $b) {
 
-        $coordenadas = $this->calculaCirculo(array($longitude, $latitude), 10);
+            $coordenadas = $this->calculaCirculo(array($b->latitude, $b->longitude), $b->diametro);
 
-        $dados = [
-            array(
+            $dados[] = array(
                 "type" => "FeatureCollection",
                 "features" => [
                     array(
                         "id" => "w137353386",
                         "properties" => array(
-                            "height" => 25,
-                            "altitude" => 20,
+                            "height" => round($b->altura - $b->nivel, 0),
+                            "totalHeight" => round($b->altura, 0),
+                            "altitude" => round($b->nivel, 0),
                             "material" => "brick",
                             "color" => "#fff",
                             "colorHover" => "#ededed",
@@ -55,14 +57,16 @@ class Mapa extends UNO_Controller {
                         "type" => "Feature"
                     )
                 ]
-            ),
-            array(
+            );
+
+            $dados[] = array(
                 "type" => "FeatureCollection",
                 "features" => [
                     array(
                         "id" => "w137353387",
                         "properties" => array(
-                            "height" => 20,
+                            "height" => round($b->nivel, 0),
+                            "totalHeight" => round($b->nivel, 0),
                             "altitude" => 0,
                             "material" => "brick",
                             "color" => "#53acd6",
@@ -79,13 +83,14 @@ class Mapa extends UNO_Controller {
                         "type" => "Feature"
                     )
                 ]
-            )
-        ];
+            );
+        }
 
         echo json_encode($dados);
     }
 
-    public function generateCircleCoordinates($center, $radius, $segments) {
+    public function generateCircleCoordinates($center, $radius, $segments)
+    {
         $coordinates = array();
         $x1 = deg2rad($center[0]);
         $y1 = deg2rad($center[1]);
@@ -97,7 +102,7 @@ class Mapa extends UNO_Controller {
             $x = $center[0] + rad2deg($d / cos(deg2rad($center[1]))) * cos($angle);
             $y = $center[1] + rad2deg($d) * sin($angle);
             $coordinates[] = [$x, $y];
-    }
+        }
         return $coordinates;
     }
 

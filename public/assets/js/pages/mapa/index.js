@@ -62,7 +62,7 @@
             }, material);
 
             //tooltip test
-            mesh.setToolTip('Nível: ' + g.properties.height, {
+            mesh.setToolTip('Nível: ' + g.properties.totalHeight, {
                 showTimeout: 0,
                 eventsPropagation: true,
                 dx: 10,

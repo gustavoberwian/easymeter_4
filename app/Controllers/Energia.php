@@ -3818,6 +3818,4 @@ class Energia extends UNO_Controller
         // gera resultados
         echo $dt->generate();
     }
-
-    
 }

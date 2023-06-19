@@ -2,7 +2,7 @@
 
     "use strict";
 
-    var center = [-74.2420436, 40.5456883]; // nova york
+    var center = [-74.243698, 40.545368]; // nova york
     //var center = [13.415118329414781, 52.53001062340084]; // nova york
 
     var map = new maptalks.Map("map", {
@@ -16,7 +16,7 @@
         })
     });
 
-// features to draw
+    // features to draw
     var features = [];
 
     var buildings = {};

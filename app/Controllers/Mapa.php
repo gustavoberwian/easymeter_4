@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\Mapa_model;
 
 class Mapa extends UNO_Controller {
+
     private Mapa_model $mapa_model;
 
     public function __construct()
@@ -23,6 +24,10 @@ class Mapa extends UNO_Controller {
 
     public function get_buildings()
     {
+        $buildings = $this->mapa_model->get_buildings();
+
+        $coordenadas = $this->calculaCirculo();
+
         $dados = [
             array(
                 "type" => "FeatureCollection",
@@ -42,55 +47,7 @@ class Mapa extends UNO_Controller {
                         ),
                         "geometry" => array(
                             "type" => "Polygon",
-                            "coordinates" => [[
-                                [-74.2420432, 40.5456883],
-                                [-74.2420644, 40.5456882],
-                                [-74.2420737, 40.5456891],
-                                [-74.2420812, 40.5456903],
-                                [-74.2420949, 40.5456935],
-                                [-74.2421053, 40.5456969],
-                                [-74.2421288, 40.5457087],
-                                [-74.2421349, 40.5457129],
-                                [-74.2421545, 40.5457324],
-                                [-74.2421591, 40.5457392],
-                                [-74.2421622, 40.5457449],
-                                [-74.2421657, 40.5457535],
-                                [-74.2421684, 40.5457648],
-                                [-74.2421691, 40.5457801],
-                                [-74.2421673, 40.5457912],
-                                [-74.2421623, 40.5458051],
-                                [-74.2421567, 40.5458148],
-                                [-74.2421472, 40.5458265],
-                                [-74.2421382, 40.5458348],
-                                [-74.2421287, 40.5458416],
-                                [-74.2421132, 40.5458501],
-                                [-74.2420991, 40.5458555],
-                                [-74.2420909, 40.5458578],
-                                [-74.2420725, 40.5458612],
-                                [-74.24205, 40.5458623],
-                                [-74.2420459, 40.5458621],
-                                [-74.242022, 40.5458588],
-                                [-74.2420084, 40.545855],
-                                [-74.2419963, 40.5458503],
-                                [-74.241979, 40.5458408],
-                                [-74.2419723, 40.545836],
-                                [-74.2419696, 40.5458338],
-                                [-74.2419587, 40.5458231],
-                                [-74.2419493, 40.5458101],
-                                [-74.2419452, 40.5458019],
-                                [-74.2419404, 40.5457849],
-                                [-74.2419404, 40.5457654],
-                                [-74.2419423, 40.5457565],
-                                [-74.2419502, 40.5457386],
-                                [-74.2419594, 40.5457262],
-                                [-74.2419662, 40.5457193],
-                                [-74.2419754, 40.5457119],
-                                [-74.2419849, 40.5457057],
-                                [-74.2419953, 40.5457004],
-                                [-74.2420061, 40.545696],
-                                [-74.2420307, 40.5456898],
-                                [-74.2420432, 40.5456883]
-                            ]]
+                            "coordinates" => [$coordenadas]
                         ),
                         "type" => "Feature"
                     )
@@ -114,55 +71,7 @@ class Mapa extends UNO_Controller {
                         ),
                         "geometry" => array(
                             "type" => "Polygon",
-                            "coordinates" => [[
-                                [-74.2420436, 40.5456883],
-                                [-74.2420644, 40.5456882],
-                                [-74.2420737, 40.5456891],
-                                [-74.2420812, 40.5456903],
-                                [-74.2420949, 40.5456935],
-                                [-74.2421053, 40.5456969],
-                                [-74.2421288, 40.5457087],
-                                [-74.2421349, 40.5457129],
-                                [-74.2421545, 40.5457324],
-                                [-74.2421591, 40.5457392],
-                                [-74.2421622, 40.5457449],
-                                [-74.2421657, 40.5457535],
-                                [-74.2421684, 40.5457648],
-                                [-74.2421691, 40.5457801],
-                                [-74.2421673, 40.5457912],
-                                [-74.2421623, 40.5458051],
-                                [-74.2421567, 40.5458148],
-                                [-74.2421472, 40.5458265],
-                                [-74.2421382, 40.5458348],
-                                [-74.2421287, 40.5458416],
-                                [-74.2421132, 40.5458501],
-                                [-74.2420991, 40.5458555],
-                                [-74.2420909, 40.5458578],
-                                [-74.2420725, 40.5458612],
-                                [-74.24205, 40.5458623],
-                                [-74.2420459, 40.5458621],
-                                [-74.242022, 40.5458588],
-                                [-74.2420084, 40.545855],
-                                [-74.2419963, 40.5458503],
-                                [-74.241979, 40.5458408],
-                                [-74.2419723, 40.545836],
-                                [-74.2419696, 40.5458338],
-                                [-74.2419587, 40.5458231],
-                                [-74.2419493, 40.5458101],
-                                [-74.2419452, 40.5458019],
-                                [-74.2419404, 40.5457849],
-                                [-74.2419404, 40.5457654],
-                                [-74.2419423, 40.5457565],
-                                [-74.2419502, 40.5457386],
-                                [-74.2419594, 40.5457262],
-                                [-74.2419662, 40.5457193],
-                                [-74.2419754, 40.5457119],
-                                [-74.2419849, 40.5457057],
-                                [-74.2419953, 40.5457004],
-                                [-74.2420061, 40.545696],
-                                [-74.2420307, 40.5456898],
-                                [-74.2420432, 40.5456883]
-                            ]]
+                            "coordinates" => [$coordenadas]
                         ),
                         "type" => "Feature"
                     )
@@ -171,5 +80,69 @@ class Mapa extends UNO_Controller {
         ];
 
         echo json_encode($dados);
+    }
+
+    public function generateCircleCoordinates($center, $radius, $segments) {
+        $coordinates = array();
+        $angleIncrement = 2 * M_PI / $segments;
+
+        // Gerar as coordenadas em torno do ponto central
+        for ($i = 0; $i < $segments; $i++) {
+            $angle = $i * $angleIncrement;
+            $x = $center[0] + $radius * cos($angle);
+            $y = $center[1] + $radius * sin($angle);
+            $coordinates[] = array($x, $y);
+        }
+
+        return $coordinates;
+    }
+
+    public function calculaCirculo()
+    {
+        // Exemplo de uso:
+        $center = array(-74.2420432, 40.5456883);
+        $radius = 0.0001;
+        $segments = 46;
+
+        $circleCoordinates = $this->generateCircleCoordinates($center, $radius, $segments);
+
+        $response = array();
+
+        foreach ($circleCoordinates as $ponto) {
+            $response[] = [$ponto[0], $ponto[1]];
+        }
+
+        return $response;
+
+        foreach ($circleCoordinates as $ponto) {
+            echo "[{$ponto[1]}, {$ponto[0]}],\n";
+        }
+
+        return;
+
+        // Coordenadas centrais
+        $x_centro = 40.545368;
+        $y_centro = -74.243698;
+
+        // Coordenadas da borda do círculo
+        $x_borda = 40.545369;
+        $y_borda = -74.243883;
+
+        // Calcula o raio
+        $raio = sqrt(pow($x_borda - $x_centro, 2) + pow($y_borda - $y_centro, 2));
+
+        // Número de pontos desejado
+        $num_pontos = 46;
+
+        // Calcula os pontos do círculo com o número desejado de coordenadas
+        $pontos_do_circulo = $this->calcularPontosDoCirculo($x_centro, $y_centro, $raio, $num_pontos);
+
+        $response = array();
+
+        foreach ($pontos_do_circulo as $ponto) {
+            $response[] = [$ponto[1], $ponto[0]];
+        }
+
+        return $response;
     }
 }

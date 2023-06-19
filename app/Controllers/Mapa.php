@@ -43,7 +43,7 @@ class Mapa extends UNO_Controller {
                             "roofMaterial" => "tar_paper",
                             "roofShape" => "pyramid",
                             "topColor" => "#fff",
-                            "opacity" => 0.1
+                            "opacity" => 0.7
                         ),
                         "geometry" => array(
                             "type" => "Polygon",
@@ -84,25 +84,26 @@ class Mapa extends UNO_Controller {
 
     public function generateCircleCoordinates($center, $radius, $segments) {
         $coordinates = array();
-        $angleIncrement = 2 * M_PI / $segments;
+        $x1 = deg2rad($center[0]);
+        $y1 = deg2rad($center[1]);
+        $earthRadius = 6371000;
+        $d = $radius / $earthRadius;
 
-        // Gerar as coordenadas em torno do ponto central
         for ($i = 0; $i < $segments; $i++) {
-            $angle = $i * $angleIncrement;
-            $x = $center[0] + $radius * cos($angle);
-            $y = $center[1] + $radius * sin($angle);
-            $coordinates[] = array($x, $y);
-        }
-
+            $angle = deg2rad(360 / $segments * $i);
+            $x = $center[0] + rad2deg($d / cos(deg2rad($center[1]))) * cos($angle);
+            $y = $center[1] + rad2deg($d) * sin($angle);
+            $coordinates[] = [$x, $y];
+    }
         return $coordinates;
     }
 
     public function calculaCirculo()
     {
         // Exemplo de uso:
-        $center = array(-74.2420432, 40.5456883);
-        $radius = 0.0001;
-        $segments = 46;
+        $center = array(-51.146157378351745, -29.670586757512122);
+        $radius = 10;
+        $segments = 360;
 
         $circleCoordinates = $this->generateCircleCoordinates($center, $radius, $segments);
 

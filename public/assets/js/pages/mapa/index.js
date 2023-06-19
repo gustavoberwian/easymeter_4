@@ -1,8 +1,7 @@
 (function () {
 
     "use strict";
-
-    var center = [-74.243698, 40.545368]; // nova york
+    var center = [-51.146157378351745, -29.670586757512122]; // nova york
     //var center = [13.415118329414781, 52.53001062340084]; // nova york
 
     var map = new maptalks.Map("map", {
@@ -53,12 +52,13 @@
         scene.add(new THREE.AmbientLight('#fff', 0.2));
 
         features.forEach(function (g) {
-            var material = new THREE.MeshPhongMaterial({ color: g.properties.color,  });
-            var highlightmaterial = new THREE.MeshBasicMaterial({ color: g.properties.colorHover });
+            var material = new THREE.MeshPhongMaterial({ color: g.properties.color, opacity: g.properties.opacity, transparent: true});
+            var highlightmaterial = new THREE.MeshPhongMaterial({ color: g.properties.colorHover, opacity: g.properties.opacity, transparent: true });
             var mesh = threeLayer.toExtrudePolygon(maptalks.GeoJSON.toGeometry(g), {
                 height: g.properties.height,
                 asynchronous: true,
-                altitude: g.properties.altitude
+                altitude: g.properties.altitude,
+                topColor: g.properties.topColor
             }, material);
 
             //tooltip test

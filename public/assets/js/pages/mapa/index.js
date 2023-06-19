@@ -37,7 +37,7 @@
         features = features.concat(b.features);
     });
 
-// the ThreeLayer to draw buildings
+    // the ThreeLayer to draw buildings
     var threeLayer = new maptalks.ThreeLayer('t', {
         forceRenderOnMoving: true,
         forceRenderOnRotating: true,
@@ -70,7 +70,7 @@
 
             //infowindow test
             mesh.setInfoWindow({
-                content: 'Nome do Reservatorio<br/>Nivel: ' + g.properties.height,
+                content: 'Reservatório: ' + g.properties.name + '<br/>Nivel: ' + g.properties.height,
                 title: 'Detalhes',
                 animationDuration: 0,
                 autoOpenOn: false,

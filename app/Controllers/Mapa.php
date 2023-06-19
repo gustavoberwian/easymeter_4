@@ -48,7 +48,8 @@ class Mapa extends UNO_Controller
                             "roofMaterial" => "tar_paper",
                             "roofShape" => "pyramid",
                             "topColor" => "#fff",
-                            "opacity" => 0.7
+                            "opacity" => 0.7,
+                            "name" => $b->name
                         ),
                         "geometry" => array(
                             "type" => "Polygon",
@@ -74,7 +75,8 @@ class Mapa extends UNO_Controller
                             "roofMaterial" => "tar_paper",
                             "roofShape" => "pyramid",
                             "topColor" => "#53acd6",
-                            "opacity" => 1
+                            "opacity" => 1,
+                            "name" => $b->name
                         ),
                         "geometry" => array(
                             "type" => "Polygon",

@@ -6,7 +6,8 @@
 
     <div class="row">
         <div class="col-6">
-            <ul class="nav nav-pills nav-pills-primary mb-3">
+            <div class="nav-wrap-desk">
+                <ul class="nav nav-pills nav-pills-primary mb-3">
             <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back" type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <?php if (($group->m_energia)) : ?>
                     <li class="nav-item configs <?= $monitoria === 'energy' ? 'active' : '' ?>" role="presentation">
@@ -29,6 +30,25 @@
                     </li>
                 <?php endif; ?>
             </ul>
+            </div>
+            <div class="nav-wrap-mob">
+                <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back"
+                    type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <select class='nav-sel btn btn btn-primary'>
+                    <?php if (($group->m_energia)) : ?>
+                        <option value="energy">Energia</option>
+                    <?php endif; ?>
+                    <?php if (($group->m_agua)) : ?>
+                        <option value="water">Água</option>
+                    <?php endif; ?>
+                    <?php if (($group->m_gas)) : ?>
+                        <option value="gas">Gás</option>
+                    <?php endif; ?>
+                    <?php if (($group->m_nivel)) : ?>
+                        <option value="nivel">Nível</option>
+                    <?php endif; ?>
+                </select>
+            </div>
         </div>
         <div class="col-6 text-end">
             <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>

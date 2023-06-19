@@ -404,11 +404,7 @@ class Admin_model extends Base_model
   
     public function chamado_close($id, $user)
     {
-        return $this->db->update('esm_tickets', array(
-            'status' => 'fechado',
-            'fechado_em' => date("Y/m/d H:i:s"),
-            'fechado_por' => $user
-        ), array('id' => $id));
+        return $this->db->table('esm_tickets')->where('id', $id)->set(array('status' => 'fechado', 'fechado_em' => date("Y/m/d H:i:s"),'fechado_por' => $user)->update());
     }
 
     public function get_medidores_unidade($unidade_id)
@@ -1698,7 +1694,7 @@ class Admin_model extends Base_model
         $this->db->transStart();
 
         foreach ($data as $k => $d) {
-            if (!$this->db->table('esm_calibracao')->set(array('leitura' . $fase => $d), array('processo' => $processo, 'porta' => $k))->update()) {
+            if (!$this->db->table('esm_calibracao')->set(array('leitura' . $fase => $d))->where('processo', $processo)->where('porta', $k)->update()) {
                 $failure[] = $this->db->error();
             }
         }
@@ -1734,7 +1730,7 @@ class Admin_model extends Base_model
         }
 
         // coloca 0 no sensor que não foi serializado
-        if (!$this->db->table('esm_calibracao'->set(array('serial' => 0), array('processo' => $processo, 'serial' => null)))->update())
+        if (!$this->db->table('esm_calibracao')->set(array('serial' => 0)->where(array('processo', $processo)->where('serial', null)))->update())
             $failure[] = $this->db->error();
 
         $this->db->transComplete();
@@ -1812,16 +1808,75 @@ class Admin_model extends Base_model
         }
     }
 
+    public function count_alerta_nao_lido($user_id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+            SELECT COUNT(id) AS counter 
+            FROM esm_alertas_envios 
+            WHERE 
+                user_id = $user_id AND 
+                lida IS NULL AND
+                visibility = 'normal'
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return 0;
+
+        return $query->getRow()->counter;
+    }
+
+    public function _count_alerta_nao_lido($user_id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+            SELECT COUNT(id) AS counter 
+            FROM esm_alertas_envios 
+            WHERE 
+                MD5(CONCAT('easymeter', user_id, '123456')) = '$user_id' AND 
+                lida IS NULL AND
+                visibility = 'normal'
+            ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return 0;
+
+        return $query->getRow()->counter;
+    }
+
+    public function add_aviso($titulo, $texto, $email)
+    {
+        $this->user = auth()->user();
+        // user id
+        $user_id = $this->user->id;
+        // cria registro do aviso
+        $data = array(
+            "tipo"        => 'aviso',
+            "titulo"      => $titulo,
+            "texto"          => $texto,
+            "enviado_por" => $user_id,
+            "email"       => ($email == 'true') ? 1 : 0
+        );
+
+        // insere mensagem em esm_alertas
+        if (!$this->db->table('esm_alertas')->set($data)->insert())
+            echo json_encode(array("status"  => "error", "message" => 'error'));
+        else
+            echo json_encode(array("status"  => "success", "message" => "Alerta cadastrado com sucesso!", "id"));
+    }
+
     public function delete_alerta($id, $box, $adm)
     {
         if ($box == 'in') {
             if ($adm) {
-                if (!$this->db->update('esm_alertas', array('visibility' => 'delbyadmin'), array('id' => $id))) {
+                if (!$this->db->table('esm_alertas')->set(array('visibility' => 'delbyadmin'))->where('id', $id)->update()) {
                     echo json_encode(array("status"  => "error", "message" => $this->db->error()));
                     return;
                 }
             } else {
-                if (!$this->db->update('esm_alertas_envios', array('visibility' => 'delbyuser'), array('id' => $id))) {
+                if (!$this->db->table('esm_alertas_envios')->set(array('visibility' => 'delbyuser'))->where('id', $id)->update()) {
                     echo json_encode(array("status"  => "error", "message" => $this->db->error()));
                     return;
                 }
@@ -1840,7 +1895,7 @@ class Admin_model extends Base_model
                 echo json_encode(array("status"  => "success", "message" => "Alerta excluído com sucesso"));
             } else {
                 // marcar como excluido
-                if (!$this->db->update('esm_alertas', array('visibility' => 'delbyuser'), array('id' => $id))) {
+                if (!$this->db->table('esm_alertas')->set(array('visibility' => 'delbyuser'))->where('id', $id)->update()) {
                     echo json_encode(array("status"  => "error", "message" => $this->db->error()));
                     return;
                 }

@@ -2846,7 +2846,7 @@ class Api_model extends Model {
                 GROUP BY device
             ) f ON f.device = esm_medidores.nome
             WHERE 
-                entrada_id = {$data['entrada_id']}
+                esm_unidades.agrupamento_id = {$data['group_id']}
         ");
 
         return $query;
@@ -2933,9 +2933,6 @@ class Api_model extends Model {
     {
         $inicio = $data["inicio"];
         $fim    = $data["fim"];
-
-        $data["inicio"] = date_create_from_format('Y-m-d H:i', $data["inicio"] . ' 00:00')->format('U');
-        $data["fim"]    = date_create_from_format('Y-m-d H:i', $data["fim"] . ' 00:00')->format('U');
 
         // inicia transação
         $failure = array();

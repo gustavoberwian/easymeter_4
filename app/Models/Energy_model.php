@@ -1111,7 +1111,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function VerifyCompetencia($entrada_id, $competencia)
+    public function VerifyCompetencia($agrupamento_id, $competencia)
     {
         $result = $this->db->query("
             SELECT
@@ -1119,7 +1119,7 @@ class Energy_model extends Base_model
             FROM 
                 esm_fechamentos_energia
             WHERE
-                entrada_id = $entrada_id AND DATE_FORMAT(competencia, '%m/%Y') = '$competencia'
+                agrupamento_id = $agrupamento_id AND competencia = '$competencia'
             LIMIT 1
         ");
 
@@ -1300,7 +1300,7 @@ class Energy_model extends Base_model
                 GROUP BY device
             ) f ON f.device = esm_medidores.nome
             WHERE 
-                entrada_id = {$data['entrada_id']}
+                esm_unidades.agrupamento_id = {$data['agrupamento_id']}
         ");
 
         return $query;
@@ -1308,11 +1308,8 @@ class Energy_model extends Base_model
 
     public function Calculate($data, $config, $group)
     {
-        $inicio = date_create_from_format('d/m/Y', $data["inicio"])->format('Y-m-d');
-        $fim = date_create_from_format('d/m/Y', $data["fim"])->format('Y-m-d');
-
-        $data["inicio"] = date_create_from_format('d/m/Y H:i', $data["inicio"] . ' 00:00')->format('U');
-        $data["fim"] = date_create_from_format('d/m/Y H:i', $data["fim"] . ' 00:00')->format('U');
+        $inicio = $data["inicio"];
+        $fim = $data["fim"];
 
         // inicia transação
         $failure = array();

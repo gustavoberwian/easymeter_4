@@ -170,7 +170,7 @@ class Api extends UNO_Controller {
                     $c = explode('-', $competencia);
 
                     if (is_numeric($c[0]) && is_numeric($c[1]) && intval($c[0]) > 0 && intval($c[0]) < 13) {
-                        $competencia =  intval($c[0])."/".$c[1];
+                        $competencia =  intval("01/" . $c[0]) . "/" . $c[1];
                     } else {
                         echo json_encode(array("status" => "error", "message" => "Invalid c parameter $competencia"));
                         return;
@@ -194,7 +194,6 @@ class Api extends UNO_Controller {
 
                 $data = array(
                     "group_id"    => $client->agrupamento_id,
-                    "entrada_id"  => $client->energia_id,
                     "competencia" => $competencia,
                     "inicio"      => $start,
                     "fim"         => $end,

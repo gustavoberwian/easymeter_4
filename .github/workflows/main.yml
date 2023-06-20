@@ -1,10 +1,7 @@
 name: Deploy via ftp
-on:
-  pull_request_review:
-    types: [submitted]
+on: push
 jobs:
-  approved:
-    if: github.event.review.state == 'approved'
+  deploy:
     name: Deploy
     runs-on: ubuntu-latest
     steps:

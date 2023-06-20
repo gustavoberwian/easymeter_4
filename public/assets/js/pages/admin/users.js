@@ -8,7 +8,7 @@
 	// * Inicializa datatable
 	// **
 	let $dtUsers = $('#dt-users').DataTable({
-		dom: '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>pr',
+		dom: '<"row"<"col-lg-6"><"col-lg-6"f>><"table-responsive"t><"row"<"col-lg-6 pt-4"l><"col-lg-6"pr>>',
 		processing: true,
 		columns: [
 			{ data: "avatar", orderable: false, class: "dt-body-center" },
@@ -20,6 +20,7 @@
 			{ data: "status", orderable: false, class: "dt-body-center" },
 			{ data: "actions", orderable: false, class: "dt-body-center actions" }
 		],
+		language: { search: ''},
 		order: [],
 		serverSide: true,
 		ajax: {

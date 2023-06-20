@@ -29,7 +29,7 @@ var unidade_validator;
     // * Inicializa datatable
     // **
 	let $dtEntities = $('#dt-entities').DataTable({
-		dom: '<"row"<"col-lg-6"l><"col-lg-6 text-right"f>><"table-responsive"t>pr',
+		dom: '<"row"<"col-lg-6"><"col-lg-6 text-right"f>><"table-responsive"t><"row"<"col-lg-6 pt-4"l><"col-lg-6"pr>>',
 		processing: true,
 		pageLength: 10,
 		columns: [
@@ -44,6 +44,7 @@ var unidade_validator;
 			{ data: "status", visible: false },
 			{ data: "action", orderable: false, className: "actions dt-body-center"}
 		],
+		language: {search: ''},
         serverSide: true,
         pagingType: "numbers",
 		ajax: {

@@ -126,6 +126,12 @@ $routes->get('/ambev/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
 $routes->get('/ambev/(:any)/(:num)', 'Industria::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/ambev/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
 
+// Routes Mapa
+$routes->get('/mapa', 'Mapa::index');
+$routes->get('/mapa/(:any)', 'Mapa::$1');
+$routes->get('/mapa/(:any)/(:num)', 'Mapa::$1/$2');
+$routes->post('/mapa/(:any)', 'Mapa::$1');
+
 service('auth')->routes($routes);
 
 /*

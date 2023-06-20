@@ -10,8 +10,9 @@
 
     <div class="row">
         <div class="col-6">
-        <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back" type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
-            <ul class="nav nav-pills nav-pills-primary mb-3">
+            <div class="nav-wrap-desk">
+                <ul class="nav nav-pills nav-pills-primary mb-3">
+                <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back" type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
                 <?php if (!$user->inGroup("unity", "shopping")): ?>
                     <li class="nav-item configs" role="presentation">
                         <button class="nav-link configs left active" data-bs-toggle="pill" data-bs-target="#resume" type="button">Resumo</button>
@@ -21,10 +22,23 @@
                     <button class="nav-link configs <?= $user->inGroup("unity") ? 'left active' : '' ?>" data-bs-toggle="pill" data-bs-target="#charts" type="button">Medição</button>
                 </li>
             </ul>
+            </div>
+            <div class="nav-wrap-mob pb-1">
+                <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back"
+                    type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <select class='nav-sel btn btn btn-primary'>
+                    <?php if (!$user->inGroup("unity", "shopping")): ?>
+                        <option value="resume">Resumo</option>
+                    <?php endif; ?>
+                    <option value="charts">Medição</option>
+                </select>
+            </div>
         </div>
-        <div class="col-6 text-end">
-            <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
-        </div>
+        <?php if($user->entity->image_url): ?>
+            <div class="col-6 text-end">
+                <img src="<?php echo base_url('assets/img/' . $user->entity->image_url); ?>" alt="<?= ""; ?>" class="mb-3" height="50"/>
+            </div>
+        <?php endif; ?>
     </div>
 
     <div class="tab-content" style="background-color: transparent; box-shadow: none; padding: 0; border: none">

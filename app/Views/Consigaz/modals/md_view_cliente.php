@@ -31,8 +31,8 @@
                     </table>
                 </div>
             </div>
-            <div class="row mt-3">
-                <div class="col-md-6">
+            <div class="row">
+                <div class="col-md-6 mt-3">
                     <table class="table-bordered w-100 border-color-light-grey-3">
                         <thead>
                         <tr class="text-center">
@@ -59,7 +59,7 @@
                         </tbody>
                     </table>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-6 mt-3">
                     <table class="table-bordered w-100 border-color-light-grey-3">
                         <thead>
                         <tr class="text-center">

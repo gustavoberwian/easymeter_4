@@ -11,7 +11,7 @@
             sSearchPlaceholder: "Pesquisar..."
         },
         columns    : [
-            {data: "nome", className: "dt-body-center table-one-line"},
+            {data: "nome", className: "dt-body-center table-one-line", responsivePriority: 1, targets: 0 },
             {data: "ultima_competencia", className: "dt-body-center"},
             {data: "opened", className: "dt-body-center"},
             {data: "closed", className: "dt-body-center"},
@@ -21,13 +21,14 @@
             {data: "ultimo_mes", className: "dt-body-center"},
             {data: "mes_atual", className: "dt-body-center"},
             {data: "previsao", className: "dt-body-center"},
-            {data: "actions", className: "dt-body-center"},
+            {data: "actions", className: "dt-body-center", responsivePriority: 2, targets: -1},
         ],
         serverSide : true,
         ordering   : false,
         pageLength : 25,
         pagingType : "numbers",
         searching  : true,
+        responsive : false,
         ajax       : {
             type: 'POST',
             url: $("#dt-entidades").data("url"),
@@ -53,6 +54,8 @@
     $("#dt-entidades tbody").on("click", "tr", function (event) {
         // se o clique não foi em uma celula ou na última, retorna
         if (event.target.cellIndex == undefined) return;
+
+        if ($(event.target).hasClass("dtr-control")) return;
 
         let data = dtEntidades.row(this).data();
 
@@ -87,7 +90,7 @@
             error: function (xhr, status, error) {
             },
             complete: function () {
-                $(_self).html('<i class="fas fa-file-download"></i> Baixar Planilha');
+                $(_self).html('<i class="fas fa-file-download"></i> <span class="d-none d-sm-inline">Baixar Planilha</span>');
             }
         });
     })

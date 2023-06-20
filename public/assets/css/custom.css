@@ -61,6 +61,13 @@ table thead th {
 .card-actions.buttons {
     top: 10px;
 }
+
+.card-actions.buttons-alerts .btn-primary {
+    background-color: #0088cc;
+    border-color: #0088cc #0088cc #006699;
+    color: #ffffff;
+    padding-bottom: 1px;
+}
 .readonly .bootstrap-tagsinput .badge [data-role="remove"]:after {
     color: #5f9ea0;
     pointer-events: none;
@@ -187,6 +194,9 @@ button.nav-link.configs {
 .nav-tabs .nav-link.active, .nav-tabs .nav-item.show .nav-link {
     border-top-color: #0088CC;
 }
+.card-central.hover .card-body {
+    background-color: #ECFFB3!important;
+}
 .btn-reload-chart {
 	margin-left: 10px;
 }
@@ -308,4 +318,33 @@ button.nav-link.configs {
     text-decoration: none;
     text-rendering: optimizeLegibility;
     word-wrap: normal;
+}
+.nav-wrap-mob {
+        display: none;
+}
+@media only screen and (max-width: 768px) {
+    .card-bottom-item {
+        width: 25%;
+    }
+}
+@media only screen and (max-width: 975px) {
+    .nav-wrap-desk {
+        display: none!important;
+    }
+    .nav-wrap-mob {
+        display: block;
+    }
+}
+@media only screen and (max-width: 532px) {
+    .col-6 {
+        padding-left: 10px;
+        padding-right: 10px;
+        padding-bottom: 10px;
+        padding-top: 10px
+    }
+}
+@media only screen and (max-width: 991px) {
+    .card-footer {
+        display: none!important;
+    }
 }

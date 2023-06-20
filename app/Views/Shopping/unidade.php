@@ -23,7 +23,8 @@
 
     <div class="row">
         <div class="col-6">
-            <ul class="nav nav-pills nav-pills-primary mb-3">
+            <div class="nav-wrap-desk">
+                <ul class="nav nav-pills nav-pills-primary mb-3">
                 <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back"
                     type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
 
@@ -45,6 +46,18 @@
 
 
             </ul>
+            </div>
+            <div class="nav-wrap-mob">
+                <button class="btn btn-light me-4" id='btn-back-last' data-bs-toggle="" data-bs-target="#back"
+                    type="button"><i class="fas fa-arrow-left"></i> Voltar</button>
+                <select class='nav-sel btn btn btn-primary'>
+                    <option value="charts">Medições</option>
+                    <?php if (!$user->inGroup("unity") || $permission->acessar_engenharia): ?>
+                        <option value="engineering">Engenharia</option>
+                    <?php endif; ?>
+                    <option value="data">Dados</option>
+                </select>
+            </div>
         </div>
         <div class="col-6 text-end">
             <?php if (!$user->inGroup("unity")): ?>

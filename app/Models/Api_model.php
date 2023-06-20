@@ -6,7 +6,7 @@ use CodeIgniter\Database\ConnectionInterface;
 use CodeIgniter\Model;
 use CodeIgniter\Validation\ValidationInterface;
 
-class Api_model extends Model {
+class Api_model extends Base_model {
 
     public function inclui_leituras($data, $header)
     {
@@ -1761,6 +1761,8 @@ class Api_model extends Model {
 
     public function api_get_active_positive($device, $start, $end, $st = array(), $gp = false)
     {
+        $entity = $this->get_group_by_device($device);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -1799,12 +1801,12 @@ class Api_model extends Model {
             if (!$gp)
                 $group = "GROUP BY esm_hours.num";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     CONCAT(LPAD(esm_hours.num, 2, '0'), ':00') AS label, 
                     SUM(activePositiveConsumption) AS value
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -1812,7 +1814,7 @@ class Api_model extends Model {
                     $dvc
                 $group
                 ORDER BY esm_hours.num
-            ");
+            ";
 
         } else {
 
@@ -1831,12 +1833,12 @@ class Api_model extends Model {
             if (!$gp)
                 $group = "GROUP BY esm_calendar.dt";
 
-            $result = $this->db->query("
+            $query = "
                 SELECT 
                     esm_calendar.dt AS label,
                     SUM(activePositiveConsumption) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                     $station
@@ -1846,8 +1848,10 @@ class Api_model extends Model {
                     esm_calendar.dt <= '$end' 
                 $group
                 ORDER BY esm_calendar.dt
-            ");
+            ";
         }
+
+        $result = $this->db->query($query);
 
         if ($result->getNumRows()) {
             return $result->getResult();
@@ -1858,6 +1862,8 @@ class Api_model extends Model {
 
     public function GetActiveDemand($device, $start, $end)
     {
+        $entity = $this->get_group_by_device($device);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -1886,7 +1892,7 @@ class Api_model extends Model {
                     MAX(activeDemand) AS valueMax,
                     SUM(activePositiveConsumption) AS valueSum
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -1903,7 +1909,7 @@ class Api_model extends Model {
                     MAX(activeDemand) AS valueMax,
                     SUM(activePositiveConsumption) AS valueSum
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                     $dvc
@@ -1924,6 +1930,8 @@ class Api_model extends Model {
 
     public function GetMainReactive($device, $start, $end)
     {
+        $entity = $this->get_group_by_device($device);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -1952,7 +1960,7 @@ class Api_model extends Model {
                     SUM(reactivePositiveConsumption) AS valueInd,
                     SUM(ABS(reactiveNegativeConsumption)) AS valueCap
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -1969,7 +1977,7 @@ class Api_model extends Model {
                     SUM(reactivePositiveConsumption) AS valueInd,
                     SUM(ABS(reactiveNegativeConsumption)) AS valueCap
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                     $dvc
@@ -1990,6 +1998,8 @@ class Api_model extends Model {
 
     public function GetMainLoad($device, $start, $end)
     {
+        $entity = $this->get_group_by_device($device);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -2017,7 +2027,7 @@ class Api_model extends Model {
                     CONCAT(esm_hours.num, ':00') AS label, 
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, ROUND(IFNULL(AVG(activePositiveConsumption + ABS(activePositiveConsumption)) / MAX(activePositiveConsumption + ABS(activePositiveConsumption)), 1), 3)) AS value
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -2033,7 +2043,7 @@ class Api_model extends Model {
                     esm_calendar.dt AS label,
                     ROUND(IFNULL(AVG(activePositiveConsumption + ABS(activePositiveConsumption)) / MAX(activePositiveConsumption + ABS(activePositiveConsumption)), 1), 3) AS value
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                     $dvc
@@ -2061,6 +2071,8 @@ class Api_model extends Model {
 
     public function GetValuesPhases($device, $start, $end, $field)
     {
+        $entity = $this->get_group_by_device($device);
+
         $operation["instant_active"]   = ["active", "SUM("];
         $operation["instant_current"]  = ["current", "AVG("];
         $operation["instant_voltage"]  = ["voltage", "AVG("];
@@ -2096,7 +2108,7 @@ class Api_model extends Model {
                     {$operation[$field][1]}({$operation[$field][0]}B)) AS value_b,
                     {$operation[$field][1]}({$operation[$field][0]}C)) AS value_c
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -2114,7 +2126,7 @@ class Api_model extends Model {
                     {$operation[$field][1]}({$operation[$field][0]}B)) AS value_b,
                     {$operation[$field][1]}({$operation[$field][0]}C)) AS value_c
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                         d.timestamp >= esm_calendar.ts_start AND 
                         d.timestamp <= esm_calendar.ts_end 
                         $dvc
@@ -2135,6 +2147,8 @@ class Api_model extends Model {
 
     public function GetLoadPhases($device, $start, $end, $field)
     {
+        $entity = $this->get_group_by_device($device);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -2164,7 +2178,7 @@ class Api_model extends Model {
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activeB) / MAX(activeB), 1)) AS value_b,
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(AVG(activeC) / MAX(activeC), 1)) AS value_c
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -2183,7 +2197,7 @@ class Api_model extends Model {
                     IFNULL(AVG(activeB) / MAX(activeB), 1) AS value_b,
                     IFNULL(AVG(activeC) / MAX(activeC), 1) AS value_c
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                         d.timestamp >= esm_calendar.ts_start AND 
                         d.timestamp <= esm_calendar.ts_end 
                         $dvc
@@ -2204,6 +2218,8 @@ class Api_model extends Model {
 
     public function GetFactorPhases($device, $start, $end)
     {
+        $entity = $this->get_group_by_device($device);
+
         $dvc = "";
         if (is_numeric($device)) {
             if ($device == 0) {
@@ -2236,7 +2252,7 @@ class Api_model extends Model {
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeB) / SQRT(POW(SUM(activeB), 2) + POW(SUM(ABS(reactiveB)), 2)), 1)) AS value_b,
                     IF(DATE(NOW()) = '$start' AND esm_hours.num >= HOUR(NOW()), null, IFNULL(SUM(activeC) / SQRT(POW(SUM(activeC), 2) + POW(SUM(ABS(reactiveC)), 2)), 1)) AS value_c
                 FROM esm_hours
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     HOUR(FROM_UNIXTIME(d.timestamp - 600)) = esm_hours.num AND 
                     d.timestamp > UNIX_TIMESTAMP('$start 00:00:00') AND 
                     d.timestamp <= UNIX_TIMESTAMP('$end 23:59:59') 
@@ -2257,7 +2273,7 @@ class Api_model extends Model {
                     IFNULL(SUM(activeB) / SQRT(POW(SUM(activeB), 2) + POW(SUM(ABS(reactiveB)), 2)), 1) AS value_b,
                     IFNULL(SUM(activeC) / SQRT(POW(SUM(activeC), 2) + POW(SUM(ABS(reactiveC)), 2)), 1) AS value_c
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     d.timestamp > (esm_calendar.ts_start) AND 
                     d.timestamp <= (esm_calendar.ts_end) 
                     $dvc
@@ -2528,8 +2544,8 @@ class Api_model extends Model {
                 SELECT
                     esm_fechamentos_agua.id,
                     competencia AS competence,
-                    FROM_UNIXTIME(inicio, '%Y-%m-%d') AS start,
-                    FROM_UNIXTIME(fim, '%Y-%m-%d') AS end,
+                    inicio AS start,
+                    fim AS end,
                     ROUND(consumo_c + consumo_u) AS consumption,
                     ROUND(consumo_c_o + consumo_u_o) AS consumption_opened,
                     ROUND(consumo_c_c + consumo_u_c) AS consumption_closed,
@@ -2725,12 +2741,12 @@ class Api_model extends Model {
         return false;
     }
 
-    public function VerifyCompetencia($type, $entrada_id, $competencia)
+    public function VerifyCompetencia($type, $agrupamento_id, $competencia)
     {
         $result = $this->db->query("
             SELECT id
             FROM esm_fechamentos_$type
-            WHERE entrada_id = $entrada_id AND competencia = '$competencia'
+            WHERE agrupamento_id = $agrupamento_id AND competencia = '$competencia'
         ");
 
         return ($result->getNumRows() > 0);
@@ -2738,7 +2754,9 @@ class Api_model extends Model {
 
     private function CalculateQuery($data, $inicio, $fim, $type, $config)
     {
-        $query = $this->db->query("
+        $entity = $this->get_entity_by_group($data['agrupamento_id']);
+
+        $query = "
             SELECT
                 {$data['id']} AS fechamento_id,
                 esm_medidores.nome AS device,
@@ -2757,7 +2775,7 @@ class Api_model extends Model {
                     MIN(leitura) AS leitura_anterior,
                     MAX(leitura) AS leitura_atual,
                     MAX(leitura) - MIN(leitura) AS consumo
-                FROM esm_leituras_ancar_agua
+                FROM esm_leituras_" . $entity->tabela . "_agua
                 WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
                 GROUP BY medidor_id
             ) a ON a.medidor_id = esm_medidores.id
@@ -2765,7 +2783,7 @@ class Api_model extends Model {
                 SELECT 
                     medidor_id,
                     SUM(consumo) AS consumo
-                FROM esm_leituras_ancar_agua
+                FROM esm_leituras_" . $entity->tabela . "_agua
                 WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
                     AND HOUR(FROM_UNIXTIME(timestamp)) > HOUR(FROM_UNIXTIME({$config->open})) AND HOUR(FROM_UNIXTIME(timestamp)) <= HOUR(FROM_UNIXTIME({$config->close}))
                 GROUP BY medidor_id
@@ -2774,20 +2792,22 @@ class Api_model extends Model {
                 SELECT 
                     medidor_id,
                     SUM(consumo) AS consumo
-                FROM esm_leituras_ancar_agua
+                FROM esm_leituras_" . $entity->tabela . "_agua
                 WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
 					AND (HOUR(FROM_UNIXTIME(timestamp)) <= HOUR(FROM_UNIXTIME({$config->open})) OR HOUR(FROM_UNIXTIME(timestamp)) > HOUR(FROM_UNIXTIME({$config->close})))
                 GROUP BY medidor_id
             ) c ON c.medidor_id = esm_medidores.id
             WHERE 
-                esm_medidores.entrada_id = {$data['entrada_id']}
-        ");
+                esm_unidades.agrupamento_id = {$data['agrupamento_id']}
+        ";
 
-        return $query;
+        return $this->db->query($query);
     }
 
     private function calculate_query_energy($data, $inicio, $fim, $config, $type)
     {
+        $entity = $this->get_entity_by_group($data['agrupamento_id']);
+
         $query = $this->db->query("
             SELECT
                 {$data['id']} AS fechamento_id,
@@ -2811,7 +2831,7 @@ class Api_model extends Model {
                     MAX(activePositive) AS leitura_atual,
                     MAX(activePositive) - MIN(activePositive) AS consumo,
                     MAX(activeDemand) AS demanda
-                FROM esm_leituras_ancar_energia
+                FROM esm_leituras_" . $entity->tabela . "_energia
                 WHERE timestamp >= UNIX_TIMESTAMP('$inicio 00:00:00') AND timestamp <= UNIX_TIMESTAMP('$fim 00:00:00')
                 GROUP BY device
             ) a ON a.device = esm_medidores.nome
@@ -2821,7 +2841,7 @@ class Api_model extends Model {
                     SUM(activePositiveConsumption) AS consumo_p,
                     MAX(activeDemand) AS demanda_p
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                     AND ((MOD((d.timestamp), 86400) >= {$config->ponta_start} AND MOD((d.timestamp), 86400) <= {$config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7)
@@ -2836,7 +2856,7 @@ class Api_model extends Model {
                     SUM(activePositiveConsumption) AS consumo_f,
                     MAX(activeDemand) AS demanda_f
                 FROM esm_calendar
-                LEFT JOIN esm_leituras_ancar_energia d ON 
+                LEFT JOIN esm_leituras_" . $entity->tabela . "_energia d ON 
                     (d.timestamp) > (esm_calendar.ts_start) AND 
                     (d.timestamp) <= (esm_calendar.ts_end + 600) 
                     AND (((MOD((d.timestamp), 86400) < {$config->ponta_start} OR MOD((d.timestamp), 86400) > {$config->ponta_end}) AND esm_calendar.dw > 1 AND esm_calendar.dw < 7) OR esm_calendar.dw = 1 OR esm_calendar.dw = 7)
@@ -2846,7 +2866,7 @@ class Api_model extends Model {
                 GROUP BY device
             ) f ON f.device = esm_medidores.nome
             WHERE 
-                esm_unidades.agrupamento_id = {$data['group_id']}
+                esm_unidades.agrupamento_id = {$data['agrupamento_id']}
         ");
 
         return $query;
@@ -2856,9 +2876,6 @@ class Api_model extends Model {
     {
         $inicio = $data["inicio"];
         $fim    = $data["fim"];
-
-        $data["inicio"] = date_create_from_format('Y-m-d H:i', $data["inicio"] . ' 00:00')->format('U');
-        $data["fim"]    = date_create_from_format('Y-m-d H:i', $data["fim"] . ' 00:00')->format('U');
 
         // inicia transação
         $failure = array();
@@ -2991,7 +3008,7 @@ class Api_model extends Model {
         }
 
         // atualiza tabela esm_fechamento com dados da área comum
-        if (!$this->db->update('esm_fechamentos_energia', array(
+        if (!$this->db->table('esm_fechamentos_energia')->set(array(
             'consumo'          => $consumo_c,
             'consumo_p'        => $consumo_c_p,
             'consumo_f'        => $consumo_c_f,
@@ -3004,7 +3021,7 @@ class Api_model extends Model {
             'demanda_u'        => ($demanda_u_p > $demanda_u_f) ? $demanda_u_p : $demanda_u_f,
             'demanda_u_p'      => $demanda_u_p,
             'demanda_u_f'      => $demanda_u_f
-        ), array('id' => $data['id']))) {
+        ))->where('id', $data['id'])->update()) {
 
             $failure[] = $this->db->error();
         }
@@ -3058,6 +3075,4 @@ class Api_model extends Model {
         return false;
 
     }
-    
-
 }

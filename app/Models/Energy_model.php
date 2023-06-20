@@ -957,7 +957,7 @@ class Energy_model extends Base_model
         return false;
     }
 
-    public function GetAlert($aid, $device = "")
+    public function GetAlert($aid, $entity, $device = "")
     {
         if ($aid == 0) {
 

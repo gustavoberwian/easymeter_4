@@ -462,7 +462,7 @@ class Api_model extends Model {
         $excesso = $this->db->query("
             SELECT 
                 '$msg' AS texto,
-                esm_leituras_baviera_agua.medidor_id, 
+                esm_leituras_{$tabela}_agua.medidor_id, 
                 esm_entradas.id AS entrada_id,
                 esm_unidades.id AS unidade_id,
                 esm_entradas.nome AS entrada,
@@ -487,7 +487,7 @@ class Api_model extends Model {
 
         foreach ($excesso as $v) {
             // para cada medidor, cria um alerta
-            if ($this->db->insert('esm_alertas', array(
+            if ($this->db->table('esm_alertas')->set(array(
                 'tipo' => 'consumo',
                 'titulo' => "Aviso de Consumo Unidade ".(!is_null($v->bloco) ? $v->bloco.'/' : '').$v->unidade,
                 'texto' => "Foi detectado um consumo excessivo $msg na ".((in_array($v->entrada, array("Única", "Geral"))) ? "" : "entrada ".$v->entrada." da ")."unidade ".(!is_null($v->bloco) ? $v->bloco.'/' : '').$v->unidade." (".number_format($v->consumo, 0, ",", ".")."L)",
@@ -498,7 +498,7 @@ class Api_model extends Model {
                 'unidade_id' => $v->unidade_id,
                 'medidor_id' => $v->medidor_id,
                 'consumo_horas' => 0,
-            ))) {
+            ))->insert()) {
 /*
                 $id = $this->db->insertID();
 
@@ -1201,12 +1201,12 @@ class Api_model extends Model {
             $this->db->transStart();
 
             // insere alerta
-            $this->db->table('esm_alertas_energia')->insert($d);
+            $this->db->table('esm_alertas')->insert($d);
 
             $id = $this->db->insertID();
 
             // envia para ancar
-            $this->db->table('esm_alertas_energia_envios')->insert(array("user_id" => 538, "alerta_id" => $id));
+            $this->db->table('esm_alertas_envios')->insert(array("user_id" => $d->id, "alerta_id" => $id));
 
             // envia para shopping
             if ($cfg->notify_shopping) {
@@ -1215,7 +1215,7 @@ class Api_model extends Model {
 
                 if ($group) {
                     foreach($group as $g) {
-                        $this->db->table('esm_alertas_energia_envios')->insert(array("user_id" => $g->id, "alerta_id" => $id));
+                        $this->db->table('esm_alertas_envios')->insert(array("user_id" => $g->id, "alerta_id" => $id));
                     }
                 }
             }
@@ -1225,7 +1225,7 @@ class Api_model extends Model {
                 $users = $this-> GetUserIdByDevice($d["device"]);
                 if ($users) {
                     foreach($users as $u) {
-                        $this->db->table('esm_alertas_energia_envios')->insert(array("user_id" => $u->id, "alerta_id" => $id));
+                        $this->db->table('esm_alertas_envios')->insert(array("user_id" => $u->id, "alerta_id" => $id));
                     }
                 }
             }
@@ -1565,56 +1565,31 @@ class Api_model extends Model {
                 }
             }
 
-            if ($generate && $monitoramento == 'agua') {
+            if ($generate) {
 
                 $this->db->transStart();
                 $data = array(
 
-                    'tipo'          => ($alerta->tipo == 'consumo') ? 1 : 2,
+                    'tipo'          => $alerta->tipo,
                     'titulo'        => $titulo,
                     'texto'         => $mensagem,
                     'enviada'       => date('Y-m-d H:i:s'),
-                    'unidade_id'    => '',
-                    'visibility'    => "normal",
-                    'device'        => $this->get_device_by_medidor_id($alerta->medidor_id),
-
+                    'enviado_por'   => 0,
+                    'email'         => 0,
+                    'monitoramento' => $alerta->monitoramento,
+                    'unidade_id'    => 0,
+                    'medidor_id'    => $alerta->medidor_id,
+                    'consumo_horas' => $result->value
                 );
 
-                if ($this->db->table('esm_alertas_agua')->set($data)->insert()) {
+                if ($this->db->table('esm_alertas')->set($data)->insert()) {
 
                     $id = $this->db->insertID();
                     
-                    $this->db->table('esm_alertas_agua_envios')->set(array(
+                    $this->db->table('esm_alertas_envios')->set(array(
                         'user_id' => $this->get_user_id_by_name($alerta->tabela),
                         'alerta_id' => $id
                     ))->insert();
-
-                    $this->alertas_send_email($alerta, $id, $mensagem);
-                    $this->db->table('esm_alertas_config')->update(array('ultimo' => date('Y-m-d 00:00:00')), array('id' => $this->get_user_id_by_name($alerta->tabela)));
-
-                    $this->db->transComplete();
-
-                }   
-            
-                } elseif ($generate  && $monitoramento == 'nivel') {
-                    
-                    $this->db->transStart();
-            
-                    if ($this->db->table('esm_alertas_nivel')->insert(array(
-                        'tipo'          => 2,
-                        'titulo'        => $titulo,
-                        'texto'         => $mensagem,
-                        'enviada'       => date('Y-m-d H:i:s'),
-                        'unidade_id'    => '',
-                        'visibility'    => "normal",
-                        'device'        => $this->get_device_by_medidor_id($alerta->medidor_id),
-                    ))) {
-            
-                    $id = $this->db->insertID();
-                    $this->db->table('esm_alertas_nivel_envios')->insert(array(
-                        'user_id' => $this->get_user_id_by_name($alerta->tabela),
-                        'alerta_id' => $id
-                    ));
 
                     $this->alertas_send_email($alerta, $id, $mensagem);
                     $this->db->table('esm_alertas_config')->update(array('ultimo' => date('Y-m-d 00:00:00')), array('id' => $this->get_user_id_by_name($alerta->tabela)));

@@ -591,30 +591,30 @@ class Shopping extends UNO_Controller
 
         $user_id = auth()->user()->id;
 
-        $dvc = 'esm_alertas_' . $m . '.device';
+        $dvc = 'esm_alertas.medidor_id';
         $join = 'JOIN esm_medidores ON esm_medidores.nome = ' . $dvc;
        
         $dt = $this->datatables->query("
             SELECT 
                 1 AS type, 
-                esm_alertas_" . $m . ".tipo, 
+                esm_alertas.tipo, 
                 $dvc,
                 esm_unidades.nome, 
-                esm_alertas_" . $m . ".titulo, 
-                esm_alertas_" . $m . ".enviada, 
+                esm_alertas.titulo, 
+                esm_alertas.enviada, 
                 0 as actions, 
-                IF(ISNULL(esm_alertas_" . $m . "_envios.lida), 'unread', '') as DT_RowClass,
-                esm_alertas_" . $m . "_envios.id AS DT_RowId
-            FROM esm_alertas_" . $m . "_envios 
-            JOIN esm_alertas_" . $m . " ON esm_alertas_" . $m . ".id = esm_alertas_" . $m . "_envios.alerta_id 
+                IF(ISNULL(esm_alertas_envios.lida), 'unread', '') as DT_RowClass,
+                esm_alertas_envios.id AS DT_RowId
+            FROM esm_alertas_envios 
+            JOIN esm_alertas ON esm_alertas.id = esm_alertas_envios.alerta_id 
             " . $join . " 
             JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.agrupamento_id = $group
             WHERE
-                esm_alertas_" . $m . "_envios.user_id = $user_id AND 
-                esm_alertas_" . $m . ".visibility = 'normal' AND 
-                esm_alertas_" . $m . "_envios.visibility = 'normal' AND
-                esm_alertas_" . $m . ".enviada IS NOT NULL
-            ORDER BY esm_alertas_" . $m . ".enviada DESC
+                esm_alertas_envios.user_id = $user_id AND 
+                esm_alertas.visibility = 'normal' AND 
+                esm_alertas_envios.visibility = 'normal' AND
+                esm_alertas.enviada IS NOT NULL
+            ORDER BY esm_alertas.enviada DESC
         ");
 
         $dt->edit('type', function ($data) {

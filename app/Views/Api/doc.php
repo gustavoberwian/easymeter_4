@@ -15,7 +15,7 @@
                 <section class="card card-easymeter mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">list</span>[&t=<span class="text-warning">{type}</span>]&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">list</span>[&t=<span class="text-warning">{type}</span>]&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -73,7 +73,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">resume</span>[&t=<span class="text-warning">{type}</span>]&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">resume</span>[&t=<span class="text-warning">{type}</span>]&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -136,7 +136,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">consumption</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">consumption</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -212,7 +212,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">active_demand</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">active_demand</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -288,7 +288,7 @@
                     <div class="card-body documentation">
 
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">reactive</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">reactive</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -364,7 +364,7 @@
                     <div class="card-body documentation">
 
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">load</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">load</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -433,7 +433,7 @@
                     <div class="card-body documentation">
 
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_active</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_active</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -516,7 +516,7 @@
                     <div class="card-body documentation">
 
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_current</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_current</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -599,7 +599,7 @@
                     <div class="card-body documentation">
 
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_voltage</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_voltage</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -682,7 +682,7 @@
                     <div class="card-body documentation">
 
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_power</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_power</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -765,7 +765,7 @@
                     <div class="card-body documentation">
 
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_load</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_load</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -848,7 +848,7 @@
                     <div class="card-body documentation">
 
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_reactive</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_reactive</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <h4>Obtém a demanda de energia ativa do medidor no período</h4>
                         <table class="api-table">
@@ -932,7 +932,7 @@
                     <div class="card-body documentation">
 
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_factor</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">instant_factor</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -1014,7 +1014,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">accountings</span>&p=<span class="text-warning">{pag}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">accountings</span>&p=<span class="text-warning">{pag}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -1077,7 +1077,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">accounting</span>&i=<span class="text-warning">{id}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">accounting</span>&i=<span class="text-warning">{id}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -1138,7 +1138,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">add_accounting</span>&c=<span class="text-warning">{competência}</span>&s=<span class="text-warning">{data início}</span>&c=<span class="text-warning">{data fim}</span>&m=<span class="text-warning">{mensagem}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/energy/1.0/param?q=<span class="text-primary">add_accounting</span>&c=<span class="text-warning">{competência}</span>&s=<span class="text-warning">{data início}</span>&c=<span class="text-warning">{data fim}</span>&m=<span class="text-warning">{mensagem}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -1205,7 +1205,7 @@
                 <section class="card card-easymeter mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">list</span>[&t=<span class="text-warning">{type}</span>]&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">list</span>[&t=<span class="text-warning">{type}</span>]&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -1263,7 +1263,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">resume</span>[&t=<span class="text-warning">{type}</span>]&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">resume</span>[&t=<span class="text-warning">{type}</span>]&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -1325,7 +1325,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">consumption</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">consumption</span>&d=<span class="text-warning">{device}</span>&s=<span class="text-warning">{data inicio}</span>&e=<span class="text-warning">{data fim}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -1389,7 +1389,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">accountings</span>&p=<span class="text-warning">{pag}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">accountings</span>&p=<span class="text-warning">{pag}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -1447,7 +1447,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">accounting</span>&i=<span class="text-warning">{id}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">accounting</span>&i=<span class="text-warning">{id}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>
@@ -1505,7 +1505,7 @@
                 <section class="card card-easymeter mt-0 mb-4 col-6">
                     <div class="card-body documentation">
                         <blockquote class="mt-3">
-                            <p class="m-0 text-3"><b>http://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">add_accounting</span>&c=<span class="text-warning">{competência}</span>&s=<span class="text-warning">{data início}</span>&c=<span class="text-warning">{data fim}</span>&m=<span class="text-warning">{mensagem}</span>&key=<span class="text-warning">{chave}</span></b></p>
+                            <p class="m-0 text-3"><b>https://www.easymeter.io/api/water/1.0/param?q=<span class="text-primary">add_accounting</span>&c=<span class="text-warning">{competência}</span>&s=<span class="text-warning">{data início}</span>&c=<span class="text-warning">{data fim}</span>&m=<span class="text-warning">{mensagem}</span>&key=<span class="text-warning">{chave}</span></b></p>
                         </blockquote>
                         <table class="api-table">
                             <tbody>

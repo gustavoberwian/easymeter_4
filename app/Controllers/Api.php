@@ -69,7 +69,7 @@ class Api extends UNO_Controller {
 
         if ($param == "energy" && !is_null($client->energia_id)) {
 
-            $cfg = $this->api_model->GetClientConfig($client->group_id);
+            $cfg = $this->api_model->GetClientConfig($client->agrupamento_id);
 
             $cmd = $this->input->getGet('q');
 
@@ -136,7 +136,7 @@ class Api extends UNO_Controller {
                     return;
                 }
 
-                echo json_encode(array("status" => "success", "data" => $this->api_model->api_get_lancamentos('energia', $client->group_id, $pag * 10)));
+                echo json_encode(array("status" => "success", "data" => $this->api_model->api_get_lancamentos('energia', $client->agrupamento_id, $pag * 10)));
 
             } else if ($cmd == "accounting") {
 
@@ -193,7 +193,7 @@ class Api extends UNO_Controller {
                 // validade dates
 
                 $data = array(
-                    "group_id"    => $client->group_id,
+                    "group_id"    => $client->agrupamento_id,
                     "entrada_id"  => $client->energia_id,
                     "competencia" => $competencia,
                     "inicio"      => $start,
@@ -333,7 +333,7 @@ class Api extends UNO_Controller {
                 // validade dates
 
                 $data = array(
-                    "group_id"    => $client->group_id,
+                    "group_id"    => $client->agrupamento_id,
                     "entrada_id"  => $client->agua_id,
                     "competencia" => $competencia,
                     "inicio"      => $start,

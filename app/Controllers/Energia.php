@@ -2651,6 +2651,7 @@ class Energia extends UNO_Controller
 
     public function alert_test($aid)
     {
+        $entity = $this->shopping_model->get_entity_by_group($this->input->getPost('group'));
         $cfg = $this->energy_model->GetAlertCfg($aid);
 
         if (!$cfg) {
@@ -2664,7 +2665,7 @@ class Energia extends UNO_Controller
 
             $values = array();
             foreach ($cfg as $d) {
-                $alert = $this->energy_model->GetAlert($aid, $d->device);
+                $alert = $this->energy_model->GetAlert($aid, $entity, $d->device);
                 if ($alert) {
                     if ($alert->today > $alert->last) {
                         $values[] = array(
@@ -2686,7 +2687,7 @@ class Energia extends UNO_Controller
 
             $values = array();
             foreach ($cfg as $d) {
-                $alert = $this->energy_model->GetAlert($aid, $d->device);
+                $alert = $this->energy_model->GetAlert($aid, $entity, $d->device);
                 if ($alert["current"] > $alert["previous"]) {
                     $values[] = array(
                             "tipo"    => '1', //info
@@ -2704,7 +2705,7 @@ class Energia extends UNO_Controller
 
         } else if($aid == 4) {  //sobre corrente
 
-            $alerts = $this->energy_model->GetAlert($aid);
+            $alerts = $this->energy_model->GetAlert($aid, $entity);
 
             $values = array();
             foreach ($alerts as $a) {

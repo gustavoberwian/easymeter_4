@@ -321,9 +321,9 @@ class Shopping_model extends Base_model
             SELECT 
                 COUNT(*) AS count
             FROM 
-                esm_alertas_energia_envios
+                esm_alertas_envios
             WHERE 
-                esm_alertas_energia_envios.user_id = $uid AND
+                esm_alertas_envios.user_id = $uid AND
                 ISNULL(lida) AND
                 visibility = 'normal'
         ");
@@ -403,14 +403,14 @@ class Shopping_model extends Base_model
     {
         $query = $this->db->query("
             SELECT 
-                esm_alertas_" . $monitoramento . ".tipo, 
-                esm_alertas_" . $monitoramento . ".titulo, 
-                esm_alertas_" . $monitoramento . ".texto, 
-                COALESCE(esm_alertas_" . $monitoramento . ".enviada, 0) AS enviada,
-                COALESCE(esm_alertas_" . $monitoramento . "_envios.lida, '') AS lida
-            FROM esm_alertas_" . $monitoramento . "_envios
-            JOIN esm_alertas_" . $monitoramento . " ON esm_alertas_" . $monitoramento . ".id = esm_alertas_" . $monitoramento . "_envios.alerta_id
-            WHERE esm_alertas_" . $monitoramento . "_envios.id = $id
+                esm_alertas.tipo, 
+                esm_alertas.titulo, 
+                esm_alertas.texto, 
+                COALESCE(esm_alertas.enviada, 0) AS enviada,
+                COALESCE(esm_alertas_envios.lida, '') AS lida
+            FROM esm_alertas_envios
+            JOIN esm_alertas ON esm_alertas.id = esm_alertas_envios.alerta_id
+            WHERE esm_alertas_envios.id = $id
         ");
 
         // verifica se retornou algo
@@ -421,7 +421,7 @@ class Shopping_model extends Base_model
 
         if ($readed) {
             // atualiza esm_alertas
-            $this->db->table('esm_alertas_' . $monitoramento . '_envios')
+            $this->db->table('esm_alertas_envios')
                 ->where('id', $id)
                 ->where('lida', NULL)
                 ->set(array('lida' => date("Y-m-d H:i:s")))
@@ -433,7 +433,7 @@ class Shopping_model extends Base_model
 
     public function DeleteAlert($id, $monitoramento = null)
     {
-        if (!$this->db->table('esm_alertas_' . $monitoramento . '_envios')->where(array('id' => $id))->set(array('visibility' => 'delbyuser'))->update()) {
+        if (!$this->db->table('esm_alertas_envios')->where(array('id' => $id))->set(array('visibility' => 'delbyuser'))->update()) {
             return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
 
@@ -445,7 +445,7 @@ class Shopping_model extends Base_model
         // atualiza data
         $this->db->transStart();
 
-        $this->db->table('esm_alertas_' . $monitoramento . '_envios')
+        $this->db->table('esm_alertas_envios')
             ->where('user_id', $user_id)
             ->where('lida', NULL)
             ->set(array('lida' => date("Y-m-d H:i:s")))

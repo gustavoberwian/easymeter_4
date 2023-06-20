@@ -66,33 +66,46 @@ if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine
     var device = 0;
 
     function apexchart(start = moment().subtract(6, 'days'), end = moment()) {
-
-        $(".chart-main").each(function() {
+        const chartElements = $(".chart-main");
+        const totalElements = chartElements.length;
+        let currentIndex = 0;
+        
+        $(".chart-main").each(function(){
             $(this).parent().parent().trigger('loading-overlay:show');
+        }    
+        )
 
-            var el = $(this);
-
-            var dados = {
-                device  : device,
-                start   : start.format("YYYY-MM-DD"),
-                end     : end.format("YYYY-MM-DD"),
-                field   : el.data("field"),
-                group   : $(".page-header").data("group"),
-            };
-
+        function processChart(index) {
+          if (index >= totalElements) {
+            // Todas as chamadas Ajax foram concluídas
+            return Promise.resolve();
+          }
+      
+          const el = chartElements.eq(index);
+      
+          const dados = {
+            device: device,
+            start: start.format("YYYY-MM-DD"),
+            end: end.format("YYYY-MM-DD"),
+            field: el.data("field"),
+            group: $(".page-header").data("group"),
+          };
+      
+          return new Promise((resolve, reject) => {
             $.ajax({
-                method  : 'POST',
-                url     : "/energia/chart_engineering",
-                data    : dados,
-                dataType: 'json',
-                success : function (json) {
-
-                    if (json.status === 'error') {
-                        notifyError(json.message);
-                        el.addClass('h-100')
-                        el.append('<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><div>Nenhum registro encontrado</div></div>');
-                        return;
-                    }
+              method: 'POST',
+              url: "/energia/chart_engineering",
+              data: dados,
+              dataType: 'json',
+              success: function(json) {
+                // Lógica de manipulação dos dados de resposta do Ajax
+      
+                if (json.status === 'error') {
+                  // Lógica para lidar com erros na resposta do Ajax
+                  notifyError(json.message);
+                  el.addClass('h-100');
+                  el.append('<div style="display: flex; justify-content: center; align-items: center; height: 100%;"><div>Nenhum registro encontrado</div></div>');
+                } else {
 
                     json.yaxis.labels.formatter = function (value) {
                         return (value === null) ? "" : value.toLocaleString("pt-BR", {minimumFractionDigits: json.extra.decimals, maximumFractionDigits: json.extra.decimals}) + " " + json.extra.unit;
@@ -120,93 +133,110 @@ if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine
                             return (value === null) ? "" : value.toLocaleString("pt-BR", {minimumFractionDigits: json.extra.tooltip.decimals, maximumFractionDigits: json.extra.tooltip.decimals}) + " " + json.extra.unit;
                         }
                     };
+                  // Lógica para atualizar ou renderizar o gráfico
+                  if (json.hasOwnProperty('extra')) {
+                    if (json.extra.hasOwnProperty('footer')) {
+                      el.parent().parent().parent().children().remove(".card-footer");
+                      el.parent().parent().parent().append(json.extra.footer);
+                    }
+                  }
 
-                    if (json.hasOwnProperty('extra')) {
-                        if (json.extra.hasOwnProperty('footer')) {
-                            el.parent().parent().parent().children().remove(".card-footer");
-                            el.parent().parent().parent().append(json.extra.footer);
+                  
+      
+                  if (json.chart.hasOwnProperty('events') && !isMobile) {
+                    if (json.chart.events.hasOwnProperty('click')) {
+                      json.chart.events.click = function(event, chartContext, config) {
+                        if (start.format("YYYY-MM-DD") === end.format("YYYY-MM-DD")) {
+                          apexchart(start_last, end_last);
+                          daterange(start_last, end_last);
+                        } else {
+                          var data = json.extra.dates[config.dataPointIndex];
+                          apexchart(moment(data), moment(data));
+                          daterange(moment(data), moment(data));
                         }
+                      };
                     }
-
-                    if (json.chart.hasOwnProperty('events') && !isMobile) {
-                        if (json.chart.events.hasOwnProperty('click')) {
-                            json.chart.events.click = function (event, chartContext, config) {
-                                if (start.format("YYYY-MM-DD") === end.format("YYYY-MM-DD")) {
-                                    apexchart(start_last, end_last)
-                                    daterange(start_last, end_last)
-                                } else {
-                                    var data = json.extra.dates[config.dataPointIndex]
-                                    apexchart(moment(data), moment(data))
-                                    daterange(moment(data), moment(data))
-                                }
-                            }
-                        }
-                    }
-
-                    if (el.data("field") === 'mainActivePositive') {
-
-                        $(".main").html(json.extra.custom.main);
-                        $(".period").html(json.extra.custom.period);
-                        $(".period-f").html(json.extra.custom.period_f);
-                        $(".period-p").html(json.extra.custom.period_p);
-                        $(".month").html(json.extra.custom.month);
-                        $(".month-f").html(json.extra.custom.month_f);
-                        $(".month-p").html(json.extra.custom.month_p);
-                        $(".prevision").html(json.extra.custom.prevision);
-                        $(".prevision-p").html(json.extra.custom.prevision_p);
-                        $(".prevision-f").html(json.extra.custom.prevision_f);
-                        $(".day").html(json.extra.custom.day);
-                        $(".day-p").html(json.extra.custom.day_p);
-                        $(".day-f").html(json.extra.custom.day_f);
-
-                    } else if (el.data("field") === 'mainFactor' || el.data("field") === 'factor') {
-
-                        json.yaxis.labels.formatter = function (value, index) {
-                            if (value === null)
-                                return null;
-                            if (value > 0) {
-                                return (1 - value).toLocaleString("pt-BR", {minimumFractionDigits: json.extra.decimals, maximumFractionDigits: json.extra.decimals}) + " ind";
-                            } else if (value < 0) {
-                                return (1 - (value * -1)).toLocaleString("pt-BR", {minimumFractionDigits: json.extra.decimals, maximumFractionDigits: json.extra.decimals}) + " cap";
-                            }
-                            return 1;
-                        };
-                    }
-
-                    if (chart[el.data("field")]) {
-                        chart[el.data("field")].updateOptions(json);
-                    } else {
-                        chart[el.data("field")] = new ApexCharts(el[0], json);
-                        chart[el.data("field")].render();
-                    }
-
-                    if (start.format("YYYY-MM-DD") === end.format("YYYY-MM-DD")) {
-                        // Populando seletor de data e ícones
-                        $('#daterange-main span').html(start.format('ddd, DD/MM/YYYY'));
-                    } else {
-                        // Populando seletor de data e ícones
-                        $('#daterange-main span').html(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
-                    }
-
-                    if (start.format("YYYY-MM-DD") !== end.format("YYYY-MM-DD")) {
-                        start_last = start;
-                        end_last = end;
-                    }
-                },
-                error: function (xhr, status, error) {
-                    notifyError(error, 'Ocorreu um erro ao processar a solicitação.');
-                    return false;
-                },
-                complete: function () {
-                    el.parent().parent().trigger('loading-overlay:hide');
-
-                    if ($('.card-footer')) {
-                        $('.card-footer').trigger('loading-overlay:hide');
-                    }
+                  }
+      
+                  if (el.data("field") === 'mainActivePositive') {
+                    // Lógica para atualizar os elementos HTML relacionados
+                    $(".main").html(json.extra.custom.main);
+                    $(".period").html(json.extra.custom.period);
+                    $(".period-f").html(json.extra.custom.period_f);
+                    $(".period-p").html(json.extra.custom.period_p);
+                    $(".month").html(json.extra.custom.month);
+                    $(".month-f").html(json.extra.custom.month_f);
+                    $(".month-p").html(json.extra.custom.month_p);
+                    $(".prevision").html(json.extra.custom.prevision);
+                    $(".prevision-p").html(json.extra.custom.prevision_p);
+                    $(".prevision-f").html(json.extra.custom.prevision_f);
+                    $(".day").html(json.extra.custom.day);
+                    $(".day-p").html(json.extra.custom.day_p);
+                    $(".day-f").html(json.extra.custom.day_f);
+                  } else if (el.data("field") === 'mainFactor' || el.data("field") === 'factor') {
+                    // Lógica específica para 'mainFactor' e 'factor'
+                    json.yaxis.labels.formatter = function(value, index) {
+                      if (value === null)
+                        return null;
+                      if (value > 0) {
+                        return (1 - value).toLocaleString("pt-BR", { minimumFractionDigits: json.extra.decimals, maximumFractionDigits: json.extra.decimals }) + " ind";
+                      } else if (value < 0) {
+                        return (1 - (value * -1)).toLocaleString("pt-BR", { minimumFractionDigits: json.extra.decimals, maximumFractionDigits: json.extra.decimals }) + " cap";
+                      }
+                      return 1;
+                    };
+                  }
+      
+                  if (chart[el.data("field")]) {
+                    chart[el.data("field")].updateOptions(json);
+                  } else {
+                    chart[el.data("field")] = new ApexCharts(el[0], json);
+                    chart[el.data("field")].render();
+                  }
+      
+                  if (start.format("YYYY-MM-DD") === end.format("YYYY-MM-DD")) {
+                    // Populando seletor de data e ícones
+                    $('#daterange-main span').html(start.format('ddd, DD/MM/YYYY'));
+                  } else {
+                    // Populando seletor de data e ícones
+                    $('#daterange-main span').html(start.format('DD/MM/YYYY') + ' - ' + end.format('DD/MM/YYYY'));
+                  }
+      
+                  if (start.format("YYYY-MM-DD") !== end.format("YYYY-MM-DD")) {
+                    start_last = start;
+                    end_last = end;
+                  }
                 }
+      
+                resolve();
+              },
+              error: function(xhr, status, error) {
+                // Lógica para lidar com erros nas chamadas Ajax
+      
+                notifyError(error, 'Ocorreu um erro ao processar a solicitação.');
+                reject(error);
+              },
+              complete: function() {
+                // Executa ações completas após a conclusão do Ajax
+      
+                el.parent().parent().trigger('loading-overlay:hide');
+      
+                if ($('.card-footer')) {
+                  $('.card-footer').trigger('loading-overlay:hide');
+                }
+              }
             });
-        });
-    }
+          }).then(() => {
+            // Chama recursivamente a próxima chamada Ajax
+            return processChart(index + 1);
+          });
+        }
+      
+        // Inicia o processamento do primeiro gráfico
+        processChart(0);
+      }
+      
+      
 
     function daterange(start = moment().subtract(6, 'days'), end = moment()) {
         // Daterange picker

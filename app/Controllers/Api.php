@@ -170,7 +170,7 @@ class Api extends UNO_Controller {
                     $c = explode('-', $competencia);
 
                     if (is_numeric($c[0]) && is_numeric($c[1]) && intval($c[0]) > 0 && intval($c[0]) < 13) {
-                        $competencia =  intval($c[0])."/".$c[1];
+                        $competencia =  $c[1] . "-" . $c[0] . "-01";
                     } else {
                         echo json_encode(array("status" => "error", "message" => "Invalid c parameter $competencia"));
                         return;
@@ -185,7 +185,7 @@ class Api extends UNO_Controller {
                     return;
                 }
 
-                if ($this->api_model->VerifyCompetencia('energia', $client->energia_id, $competencia)) {
+                if ($this->api_model->VerifyCompetencia('energia', $client->agrupamento_id, $competencia)) {
                     echo json_encode(array("status" => "error", "message" => "Competence already have a accounting"));
                     return;
                 }
@@ -193,8 +193,7 @@ class Api extends UNO_Controller {
                 // validade dates
 
                 $data = array(
-                    "group_id"    => $client->agrupamento_id,
-                    "entrada_id"  => $client->energia_id,
+                    "agrupamento_id"    => $client->agrupamento_id,
                     "competencia" => $competencia,
                     "inicio"      => $start,
                     "fim"         => $end,
@@ -310,7 +309,7 @@ class Api extends UNO_Controller {
                     $c = explode('-', $competencia);
 
                     if (intval($c[0]) > 0 && intval($c[0]) < 13) {
-                        $competencia =  intval($c[0])."/".$c[1];
+                        $competencia =  $c[1] . "-" . $c[0] . "-01";
                     } else {
                         echo json_encode(array("status" => "error", "message" => "Invalid c parameter"));
                         return;
@@ -325,7 +324,7 @@ class Api extends UNO_Controller {
                     return;
                 }
 
-                if ($this->api_model->VerifyCompetencia('agua', $client->agua_id, $competencia)) {
+                if ($this->api_model->VerifyCompetencia('agua', $client->agrupamento_id, $competencia)) {
                     echo json_encode(array("status" => "error", "message" => "Competence already have a accounting"));
                     return;
                 }
@@ -333,8 +332,7 @@ class Api extends UNO_Controller {
                 // validade dates
 
                 $data = array(
-                    "group_id"    => $client->agrupamento_id,
-                    "entrada_id"  => $client->agua_id,
+                    "agrupamento_id"    => $client->agrupamento_id,
                     "competencia" => $competencia,
                     "inicio"      => $start,
                     "fim"         => $end,
@@ -367,6 +365,8 @@ class Api extends UNO_Controller {
             $period_f = $this->api_model->api_get_active_positive($device, $start, $end, array("fora", $cfg->ponta_start, $cfg->ponta_end));
             $period_i = false;
         }
+
+        var_dump($period_f); return;
 
         $values_p  = array();
         $values_f  = array();

@@ -348,3 +348,70 @@ button.nav-link.configs {
         display: none!important;
     }
 }
+
+/* Loading Overlay */
+.loading-overlay-showing {
+	overflow: hidden;
+}
+
+.loading-overlay-showing > .loading-overlay {
+	opacity: 1;
+	visibility: visible;
+}
+
+.loading-overlay {
+	-webkit-transition: visibility 0s ease-in-out 0.5s, opacity 0.5s ease-in-out;
+	transition: visibility 0s ease-in-out 0.5s, opacity 0.5s ease-in-out;
+	bottom: 0;
+	left: 0;
+	position: absolute;
+	opacity: 0;
+	right: 0;
+	top: 0;
+	visibility: hidden;
+	background: #FFF;
+}
+
+body > .loading-overlay {
+	position: fixed;
+	z-index: 999999;
+}
+
+/* Bounce Loading */
+.bounce-loader {
+	-webkit-transition: all 0.2;
+	transition: all 0.2;
+	margin: -9px 0 0 -35px;
+	text-align: center;
+	width: 70px;
+	height: 20px;
+	line-height: 20px;
+	left: 50%;
+	position: absolute;
+	top: 50%;
+	z-index: 10000;
+}
+
+.bounce-loader .bounce1,
+.bounce-loader .bounce2,
+.bounce-loader .bounce3 {
+	-webkit-animation: 1.4s ease-in-out 0s normal both infinite running bouncedelay;
+	        animation: 1.4s ease-in-out 0s normal both infinite running bouncedelay;
+	background-color: #CCC;
+	border-radius: 100%;
+	-webkit-box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.15);
+	        box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.15);
+	display: inline-block;
+	height: 18px;
+	width: 18px;
+}
+
+.bounce-loader .bounce1 {
+	-webkit-animation-delay: -0.32s;
+	        animation-delay: -0.32s;
+}
+
+.bounce-loader .bounce2 {
+	-webkit-animation-delay: -0.16s;
+	        animation-delay: -0.16s;
+}

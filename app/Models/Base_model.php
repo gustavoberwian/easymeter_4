@@ -29,7 +29,7 @@ class Base_model extends Model
             JOIN esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id
             JOIN esm_unidades ON esm_unidades.agrupamento_id = esm_agrupamentos.id
             JOIN esm_medidores ON esm_medidores.unidade_id = esm_unidades.id
-            WHERE esm_medidores.nome = $dvc";
+            WHERE esm_medidores.nome = '$dvc'";
 
         return $this->db->query($query)->getRow();
     }

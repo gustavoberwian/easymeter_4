@@ -3064,29 +3064,43 @@ class Energia extends UNO_Controller
 
     public function faturamento()
     {
+        $comp = str_replace('/', '-', $this->input->getPost('tar-competencia'));
+        $ini = str_replace('/', '-', $this->input->getPost('tar-data-ini'));
+        $end = str_replace('/', '-', $this->input->getPost('tar-data-fim'));
+
         $data = array(
             "agrupamento_id"    => $this->input->getPost('tar-group'),
-            "entrada_id"  => 72,
-            "competencia" => $this->input->getPost('tar-competencia'),
-            "inicio"      => $this->input->getPost('tar-data-ini'),
-            "fim"         => $this->input->getPost('tar-data-fim'),
-            "mensagem"    => $this->input->getPost('tar-msg'),
+            "competencia" => date('Y-m-d', strtotime('01-' . $comp)),
+            "inicio" => date('Y-m-d', strtotime($ini)),
+            "fim" => date('Y-m-d', strtotime($end)),
+            "mensagem" => $this->input->getPost('tar-msg'),
         );
 
-		if ($this->energy_model->VerifyCompetencia($data["entrada_id"], $data["competencia"])) {
-			echo '{ "status": "message", "field": "tar-competencia", "message" : "Competência já possui lançamento"}';
-			return;
-		}
+        $this->user->config = $this->shopping_model->get_client_config($data['agrupamento_id']);
 
-        if (date_create_from_format('d/m/Y', $data["inicio"]) == date_create_from_format('d/m/Y', $data["fim"])) {
-			echo '{ "status": "message", "field": "tar-data-fim", "message" : "Data final igual a inicial"}';
-			return;
-		}
+        if (!$this->user->config) {
+            return json_encode(
+                array(
+                    "status" => "error",
+                    "message" => "Dados não foram carregados corretamente. Configurações gerais do shopping não fornecidas."
+                )
+            );
+        }
 
-		if (date_create_from_format('d/m/Y', $data["inicio"]) > date_create_from_format('d/m/Y', $data["fim"])) {
-			echo '{ "status": "message", "field": "tar-data-fim", "message" : "Data final menor que a inicial"}';
-			return;
-		}
+        if ($this->energy_model->VerifyCompetencia($data["agrupamento_id"], $data["competencia"])) {
+            echo '{ "status": "message", "field": "tar-competencia", "message" : "Competência já possui lançamento"}';
+            return;
+        }
+
+        if ($data["inicio"] == $data["fim"]) {
+            echo '{ "status": "message", "field": "tar-data-fim", "message" : "Data final igual a inicial"}';
+            return;
+        }
+
+        if ($data["inicio"] > $data["fim"]) {
+            echo '{ "status": "message", "field": "tar-data-fim", "message" : "Data final menor que a inicial"}';
+            return;
+        }
 
         echo $this->energy_model->Calculate($data, $this->user->config, $data['agrupamento_id']);
     }

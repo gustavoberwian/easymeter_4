@@ -1,5 +1,4 @@
 <main>
-teste
     <section class="p-0" id="slider">
 
         <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">

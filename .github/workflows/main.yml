@@ -1,0 +1,31 @@
+name: Deploy via ftp
+on:
+  pull_request:
+    types: [ closed ]
+
+jobs:
+  deploy:
+    name: Deploy
+    if: github.event.pull_request.merged == true && github.event.pull_request.merged_by != null
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Get Pull Request Details
+        id: pr_details
+        run: |
+          echo "state=$(curl -s -H 'Authorization: Bearer ${{ secrets.TOKEN }}' \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" | jq -r '.state')" >> $GITHUB_OUTPUT
+          echo "approved=$(curl -s -H 'Authorization: Bearer ${{ secrets.TOKEN }}' \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}/reviews" | jq -r 'map(select(.state == "APPROVED")) | length > 0')" >> $GITHUB_OUTPUT
+            
+      - name: FTP Deploy
+        if: steps.pr_details.outputs.state == 'closed' && steps.pr_details.outputs.approved == 'true'
+        uses: RafaAssis06/ftp_deploy@1.0.0
+        with:
+          host: ${{ secrets.HOST }}
+          user: ${{ secrets.USER }}
+          password: ${{ secrets.PASS }}
+          remoteDir: ${{ github.event.pull_request.base.ref == 'work' && secrets.WORK_DIR || secrets.REMOTE_DIR }}

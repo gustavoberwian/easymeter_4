@@ -28,4 +28,4 @@ jobs:
           host: ${{ secrets.HOST }}
           user: ${{ secrets.USER }}
           password: ${{ secrets.PASS }}
-          remoteDir: ${{ github.event.pull_request.base.ref == 'work' && secrets.WORK_DIR || secrets.REMOTE_DIR }}
+          remoteDir: ${{ github.event.pull_request.base.ref == 'work' && secrets.WORK_DIR || secrets.ONLINE_DIR }}

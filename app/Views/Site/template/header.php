@@ -95,7 +95,7 @@
                         <div class="module language left">
                             <ul class="menu bold square">
                                 <li>
-                                    <a class="link_nav" href="#sobrenos">Sobre nós </a>
+                                    <a class="link_nav" href="#sobrenos">Sobre nos </a>
                                 </li>
                                 <li>
                                     <a class="link_nav" href="#plataforma">A Plataforma</a>

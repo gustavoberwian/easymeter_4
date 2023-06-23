@@ -714,7 +714,7 @@ class Admin extends UNO_Controller
         // inclui campo status
         $dt->add('action', function ($data) {
             return '
-                <div class="dropdown">
+                <div class="dropdown-toggle">
                     <a class="" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false"><i class="fas fa-bars" title="Ações"></i></a>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <a class="dropdown-item" data-id="' . $data['id'] . '" href="' . site_url('admin/unidades/' . $data['id']) . '" target="_blank"><i class="fas fa-eye mr-2"></i> Consumo</a>

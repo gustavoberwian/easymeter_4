@@ -8,7 +8,7 @@ namespace App\Controllers;
 use App\Models\Mapa_model;
 
 /**
- * Classe responsável pelo controle do mapa.
+ * Controller responsável pelo controle do mapa.
  */
 class Mapa extends UNO_Controller
 {
@@ -20,7 +20,7 @@ class Mapa extends UNO_Controller
     private Mapa_model $mapa_model;
 
     /**
-     * Construtor da classe Mapa.
+     * Construtor do controller Mapa.
      * Instancia o modelo de mapa.
      */
     public function __construct()

@@ -10,7 +10,7 @@ use App\Models\Mapa_model;
 /**
  * Controller responsável pelo controle do mapa.
  */
-class Mapa extends UNO_Controller
+class Mapa extends BaseController
 {
 
     /**
@@ -25,10 +25,41 @@ class Mapa extends UNO_Controller
      */
     public function __construct()
     {
-        parent::__construct();
-
         // Instancia o modelo de mapa
         $this->mapa_model = new Mapa_model();
+    }
+
+    /**
+     * Renderiza a view com o cabeçalho, menu e rodapé opcionais.
+     *
+     * @param string $view O nome da view a ser renderizada.
+     * @param mixed|null $data Os dados a serem passados para a view (opcional).
+     * @param bool $menu Indica se o menu deve ser incluído ou não (padrão: true).
+     * @return string A saída da renderização da view.
+     */
+    protected function render(string $view, array $data = null, bool $menu = true): string
+    {
+        // Obtém o nome do controller atual
+        $controller = explode('\\', service('router')->controllerName());
+        // Obtém o nome do método atual
+        $method = service('router')->methodName();
+
+        // Adiciona o nome do controller e o nome do método aos dados
+        $data['class']  = end($controller);
+        $data['method'] = $method;
+
+        if ($menu) {
+            // Renderiza o cabeçalho, menu, view e rodapé com menu
+            return view($data['class'] . '/template/header', $data)
+                . view($data['class'] . '/template/menu', $data)
+                . view($data['class'] . '/' . $view, $data)
+                . view($data['class'] . '/template/footer', $data);
+        } else {
+            // Renderiza o cabeçalho, view e rodapé sem menu
+            return view($data['class'] . '/template/header', $data)
+                . view($data['class'] . '/' . $view, $data)
+                . view($data['class'] . '/template/footer', $data);
+        }
     }
 
     /**

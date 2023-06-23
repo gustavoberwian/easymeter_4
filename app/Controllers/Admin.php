@@ -946,8 +946,8 @@ class Admin extends UNO_Controller
         $dados['m_nivel'] = $this->input->getPost('nivel-entity') === 'on' ? 1 : 0;
         $dados['fracao_ideal'] = $this->input->getPost('fracao-entity') === 'on' ? 1 : 0;
         $dados['status'] = $this->input->getPost('switch') === 'on' ? 'ativo' : 'inativo';
-        $dados['admin_id'] = $this->input->getPost('select-adm') ?? '';
-        $dados['gestor_id'] = $this->input->getPost('select-gestor') ?? '';
+        $dados['admin_id'] = $this->input->getPost('select-adm') ?? null;
+        $dados['gestor_id'] = $this->input->getPost('select-gestor') ?? null;
 
         echo $this->admin_model->add_entity($dados);
     }

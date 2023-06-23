@@ -522,7 +522,7 @@
                                         <button class="btn btn-primary btn-filter" type="button" <?= (count($groups) == 0 or is_null($readonly)) ? 'disabled' : ''; ?>><i class="fa fa-filter"></i></button>
                                     </div>
                                 <?php endif; ?>
-                                <table class="table table-bordered table-striped" id="dt-unidades">
+                                <table class="table table-bordered table-striped table-hover table-click dataTable no-footer display responsive nowrap" id="dt-unidades">
                                     <thead>
                                         <tr role="row">
                                             <th width="4%">Apto</th>
@@ -534,6 +534,7 @@
                                             <th width="5%">Ações</th>
                                         </tr>
                                     </thead>
+                                    <tbody></tbody>
                                 </table>
                                 <div class="legenda">
                                     <span class="badge badge-agua">Água</span>

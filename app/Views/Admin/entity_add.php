@@ -114,7 +114,7 @@
                                     class="col-lg-3 control-label text-lg-right pt-2">Bairro</label>
                                 <div class="col-lg-6">
                                     <input id="bairro-entity" name="bairro-entity" type="text" value=""
-                                        class="form-control" placeholder="Nome do bairro" required>
+                                        class="form-control" placeholder="Nome do bairro">
                                 </div>
                             </div>
 
@@ -124,12 +124,11 @@
                                     <div class="row">
                                         <div class="col-md-6">
                                             <input id="cidade-entity" name="cidade-entity" value="" placeholder="Cidade"
-                                                class="form-control" required>
+                                                class="form-control">
                                         </div>
                                         <div class="col-md-6">
                                             <div class="select-wrap">
-                                                <select id="estado-entity" name="estado-entity" class="form-control"
-                                                    required>
+                                                <select id="estado-entity" name="estado-entity" class="form-control">
                                                     <option selected disabled value="">Estado</option>
                                                     <option value="AC">Acre</option>
                                                     <option value="AL">Alagoas</option>
@@ -176,27 +175,25 @@
                             </div>
 
                             <div class="form-group row">
-                                <label for="select-gestor" class="col-lg-3 control-label text-lg-right pt-2">Gestor
-                                    <span class="required">*</span></label>
+                                <label for="select-gestor" class="col-lg-3 control-label text-lg-right pt-2">Gestor</label>
                                 <div class="col-lg-6">
                                     <select id="select-gestor" name="select-gestor" class="form-control populate"
-                                        data-url="<?php echo site_url('admin/get_gestor'); ?>" required>
+                                        data-url="<?php echo site_url('admin/get_gestor'); ?>">
                                     </select>
                                 </div>
                             </div>
 
                             <div class="form-group row">
-                                <label class="col-lg-3 control-label text-lg-right pt-2">Inicio e Fim do Mandato <span
-                                        class="required">*</span></label>
+                                <label class="col-lg-3 control-label text-lg-right pt-2">Inicio e Fim do Mandato</label>
                                 <div class="col-lg-6">
                                     <div class="row">
                                         <div class="col-md-6">
                                             <input id="inicio-entity" name="inicio-entity" value=""
-                                                placeholder="__/__/____" class="form-control vdate" required>
+                                                placeholder="__/__/____" class="form-control vdate">
                                         </div>
                                         <div class="col-md-6">
                                             <input id="fim-entity" name="fim-entity" value="" placeholder="__/__/____"
-                                                class="form-control vdate" required>
+                                                class="form-control vdate">
                                         </div>
                                     </div>
                                 </div>

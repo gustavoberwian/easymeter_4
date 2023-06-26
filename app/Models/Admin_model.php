@@ -8,6 +8,7 @@ class Admin_model extends Base_model
 {
     public function get_all_centrais()
     {
+        
         // realiza a consulta
         $query = $this->db->query("
             SELECT esm_entidades_centrais.nome as DT_RowId, esm_entidades_centrais.nome, esm_entidades_centrais.modo, esm_entidades_centrais.board, 
@@ -307,14 +308,18 @@ class Admin_model extends Base_model
 
     public function get_central_leituras($central, $tabela)
     {
+
+        $tableExists = table_exists("esm_leituras_{$tabela}_agua");
         $db = Database::connect('easy_com_br');
-        $query = $this->db->query("
+
+        if ($tableExists) {
+            $query = $this->db->query("
             SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
             FROM esm_leituras_{$tabela}_agua
             WHERE timestamp >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY)) AND medidor_id = (SELECT id FROM esm_medidores WHERE central = '$central' LIMIT 1)
             GROUP BY year(FROM_UNIXTIME(`timestamp`)), month(FROM_UNIXTIME(`timestamp`)), day(FROM_UNIXTIME(`timestamp`))
         ");
-        if ($query) {
+        } else {
             $query = $db->query("
             SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
             FROM esm_leituras_{$tabela}_agua
@@ -1991,6 +1996,18 @@ class Admin_model extends Base_model
             echo json_encode(array("status"  => "error", "message" => $this->db->error()));
             return;
         }
+        echo json_encode(array("status"  => "success", "message" => "Entrada editada com sucesso"));
+    }
+    public function add_entradas($data)
+    {
+        $id = $data['id-entidade'];
+        $nome = $data['nome-entrada'];
+        $color = $data['cor-entrada'];
+        $type = $data['tipo-entrada'];
+    
+        if (!$this->db->table('esm_entradas')->set(array('nome' => $nome, 'color' => $color, 'entidade_id' => $id, 'tipo' => $type))->insert()) {
+            echo json_encode(array("status"  => "error", "message" => $this->db->error()));
+        }       
         echo json_encode(array("status"  => "success", "message" => "Entrada editada com sucesso"));
     }
 }

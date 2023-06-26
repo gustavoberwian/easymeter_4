@@ -485,22 +485,16 @@
                                         </option>
                                     <?php } ?>
                                 </select>
-                                <?php if ($readonly == '') { ?>
-                                    <button class="btn btn-warning btn-entrada-edit" type="button" title="Editar" <?php if (count($groups) == 0 or $readonly != '')
-                                        echo 'disabled'; ?>><i
-                                            class="fas fa-edit"></i></button>
-                                    <button class="btn btn-success btn-entrada-add" type="button" title="Adicionar"><i
-                                            class="fas fa-plus"></i></button>
-                                    <button class="btn btn-danger btn-entrada-delete" type="button" title="Excluir" <?php if (count($groups) == 0 or $readonly != '')
-                                        echo 'disabled'; ?>><i
-                                            class="fas fa-times"></i></button>
-                                <?php } ?>
                             </div>
                         </div>      
                     <div class="row">
                         <div class="col-lg-12">           
                             <div class="entradas-container">
                                 <div class="text-end mb-1 dropdown">
+                                    <?php if ($readonly == '') { ?>
+                                        <button class="btn btn-success btn-entrada-add" type="button" title="Adicionar"><i
+                                                class="fas fa-plus"></i> Incluir Entrada</button>
+                                    <?php } ?>
                                     <button class="btn btn-primary btn-filter-tipo dropdown-toggle" data-bs-toggle="dropdown" type="button" <?= (count($groups) == 0 or is_null($readonly)) ? 'disabled' : ''; ?>><i class="fa fa-filter"></i></button>
                                     <ul class="dropdown-menu dropdown-menu-config-entradas" aria-labelledby="dropdown-filtros" role="menu">
                                         <li><a href="#" class="monitor all" data-mode="0"><i class="fas fa-check ps-1"></i> Todos</a></li>
@@ -833,5 +827,11 @@ echo view('Admin/modals/confirm', $data);
 $data['modal_id'] = 'modalUnidadeRemove';
 $data['modal_title'] = 'Você tem certeza?';
 $data['modal_message'] = 'Deseja realmente excluir esta unidade?';
+$data['button'] = array('Excluir', 'Cancelar');
+echo view('Admin/modals/confirm', $data);
+
+$data['modal_id'] = 'modalExcluiEntradas';
+$data['modal_title'] = 'Você tem certeza?';
+$data['modal_message'] = 'Deseja realmente excluir esta entrada?';
 $data['button'] = array('Excluir', 'Cancelar');
 echo view('Admin/modals/confirm', $data);

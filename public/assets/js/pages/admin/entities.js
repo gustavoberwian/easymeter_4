@@ -1984,6 +1984,24 @@ var unidade_validator;
 		});
 	});
 
+	$(document).on('click', '.btn-entrada-add', function (e) {
+		e.preventDefault();
+		
+		$.magnificPopup.open( {
+			items: {src: '/admin/md_add_entrada'},
+			type: 'ajax',
+			focus: '#id-entrada',
+			modal:true,
+			ajax: {
+				settings: {
+					type: 'POST',
+					data: { eid: window.location.pathname.split('/')[3]}
+				}
+			},
+		});
+	});
+
+
 
 	$(document).on('click',".dropdown-menu-config-entradas .monitor", function () {
 		$('.monitor').children().addClass('fa-none').removeClass('fa-check');
@@ -2038,6 +2056,88 @@ var unidade_validator;
 			});
 		}
     });
+
+	$(document).on("click", ".form-entrada-add .modal-confirm", function()
+	{
+		// verifica se campos do modal são válidos
+		if ( $(".form-entrada-add").valid() ) {
+			// mostra indicador
+			
+			var $btn = $(this);
+			$btn.trigger('loading-overlay:show');
+			// desabilita botões
+			var $btn_d = $('.form-entrada-add .btn:enabled').prop('disabled', true);
+			// envia os dados
+			$.post('/admin/add_entrada', $('.form-entrada-add').serialize(), function(json) {
+				if (json.status == 'success') {
+					//TODO Pergunta se quer cadastrar os blocos
+					notifySuccess(json.message)
+					// reload table
+					dtEntradas.ajax.reload();
+
+					// close modal
+					$.magnificPopup.close();
+
+
+				} else {
+					// notifica erro
+					notifyError(json.message.message);
+				}
+			}, 'json')
+			.fail(function(xhr, status, error) {
+				// falha no ajax: notifica
+				notifyError(error);
+			})
+			.always(function() {
+				// oculta indicador
+				$btn.trigger('loading-overlay:hide');
+				// habilita botões
+				$btn_d.prop('disabled', false);
+			});
+		}
+    });
+// **
+	// * Handler Action Abrir modal confirmação para excluir entrada
+	// **
+	$(document).on('click', '#dt-entradas .action-delete', function () {
+
+        var dis_timer, id = $(this).data('id');
+        
+		// abre a modal
+		$.magnificPopup.open( {
+			items: {src: '#modalExcluiEntradas'}, type: 'inline',
+			callbacks: {
+				beforeOpen: function() {
+                    $('#modalExcluiEntradas .id').val( id );
+                },
+                open: function() {
+                    // desabilita botão
+                    var btn = $('#modalExcluiEntradas .modal-confirm');
+                    btn.prop("disabled", true);
+                    // inicializa timer
+                    var sec = btn.data('timer');
+                    // declaração do timer regressimo
+                    function countDown() {
+                        // mostra valor
+                        btn.html(sec);
+                        if (sec <= 0) {
+                            // terminou. Habilita botão e atualiza texto
+                            btn.prop("disabled", false);
+                            btn.html('Excluir');
+                            return;
+                        }
+                        // continua contando
+                        sec -= 1;
+                        dis_timer = setTimeout(countDown, 1000);
+                    }
+                    countDown();
+                },
+                close: function() {
+                    clearTimeout(dis_timer);
+                }
+			}
+		});
+	});
 
 
 }).apply(this, [jQuery]);

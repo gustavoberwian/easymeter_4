@@ -1874,6 +1874,7 @@ class Admin extends UNO_Controller
   
     public function get_central_detail($central)
     {
+
         if (substr($central, 0, 2) == "43" || substr($central, 0, 2) == "53" || substr($central, 0, 2) == "63") {
             $order = "esm_medidores.posicao";
         } else {
@@ -2311,6 +2312,7 @@ class Admin extends UNO_Controller
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
                         <a class="dropdown-item action-edit" data-id= "'.$data['id'].'"  href="#"><i class="fas fa-pencil-alt mr-2"></i> Editar</a>
                         <a class="dropdown-item" data-id="' . $data['id'] . '" href="' . site_url('admin/unidades/' . $data['id']) . '" target="_blank"><i class="fas fa-eye mr-2"></i> Consumo</a>
+                        <a class="dropdown-item action-delete" data-id="' . $data['id'] . '" href="#"><i class="fas fa-trash mr-2"></i> Excluir</a>
                     </div></div>';
         });
 
@@ -2341,12 +2343,23 @@ class Admin extends UNO_Controller
         $data['readonly'] = $this->input->getPost('readonly');
         $data['entrada'] = $this->admin_model->get_entrada_by_id($eid);
         $data['medidores'] = $this->admin_model->get_medidores_by_entrada($eid);
-        
+
         return view('admin/modals/edit_entrada', $data);
+    }
+    public function md_add_entrada()
+    {
+        $data = $this->input->getPost();
+        $data['entidade'] = $this->admin_model->get_entity($this->url);
+        return view('admin/modals/add_entrada', $data);
     }
     public function edit_entrada() 
     {
         $data = $this->input->getPost();
         echo $this->admin_model->edit_entradas($data);
+    }
+    public function add_entrada() 
+    {
+        $data = $this->input->getPost();
+        echo $this->admin_model->add_entradas($data);
     }
 }

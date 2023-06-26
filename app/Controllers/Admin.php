@@ -2251,4 +2251,102 @@ class Admin extends UNO_Controller
 
         echo json_encode($output);
     }
+
+    public function get_resultado_entrada()
+    {
+
+        $bloco = intval($this->input->getGet('bloco'));
+
+        $mode = "";
+        if ($this->input->getGet('mode') == 1) {
+            $mode = " AND esm_entradas.tipo = 'agua' ";
+        } elseif ($this->input->getGet('mode') == 2) {
+            $mode = " AND esm_entradas.tipo = 'energia' ";
+        } elseif ($this->input->getGet('mode') == 3) {
+            $mode = " AND esm_entradas.tipo = 'gas' ";
+        } elseif ($this->input->getGet('mode') == 4) {
+            $mode = " AND esm_entradas.tipo = 'nivel' ";
+        }
+
+        $dt = $this->datatables->query("
+            SELECT
+                esm_entradas.id,
+                esm_entradas.nome,
+                esm_entradas.tipo,
+                esm_entradas.color,
+                esm_unidades.agrupamento_id
+            FROM
+                esm_entradas
+                INNER JOIN esm_medidores ON esm_entradas.id = esm_medidores.entrada_id
+                INNER JOIN esm_unidades ON esm_medidores.unidade_id = esm_unidades.id 
+            WHERE
+                agrupamento_id = $bloco " . $mode . "
+            GROUP BY
+                esm_entradas.id
+        ");
+
+        $dt->add('medidor', function ($data) {
+            $medidores = $this->admin_model->get_medidores_by_entrada($data['id']);
+            $ret = '';
+            if (is_null($medidores)) {
+                $ret = '-';   
+            } elseif (!is_array($medidores)) {
+                $ret='';
+                $name = $medidores['nome'];
+                $id = $medidores['id'];
+                $ret =  "<span class='badge entrada-medidor badge-primary me-1 cur-pointer' data-id='$id' >$name</span>";
+            } else {
+                $ret='';
+                foreach ($medidores as $m) {
+                    $name = $m['nome'];
+                    $id = $m['id'];
+                    $ret .=  "<span class='badge entrada-medidor badge-primary me-1 cur-pointer' data-id='$id' >$name</span>";
+                } 
+            }
+            return $ret;
+        });
+
+        $dt->add('action', function ($data) {
+            return '<div class="dropdown-toggle"><a class="" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown"><i class="fas fa-bars" title="Ações"></i></a>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item action-edit" data-id= "'.$data['id'].'"  href="#"><i class="fas fa-pencil-alt mr-2"></i> Editar</a>
+                        <a class="dropdown-item" data-id="' . $data['id'] . '" href="' . site_url('admin/unidades/' . $data['id']) . '" target="_blank"><i class="fas fa-eye mr-2"></i> Consumo</a>
+                    </div></div>';
+        });
+
+        $dt->edit('tipo', function ($data) {
+            $ret = '';
+            if ($data['tipo'] == 'agua')
+                $ret .= '<i class="fas fa-tint text-primary" title="Água"></i> ';
+            if ($data['tipo'] == 'gas')
+                $ret .= '<i class="fas fa-fire color-gas" title="Gás"></i> ';
+            if ($data['tipo'] == 'nivel')
+                $ret .= '<i class="fas fa-database text-info" title="Nível de reservatório"></i> ';
+            if ($data['tipo'] == 'energia')
+                $ret .= '<i class="fas fa-bolt text-danger" title="Energia Elétrica"></i>';
+
+            return $ret;
+        });
+
+        $dt->edit('color', function ($data) {
+            return '<span class="badge" style="background: ' . $data["color"] . '; color:#FFF ">' . $data["color"] . '</span>';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+    public function md_entrada()
+    {
+        $eid = $this->input->getPost('id');
+        $data['readonly'] = $this->input->getPost('readonly');
+        $data['entrada'] = $this->admin_model->get_entrada_by_id($eid);
+        $data['medidores'] = $this->admin_model->get_medidores_by_entrada($eid);
+        
+        return view('admin/modals/edit_entrada', $data);
+    }
+    public function edit_entrada() 
+    {
+        $data = $this->input->getPost();
+        echo $this->admin_model->edit_entradas($data);
+    }
 }

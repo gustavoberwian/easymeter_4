@@ -9,7 +9,7 @@
                 <div class="alert alert-danger notification" style="display:none;"></div>
 
                 <div class="form-group row">
-                    <label class="col-lg-3 control-label text-lg-right pt-2">Identificador</label>
+                    <label class="col-lg-3 control-label text-lg-end pt-2">Identificador</label>
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-md-6">
@@ -30,7 +30,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label class="col-lg-3 control-label text-lg-right pt-2">Sensor</label>
+                    <label class="col-lg-3 control-label text-lg-end pt-2">Sensor</label>
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-md-6">
@@ -49,7 +49,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label class="col-lg-3 control-label text-lg-right pt-2">Calibrado em</label>
+                    <label class="col-lg-3 control-label text-lg-end pt-2">Calibrado em</label>
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-md-6">
@@ -60,7 +60,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label class="col-lg-3 control-label text-lg-right pt-2">Utilizado em</label>
+                    <label class="col-lg-3 control-label text-lg-end pt-2">Utilizado em</label>
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-md-6">
@@ -71,7 +71,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label class="col-lg-3 control-label text-lg-right pt-2">Instalado em</label>
+                    <label class="col-lg-3 control-label text-lg-end pt-2">Instalado em</label>
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-md-6">
@@ -82,7 +82,7 @@
                 </div>
 
                 <div class="form-group row">
-                    <label class="col-lg-3 control-label text-lg-right pt-2">Leitura Atual</label>
+                    <label class="col-lg-3 control-label text-lg-end pt-2">Leitura Atual</label>
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-md-6">
@@ -100,7 +100,7 @@
                     </div>
                 </div>
                 <div class="form-group row">
-                    <label class="col-lg-3 control-label text-lg-right pt-2">Status</label>
+                    <label class="col-lg-3 control-label text-lg-end pt-2">Status</label>
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-md-6">
@@ -122,7 +122,7 @@
             </div>
             <footer class="card-footer">
                 <div class="row">
-                    <div class="col-md-12 text-right">
+                    <div class="col-md-12 text-end">
                         <button class="btn btn-default modal-dismiss">Fechar</button>
                     </div>
                 </div>

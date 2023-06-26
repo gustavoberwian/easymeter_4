@@ -67,6 +67,7 @@ class UNO_Controller extends BaseController {
 
         $data['class']  = end($controller);
         $data['method'] = service('router')->methodName();
+        $data['view']   = $view;
         $data['user']   = $this->user;
 
         $data['chamados']        = $this->admin_model->get_chamados("aberto", 5);

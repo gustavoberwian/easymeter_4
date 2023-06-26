@@ -197,4 +197,95 @@
         });
     })
 
+    if ($("#dt-fechamentos-unidade").length) {
+        let dtGas = $("#dt-fechamentos-unidade").DataTable({
+            dom: '<"row"<"col-lg-6"l><"col-lg-6"f>><"table-responsive"t>pr',
+            processing : true,
+            paging     : true,
+            language   : {
+                sSearch: ""
+            },
+            columns: [
+                {data: "competencia", class: "dt-body-center"},
+                {data: "inicio", class: "dt-body-center" },
+                {data: "fim", class: "dt-body-center"},
+                {data: "consumo", class: "dt-body-center"},
+                {data: "emissao", class: "dt-body-center"},
+                {data: "action", class: "dt-body-center"},
+            ],
+            serverSide: true,
+            sorting: [],
+            pageLength: 10,
+            pagingType: "numbers",
+            searching: true,
+            ajax: {
+                type: 'POST',
+                url: $("#dt-fechamentos-unidade").data("url"),
+                data: function(d){
+                    d.unidade = $(".page-header").data("unidade");
+                },
+                error: function () {
+                    notifyError(
+                        "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
+                    );
+                    $("#dt-fechamentos-unidade").dataTable().fnProcessingIndicator(false);
+                    $("#dt-fechamentos_wrapper .table-responsive").removeClass("processing");
+                },
+            },
+        });
+    }
+
+    if ($("#dt-alertas-unidade").length) {
+        let dtAlertas = $("#dt-alertas-unidade").DataTable({
+            dom: '<"table-responsive"t>pr',
+            processing: true,
+            columns: [
+                {data: "type", className: "dt-body-center", orderable: false},
+                {data: "titulo"},
+                {data: "enviada", className: "dt-body-center"},
+                {data: "actions", className: "dt-body-center", orderable: false},
+            ],
+            serverSide: true,
+            sorting: [],
+            pageLength: 25,
+            pagingType: "numbers",
+            searching: true,
+            ajax: {
+                url: $("#dt-alertas-unidade").data("url"),
+                method: 'POST',
+                data: function (d) {
+                    d.entidade = $("#dt-alertas-unidade").data("entidade");
+                },
+                error: function () {
+                    notifyError(
+                        "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
+                    );
+                    $("#dt-alertas-unidade").dataTable().fnProcessingIndicator(false);
+                    $("#dt-alertas-unidade_wrapper .table-responsive").removeClass("processing");
+                },
+            },
+            fnDrawCallback: function () {
+                $("#dt-alertas_wrapper .table-responsive").removeClass("processing");
+                if ($('#dt-alertas tbody tr').hasClass('unread') && !$('.dataTables_paginate').children().hasClass('select-all'))
+                    $('#dt-alertas_paginate').prepend('<div class="select-all"><a class="mark-all cur-pointer">Marcar todos como lidos</a></div>')
+            }
+        });
+    }
+
+    $(document).on('click', '.action-ver-fechamento', function (e) {
+        e.preventDefault();
+
+        var data_start = $(this).data("start").split('-');
+        var start = moment({ year: data_start[0].trim(), month: data_start[1].trim(), day: data_start[2].trim() }); // $(this).data("start")
+
+        var data_end = $(this).data("end").split('-');
+        var end = moment({ year: data_end[0].trim(), month: data_end[1].trim(), day: data_end[2].trim() }); // $(this).data("end")
+
+        apexchart(start, end);
+    })
+
+    $(document).on('click', '.action-modal-fechamento', function (e) {
+        e.preventDefault();
+    })
+
 }).apply(this, [jQuery]);

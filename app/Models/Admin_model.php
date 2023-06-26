@@ -8,6 +8,7 @@ class Admin_model extends Base_model
 {
     public function get_all_centrais()
     {
+        
         // realiza a consulta
         $query = $this->db->query("
             SELECT esm_entidades_centrais.nome as DT_RowId, esm_entidades_centrais.nome, esm_entidades_centrais.modo, esm_entidades_centrais.board, 
@@ -307,14 +308,18 @@ class Admin_model extends Base_model
 
     public function get_central_leituras($central, $tabela)
     {
+
+        $tableExists = table_exists("esm_leituras_{$tabela}_agua");
         $db = Database::connect('easy_com_br');
-        $query = $this->db->query("
+
+        if ($tableExists) {
+            $query = $this->db->query("
             SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
             FROM esm_leituras_{$tabela}_agua
             WHERE timestamp >= UNIX_TIMESTAMP(DATE_SUB(CURDATE(), INTERVAL 40 DAY)) AND medidor_id = (SELECT id FROM esm_medidores WHERE central = '$central' LIMIT 1)
             GROUP BY year(FROM_UNIXTIME(`timestamp`)), month(FROM_UNIXTIME(`timestamp`)), day(FROM_UNIXTIME(`timestamp`))
         ");
-        if ($query) {
+        } else {
             $query = $db->query("
             SELECT DATE_FORMAT(FROM_UNIXTIME(timestamp),'%d/%m/%Y') AS label, COUNT(*) AS leituras
             FROM esm_leituras_{$tabela}_agua
@@ -717,14 +722,14 @@ class Admin_model extends Base_model
     public function get_medidor($id)
     {
         // aplica filtro pelo id
-        $query = $this->db->query("
+        $query = "
             SELECT esm_medidores.*, esm_sensores_agua.calibracao, esm_sensores_agua.utilizacao, esm_sensores_agua.instalacao
             FROM esm_medidores
             LEFT JOIN esm_sensores_agua ON esm_sensores_agua.id = esm_medidores.sensor_id
             WHERE esm_medidores.id = $id
-		");
+		";
 
-        return $query->getRow();
+        return $this->db->query($query)->getRow();
     }
 
     public function delete_bloco($id)
@@ -1905,30 +1910,104 @@ class Admin_model extends Base_model
             echo json_encode(array("status"  => "error", "message" => 'Parâmetro incorreto.'));
         }
     }
+    public function get_medidores_by_entrada($id) {
+        $query = $this->db->query("
+        SELECT
+            esm_medidores.nome,
+            esm_medidores.id
+        FROM
+            esm_medidores
+            INNER JOIN
+            esm_entradas
+            ON 
+                esm_medidores.entrada_id = esm_entradas.id
+        WHERE
+            esm_entradas.id = $id
+        ");
 
-    // public function finish_calibracao($processo)
-    // {
-    //     $failure = array();
-    //     $this->db->transStart();
+        return $query->getResultArray();
+    }
+    public function get_condo_config_by_bloco($b, $extra = '')
+    {
+        $query = "
+        SELECT esm_entidades.fracao_ideal, 
+        esm_entidades.m_agua, 
+        esm_entidades.m_gas, 
+        esm_entidades.m_energia $extra 
+        FROM
+            esm_entidades
+        JOIN
+            esm_agrupamentos ON esm_agrupamentos.entidade_id = esm_entidades.id
+        WHERE esm_agrupamentos.id = $b
+        ";
+        // realiza a consulta
+        $res = $this->db->query($query);
 
-    //     $sensores = $this->db->query("
-    //         SELECT serial AS id, fator, NOW() AS calibracao 
-    //         FROM esm_calibracao
-    //         WHERE processo = $processo AND serial != 0
-    //         ORDER BY serial
-    //     ")->getResult();
+        // verifica se retornou algo
+        if ($res->getNumRows() == 0)
+            return 0;
 
-    //     if (!$this->db->insert_batch('esm_sensores_agua', $sensores)) {
-    //         $failure[] = $this->db->error();
-    //     }
+        return $res->getRow();
+    }
 
-    //     $this->db->transComplete();
+    public function get_fracoes_condominio($cid)
+    {
+        $query = $this->db->query("
+            SELECT DISTINCT fracao 
+            FROM esm_unidades
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
+            WHERE esm_entidades.id = $cid
+            ORDER BY fracao
+        ");
 
-    //     if ($this->db->transStatus() === FALSE) {
-    //         return json_encode(array("status"  => "error", "message" => $failure[0]));
-    //     } else {
-    //         return json_encode(array("status"  => "success", "message" => "Sensores salvos", "data" => $sensores));
-    //     }
-    // }
+        return $query->getResult();
+    }
+    public function get_entrada_by_id($id) 
+    {
+       $query =" 
+       SELECT
+            esm_entradas.id,
+            esm_entradas.nome,
+            esm_entradas.tipo,
+            esm_entradas.color,
+            esm_unidades.agrupamento_id
+        FROM
+            esm_entradas
+            INNER JOIN esm_medidores ON esm_entradas.id = esm_medidores.entrada_id
+            INNER JOIN esm_unidades ON esm_medidores.unidade_id = esm_unidades.id 
+        WHERE
+            entrada_id = $id
+        GROUP BY
+            esm_entradas.id
+        ";
+        if ($this->db->query($query)->getNumRows() == 0)
+            return 0;
 
+        return $this->db->query($query)->getRow();
+    }
+    public function edit_entradas($data)
+    {
+        $id = $data['id-entrada'];
+        $nome = $data['nome-entrada'];
+        $color = $data['cor-entrada'];
+
+        if (!$this->db->table('esm_entradas')->set(array('nome' => $nome, 'color' => $color))->where('id', $id)->update()) {
+            echo json_encode(array("status"  => "error", "message" => $this->db->error()));
+            return;
+        }
+        echo json_encode(array("status"  => "success", "message" => "Entrada editada com sucesso"));
+    }
+    public function add_entradas($data)
+    {
+        $id = $data['id-entidade'];
+        $nome = $data['nome-entrada'];
+        $color = $data['cor-entrada'];
+        $type = $data['tipo-entrada'];
+    
+        if (!$this->db->table('esm_entradas')->set(array('nome' => $nome, 'color' => $color, 'entidade_id' => $id, 'tipo' => $type))->insert()) {
+            echo json_encode(array("status"  => "error", "message" => $this->db->error()));
+        }       
+        echo json_encode(array("status"  => "success", "message" => "Entrada editada com sucesso"));
+    }
 }

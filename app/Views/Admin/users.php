@@ -28,7 +28,7 @@
             <h2 class="card-title">Listagem</h2>
         </header>
         <div class="card-body">
-            <table class="table table-bordered table-striped table-click table-pointer" id="dt-users"
+            <table class="table table-bordered table-striped table-click table-pointer cur-pointer" id="dt-users"
                 data-url="<?php echo site_url('admin/get_users'); ?>">
                 <thead>
                     <tr role="row">

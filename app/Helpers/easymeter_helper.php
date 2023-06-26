@@ -1,4 +1,8 @@
 <?php
+
+
+use CodeIgniter\Database\Config;
+use CodeIgniter\Database\Exceptions\DatabaseException;
 function avatar($avatar)
 {
     if ($avatar == '') {
@@ -261,3 +265,28 @@ function entrada_icon($tipo, $class = '', $cor = false)
     if ($tipo == 'energia')
         return '<i class="fas fa-bolt '.($cor ? $cor : 'text-danger').' '.$class.'" title="Energia"></i>';
 }
+
+    function table_exists($tableName)
+    {
+        $defaultDB = db_connect();
+
+        // Consulta SQL para verificar a existência da tabela no banco de dados padrão
+        $query = "SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema = '{$defaultDB->database}' AND table_name = '{$tableName}'";
+
+        $result = $defaultDB->query($query)->getRow();
+
+        if ($result->count > 0) {
+            return true;
+        } else {
+            $alternateDB = db_connect('easy_com_br');
+
+            // Consulta SQL para verificar a existência da tabela no banco de dados alternativo
+            $query = "SELECT COUNT(*) as count FROM information_schema.tables WHERE table_schema = '{$alternateDB->database}' AND table_name = '{$tableName}'";
+
+            $result = $alternateDB->query($query)->getRow();
+
+            if ($result->count > 0) {
+                return false;
+            } 
+        }
+    }

@@ -474,8 +474,52 @@
                 <!-- tab-form cadastro -->
 
                 <!-- tab-form entradas -->
-                <div class="tab-form entradas d-none">
-                    <p>TODO: Cadastro dos tipos com diferentes configurações de entradas -> esm_entradas</p>
+                <div class="tab-form entradas d-none<?php if(count($groups) == 0) echo ' inactive'; ?>">
+                    <div class="form-group row">
+                        <label class="col-lg-3 control-label text-lg-right pt-2">Bloco</label>
+                        <div class="col-lg-6">
+                            <div class="input-group">
+                                <select id="sel-bloco-entradas" data-entity="<?php echo $entity->id ;?>" name="sel-bloco-entradas" class="form-control">
+                                    <?php foreach ($groups as $bl) { ?>
+                                        <option value="<?= $bl->id; ?>"><?= ($bl->nome == '') ? 'Não possui' : $bl->nome; ?>
+                                        </option>
+                                    <?php } ?>
+                                </select>
+                            </div>
+                        </div>      
+                    <div class="row">
+                        <div class="col-lg-12">           
+                            <div class="entradas-container">
+                                <div class="text-end mb-1 dropdown">
+                                    <?php if ($readonly == '') { ?>
+                                        <button class="btn btn-success btn-entrada-add" type="button" title="Adicionar"><i
+                                                class="fas fa-plus"></i> Incluir Entrada</button>
+                                    <?php } ?>
+                                    <button class="btn btn-primary btn-filter-tipo dropdown-toggle" data-bs-toggle="dropdown" type="button" <?= (count($groups) == 0 or is_null($readonly)) ? 'disabled' : ''; ?>><i class="fa fa-filter"></i></button>
+                                    <ul class="dropdown-menu dropdown-menu-config-entradas" aria-labelledby="dropdown-filtros" role="menu">
+                                        <li><a href="#" class="monitor all" data-mode="0"><i class="fas fa-check ps-1"></i> Todos</a></li>
+                                        <li><a href="#" class="monitor agua" data-mode="1"><i class="fas fa-none ps-1"></i> Água</a></li>
+                                        <li><a href="#" class="monitor gas" data-mode="2"><i class="fas fa-none ps-1"></i> Gás</a></li>
+                                        <li><a href="#" class="monitor energia" data-mode="3"><i class="fas fa-none ps-1"></i> Energia</a></li>
+                                        <li><a href="#" class="monitor nivel" data-mode="4"><i class="fas fa-none ps-1"></i> Nível</a></li>
+                                    </ul>
+                                </div>      
+                                <table class="table table-bordered table-striped wrap" id="dt-entradas">
+                                    <thead>
+                                        <tr role="row">
+                                            <th width="4%">Id</th>
+                                            <th width="4%">Entradas</th>
+                                            <th width="4%">Tipo</th>
+                                            <th width="5%">Cor</th>
+                                            <th width="15%">Medidores</th>
+                                            <th width="5%">Ações</th>
+                                        </tr>
+                                    </thead>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 </div>
                 <!-- tab-form cadastro -->
 
@@ -783,5 +827,11 @@ echo view('Admin/modals/confirm', $data);
 $data['modal_id'] = 'modalUnidadeRemove';
 $data['modal_title'] = 'Você tem certeza?';
 $data['modal_message'] = 'Deseja realmente excluir esta unidade?';
+$data['button'] = array('Excluir', 'Cancelar');
+echo view('Admin/modals/confirm', $data);
+
+$data['modal_id'] = 'modalExcluiEntradas';
+$data['modal_title'] = 'Você tem certeza?';
+$data['modal_message'] = 'Deseja realmente excluir esta entrada?';
 $data['button'] = array('Excluir', 'Cancelar');
 echo view('Admin/modals/confirm', $data);

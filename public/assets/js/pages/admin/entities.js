@@ -1793,7 +1793,6 @@ var unidade_validator;
     // * Abre página do condominio
     // **
     $('#dt-entities tbody').on('click', 'tr', function (event) {
-		console.log('teste');
         // se o clique não foi em uma celula ou na última, retorna
         if (event.target.cellIndex == undefined || event.target.cellIndex == 9) return;
         // pega dados da linha

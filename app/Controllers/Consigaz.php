@@ -60,11 +60,6 @@ class Consigaz extends UNO_Controller
 
     public function index()
     {
-        if ($this->user->type === "unity") {
-            echo $this->unidade($this->user->unity_id, 'consumo');
-            return;
-        }
-
         $data['user'] = $this->user;
         $data['url'] = $this->url;
         $data['monitoria'] = $this->monitoria;

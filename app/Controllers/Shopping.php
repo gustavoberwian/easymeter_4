@@ -54,11 +54,11 @@ class Shopping extends UNO_Controller
             $this->user->entity = (object)[];
             $this->user->entity->classificacao = $this->user->page;
         } else if ($this->user->inGroup('admin')) {
-            $this->user->entity = $this->shopping_model->get_condo($this->user->entity_id);
+            $this->user->entity = $this->shopping_model->get_condo($this->user->type->entity_id);
         } else if ($this->user->inGroup('group')) {
-            $this->user->entity = $this->shopping_model->get_condo_by_group($this->user->group_id);
+            $this->user->entity = $this->shopping_model->get_condo_by_group($this->user->type->group_id);
         } else if ($this->user->inGroup('unity')) {
-            $this->user->entity = $this->shopping_model->get_condo_by_unity($this->user->unity_id);
+            $this->user->entity = $this->shopping_model->get_condo_by_unity($this->user->type->unity_id);
         }
         if(!$this->user->inGroup('superadmin'))
         {
@@ -84,8 +84,8 @@ class Shopping extends UNO_Controller
 
         if ($this->user->inGroup('shopping', 'admin')) {
 
-            $data['entity_id'] = $this->user->entity_id;
-            $data['groups'] = $this->shopping_model->get_groups_by_entity($this->user->entity_id);
+            $data['entity_id'] = $this->user->type->entity_id;
+            $data['groups'] = $this->shopping_model->get_groups_by_entity($this->user->type->entity_id);
 
             foreach ($data['groups'] as $grp) {
                 if ($this->user->inGroup('energia')) {
@@ -136,11 +136,11 @@ class Shopping extends UNO_Controller
         
         if ($this->user->inGroup('shopping', 'admin'))
         {
-            $data['condo'] = $this->shopping_model->get_condo($this->user->entity_id);
+            $data['condo'] = $this->shopping_model->get_condo($this->user->type->entity_id);
         } elseif ($this->user->inGroup('group')) {
-            $data['condo'] = $this->shopping_model->get_condo_by_group($this->user->group_id);
+            $data['condo'] = $this->shopping_model->get_condo_by_group($this->user->type->group_id);
         } elseif ($this->user->inGroup('unity')) {
-            $data['condo'] = $this->shopping_model->get_condo_by_unity($this->user->unity_id);
+            $data['condo'] = $this->shopping_model->get_condo_by_unity($this->user->type->unity_id);
         } else {
             $data['condo'] = '';
         }
@@ -1025,7 +1025,7 @@ class Shopping extends UNO_Controller
             
         }
 
-        $dados['entrada_id'] = $this->shopping_model->get_entrada_id($this->user->entity_id, $this->input->getPost("entrada_id"));
+        $dados['entrada_id'] = $this->shopping_model->get_entrada_id($this->user->type->entity_id, $this->input->getPost("entrada_id"));
 
         if ($this->input->getPost("id")) {
             $dados['id'] = $this->input->getPost("id");

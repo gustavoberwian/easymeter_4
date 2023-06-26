@@ -66,7 +66,7 @@ class Consigaz_model extends Base_model
     {
         $result = $this->db->table('esm_unidades')
             ->join('esm_agrupamentos', 'esm_agrupamentos.id = esm_unidades.agrupamento_id')
-            ->join('esm_medidores', 'esm_medidores.unidade_id = esm_unidades.id')
+            ->join('esm_medidores', 'esm_medidores.unidade_id = esm_unidades.id', 'left')
             ->where('esm_unidades.id', $uid)
             ->select('esm_unidades.nome AS unidade_nome, 
                 esm_agrupamentos.nome AS agrupamento_nome, 

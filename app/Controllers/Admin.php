@@ -238,11 +238,11 @@ class Admin extends UNO_Controller
         $user_id = $this->user->id;
 
         if ($this->user->inGroup('shopping', 'admin')) {
-            $data['condo'] = $this->admin_model->get_condo($this->user->type->entity_id);
+            $data['condo'] = $this->admin_model->get_condo($this->user->entity_id);
         } elseif ($this->user->inGroup('group')) {
-            $data['condo'] = $this->admin_model->get_condo_by_group($this->user->type->group_id);
+            $data['condo'] = $this->admin_model->get_condo_by_group($this->user->group_id);
         } elseif ($this->user->inGroup('unity')) {
-            $data['condo'] = $this->admin_model->get_condo_by_unity($this->user->type->unity_id);
+            $data['condo'] = $this->admin_model->get_condo_by_unity($this->user->unity_id);
         } else {
             $data['condo'] = '';
         }

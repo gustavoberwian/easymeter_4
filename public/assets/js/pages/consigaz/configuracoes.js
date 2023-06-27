@@ -90,4 +90,39 @@
         $.magnificPopup.close();
     });
 
+    let dtUsuarios = $("#dt-usuarios").DataTable({
+        dom: '<"table-responsive"t>pr',
+        processing: true,
+        columns: [
+            {data: "image", className: "d-none", orderable: false},
+            {data: "nome", className: "dt-body-center", orderable: false},
+            {data: "email", className: "dt-body-center", orderable: false},
+            {data: "bloco", className: "dt-body-center", orderable: false},
+            {data: "apto", className: "dt-body-center table-one-line", orderable: false},
+            {data: "actions", className: "dt-body-center", orderable: false},
+        ],
+        serverSide: true,
+        sorting: [],
+        pageLength: 25,
+        pagingType: "numbers",
+        searching: true,
+        ajax: {
+            url: $("#dt-usuarios").data("url"),
+            method: 'POST',
+            data: function(d) {
+                d.entidade = $("#sel-entity").val();
+            },
+            error: function () {
+                notifyError(
+                    "Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes."
+                );
+                $("#dt-usuarios").dataTable().fnProcessingIndicator(false);
+                $("#dt-usuarios_wrapper .table-responsive").removeClass("processing");
+            },
+        },
+        fnDrawCallback: function() {
+            $("#dt-usuarios_wrapper .table-responsive").removeClass("processing");
+        }
+    });
+
 }.apply(this, [jQuery]));

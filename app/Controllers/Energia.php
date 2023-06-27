@@ -110,7 +110,7 @@ class Energia extends UNO_Controller
 
     private function chartFooter($data, $colorize = false)
     {
-        $html = '<div class="card-footer-chart total text-right d-none d-sm-block" data-loading-overlay="" data-loading-overlay-options="{ \"css\": { \"backgroundColor\": \"#00000080\" } }" style="">
+        $html = '<div class="card-footer card-footer-chart total text-right d-none d-sm-block" data-loading-overlay="" data-loading-overlay-options="{ \"css\": { \"backgroundColor\": \"#00000080\" } }" style="">
                     <div class="row">';
 
         foreach ($data as $d) {

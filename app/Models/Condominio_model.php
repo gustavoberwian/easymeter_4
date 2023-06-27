@@ -487,4 +487,5 @@ class Condominio_model extends Base_model
 
         return $result->getRow();
     }
+
 }

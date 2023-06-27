@@ -1793,7 +1793,6 @@ var unidade_validator;
     // * Abre página do condominio
     // **
     $('#dt-entities tbody').on('click', 'tr', function (event) {
-		console.log('teste');
         // se o clique não foi em uma celula ou na última, retorna
         if (event.target.cellIndex == undefined || event.target.cellIndex == 9) return;
         // pega dados da linha
@@ -1910,6 +1909,234 @@ var unidade_validator;
 				$btn_d.prop('disabled', false);
 			});
 		}
+	});
+
+
+	var mostraEntrada = 0;
+	var dtEntradas = $('#dt-entradas').DataTable({
+        dom: '<"table-responsive"t>pr',
+        processing: true,
+		pagingType: "numbers",
+        ordering: false,
+		searching: false,
+		lengthChange: false,
+		serverSide: true,
+		ajax: {
+			url: "/admin/get_resultado_entrada",
+			data: function ( d ) {
+				return $.extend( {}, d, {
+					bloco: $("#sel-bloco-entradas option:selected").val(), 
+					mode: url[4], 
+					mode: mostraEntrada
+				} );
+            },
+			
+            complete: function (json, type) {
+                if (type == "success") {
+                    $('.action-medidor').popover({container: 'body', placement: 'bottom', trigger: 'hover', html: true});
+                }
+            },
+			error: function () {
+				notifyError( 'Ocorreu um erro no servidor. Por favor tente novamente em alguns instantes.' );
+                $('#dtEntradas').dataTable().fnProcessingIndicator(false);
+                $('.table-responsive').removeClass('processing');
+            }
+		},
+        columns: [ { data: "id", class: "dt-body-center" },  { data: "nome", class: "dt-body-center" },{ data: "tipo", orderable: false, className: "dt-body-center retipo" }, 
+		{ data: "color", class: "dt-body-center" }, {data: "medidor", class: "dt-body-start"}, { data: "action", class: "actions dt-body-center" } ],
+		fnPreDrawCallback: function() { $('.table-responsive').addClass('processing'); },
+        fnDrawCallback: function(oSettings) { $('.table-responsive').removeClass('processing'); }       
+    });
+
+	
+
+	$(document).on('click', '#dt-entradas .action-edit', function (e) {
+		e.preventDefault()
+		$.magnificPopup.open( {
+			items: {src: '/admin/md_entrada'},
+			type: 'ajax',
+			focus: '#id-entrada',
+			modal:true,
+			ajax: {
+				settings: {
+					type: 'POST',
+					data: { id: $(this).data('id'), readonly: ((window.location.pathname.split('/').length == 5) ? true : false) }
+				}
+			},
+		});
+	});
+	
+
+	$(document).on('click', '#dt-entradas .entrada-medidor', function (e) {
+		e.preventDefault();
+		
+		$.magnificPopup.open( {
+			items: {src: '/admin/md_medidor'},
+			type: 'ajax',
+			focus: '#id-entrada',
+			modal:true,
+			ajax: {
+				settings: {
+					type: 'POST',
+					data: { id: $(this).data('id') }
+				}
+			},
+		});
+	});
+
+	$(document).on('click', '.btn-entrada-add', function (e) {
+		e.preventDefault();
+		
+		$.magnificPopup.open( {
+			items: {src: '/admin/md_add_entrada'},
+			type: 'ajax',
+			focus: '#id-entrada',
+			modal:true,
+			ajax: {
+				settings: {
+					type: 'POST',
+					data: { eid: window.location.pathname.split('/')[3]}
+				}
+			},
+		});
+	});
+
+
+
+	$(document).on('click',".dropdown-menu-config-entradas .monitor", function () {
+		$('.monitor').children().addClass('fa-none').removeClass('fa-check');
+        $(this).children().addClass('fa-check').removeClass('fa-none');
+		mostraEntrada = $(this).data('mode');
+		dtEntradas.ajax.reload();
+    });	
+
+	$(document).on('change', '#sel-bloco-entradas', function()
+	{
+        // ajax to load colums define
+        // set colums define
+        dtEntradas.ajax.reload();
+	});
+
+	$(document).on("click", ".form-entrada-edit .modal-confirm", function()
+	{
+		// verifica se campos do modal são válidos
+		if ( $(".form-entrada-edit").valid() ) {
+			// mostra indicador
+			
+			var $btn = $(this);
+			$btn.trigger('loading-overlay:show');
+			// desabilita botões
+			var $btn_d = $('.form-entrada-edit .btn:enabled').prop('disabled', true);
+			// envia os dados
+			$.post('/admin/edit_entrada', $('.form-entrada-edit').serialize(), function(json) {
+				if (json.status == 'success') {
+					//TODO Pergunta se quer cadastrar os blocos
+					notifySuccess(json.message)
+					// reload table
+					dtEntradas.ajax.reload();
+
+					// close modal
+					$.magnificPopup.close();
+
+
+				} else {
+					// notifica erro
+					notifyError(json.message.message);
+				}
+			}, 'json')
+			.fail(function(xhr, status, error) {
+				// falha no ajax: notifica
+				notifyError(error);
+			})
+			.always(function() {
+				// oculta indicador
+				$btn.trigger('loading-overlay:hide');
+				// habilita botões
+				$btn_d.prop('disabled', false);
+			});
+		}
+    });
+
+	$(document).on("click", ".form-entrada-add .modal-confirm", function()
+	{
+		// verifica se campos do modal são válidos
+		if ( $(".form-entrada-add").valid() ) {
+			// mostra indicador
+			
+			var $btn = $(this);
+			$btn.trigger('loading-overlay:show');
+			// desabilita botões
+			var $btn_d = $('.form-entrada-add .btn:enabled').prop('disabled', true);
+			// envia os dados
+			$.post('/admin/add_entrada', $('.form-entrada-add').serialize(), function(json) {
+				if (json.status == 'success') {
+					//TODO Pergunta se quer cadastrar os blocos
+					notifySuccess(json.message)
+					// reload table
+					dtEntradas.ajax.reload();
+
+					// close modal
+					$.magnificPopup.close();
+
+
+				} else {
+					// notifica erro
+					notifyError(json.message.message);
+				}
+			}, 'json')
+			.fail(function(xhr, status, error) {
+				// falha no ajax: notifica
+				notifyError(error);
+			})
+			.always(function() {
+				// oculta indicador
+				$btn.trigger('loading-overlay:hide');
+				// habilita botões
+				$btn_d.prop('disabled', false);
+			});
+		}
+    });
+// **
+	// * Handler Action Abrir modal confirmação para excluir entrada
+	// **
+	$(document).on('click', '#dt-entradas .action-delete', function () {
+
+        var dis_timer, id = $(this).data('id');
+        
+		// abre a modal
+		$.magnificPopup.open( {
+			items: {src: '#modalExcluiEntradas'}, type: 'inline',
+			callbacks: {
+				beforeOpen: function() {
+                    $('#modalExcluiEntradas .id').val( id );
+                },
+                open: function() {
+                    // desabilita botão
+                    var btn = $('#modalExcluiEntradas .modal-confirm');
+                    btn.prop("disabled", true);
+                    // inicializa timer
+                    var sec = btn.data('timer');
+                    // declaração do timer regressimo
+                    function countDown() {
+                        // mostra valor
+                        btn.html(sec);
+                        if (sec <= 0) {
+                            // terminou. Habilita botão e atualiza texto
+                            btn.prop("disabled", false);
+                            btn.html('Excluir');
+                            return;
+                        }
+                        // continua contando
+                        sec -= 1;
+                        dis_timer = setTimeout(countDown, 1000);
+                    }
+                    countDown();
+                },
+                close: function() {
+                    clearTimeout(dis_timer);
+                }
+			}
+		});
 	});
 
 

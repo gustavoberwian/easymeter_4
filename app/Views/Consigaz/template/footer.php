@@ -82,8 +82,8 @@
        
 
         <!-- Page Specific -->
-        <?php if (file_exists('assets/js/pages/' . strtolower($class) . '/' . strtolower($method) . '.js') || file_exists('public/assets/js/pages/' . strtolower($class) . '/' . strtolower($method) . '.js')) : ?>
-            <script src="<?= base_url('assets/js/pages/' . strtolower($class) . '/' . strtolower($method) . '.js'); ?>"></script>
+        <?php if (file_exists('assets/js/pages/' . strtolower($class) . '/' . strtolower($view) . '.js') || file_exists('public/assets/js/pages/' . strtolower($class) . '/' . strtolower($method) . '.js')) : ?>
+            <script src="<?= base_url('assets/js/pages/' . strtolower($class) . '/' . strtolower($view) . '.js'); ?>"></script>
         <?php endif; ?>
 
         <script>

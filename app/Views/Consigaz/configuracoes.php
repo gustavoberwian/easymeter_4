@@ -4,21 +4,18 @@
         <h2>Configurações</h2>
     </header>
 
-    <!--<div class="row">
+    <div class="row">
         <div class="col-12">
             <ul class="nav nav-pills nav-pills-primary mb-3" role="tablist">
                 <li class="nav-item configs" role="presentation">
                     <button class="nav-link configs active" data-bs-toggle="pill" data-bs-target="#geral" type="button" aria-selected="true" role="tab">Geral</button>
                 </li>
                 <li class="nav-item configs" role="presentation">
-                    <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#fechamentos" type="button" aria-selected="false" role="tab" tabindex="-1">Fechamentos</button>
-                </li>
-                <li class="nav-item configs" role="presentation">
-                    <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#alertas" type="button" aria-selected="false" role="tab" tabindex="-1">Alertas</button>
+                    <button class="nav-link configs" data-bs-toggle="pill" data-bs-target="#usuarios" type="button" aria-selected="false" role="tab" tabindex="-1">Usuários</button>
                 </li>
             </ul>
         </div>
-    </div>-->
+    </div>
 
     <div class="tab-content configs">
         <div class="tab-pane fade active show" id="geral" role="tabpanel">
@@ -60,13 +57,52 @@
             </div>
         </div>
 
-        <!--<div class="tab-pane fade" id="fechamentos" role="tabpanel">
+        <div class="tab-pane fade" id="usuarios" role="tabpanel">
+            <div class="row pt-0 mb-4">
+                <div class="col-md-4">
+                    <section class="card card-comparativo h-100">
+                        <div class="card-body" style="background-color: #03aeef;">
+                            <h6 class="card-body-title mb-3 mt-0 text-light">Cliente <i class="float-end fas fa-microchip"></i></h6>
+                            <div class="row">
+                                <div class="col-lg-12 pl-1">
+                                    <select id="sel-entity" name="sel-entity" class="form-control" required>
+                                        <option disabled value="">Selecione o cliente</option>
+                                        <?php foreach ($clientes as $i => $cliente) : ?>
+                                            <option <?= (array_key_first($clientes) == $i) ? 'selected' : '' ?> value="<?= $cliente->id ?>"><?= $cliente->nome ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
 
+            <section class="card card-easymeter mb-4">
+                <header class="card-header">
+                    <div class="card-actions buttons">
+                        <button type="button" class="btn btn-primary btn-incluir-usuario"><i class="fas fa-user-plus"></i> Incluir Usuário</button>
+                    </div>
+                    <h2 class="card-title">Usuários</h2>
+                </header>
+                <div class="card-body">
+                    <table class="table table-bordered table-striped table-hover table-click dataTable no-footer display responsive nowrap" id="dt-usuarios" data-url="/consigaz/get_usuarios">
+                        <thead>
+                        <tr role="row">
+                            <th class="text-center"></th>
+                            <th class="text-center">Nome</th>
+                            <th class="text-center">Email</th>
+                            <th class="text-center">Bloco</th>
+                            <th class="text-center">Apto</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
         </div>
-
-        <div class="tab-pane fade" id="alertas" role="tabpanel">
-
-        </div>-->
     </div>
     <!-- end: page -->
 </section>

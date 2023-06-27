@@ -17,7 +17,7 @@
 			<h2 class="card-title">Chamados</h2>
 		</header>
 		<div class="card-body">
-			<table class="table table-bordered table-striped table-nowrap" id="dt-suporte"
+			<table class="table table-bordered table-striped table-nowrap cur-pointer" id="dt-suporte"
 				data-url="<?php echo site_url('admin/get_chamados_novo'); ?>">
 				<thead>
 					<tr role="row">

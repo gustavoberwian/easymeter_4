@@ -415,3 +415,15 @@ body > .loading-overlay {
 	-webkit-animation-delay: -0.16s;
 	        animation-delay: -0.16s;
 }
+.dropdown-toggle::after {
+    display: none;
+}
+table.dataTable td{
+    white-space: normal!important;
+}
+#modalEntrada .bootstrap-tagsinput [data-role="remove"] {
+    margin-left: 0;
+    display: none;
+    content: none;
+ }
+

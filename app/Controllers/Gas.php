@@ -805,4 +805,54 @@ class Gas extends UNO_Controller
 
         echo json_encode($response);
     }
+
+    public function get_fechamentos_unidade()
+    {
+        $uid = $this->input->getPost('unidade');
+
+        $dt = $this->datatables->query("
+            SELECT 
+                esm_fechamentos_gas.id,
+                esm_fechamentos_gas.competencia,
+                esm_fechamentos_gas.inicio AS inicio,
+		        esm_fechamentos_gas.fim AS fim,
+                esm_fechamentos_gas_entradas.leitura_atual - esm_fechamentos_gas_entradas.leitura_anterior AS consumo,
+                esm_fechamentos_gas.cadastro AS emissao
+            FROM 
+                esm_fechamentos_gas_entradas
+            JOIN
+                esm_fechamentos_gas ON esm_fechamentos_gas.id = esm_fechamentos_gas_entradas.fechamento_id
+            JOIN 
+                esm_medidores ON esm_medidores.id = esm_fechamentos_gas_entradas.medidor_id
+            JOIN 
+                esm_unidades ON esm_unidades.id = esm_medidores.unidade_id AND esm_unidades.id = $uid
+        ");
+
+        $dt->edit('competencia', function ($data) {
+            return strftime('%b/%Y', strtotime($data['competencia']));
+        });
+
+        $dt->edit('inicio', function ($data) {
+            return date("d/m/Y", strtotime($data['inicio']));
+        });
+
+        $dt->edit('fim', function ($data) {
+            return date("d/m/Y", strtotime($data['fim']));
+        });
+
+        $dt->edit('consumo', function ($data) {
+            return number_format($data['consumo'], 0, ",", ".");
+        });
+
+        $dt->edit('emissao', function ($data) {
+            return date("d/m/Y", strtotime($data['emissao']));
+        });
+
+        $dt->add('action', function ($data) use ($uid) {
+            return '<a href="#" class="action-ver-fechamento text-primary" data-start="' . date('Y-m-d', strtotime($data['inicio'])) . ' " data-end="' . date('Y-m-d', strtotime($data['fim'])) . ' " data-id="' . $data['id'] . '" title="Visualizar Consumo"><i class="fas fa-chart-line"></i></a>
+				<a href="#" class="action-modal-fechamento text-primary" data-id="' . $data['id'] . '" data-uid="' . $uid . '"><i class="fas fa-eye" title="Ver Detalhes"></i></a>';
+        });
+
+        echo $dt->generate();
+    }
 }

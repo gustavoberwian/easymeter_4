@@ -27,9 +27,9 @@
                 <tr role="row">
                     <td><?= strftime('%b/%Y', strtotime($fechamento->competencia)); ?></td>
                     <td><?= number_format(round($fechamento->leitura_atual - $fechamento->leitura_anterior, 0), 0, ',', '.'); ?></td>
-                    <td><?= date('d/m/Y', $fechamento->inicio); ?></td>
-                    <td><?= date('d/m/Y', $fechamento->fim); ?></td>
-                    <td><?= round(($fechamento->fim - $fechamento->inicio) / 86400 + 1, 0); ?></td>
+                    <td><?= strftime('%b/%Y', strtotime($fechamento->inicio)); ?></td>
+                    <td><?= strftime('%b/%Y', strtotime($fechamento->fim)); ?></td>
+                    <td><?= round((strtotime($fechamento->fim) - strtotime($fechamento->inicio)) / 86400 + 1, 0); ?></td>
                     <td><?= date('d/m/Y', strtotime($fechamento->cadastro)); ?></td>
                 </tr>
                 </tbody>

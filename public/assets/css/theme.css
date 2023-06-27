@@ -15188,7 +15188,6 @@ html.dark .note-editor .caret {
 }
 
 .table .actions a,.table .actions-hover a {
-	display: inline-block;
 	margin-right: 5px;
 	color: #666
 }

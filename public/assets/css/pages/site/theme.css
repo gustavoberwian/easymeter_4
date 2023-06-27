@@ -530,6 +530,20 @@ p.lead {
   p {
     font-size: 12px;
   }
+
+  a:hover {
+    text-decoration: none;
+      outline: none;
+      text-align: left;
+  }  
+  a.classic{
+    text-decoration: none;
+    outline: none;
+    text-align: left;
+}
+
+a.classic:hover {
+  text-decoration: none; }
 }
 
 a,
@@ -7348,4 +7362,6 @@ p {
     max-height: 150px;
   }
 }
+
+
 

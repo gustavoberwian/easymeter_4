@@ -32,6 +32,8 @@ $routes->set404Override();
 
 // Route site principal
 $routes->get('/', 'Site::index');
+$routes->get('/forum', 'Site::forum');
+$routes->get('/assuntoforum', 'Site::assuntoforum');
 
 // Routes shopping
 $routes->get('/shopping', 'Shopping::index',['filter'=>'checkApiAuth']);

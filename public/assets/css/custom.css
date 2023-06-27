@@ -344,7 +344,7 @@ button.nav-link.configs {
     }
 }
 @media only screen and (max-width: 991px) {
-    .card-footer {
+    .card-footer-chart {
         display: none!important;
     }
 }

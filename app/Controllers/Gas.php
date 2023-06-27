@@ -833,11 +833,11 @@ class Gas extends UNO_Controller
         });
 
         $dt->edit('inicio', function ($data) {
-            return date("d/m/Y", $data['inicio']);
+            return date("d/m/Y", strtotime($data['inicio']));
         });
 
         $dt->edit('fim', function ($data) {
-            return date("d/m/Y", $data['fim']);
+            return date("d/m/Y", strtotime($data['fim']));
         });
 
         $dt->edit('consumo', function ($data) {
@@ -848,9 +848,9 @@ class Gas extends UNO_Controller
             return date("d/m/Y", strtotime($data['emissao']));
         });
 
-        $dt->add('action', function ($data) {
-            return '<a href="#" class="action-ver-fechamento text-primary" data-start="' . date('Y-m-d', $data['inicio']) . ' " data-end="' . date('Y-m-d', $data['fim']) . ' " data-id="' . $data['id'] . '" title="Visualizar Consumo"><i class="fas fa-chart-line"></i></a>
-				<a href="#" class="action-modal-fechamento text-primary" data-id="' . $data['id'] . '"><i class="fas fa-eye" title="Ver Detalhes"></i></a>';
+        $dt->add('action', function ($data) use ($uid) {
+            return '<a href="#" class="action-ver-fechamento text-primary" data-start="' . date('Y-m-d', strtotime($data['inicio'])) . ' " data-end="' . date('Y-m-d', strtotime($data['fim'])) . ' " data-id="' . $data['id'] . '" title="Visualizar Consumo"><i class="fas fa-chart-line"></i></a>
+				<a href="#" class="action-modal-fechamento text-primary" data-id="' . $data['id'] . '" data-uid="' . $uid . '"><i class="fas fa-eye" title="Ver Detalhes"></i></a>';
         });
 
         echo $dt->generate();

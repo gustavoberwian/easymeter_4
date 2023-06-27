@@ -1,4 +1,4 @@
-<section role="main" class="content-body" data-entidade="<?= $entidade->id ?>" data-ramal="<?= $ramal->id ?>" data-fechamento="<?= $relatorio->id ?>">
+<section role="main" class="content-body" data-entidade="<?= $entidade->id ?>" data-ramal="<?= $ramal->id ?>" data-fechamento="<?= $fechamento->id ?>">
     <!-- start: page -->
     <section class="card" id="page-header">
 
@@ -22,21 +22,21 @@
 
                         <td width="20%" class="text-dark d-print-none">
                             <p class="text-1 text-muted mb-0">Tipo</p>
-                            <div class="text-4 font-weight-bold mb-0 text-center"><?= ucfirst(str_replace("_", " ", $unidade->tipo)); ?></div>
+                            <div class="text-4 font-weight-bold mb-0 text-center"><?= ucfirst(str_replace("_", " ", $unidade_d->tipo)); ?></div>
                         </td>
 
                         <td width="10%" class="text-dark">
                             <p class="text-1 text-muted mb-0">Medidor</p>
-                            <div class="text-4 font-weight-bold mb-0 text-center"><?= $unidade->medidor ?></div>
+                            <div class="text-4 font-weight-bold mb-0 text-center"><?= $unidade_d->medidor_id ?></div>
                         </td>
 
                         <td width="20%" class="text-dark">
                             <p class="text-1 text-muted mb-0">Ciclo</p>
-                            <div class="text-4 font-weight-bold mb-0 text-center"><?php echo date('d/m/Y', $fechamento->inicio).' a '.date('d/m/Y', $fechamento->fim); ?></div>
+                            <div class="text-4 font-weight-bold mb-0 text-center"><?php echo date('d/m/Y', strtotime($fechamento->inicio)).' a '.date('d/m/Y', strtotime($fechamento->fim)); ?></div>
                         </td>
                         <td width="10%" class="text-dark">
                             <p class="text-1 text-muted mb-0">Dias</p>
-                            <div class="text-4 font-weight-bold mb-0 text-center"><?php echo round(($fechamento->fim - $fechamento->inicio) / 86400) + 1; ?></div>
+                            <div class="text-4 font-weight-bold mb-0 text-center"><?php echo round((strtotime($fechamento->fim) - strtotime($fechamento->inicio)) / 86400) + 1; ?></div>
                         </td>
                         <td width="10%" class="text-dark">
                             <p class="text-1 text-muted mb-0">Fechamento</p>
@@ -101,7 +101,7 @@
                             </td>
                         </tr>
                         <tr>
-                            <?php if ($historico) { ?>
+                            <?php if (isset($historico)) { ?>
 
                                 <td class="history text-center" style="height:100px; vertical-align: top;">
 

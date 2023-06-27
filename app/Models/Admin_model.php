@@ -665,7 +665,7 @@ class Admin_model extends Base_model
         return $result->getRow();
     }
 
-    public function get_fracoes_entidade($cid)
+    public function  get_fracoes_entidade($cid)
     {
         $query = $this->db->query("
             SELECT DISTINCT fracao 
@@ -2009,5 +2009,102 @@ class Admin_model extends Base_model
             echo json_encode(array("status"  => "error", "message" => $this->db->error()));
         }       
         echo json_encode(array("status"  => "success", "message" => "Entrada editada com sucesso"));
+    }
+    public function get_condo_info_by_unidade($unidade_id)
+    {
+        $query = $this->db->query("
+        SELECT
+            auth_users.username,
+            esm_unidades.nome AS apto,
+            esm_agrupamentos.nome AS bloco,
+            esm_entidades.nome AS condo,
+            esm_entidades.cep,
+            esm_entidades.logradouro,
+            esm_entidades.numero,
+            esm_entidades.bairro,
+            esm_entidades.cidade,
+            esm_entidades.uf,
+            esm_unidades.codigo,
+            esm_entidades.t_basico 
+        FROM
+            esm_unidades
+            JOIN esm_agrupamentos ON esm_agrupamentos.id = esm_unidades.agrupamento_id
+            JOIN esm_entidades ON esm_entidades.id = esm_agrupamentos.entidade_id
+            LEFT JOIN auth_user_relation ON auth_user_relation.unidade_id = esm_unidades.id
+            LEFT JOIN auth_users ON auth_users.id = auth_user_relation.user_id 
+        WHERE
+            esm_unidades.id = 2067
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow();
+    }
+    public function get_fechamento($fechamento_id)
+    {
+        $query = $this->db->query("
+            SELECT
+                esm_fechamentos_gas.*,
+                esm_ramais.nome AS ramal,
+                esm_entidades.nome AS entidade,
+                esm_entidades.t_basico,
+                esm_entidades.tabela,
+                DATEDIFF(
+                    FROM_UNIXTIME( esm_fechamentos_gas.fim ),
+                FROM_UNIXTIME( esm_fechamentos_gas.inicio )) + 1 AS dias,
+                esm_fechamentos_gas.inicio,
+                esm_fechamentos_gas.fim,
+                COUNT( esm_fechamentos_envios.id ) AS envios,
+                DATE_FORMAT( esm_fechamentos_gas.cadastro, '%d/%m/%Y' ) AS leitura,
+                DATE_ADD( esm_fechamentos_gas.cadastro, INTERVAL 8 HOUR ) AS hora_mostrar 
+            FROM
+                esm_fechamentos_gas
+                JOIN esm_ramais ON esm_ramais.id = esm_fechamentos_gas.ramal_id
+                JOIN esm_entidades ON esm_entidades.id = esm_ramais.entidade_id
+                LEFT JOIN esm_fechamentos_envios ON esm_fechamentos_envios.fechamento_id = esm_fechamentos_gas.id 
+            WHERE
+                esm_fechamentos_gas.id = $fechamento_id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow();
+    }
+    public function get_fechamentos_unidade($fechamento_id, $unidade_id)
+    {
+        $query = $this->db->query("
+            SELECT
+                * 
+            FROM
+                (
+                SELECT
+                    esm_fechamentos_gas.id,
+                    esm_fechamentos_gas_entradas.consumo,
+                    esm_fechamentos_gas.competencia 
+                FROM
+                    esm_fechamentos_gas_entradas
+                    JOIN esm_fechamentos_gas ON esm_fechamentos_gas.id = esm_fechamentos_gas_entradas.fechamento_id
+                    JOIN esm_medidores ON esm_medidores.nome = esm_fechamentos_gas_entradas.device
+                    JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id 
+                WHERE
+                    esm_medidores.unidade_id = 2067 
+                    AND esm_fechamentos_gas.id <= 88 
+                ORDER BY
+                    esm_fechamentos_gas.id DESC 
+                    LIMIT 12 
+                ) t 
+            ORDER BY
+                id
+        ");
+
+        // verifica se retornou algo
+               if ($query->getNumRows() == 0)
+                   return false;
+
+        return $query->getResultArray();
     }
 }

@@ -4,6 +4,7 @@ namespace App\Controllers;
 
 use Config\Database;
 use App\Models\Consigaz_model;
+use App\Models\Admin_model;
 use App\Models\Gas_model;
 use Ozdemir\Datatables\Datatables;
 use Ozdemir\Datatables\DB\Codeigniter4Adapter;
@@ -21,6 +22,13 @@ class Consigaz extends UNO_Controller
      * @var Consigaz_model
      */
     private Consigaz_model $consigaz_model;
+
+    
+    /**
+     * @var Admin_model
+     */
+    private Admin_model $admin_model;
+
 
     /**
      * @var Gas_model
@@ -41,6 +49,7 @@ class Consigaz extends UNO_Controller
         // load models
         $this->consigaz_model = new Consigaz_model();
         $this->gas_model = new Gas_model();
+        $this->admin_model = new Admin_model();
 
         // load libraries
         $this->datatables = new Datatables(new Codeigniter4Adapter);
@@ -972,4 +981,54 @@ class Consigaz extends UNO_Controller
         $data = array();
         echo view('Consigaz/modals/md_request_code', $data);
     }
+    public function md_fechamento_unidade()
+    {
+
+        $fechamento_id = $this->input->getPost('id');
+        $unidade_id = $this->input->getPost('uid');
+
+        $data['user_unidade'] = $this->consigaz_model->get_user_unidade($unidade_id);
+        $data['unidade'] = $this->consigaz_model->get_fechamento_unidade($fechamento_id, $unidade_id);
+        $data['details'] = $this->consigaz_model->get_fechamento_unidade_detail($fechamento_id, $unidade_id);
+        $data['fechamento_id'] = $fechamento_id;
+        $data['administradora'] = $this->user->inGroup('administradora');
+        $data['origem'] = (is_null($this->input->getPost('origem'))) ? "consigaz" : $this->input->getPost('origem');
+
+        if ($this->user->inGroup("docol")) {
+            $data['origem'] = "representante";
+        }
+
+        $data['user'] = $this->user;
+
+        echo view('consigaz/modals/fechamento_details', $data);
+    }
+    public function relatorios($fechamento_id, $unidade_id)
+	{
+        $data['entidade'] = $this->consigaz_model->get_entity_by_unity($unidade_id);
+        $data['ramal'] = $this->consigaz_model->get_ramal_by_unity($unidade_id);
+        $data['user'] = $this->user;
+        $data['url'] = $this->url;
+		$data['unidade_id']   = $unidade_id;
+        $data['fechamento']   = $this->admin_model->get_fechamento($fechamento_id);
+
+        // verifica se existe fechamento
+        if(is_null($data['fechamento']->id)) {
+            // mostra proibição
+            $this->render('erro', array('mensagem' => 'Faturamento não encontrado!'));
+            return;
+        }
+
+        $data['fechamentos']  = $this->admin_model->get_fechamentos_unidade($fechamento_id, $unidade_id);
+        $data['unidade'] = $this->consigaz_model->get_fechamento_unidade($fechamento_id, $unidade_id);
+        $data['details'] = $this->consigaz_model->get_fechamento_unidade_detail($fechamento_id, $unidade_id);
+        $data['unidade_info'] = $this->admin_model->get_condo_info_by_unidade($unidade_id);
+        $data['unidade_d'] = $this->consigaz_model->get_unidade($unidade_id);
+        $data['unidade_d']->tipo = 'gas';
+
+        // print_r($data['unidade_d']); return;
+        
+        
+        
+        echo $this->render('relatorio', $data);
+	}
 }

@@ -286,6 +286,32 @@
 
     $(document).on('click', '.action-modal-fechamento', function (e) {
         e.preventDefault();
-    })
+
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_fechamento_unidade'},
+            type: 'ajax',
+            focus: '#id-bloco',
+            modal:true,
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: {
+                        id: $(this).data('id'),
+                        uid: $(this).data('uid'),
+                    }
+                }
+            }
+        });
+    });
+
+    // **
+    // * Handler Fechar Modal
+    // **
+    $(document).on('click', '.modal-dismiss', function (e) {
+        // para propagação
+        e.preventDefault();
+        // fecha a modal
+        $.magnificPopup.close();
+    });
 
 }).apply(this, [jQuery]);

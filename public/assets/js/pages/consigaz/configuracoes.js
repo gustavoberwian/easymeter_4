@@ -125,4 +125,26 @@
         }
     });
 
+    $(document).on('click', '.btn-incluir-usuario', function (e) {
+        e.preventDefault();
+
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_add_user'},
+            type: 'ajax',
+            modal: true,
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: {}
+                },
+            }
+        });
+    })
+
+    $(document).on('click', '#md-add-user .modal-dismiss', function (e) {
+        e.preventDefault();
+
+        $.magnificPopup.close();
+    });
+
 }.apply(this, [jQuery]));

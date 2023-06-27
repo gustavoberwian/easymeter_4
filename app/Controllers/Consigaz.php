@@ -1033,4 +1033,10 @@ class Consigaz extends UNO_Controller
         
         echo $this->render('relatorio', $data);
 	}
+
+    public function md_add_user()
+    {
+        $data = array();
+        echo view('Consigaz/modals/md_add_user', $data);
+    }
 }

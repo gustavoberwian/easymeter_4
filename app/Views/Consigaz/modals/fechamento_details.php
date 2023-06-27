@@ -88,7 +88,7 @@
                 <div class="col-md-6">
                         <a href="<?php echo site_url($origem."/relatorios/".$fechamento_id.'/'.$unidade->id); ?>" class="btn btn-primary">Visualizar Relatório</a>
                 </div>
-                <div class="col-md-6 text-right">
+                <div class="col-md-6 text-end">
                     <button class="btn btn-default modal-dismiss">Fechar</button>
                 </div>
             </div>

@@ -21,7 +21,14 @@ class Mapa extends UNO_Controller
     {
         $data = array();
 
-        echo $this->render('index', $data, false);
+        echo $this->render('index', $data);
+    }
+
+    public function view()
+    {
+        $data = array();
+
+        echo $this->render('view', $data);
     }
 
     public function get_buildings()
@@ -124,5 +131,10 @@ class Mapa extends UNO_Controller
         }
 
         return $response;
+    }
+
+    public function get_switcher()
+    {
+        echo $this->view('Mapa/switcher-content');
     }
 }

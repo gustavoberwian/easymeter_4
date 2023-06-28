@@ -243,7 +243,6 @@ class Admin_model extends Base_model
         foreach ($query->getResult() as $q) {
             $values[$q->nome] = $q->nome;
         }
-
         return $values;
     }
 
@@ -979,11 +978,14 @@ class Admin_model extends Base_model
             }
         }
         //Insere grupos adicionais
-        foreach ($dados['groups-user'] as $groups) {
-            if (!$this->db->table('auth_groups_users')->set(array('group' => $groups, 'user_id' => $dados['user-id']))->insert()) {
-                return json_encode(array("status" => "error", "message" => $this->db->error()));
+        if (!empty($dados['groups-user'])) {
+            foreach ($dados['groups-user'] as $groups) {
+                if (!$this->db->table('auth_groups_users')->set(array('group' => $groups, 'user_id' => $dados['user-id']))->insert()) {
+                    return json_encode(array("status" => "error", "message" => $this->db->error()));
+                }
             }
         }
+        
         return json_encode(array("status" => "success", "message" => "Usuário criado com sucesso."));
     }
 

@@ -94,7 +94,8 @@
         dom: '<"table-responsive"t>pr',
         processing: true,
         columns: [
-            {data: "image", className: "d-none", orderable: false},
+            {data: "id", className: "d-none", orderable: false},
+            {data: "avatar", className: "d-none", orderable: false},
             {data: "nome", className: "dt-body-center", orderable: false},
             {data: "email", className: "dt-body-center", orderable: false},
             {data: "bloco", className: "dt-body-center", orderable: false},
@@ -135,7 +136,10 @@
             ajax: {
                 settings: {
                     type: 'POST',
-                    data: {}
+                    data: { 
+                        eid: $(this).data('eid'), 
+                        name: $(this).data('name') 
+                    }
                 },
             }
         });
@@ -146,5 +150,115 @@
 
         $.magnificPopup.close();
     });
+
+    $.validator.addClassRules("vnome", { twostring: true });
+	$.validator.addClassRules("vemail", { email: true, required: true })
+	$.validator.addClassRules("vsenha", { minlength: 5, required: true });
+	$.validator.addClassRules("vconfirma", {
+		minlength: 5,
+		equalTo: "#senha-user"
+	});
+
+    $(document).on("click", ".form-add .modal-confirm", function () {
+        // verifica se campos do modal são válidos
+        if ($(".form-add").valid()) {
+            // mostra indicador
+            var $btn = $(this);
+            $btn.trigger('loading-overlay:show');
+            // desabilita botões
+            var $btn_d = $('.form-add .btn:enabled').prop('disabled', true);
+            // envia os dados
+            var data = $('.form-add').serialize();
+            var unity = $('.select-unity:selected').data('val');
+            var payload = {
+                data: data,
+                unity: unity
+            };
+            $.post('/consigaz/add_user', payload, function (json) {
+                if (json.status == 'success') {
+                    //TODO Pergunta se quer cadastrar os blocos
+                    notifySuccess(json.message);
+                    // refresh dt
+                    dtUsuarios.ajax.reload();
+                    // close modal
+                    $.magnificPopup.close();
+                } else {
+                    // notifica erro
+                    notifyError(json.message.message);
+                }
+            }, 'json')
+            .fail(function (xhr, status, error) {
+                // falha no ajax: notifica
+                notifyError(error);
+            })
+            .always(function () {
+                // oculta indicador
+                $btn.trigger('loading-overlay:hide');
+                // habilita botões
+                $btn_d.prop('disabled', false);
+            });
+        }
+    });
+
+    $(document).on('click', '#md-add-user .modal-dismiss', function (e) {
+        e.preventDefault();
+
+        $.magnificPopup.close();
+    });
+
+    $(document).on('click', '#dt-usuarios .action-delete', function () {
+		var uid = $(this).data('id');
+		// abre a modal
+		$.magnificPopup.open({
+			items: { src: '#modalExclui' }, type: 'inline',
+			callbacks: {
+				beforeOpen: function () {
+					$('#modalExclui .id').data('uid', uid);
+				}
+			}
+		});
+	});
+
+    $(document).on('click', '#modalExclui .modal-confirm', function () {
+		// mostra indicador
+		var $btn = $(this);
+		$btn.trigger('loading-overlay:show');
+		// desabilita botões
+		var $btn_d = $('.btn:enabled').prop('disabled', true);
+		// pega o valor do id
+		var uid = $('#modalExclui .id').data('uid');
+		// faz a requisição
+		$.post("/consigaz/delete_user", { uid: uid }, function (json) {
+			if (json.status == 'success') {
+				// fecha modal
+				$.magnificPopup.close();
+				// atualiza tabela
+				dtUsuarios.ajax.reload();
+				// mostra notificação
+				notifySuccess(json.message);
+			} else {
+				// fecha modal
+				$.magnificPopup.close();
+				// mostra erro
+				notifyError(json.message);
+			}
+		}, 'json')
+			.fail(function (xhr, status, error) {
+				// fecha modal
+				$.magnificPopup.close();
+				// mostra erro
+				notifyError(error, 'Ajax Error');
+			})
+			.always(function () {
+				// oculta indicador e habilita botão
+				$btn.trigger('loading-overlay:hide');
+				// habilita botões
+				$btn_d.prop('disabled', false);
+				// limpa id
+				$('#modalExclui .id').val('').data('uid', null);
+			});
+	});
+
+
 
 }.apply(this, [jQuery]));

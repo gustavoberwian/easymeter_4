@@ -31,6 +31,13 @@ class Mapa extends UNO_Controller
         echo $this->render('view', $data);
     }
 
+    public function water()
+    {
+        $data = array();
+
+        echo $this->render('water-tank', $data);
+    }
+
     public function get_buildings()
     {
         $buildings = $this->mapa_model->get_buildings();

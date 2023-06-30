@@ -59,6 +59,12 @@ $routes->get('/frasle/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/frasle/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/frasle/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 
+// Routes da Comary para shopping
+$routes->get('/comary', 'Shopping::index',['filter'=>'checkApiAuth']);
+$routes->get('/comary/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+$routes->get('/comary/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/comary/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+
 // Routes da Consigaz para shopping
 $routes->get('/consigaz', 'Consigaz::index',['filter'=>'checkApiAuth']);
 $routes->get('/consigaz/(:any)', 'Consigaz::$1',['filter'=>'checkApiAuth']);

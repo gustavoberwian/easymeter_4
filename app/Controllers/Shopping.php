@@ -36,7 +36,7 @@ class Shopping extends UNO_Controller
 
         // load requests
         $this->input = \Config\Services::request();
-       
+
 
         // load models
         $this->shopping_model = new Shopping_model();
@@ -48,7 +48,7 @@ class Shopping extends UNO_Controller
 
         // set variables
         $this->url = service('uri')->getSegment(1);
-        
+
 
         if ($this->user->inGroup('superadmin')) {
             $this->user->entity = (object)[];
@@ -62,16 +62,16 @@ class Shopping extends UNO_Controller
         }
         if(!$this->user->inGroup('superadmin'))
         {
-          if ($this->user->inGroup('energia'))
-            $this->user->monitoria = 'energy';
-        elseif ($this->user->inGroup('agua'))
-            $this->user->monitoria = 'water';
-        elseif ($this->user->inGroup('gas'))
-            $this->user->monitoria = 'gas';
-        elseif ($this->user->inGroup('nivel'))
-            $this->user->monitoria = 'nivel';  
+            if ($this->user->inGroup('energia'))
+                $this->user->monitoria = 'energy';
+            elseif ($this->user->inGroup('agua'))
+                $this->user->monitoria = 'water';
+            elseif ($this->user->inGroup('gas'))
+                $this->user->monitoria = 'gas';
+            elseif ($this->user->inGroup('nivel'))
+                $this->user->monitoria = 'nivel';
         }
-        
+
     }
 
     public function index()
@@ -122,7 +122,7 @@ class Shopping extends UNO_Controller
         }
     }
 
-    
+
     public function profile()
     {
         $data['validation'] = \Config\Services::validation();
@@ -133,7 +133,7 @@ class Shopping extends UNO_Controller
         $data['emails'] = $this->shopping_model->get_user_emails($this->user->id);
         helper('form');
         $user_id = $this->user->id;
-        
+
         if ($this->user->inGroup('shopping', 'admin'))
         {
             $data['condo'] = $this->shopping_model->get_condo($this->user->type->entity_id);
@@ -145,14 +145,14 @@ class Shopping extends UNO_Controller
             $data['condo'] = '';
         }
 
-        
+
 
 
 
         if ($this->input->getPost()) {
             $image = $this->input->getPost('crop-image');
             $senha = $this->input->getPost('password');
-        
+
             if ($image) {
                 // valida se é imagem...
 
@@ -162,22 +162,22 @@ class Shopping extends UNO_Controller
                 $image = base64_decode($image);
                 $filename = time() . $this->user->id . '.png';
                 if (file_put_contents('../public/assets/img/uploads/avatars/' . $filename, $image)) {
-        
-                // mensagem
+
+                    // mensagem
                     $img['avatar'] = $filename;
 
                     // apaga avatar anterior
                     if ($this->user->avatar && file_exists('../public/assets/img/uploads/avatars/' . $this->user->avatar)) {
                         unlink('../public/assets/img/uploads/avatars/' . $this->user->avatar);
                         $this->user->avatar = $filename;
-                                
-                }
-                    
+
+                    }
+
                     // atualiza avatar em auth_users
                     if ($this->shopping_model->update_avatar($this->user->id, $img)) {
                         $data['error'] = false;
-                        }
-                         else {
+                    }
+                    else {
                         //erro e mensagem
                     }
                 } else {
@@ -189,34 +189,34 @@ class Shopping extends UNO_Controller
                 if($this->input->getPost('password'))
                 {
                     $rules = [
-                'password' => 'required|min_length[6]',
-                'confirm' => 'required|matches[password]',
-                'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
-                'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
-               ];
+                        'password' => 'required|min_length[6]',
+                        'confirm' => 'required|matches[password]',
+                        'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
+                        'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
+                    ];
                 } else {
                     $rules = [
                         'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
                         'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
                     ];
                 };
-                
 
-                 $emails = null;
-                 if ($this->input->getPost('emails') != '') {
-                     $emails = explode(',', $this->input->getPost('emails'));
-                        $rules = [
-                            'emails' => 'valid_email'
-                        ];
-                     }
-                 
-               
+
+                $emails = null;
+                if ($this->input->getPost('emails') != '') {
+                    $emails = explode(',', $this->input->getPost('emails'));
+                    $rules = [
+                        'emails' => 'valid_email'
+                    ];
+                }
+
+
                 if ($this->validate($rules) && !isset($data['email_form'])) {
                     // coleta os dados do post
                     $password = $this->input->getPost('password');
                     $telefone = $this->input->getPost('telefone');
                     $celular  = $this->input->getPost('celular');
-                    
+
 
                     // atualiza dados
                     if (!$this->shopping_model->update_user($user_id, $password, $telefone, $celular, $emails)) {
@@ -233,7 +233,7 @@ class Shopping extends UNO_Controller
                             'status' => 'success',
                             'message' => 'Seus dados foram atualizados com sucesso.'
                         ));
-                        
+
 
                     }
                 }
@@ -241,7 +241,7 @@ class Shopping extends UNO_Controller
             }
         }
         $data['avatar'] = $this->user->avatar;
-       
+
         echo $this->render('profile', $data);
     }
 
@@ -593,7 +593,7 @@ class Shopping extends UNO_Controller
 
         $dvc = 'esm_alertas.medidor_id';
         $join = 'JOIN esm_medidores ON esm_medidores.nome = ' . $dvc;
-       
+
         $dt = $this->datatables->query("
             SELECT 
                 1 AS type, 
@@ -1022,7 +1022,7 @@ class Shopping extends UNO_Controller
         }
         foreach ($this->input->getPost("select_unidades") as $m) {
             $dados['devices'][] = $m;
-            
+
         }
 
         $dados['entrada_id'] = $this->shopping_model->get_entrada_id($this->user->type->entity_id, $this->input->getPost("entrada_id"));

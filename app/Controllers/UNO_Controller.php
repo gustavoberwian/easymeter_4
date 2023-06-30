@@ -49,7 +49,7 @@ class UNO_Controller extends BaseController {
             $this->user->alerts     = $this->shopping_model->CountAlerts($this->user->id);
             $this->user->type       = $this->shopping_model->get_user_relation($this->user->id);
 
-            if (service('router')->methodName() !== 'index') {
+            if (!in_array(service('router')->methodName(), array('index', 'forum', 'assuntoforum'))) {
                 $this->user->config = $this->shopping_model->get_client_config(service('uri')->getSegment(3));
             }
 
@@ -67,6 +67,7 @@ class UNO_Controller extends BaseController {
 
         $data['class']  = end($controller);
         $data['method'] = service('router')->methodName();
+        $data['view']   = $view;
         $data['user']   = $this->user;
 
         $data['chamados']        = $this->admin_model->get_chamados("aberto", 5);
@@ -77,12 +78,16 @@ class UNO_Controller extends BaseController {
         $data['contato_unread']  = $this->admin_model->count_contato(0);
 
         $data['logs']   = $builder->get()->getNumRows();
+       
+        if ($menu === 'forum') {
+            return view($data['class'] . '/' . $view, $data);
 
-        if ($menu) {
+        } else if ($menu) {
             return view($data['class'] . '/template/header', $data)
                 . view($data['class'] . '/template/menu', $data)
                 . view($data['class'] . '/' . $view, $data)
                 . view($data['class'] . '/template/footer', $data);
+
         } else {
             return view($data['class'] . '/template/header', $data)
                 . view($data['class'] . '/' . $view, $data)

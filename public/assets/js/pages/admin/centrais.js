@@ -84,7 +84,7 @@ var dtEnvios;
     // * Inicializa datatable conexões
     // **
 	var dtPortas = $('#dt-portas').DataTable({
-        dom: '<"table-responsive"t><"row"<"col-lg-6"l><"col-lg-6"p>>r',
+        dom: '<"table-responsive"t><"row"<"col-lg-6 pt-6"l><"col-lg-6 pt-5"p>>r',
 		processing: true,
         columns: [ 
                     { data: "posicao", class: "dt-body-center" }, 

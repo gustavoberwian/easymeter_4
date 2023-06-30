@@ -69,8 +69,21 @@ class Mapa extends BaseController
     {
         $data = array();
 
-        // Renderiza a página 'index' passando os dados
-        echo $this->render('index', $data, false);
+        echo $this->render('index', $data);
+    }
+
+    public function view()
+    {
+        $data = array();
+
+        echo $this->render('view', $data);
+    }
+
+    public function water()
+    {
+        $data = array();
+
+        echo $this->render('water-tank', $data);
     }
 
     /**
@@ -198,5 +211,10 @@ class Mapa extends BaseController
 
         // Retorna as coordenadas como um array
         return $coordinates;
+    }
+
+    public function get_switcher()
+    {
+        echo $this->view('Mapa/switcher-content');
     }
 }

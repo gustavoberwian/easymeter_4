@@ -66,9 +66,10 @@ class Consigaz_model extends Base_model
     {
         $result = $this->db->table('esm_unidades')
             ->join('esm_agrupamentos', 'esm_agrupamentos.id = esm_unidades.agrupamento_id')
-            ->join('esm_medidores', 'esm_medidores.unidade_id = esm_unidades.id')
+            ->join('esm_medidores', 'esm_medidores.unidade_id = esm_unidades.id', 'left')
             ->where('esm_unidades.id', $uid)
-            ->select('esm_unidades.nome AS unidade_nome, 
+            ->select('esm_unidades.id AS uid,
+                esm_unidades.nome AS unidade_nome, 
                 esm_agrupamentos.nome AS agrupamento_nome, 
                 esm_agrupamentos.entidade_id AS entidade_id,
                 esm_medidores.id AS medidor_id')
@@ -615,5 +616,247 @@ class Consigaz_model extends Base_model
         }
 
         return false;
+    }
+    public function get_user_unidade($unidade_id)
+    {
+        // realiza a consulta
+        $query = $this->db->query("
+            SELECT * 
+            FROM auth_user_relation
+            WHERE unidade_id = $unidade_id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow();
+    }
+    public function get_fechamento_unidade($fechamento_id, $unidade_id)
+    {
+
+        $query = $this->db->query("
+        SELECT
+            esm_fechamentos_gas_entradas.consumo, 
+            esm_fechamentos_gas.inicio, 
+            esm_fechamentos_gas.fim, 
+            esm_fechamentos_gas.competencia, 
+            esm_fechamentos_gas.cadastro, 
+            esm_unidades.id, 
+            esm_unidades.nome as apto, 
+            esm_agrupamentos.nome, 
+            esm_agrupamentos.id as agrupamento_id
+        FROM
+            esm_fechamentos_gas_entradas
+            JOIN
+            esm_fechamentos_gas
+            ON 
+                esm_fechamentos_gas.id = esm_fechamentos_gas_entradas.fechamento_id AND
+                esm_fechamentos_gas_entradas.fechamento_id = esm_fechamentos_gas.id
+            INNER JOIN
+            esm_unidades
+            INNER JOIN
+            esm_agrupamentos
+            ON 
+                esm_unidades.agrupamento_id = esm_agrupamentos.id
+            INNER JOIN
+            esm_medidores
+            ON 
+                esm_unidades.id = esm_medidores.unidade_id AND
+                esm_fechamentos_gas_entradas.medidor_id = esm_medidores.id
+        WHERE
+            esm_fechamentos_gas_entradas.fechamento_id = $fechamento_id AND
+            esm_unidades.id = $unidade_id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow();
+    }
+    public function get_fechamento_unidade_detail($fechamento_id, $unidade_id)
+    {
+        $query = $this->db->query("
+            SELECT esm_medidores.nome AS medidor, esm_entradas.nome AS entrada, 
+            LPAD(esm_fechamentos_gas_entradas.leitura_anterior, 6, '0') AS leitura_anterior, 
+            LPAD(esm_fechamentos_gas_entradas.leitura_atual, 6, '0') AS leitura_atual,
+            esm_fechamentos_gas_entradas.leitura_atual - esm_fechamentos_gas_entradas.leitura_anterior AS consumo
+            FROM esm_fechamentos_gas_entradas 
+            JOIN esm_medidores ON esm_medidores.id = esm_fechamentos_gas_entradas.medidor_id
+            JOIN esm_entradas ON esm_entradas.id = esm_medidores.entrada_id
+            WHERE esm_entradas.tipo = 'gas' AND
+            esm_fechamentos_gas_entradas.fechamento_id = $fechamento_id AND 
+            esm_medidores.unidade_id = $unidade_id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getResult();
+    }
+    public function get_entity_by_unity($unidade_id)
+    {
+        $query = $this->db->query("
+            SELECT
+                esm_entidades.*
+            FROM
+                esm_entidades
+                INNER JOIN
+                esm_agrupamentos
+                ON 
+                    esm_entidades.id = esm_agrupamentos.entidade_id
+                INNER JOIN
+                esm_unidades
+                ON 
+                    esm_unidades.agrupamento_id = esm_agrupamentos.id
+            WHERE
+                esm_unidades.id = $unidade_id
+        ");
+                // verifica se retornou algo
+                if ($query->getNumRows() == 0)
+                return false;
+    
+            return $query->getRow();
+    }
+    public function get_ramal_by_unity($unidade_id)
+    {
+        $query = $this->db->query("
+            SELECT
+                esm_ramais.*
+            FROM
+                esm_entidades
+                INNER JOIN
+                esm_ramais
+                ON 
+                    esm_entidades.id = esm_ramais.entidade_id
+                INNER JOIN
+                esm_agrupamentos
+                ON 
+                    esm_entidades.id = esm_agrupamentos.entidade_id
+                INNER JOIN
+                esm_unidades
+                ON 
+                    esm_unidades.agrupamento_id = esm_agrupamentos.id
+            WHERE
+                esm_unidades.id = $unidade_id
+        ");
+                // verifica se retornou algo
+                if ($query->getNumRows() == 0)
+                return false;
+    
+            return $query->getRow();
+    }
+    public function get_fechamento_media($fechamento_id, $unidade_id)
+    {
+        $query = $this->db->query("
+            SELECT
+                AVG(esm_fechamentos_gas_entradas.consumo) AS media
+            FROM
+                esm_medidores
+                INNER JOIN
+                esm_unidades
+                ON 
+                    esm_medidores.unidade_id = esm_unidades.id
+                INNER JOIN
+                esm_fechamentos_gas_entradas
+                ON 
+                    esm_fechamentos_gas_entradas.medidor_id = esm_medidores.id
+            WHERE
+                esm_fechamentos_gas_entradas.fechamento_id = $fechamento_id AND
+                esm_unidades.id != $unidade_id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow()->media;
+    }
+    public function get_fechamento_max($fechamento_id, $unidade_id)
+    {
+        $query = $this->db->query("
+            SELECT
+                SUM(esm_fechamentos_gas_entradas.consumo) AS soma
+            FROM
+                esm_medidores
+                INNER JOIN
+                esm_unidades
+                ON 
+                    esm_medidores.unidade_id = esm_unidades.id
+                INNER JOIN
+                esm_fechamentos_gas_entradas
+                ON 
+                    esm_fechamentos_gas_entradas.medidor_id = esm_medidores.id
+            WHERE
+                esm_fechamentos_gas_entradas.fechamento_id = $fechamento_id AND
+                esm_unidades.id != $unidade_id
+        ");
+
+        // verifica se retornou algo
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getRow()->soma;
+    }
+    public function get_relatorio_info($fechamento_id, $unidade_id)
+    {
+        $query = $this->db->query("
+            SELECT
+                esm_fechamentos_gas_entradas.consumo AS consumo, 
+                esm_fechamentos_gas.inicio AS data_inicio, 
+                esm_fechamentos_gas.fim AS data_fim, 
+                esm_fechamentos_gas.competencia AS competencia, 
+                esm_fechamentos_gas.cadastro AS cadastro, 
+                esm_unidades.nome AS apto, 
+                esm_agrupamentos.nome AS bloco, 
+                esm_medidores.nome AS medidor, 
+                LPAD( esm_fechamentos_gas_entradas.leitura_anterior, 6, '0' ) AS leitura_anterior, 
+                LPAD( esm_fechamentos_gas_entradas.leitura_atual, 6, '0' ) AS leitura_atual, 
+                AVG(esm_fechamentos_gas_entradas.consumo) AS media, 
+                SUM(esm_fechamentos_gas_entradas.consumo) AS soma, 
+                esm_entidades.id AS entidade_id, 
+                esm_ramais.id AS ramal_id, 
+                esm_entradas.nome AS entrada
+            FROM
+                esm_fechamentos_gas_entradas
+                JOIN
+                esm_fechamentos_gas
+                ON 
+                    esm_fechamentos_gas.id = esm_fechamentos_gas_entradas.fechamento_id AND
+                    esm_fechamentos_gas_entradas.fechamento_id = esm_fechamentos_gas.id
+                INNER JOIN
+                esm_unidades
+                INNER JOIN
+                esm_agrupamentos
+                ON 
+                    esm_unidades.agrupamento_id = esm_agrupamentos.id
+                INNER JOIN
+                esm_medidores
+                ON 
+                    esm_unidades.id = esm_medidores.unidade_id AND
+                    esm_fechamentos_gas_entradas.medidor_id = esm_medidores.id
+                INNER JOIN
+                esm_entidades
+                ON 
+                    esm_agrupamentos.entidade_id = esm_entidades.id
+                INNER JOIN
+                esm_entradas
+                ON 
+                    esm_entidades.id = esm_entradas.entidade_id AND
+                    esm_medidores.entrada_id = esm_entradas.id
+                INNER JOIN
+                esm_ramais
+                ON 
+                    esm_entidades.id = esm_ramais.entidade_id
+            WHERE
+                esm_fechamentos_gas_entradas.fechamento_id = $fechamento_id AND
+                esm_unidades.id = $unidade_id
+        ");
+        if ($query->getNumRows() == 0)
+            return false;
+
+        return $query->getResultObject();
     }
 }

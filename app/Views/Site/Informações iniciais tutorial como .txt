@@ -1,0 +1,11 @@
+Informações iniciais/ tutorial "como faço o meu login no site?"
+
+Passo a Passo para Fazer Login no Nosso Site
+
+1. Para iniciar o processo de cadastro em nosso serviço, acesse nosso site por meio do endereço easymeter.com.br. Abra o navegador de sua preferência e insira esse URL na barra de endereços. Em seguida, pressione Enter ou clique em "Ir" para ser redirecionado à página inicial.
+
+2. Ao chegar na página inicial, procure pelo cabeçalho do site, localizado geralmente na parte superior da página. Nele, você encontrará várias opções de navegação. Localize e clique na opção "Entrar" para prosseguir para a página de login.
+
+3. Agora você está na página de login. Neste momento, preencha suas informações de login, como e-mail e senha. Certifique-se de digitar corretamente os dados solicitados para evitar problemas de acesso.
+
+Com esses passos simples, você estará pronto para aproveitar todos os recursos e serviços disponíveis em nosso site. Caso enfrente alguma dificuldade, fique à vontade para entrar em contato com nossa equipe de suporte, pronta para ajudar você em todo o processo.

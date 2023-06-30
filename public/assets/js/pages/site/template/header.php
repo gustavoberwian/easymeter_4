@@ -43,6 +43,7 @@ defined('BASEPATH') or exit('No direct script access allowed');
     <link href="<?php echo base_url('vendor/swiper/swiper-bundle.min.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?php echo base_url('assets/css/pages/site/global.css'); ?>">
+    
 
 </head>
 

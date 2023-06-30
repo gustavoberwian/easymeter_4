@@ -70,7 +70,7 @@ class Industria extends UNO_Controller
 
         $this->user->unidade = (object)[];
         $this->user->entity = (object)[];
-        
+
 
         if ($this->user->inGroup('superadmin')) {
             $this->user->entity->classificacao = $this->user->page;
@@ -86,13 +86,13 @@ class Industria extends UNO_Controller
         if(!$this->user->inGroup('superadmin'))
         {
             if ($this->user->inGroup('energia'))
-            $this->user->monitoria = 'energy';
-        elseif ($this->user->inGroup('agua'))
-            $this->user->monitoria = 'water';
-        elseif ($this->user->inGroup('gas'))
-            $this->user->monitoria = 'gas';
-        elseif ($this->user->inGroup('nivel'))
-            $this->user->monitoria = 'nivel';
+                $this->user->monitoria = 'energy';
+            elseif ($this->user->inGroup('agua'))
+                $this->user->monitoria = 'water';
+            elseif ($this->user->inGroup('gas'))
+                $this->user->monitoria = 'gas';
+            elseif ($this->user->inGroup('nivel'))
+                $this->user->monitoria = 'nivel';
         }
     }
 
@@ -383,7 +383,7 @@ class Industria extends UNO_Controller
         $m = $this->input->getPost('monitoramento');
         $user_id = auth()->user()->id;
 
-        
+
 
         $dvc = 'esm_alertas.device';
         $join = 'JOIN esm_medidores ON esm_medidores.nome = ' . $dvc;
@@ -516,7 +516,7 @@ class Industria extends UNO_Controller
         helper('form');
         $data['emails'] = $this->industria_model->get_user_emails($this->user->id);
         $user_id = $this->user->id;
-        
+
         if ($this->user->inGroup('shopping', 'admin'))
         {
             $data['condo'] = $this->admin_model->get_condo($this->user->type->entity_id);
@@ -528,14 +528,14 @@ class Industria extends UNO_Controller
             $data['condo'] = '';
         }
 
-        
+
 
 
 
         if ($this->input->getPost()) {
             $image = $this->input->getPost('crop-image');
             $senha = $this->input->getPost('password');
-        
+
             if ($image) {
                 // valida se é imagem...
 
@@ -545,22 +545,22 @@ class Industria extends UNO_Controller
                 $image = base64_decode($image);
                 $filename = time() . $this->user->id . '.png';
                 if (file_put_contents('../public/assets/img/uploads/avatars/' . $filename, $image)) {
-        
-                // mensagem
+
+                    // mensagem
                     $img['avatar'] = $filename;
 
                     // apaga avatar anterior
                     if ($this->user->avatar && file_exists('../public/assets/img/uploads/avatars/' . $this->user->avatar)) {
                         unlink('../public/assets/img/uploads/avatars/' . $this->user->avatar);
                         $this->user->avatar = $filename;
-                                
-                }
-                    
+
+                    }
+
                     // atualiza avatar em auth_users
                     if ($this->admin_model->update_avatar($this->user->id, $img)) {
                         $data['error'] = false;
-                        }
-                         else {
+                    }
+                    else {
                         //erro e mensagem
                     }
                 } else {
@@ -572,34 +572,34 @@ class Industria extends UNO_Controller
                 if($this->input->getPost('password'))
                 {
                     $rules = [
-                'password' => 'required|min_length[6]',
-                'confirm' => 'required|matches[password]',
-                'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
-                'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
-               ];
+                        'password' => 'required|min_length[6]',
+                        'confirm' => 'required|matches[password]',
+                        'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
+                        'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
+                    ];
                 } else {
                     $rules = [
                         'celular' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]',
                         'telefone' => 'permit_empty|regex_match[/^(?:(?:\+|00)?(55)\s?)?(?:\(?([1-9][0-9])\)?\s?)?(?:((?:9\d|[2-9])\d{3})\-?(\d{4}))$/]'
                     ];
                 };
-                
 
-                 $emails = null;
-                 if ($this->input->getPost('emails') != '') {
-                     $emails = explode(',', $this->input->getPost('emails'));
-                        $rules = [
-                            'emails' => 'valid_email'
-                        ];
-                     }
-                 
-               
+
+                $emails = null;
+                if ($this->input->getPost('emails') != '') {
+                    $emails = explode(',', $this->input->getPost('emails'));
+                    $rules = [
+                        'emails' => 'valid_email'
+                    ];
+                }
+
+
                 if ($this->validate($rules) && !isset($data['email_form'])) {
                     // coleta os dados do post
                     $password = $this->input->getPost('password');
                     $telefone = $this->input->getPost('telefone');
                     $celular  = $this->input->getPost('celular');
-                    
+
 
                     // atualiza dados
                     if (!$this->admin_model->update_user($user_id, $password, $telefone, $celular, $emails)) {
@@ -616,7 +616,7 @@ class Industria extends UNO_Controller
                             'status' => 'success',
                             'message' => 'Seus dados foram atualizados com sucesso.'
                         ));
-                        
+
 
                     }
                 }

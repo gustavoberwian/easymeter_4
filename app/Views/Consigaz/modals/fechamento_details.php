@@ -14,7 +14,7 @@
             <tbody>
                 <tr>
                     <td class="text-right" style="width: 150px;"><b>Referencia</b></td>
-                    <td><?= $unidade->competencia; ?></td>
+                    <td><?= strftime('%b/%Y', strtotime($unidade->competencia)); ?></td>
                     <td class="text-right" style="width: 150px;"><b>Fechamento</b></td>
                     <td><?= date('d/m/Y', strtotime($unidade->cadastro)); ?></td>
                 </tr>

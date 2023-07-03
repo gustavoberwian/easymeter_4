@@ -275,7 +275,7 @@ class Water_model extends Base_model
         return false;
     }
 
-    public function generateResume($group, $config, $type, $start, $end, $demo = false)
+    public function generateResume($group, $config, $start, $end, $demo = false)
     {
             $entity = $this->get_entity_by_group($group);
             $values = " m.value AS value_month";

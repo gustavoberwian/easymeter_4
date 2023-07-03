@@ -1084,4 +1084,35 @@ class Shopping_model extends Base_model
 
         return $result->getRow()->id;
     }
+
+    public function get_medidores_by_group($group, $monitora = null)
+    {
+        $m = "";
+
+        if (!is_null($monitora)) {
+            $m = "WHERE esm_medidores.tipo = '$monitora'";
+        }
+
+        $query = "
+            SELECT esm_medidores.*, esm_unidades.nome AS unidade FROM esm_medidores 
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id 
+            AND esm_unidades.agrupamento_id = $group 
+            $m";
+
+        $result = $this->db->query($query);
+
+        return $result->getResult();
+    }
+
+    public function get_medidor($device)
+    {
+        $query = "
+            SELECT esm_medidores.*, esm_unidades.nome AS unidade FROM esm_medidores 
+            JOIN esm_unidades ON esm_unidades.id = esm_medidores.unidade_id  
+            WHERE esm_medidores.nome = '$device'";
+
+        $result = $this->db->query($query);
+
+        return $result->getRow();
+    }
 }

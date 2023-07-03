@@ -135,7 +135,7 @@ class Water extends UNO_Controller
 	{
         setlocale(LC_TIME, 'pt_BR', 'pt_BR.utf-8', 'pt_BR.utf-8', 'portuguese');
         $gid = $this->input->getGet('gid') ?? $this->input->getPost('gid');
-		if (is_null($gid)) 
+		if (is_null($gid))
             $gid = $this->user->group;
 
         // realiza a query via dt
@@ -205,7 +205,7 @@ class Water extends UNO_Controller
 		$dt->add('action', function ($data) {
 			return '<a href="#" class="action-download-unity text-primary me-2" data-fid="' . $data['fid'] . '" data-uid="' . $data['uid'] . '" data-eid="' . $data['entrada_id'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
 		});
-        
+
         echo $dt->generate();
 	}
 
@@ -300,12 +300,12 @@ class Water extends UNO_Controller
             );
         }
 
-        $values_c   = array();
         $max_c = -1;
         $min_c = 999999999;
         $colors = ['#734ba9', '#87a84b', '#a86f4b'];
         if ($compare != "") {
             foreach ($compare as $key => $c) {
+                $values_c   = array();
                 $comp = $this->water_model->GetConsumption($c, $shopping_id, $start, $end, array(), true, null, $this->user->demo);
                 if ($comp) {
 
@@ -603,7 +603,9 @@ class Water extends UNO_Controller
         $group_id = $this->input->getPost('group');
         $start = $this->input->getPost('dados[start]');
         $end = $this->input->getPost('dados[end]');
-        
+        $device = $this->input->getPost('dados[device]');
+        $compare = $this->input->getPost('dados[compare]');
+
         // busca fechamento
         $group = $this->shopping_model->get_group_info($group_id);
 
@@ -630,8 +632,6 @@ class Water extends UNO_Controller
 */
         $spreadsheet = new Spreadsheet();
 
-
-
         $spreadsheet->getProperties()
             ->setCreator('Easymeter')
             ->setLastModifiedBy('Easymeter')
@@ -642,48 +642,102 @@ class Water extends UNO_Controller
             ->setCategory('Relatório')->setCompany('Easymeter');
 
 
-        $spreadsheet->getActiveSheet()->setTitle($this->user->config->area_comum);
+        $spreadsheet->getActiveSheet()->setTitle('Medidores');
 
-        $myWorkSheet = new \PhpOffice\PhpSpreadsheet\Worksheet\Worksheet($spreadsheet, 'Unidades');
-        $spreadsheet->addSheet($myWorkSheet, 1);
+        if ($start === $end) {
+            if ($device === "T") {
+                $medidores = $this->shopping_model->get_medidores_by_group($group_id, 'agua');
 
-        for ($i = 0; $i < 2; $i++) {
+                foreach ($medidores as $i => $medidor) {
+                    $hours = $this->water_model->GetConsumption($medidor->nome, $group_id, $start, $end);
 
-            $spreadsheet->setActiveSheetIndex($i);
+                    $resume[$i] = [$medidor->nome, $medidor->unidade];
 
-            $resume = $this->water_model->generateResume($group_id, $this->user->config, $i + 1, strtotime($start.'00:00'), strtotime($end.'23:59'), $this->user->demo );
+                    foreach ($hours as $h) {
+                        $resume[$i][] = $h->value;
+                    }
+                }
+            } else {
+                if (empty($compare)) {
+                    $medidor = $this->shopping_model->get_medidor($device);
+                    $hours = $this->water_model->GetConsumption($medidor->nome, $group_id, $start, $end);
 
+                    $resume = [$medidor->nome, $medidor->unidade];
 
-            $spreadsheet->getActiveSheet()->getStyle('A1:C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
-            $spreadsheet->getActiveSheet()->mergeCells('A1:C1');
-            $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - ' . date('d/m/Y', strtotime($start) ) . ' a ' . date('d/m/Y', strtotime($end)));
-            $spreadsheet->getActiveSheet()->mergeCells('A2:C2');
+                    foreach ($hours as $h) {
+                        $resume[] = $h->value;
+                    }
+                } else {
+                    $medidores = array();
 
-            $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
-            $spreadsheet->getActiveSheet()->setCellValue('B4', 'Nome')->mergeCells('B4:B5');
+                    $medidores[] = $this->shopping_model->get_medidor($device);
+
+                    foreach ($compare as $c) {
+                        $medidores[] = $this->shopping_model->get_medidor($c);
+                    }
+
+                    foreach ($medidores as $i => $medidor) {
+                        $hours = $this->water_model->GetConsumption($medidor->nome, $group_id, $start, $end);
+
+                        $resume[$i] = [$medidor->nome, $medidor->unidade];
+
+                        foreach ($hours as $h) {
+                            $resume[$i][] = $h->value;
+                        }
+                    }
+                }
+            }
+
+            $startColumn = 'C';
+            $endColumn = chr(ord($startColumn) + 23);
+            $startRow = 5;
+            $spreadsheet->getActiveSheet()->setCellValue($startColumn . '4', 'Consumo - m³')->mergeCells($startColumn . '4:' . $endColumn . '4');
+            for ($hour = 0; $hour < 24; $hour++) {
+                $column = $startColumn;
+                $row = $startRow;
+
+                $hourLabel = $hour . 'h';
+
+                $spreadsheet->getActiveSheet()->setCellValue($column . $row, $hourLabel);
+
+                $spreadsheet->getActiveSheet()->getColumnDimension($column)->setWidth(11);
+
+                $spreadsheet->getActiveSheet()->getStyle($column . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                $spreadsheet->getActiveSheet()->getStyle($column . $row)->getFont()->setBold(true);
+
+                $startColumn++;
+            }
+        } else {
+            $resume = $this->water_model->generateResume($group_id, $this->user->config, strtotime($start . '00:00'), strtotime($end . '23:59'), $this->user->demo);
             $spreadsheet->getActiveSheet()->setCellValue('C4', 'Consumo')->mergeCells('C4:C5');
-           
-
-            $spreadsheet->getActiveSheet()->getStyle('A1:C5')->getFont()->setBold(true);
-            $spreadsheet->getActiveSheet()->getStyle('A4:C5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-
-
-            $spreadsheet->getActiveSheet()->fromArray($resume, NULL, 'A6');
-
-            $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
-            $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
-            $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(30);
-
-
-            $spreadsheet->getActiveSheet()->getStyle('A6:A'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $spreadsheet->getActiveSheet()->getStyle('B6:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $spreadsheet->getActiveSheet()->getStyle('C6:C'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-
-            $spreadsheet->getActiveSheet()->setCellValue('A' . (count($resume) + 7), 'Gerado em ' . date("d/m/Y H:i"));
-
-            $spreadsheet->getActiveSheet()->setSelectedCell('A1');
+            $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
         }
+
+        $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
+        $spreadsheet->getActiveSheet()->setCellValue('B4', 'Nome')->mergeCells('B4:B5');
+
+        $spreadsheet->getActiveSheet()->getStyle('A1:C2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
+        $spreadsheet->getActiveSheet()->mergeCells('A1:C1');
+        $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório Resumo - ' . date('d/m/Y', strtotime($start) ) . ' a ' . date('d/m/Y', strtotime($end)));
+        $spreadsheet->getActiveSheet()->mergeCells('A2:C2');
+
+        $spreadsheet->getActiveSheet()->getStyle('A1:C5')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A4:C5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+        $spreadsheet->getActiveSheet()->fromArray($resume, NULL, 'A6');
+
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+
+        $spreadsheet->getActiveSheet()->getStyle('A6:A'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('B6:B'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('C6:C'.(count($resume) + 6))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+
+        $spreadsheet->getActiveSheet()->setCellValue('A' . (count($resume) + 7), 'Gerado em ' . date("d/m/Y H:i"));
+
+        $spreadsheet->getActiveSheet()->setSelectedCell('A1');
 
         $spreadsheet->setActiveSheetIndex(0);
 

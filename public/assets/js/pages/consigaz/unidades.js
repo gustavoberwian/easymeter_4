@@ -219,26 +219,6 @@
         });
     })
 
-    $(document).on('click', '.action-edit', function (e) {
-        // para propagação
-        e.preventDefault();
-
-        // abre modal
-        $.magnificPopup.open( {
-            items: {src: '/consigaz/md_edit_medidor'},
-            type: 'ajax',
-            modal: true,
-            ajax: {
-                settings: {
-                    type: 'POST',
-                    data: {
-                        medidor: $(this).data("mid")
-                    }
-                }
-            }
-        });
-    });
-
     $(document).on('click', '#md-edit-medidor .modal-confirm', function () {
 
         if (!$(".form-edit-medidor").valid())

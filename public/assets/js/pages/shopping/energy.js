@@ -274,12 +274,10 @@ if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine
         );
     }
 
-    //apexchart(start, end);
-    //daterange()
-
     /**
      * Handler on change select value
      */
+    
     $('#sel-device').on('change', function () {
         device = this.value;
         if (device === 'href') {

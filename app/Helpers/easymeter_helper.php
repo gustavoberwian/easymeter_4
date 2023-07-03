@@ -299,3 +299,13 @@ function format_pb_comparativo($consumo, $consumos)
         return 'warning';
 
 }
+function num2alpha($num) {
+    $str = '';
+    while ($num > 0) {
+        $num--;
+        $remainder = $num % 26;
+        $str = chr(65 + $remainder) . $str;
+        $num = intval($num / 26);
+    }
+    return $str;
+}

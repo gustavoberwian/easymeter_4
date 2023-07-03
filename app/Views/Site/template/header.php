@@ -39,10 +39,10 @@
     <link href="<?= base_url('vendor/flexslider/flexslider.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <link href="<?= base_url('assets/css/pages/site/theme-fonts.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <link href="<?= base_url('assets/css/pages/site/theme.css'); ?>" rel="stylesheet" type="text/css" media="all" />
-    <link href="<?= base_url('assets/css/pages/site/footer.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <link href="<?= base_url('vendor/swiper/swiper-bundle.min.css'); ?>" rel="stylesheet" type="text/css" media="all" />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= base_url('assets/css/pages/site/global.css'); ?>">
+
 
 </head>
 

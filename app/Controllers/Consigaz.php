@@ -1012,7 +1012,6 @@ class Consigaz extends UNO_Controller
         $data['ramal'] = $this->consigaz_model->get_ramal_by_unity($unidade_id);
         $data['user'] = $this->user;
         $data['url'] = $this->url;
-		$data['unidade_id']   = $unidade_id;
         $data['fechamento']   = $this->admin_model->get_fechamento($fechamento_id);
 
         // verifica se existe fechamento
@@ -1022,15 +1021,11 @@ class Consigaz extends UNO_Controller
             return;
         }
 
-        $data['fechamentos']  = $this->admin_model->get_fechamentos_unidade($fechamento_id, $unidade_id);
-        $data['unidade'] = $this->consigaz_model->get_fechamento_unidade($fechamento_id, $unidade_id);
-        $data['details'] = $this->consigaz_model->get_fechamento_unidade_detail($fechamento_id, $unidade_id);
+        $data['relatorio'] = $this->consigaz_model->get_relatorio_info($fechamento_id, $unidade_id)[0];
         $data['unidade_info'] = $this->admin_model->get_condo_info_by_unidade($unidade_id);
-        $data['unidade_d'] = $this->consigaz_model->get_unidade($unidade_id);
-        $data['unidade_d']->tipo = 'gas';
-
-        // print_r($data['unidade_d']); return;
-        
+        $data['relatorio']->tipo = 'gas';
+        $data['relatorio']->media = $this->consigaz_model->get_fechamento_media($fechamento_id, $unidade_id);
+        $data['relatorio']->soma = $this->consigaz_model->get_fechamento_max($fechamento_id, $unidade_id);   
         
         
         echo $this->render('relatorio', $data);

@@ -1541,153 +1541,153 @@ class Energia extends UNO_Controller
 
         echo json_encode($options);
     }
-/*
-    private function chart_active_demand()
-    {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
+    /*
+        private function chart_active_demand()
+        {
+            $device   = $this->input->getPost('device', true);
+            $start    = $this->input->getPost('start', true);
+            $end      = $this->input->getPost('end', true);
 
-        $values_a   = array();
-        $values_b   = array();
-        $values_c   = array();
-        $labels     = array();
-        $days       = array();
+            $values_a   = array();
+            $values_b   = array();
+            $values_c   = array();
+            $labels     = array();
+            $days       = array();
 
-        $values = $this->energy_model->get_active_demand($device, $start, $end);
+            $values = $this->energy_model->get_active_demand($device, $start, $end);
 
-        if ($values) {
-            foreach ($values as $v) {
-                // insere resultado no array
-                $values_a[] = $v->value_a;
-                $values_b[] = $v->value_b;
-                $values_c[] = $v->value_c;
-                $labels[]   = $v->label;
+            if ($values) {
+                foreach ($values as $v) {
+                    // insere resultado no array
+                    $values_a[] = $v->value_a;
+                    $values_b[] = $v->value_b;
+                    $values_c[] = $v->value_c;
+                    $labels[]   = $v->label;
 
-                if ($start != $end)
-                    $days[]     = weekDayName($v->dw);
+                    if ($start != $end)
+                        $days[]     = weekDayName($v->dw);
+                }
+
+            } else {
+
+                $values_a[] = 0;
+                $values_b[] = 0;
+                $values_c[] = 0;
+                $labels[]  = "";
             }
 
-        } else {
 
-            $values_a[] = 0;
-            $values_b[] = 0;
-            $values_c[] = 0;
-            $labels[]  = "";
-        }
-
-
-        $options = array(
-            "chart" => array(
-                "toolbar" => array(
-                    "show" => false
-                ),
-                "type" => "line",
-                "width" => "100%",
-                "height" => 380,
-                "stacked" => false,
-                "foreColor" => "#777",
-                "events" => array(
-                    "click" => "function"
-                )
-            ),
-            "extra" => array(
-                "tooltip" => array(
-                    "title" => $days,
-                ),
-                "unit" => array("limit" => 0, "sup" => "kWh", "sup_dec" => 3, "inf" => "kWh", "inf_dec" => 3)
-            ),
-            "series" => [
-                array(
-                    "name" => "Fase R",
-                    "data" => $values_a,
-                    "color" => "#FF0000",
-                ),
-                array(
-                    "name" => "Fase S",
-                    "data" => $values_b,
-                    "color" => "#000",
-                ),
-                array(
-                    "name" => "Fase T",
-                    "data" => $values_c,
-                    "color" => "#8B4513",
-                ),
-            ],
-            "stroke" => array(
-                "curve" => "smooth",
-                "width" => 2
-            ),
-            "plotOptions" => array(
-                "bar" => array(
-                    "dataLabels" => array(
-                        "position" => "top"
+            $options = array(
+                "chart" => array(
+                    "toolbar" => array(
+                        "show" => false
+                    ),
+                    "type" => "line",
+                    "width" => "100%",
+                    "height" => 380,
+                    "stacked" => false,
+                    "foreColor" => "#777",
+                    "events" => array(
+                        "click" => "function"
                     )
-                )
-            ),
-            "dataLabels" => array(
-                "enabled" => false,
-                "style" => array(
-                    "colors" => ["#777"]
                 ),
-                "offsetY" => -20,
-                "formatter" => "function"
-            ),
-            "xaxis" => array(
-                "categories" => $labels,
-                "axisBorder" => array(
-                    "show" => false
+                "extra" => array(
+                    "tooltip" => array(
+                        "title" => $days,
+                    ),
+                    "unit" => array("limit" => 0, "sup" => "kWh", "sup_dec" => 3, "inf" => "kWh", "inf_dec" => 3)
                 ),
-                "axisTicks" => array(
-                    "show" => false
+                "series" => [
+                    array(
+                        "name" => "Fase R",
+                        "data" => $values_a,
+                        "color" => "#FF0000",
+                    ),
+                    array(
+                        "name" => "Fase S",
+                        "data" => $values_b,
+                        "color" => "#000",
+                    ),
+                    array(
+                        "name" => "Fase T",
+                        "data" => $values_c,
+                        "color" => "#8B4513",
+                    ),
+                ],
+                "stroke" => array(
+                    "curve" => "smooth",
+                    "width" => 2
                 ),
-                "tickAmount" => $start == $end ? 24 : count($labels)
-            ),
-            "yaxis" => array(
-                "labels" => array(
+                "plotOptions" => array(
+                    "bar" => array(
+                        "dataLabels" => array(
+                            "position" => "top"
+                        )
+                    )
+                ),
+                "dataLabels" => array(
+                    "enabled" => false,
+                    "style" => array(
+                        "colors" => ["#777"]
+                    ),
+                    "offsetY" => -20,
                     "formatter" => "function"
                 ),
-                "tickAmount" => 6
-            ),
-            "annotations" => array(
-                "yaxis" => [
-                    array(
-                        "y" => 9000,
-                        "borderColor" => "#EDC241",
-                        "label" => array(
-                            "show" => false
-                        )
+                "xaxis" => array(
+                    "categories" => $labels,
+                    "axisBorder" => array(
+                        "show" => false
                     ),
-                    array(
-                        "y" => 9500,
-                        "borderColor" => "red",
-                        "label" => array(
-                            "show" => false
-                        )
-                    )
-                ]
-            ),
-            "tooltip" => array(
-                "enabled" => true,
-                "intersect" => false,
-                "shared" => true,
-                "y" => array(
-                    "formatter" => "empty",
-                    "title" => array(
-                        "formatter" => "empty"
+                    "axisTicks" => array(
+                        "show" => false
                     ),
+                    "tickAmount" => $start == $end ? 24 : count($labels)
                 ),
-                "x" => array(
-                    "formatter" => "empty",
-                    "format" => "dd MMM",
-                    "show" => true
-                )
-            ),
-        );
+                "yaxis" => array(
+                    "labels" => array(
+                        "formatter" => "function"
+                    ),
+                    "tickAmount" => 6
+                ),
+                "annotations" => array(
+                    "yaxis" => [
+                        array(
+                            "y" => 9000,
+                            "borderColor" => "#EDC241",
+                            "label" => array(
+                                "show" => false
+                            )
+                        ),
+                        array(
+                            "y" => 9500,
+                            "borderColor" => "red",
+                            "label" => array(
+                                "show" => false
+                            )
+                        )
+                    ]
+                ),
+                "tooltip" => array(
+                    "enabled" => true,
+                    "intersect" => false,
+                    "shared" => true,
+                    "y" => array(
+                        "formatter" => "empty",
+                        "title" => array(
+                            "formatter" => "empty"
+                        ),
+                    ),
+                    "x" => array(
+                        "formatter" => "empty",
+                        "format" => "dd MMM",
+                        "show" => true
+                    )
+                ),
+            );
 
-        return json_encode($options);
-    }
-*/
+            return json_encode($options);
+        }
+    */
     private function chart_carbon()
     {
         $device   = $this->input->getPost('device');
@@ -1822,321 +1822,321 @@ class Energia extends UNO_Controller
 
         return json_encode($options);
     }
-/*
-    private function chart_load_profile()
-    {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
-        $interval = $this->input->getPost('interval', true);
+    /*
+        private function chart_load_profile()
+        {
+            $device   = $this->input->getPost('device', true);
+            $start    = $this->input->getPost('start', true);
+            $end      = $this->input->getPost('end', true);
+            $interval = $this->input->getPost('interval', true);
 
-        $semana  = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab');
-        $current = strtotime($start);
-        $value_a = array();
-        $value_b = array();
-        $value_c = array();
-        $labels  = array();
-        $days    = array();
+            $semana  = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab');
+            $current = strtotime($start);
+            $value_a = array();
+            $value_b = array();
+            $value_c = array();
+            $labels  = array();
+            $days    = array();
 
-        if ($interval != "day") {
-            while ($current <= strtotime($end . ' 23:59:59')) {
-                $days[]  = $semana[date('w', $current)];
-                $current = strtotime('+1 day', $current);
-            }
-        }
-
-        $values = $this->energy_model->get_values_load($device, $interval, strtotime($start . ' 00:00:00'), strtotime($end . ' 23:59:59'));
-
-        if ($values) {
-
-            foreach ($values as $l) {
-
-                if ($l->value_max_a > 0)
-                    $value_a[] = $l->value_avg_a / $l->value_max_a;
-                else
-                    $value_a[] = 0;
-
-                if ($l->value_max_b > 0)
-                    $value_b[] = $l->value_avg_b / $l->value_max_b;
-                else
-                    $value_b[] = 0;
-
-                if ($l->value_max_c > 0)
-                    $value_c[] = $l->value_avg_c / $l->value_max_c;
-                else
-                    $value_c[] = 0;
-
-                $labels[]  = $l->label;
+            if ($interval != "day") {
+                while ($current <= strtotime($end . ' 23:59:59')) {
+                    $days[]  = $semana[date('w', $current)];
+                    $current = strtotime('+1 day', $current);
+                }
             }
 
-        } else {
+            $values = $this->energy_model->get_values_load($device, $interval, strtotime($start . ' 00:00:00'), strtotime($end . ' 23:59:59'));
 
-            $value_a[] = 0;
-            $value_b[] = 0;
-            $value_c[] = 0;
-            $labels[]  = "";
-        }
+            if ($values) {
 
-        $options = array(
-            "chart" => array(
-                "toolbar" => array(
-                    "show" => false
-                ),
-                "type" => "line",
-                "width" => "100%",
-                "height" => 380,
-                "foreColor" => "#777",
-                "stacked" => false,
-                "events" => array(
-                    "click" => "function"
-                )
-            ),
-            "series" => [
-                array(
-                    "name" => "Fase R",
-                    "data" => $value_a,
-                    "color" => "#FF0000",
-                ),
-                array(
-                    "name" => "Fase S",
-                    "data" => $value_b,
-                    "color" => "#000",
-                ),
-                array(
-                    "name" => "Fase T",
-                    "data" => $value_c,
-                    "color" => "#8B4513",
-                ),
-            ],
-            "stroke" => array(
-                "curve" => "smooth",
-                "width" => 2
-            ),
-            "extra" => array(
-                "tooltip" => array(
-                    "title" => $days,
-                ),
-                "unit" => array("limit" => 0, "sup" => "", "sup_dec" => 1, "inf" => "", "inf_dec" => 1)
-            ),
-            "plotOptions" => array(
-                "bar" => array(
-                    "dataLabels" => array(
-                        "position" => "top"
-                    )
-                )
-            ),
-            "dataLabels" => array(
-                "enabled" => false,
-                "style" => array(
-                    "colors" => ["#777"]
-                ),
-                "offsetY" => -20,
-                "distributed" => true,
-            ),
-            "xaxis" => array(
-                "categories" => $labels,
-                "axisBorder" => array(
-                    "show" => false
-                ),
-                "axisTicks" => array(
-                    "show" => false
-                ),
-                "tickAmount" => $interval == "day" ? 24 : count($labels)
-            ),
-            "yaxis" => array(
-                "labels" => array(
-                    "formatter" => "function"
-                )
-            ),
-            "tooltip" => array(
-                "enabled" => true,
-                "intersect" => false,
-                "shared" => true,
-                "y" => array(
-                    "formatter" => "function",
-                    "title" => array(
-                        "formatter" => "function"
-                    ),
-                ),
-                "x" => array(
-                    "formatter" => "function",
-                    "show" => true
-                )
-            ),
-        );
+                foreach ($values as $l) {
 
-        return json_encode($options);
-    }
+                    if ($l->value_max_a > 0)
+                        $value_a[] = $l->value_avg_a / $l->value_max_a;
+                    else
+                        $value_a[] = 0;
 
-    private function chart_factor()
-    {
-        $device   = $this->input->getPost('device', true);
-        $start    = $this->input->getPost('start', true);
-        $end      = $this->input->getPost('end', true);
-        $interval = 'last';
+                    if ($l->value_max_b > 0)
+                        $value_b[] = $l->value_avg_b / $l->value_max_b;
+                    else
+                        $value_b[] = 0;
 
-        $limite = "Limite: " . 0.92;
+                    if ($l->value_max_c > 0)
+                        $value_c[] = $l->value_avg_c / $l->value_max_c;
+                    else
+                        $value_c[] = 0;
 
-        $semana  = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab');
-        $current = strtotime($start);
-        $value_a = array();
-        $value_b = array();
-        $value_c = array();
-        $labels  = array();
-        $days    = array();
-
-        if ($interval != "day") {
-            while ($current <= strtotime($end . ' 23:59:59')) {
-                $days[]  = $semana[date('w', $current)];
-                $current = strtotime('+1 day', $current);
-            }
-        }
-
-        $values = $this->energy_model->get_values_factor($device, $interval, strtotime($start . ' 00:00:00'), strtotime($end . ' 23:59:59'));
-
-        if ($values) {
-
-            foreach ($values as $l) {
-
-                if (is_null($l->factor_a))
-                    $value_a[] = 0;
-                else
-                    $value_a[] = ($l->reactive_a >= 0) ? 1 - $l->factor_a : -1 + $l->factor_a;
-
-                if (is_null($l->factor_b))
-                    $value_b[] = 0;
-                else
-                    $value_b[] = ($l->reactive_b >= 0) ? 1 - $l->factor_b : -1 + $l->factor_b;
-
-                if (is_null($l->factor_c))
-                    $value_c[] = 0;
-                else {
-                    $value_c[] = ($l->reactive_c >= 0) ? 1 - $l->factor_c : -1 + $l->factor_c;
+                    $labels[]  = $l->label;
                 }
 
-                $labels[]  = $l->label;
+            } else {
+
+                $value_a[] = 0;
+                $value_b[] = 0;
+                $value_c[] = 0;
+                $labels[]  = "";
             }
 
-        } else {
+            $options = array(
+                "chart" => array(
+                    "toolbar" => array(
+                        "show" => false
+                    ),
+                    "type" => "line",
+                    "width" => "100%",
+                    "height" => 380,
+                    "foreColor" => "#777",
+                    "stacked" => false,
+                    "events" => array(
+                        "click" => "function"
+                    )
+                ),
+                "series" => [
+                    array(
+                        "name" => "Fase R",
+                        "data" => $value_a,
+                        "color" => "#FF0000",
+                    ),
+                    array(
+                        "name" => "Fase S",
+                        "data" => $value_b,
+                        "color" => "#000",
+                    ),
+                    array(
+                        "name" => "Fase T",
+                        "data" => $value_c,
+                        "color" => "#8B4513",
+                    ),
+                ],
+                "stroke" => array(
+                    "curve" => "smooth",
+                    "width" => 2
+                ),
+                "extra" => array(
+                    "tooltip" => array(
+                        "title" => $days,
+                    ),
+                    "unit" => array("limit" => 0, "sup" => "", "sup_dec" => 1, "inf" => "", "inf_dec" => 1)
+                ),
+                "plotOptions" => array(
+                    "bar" => array(
+                        "dataLabels" => array(
+                            "position" => "top"
+                        )
+                    )
+                ),
+                "dataLabels" => array(
+                    "enabled" => false,
+                    "style" => array(
+                        "colors" => ["#777"]
+                    ),
+                    "offsetY" => -20,
+                    "distributed" => true,
+                ),
+                "xaxis" => array(
+                    "categories" => $labels,
+                    "axisBorder" => array(
+                        "show" => false
+                    ),
+                    "axisTicks" => array(
+                        "show" => false
+                    ),
+                    "tickAmount" => $interval == "day" ? 24 : count($labels)
+                ),
+                "yaxis" => array(
+                    "labels" => array(
+                        "formatter" => "function"
+                    )
+                ),
+                "tooltip" => array(
+                    "enabled" => true,
+                    "intersect" => false,
+                    "shared" => true,
+                    "y" => array(
+                        "formatter" => "function",
+                        "title" => array(
+                            "formatter" => "function"
+                        ),
+                    ),
+                    "x" => array(
+                        "formatter" => "function",
+                        "show" => true
+                    )
+                ),
+            );
 
-            $value_a[] = 0;
-            $value_b[] = 0;
-            $value_c[] = 0;
-            $labels[]  = "";
+            return json_encode($options);
         }
 
-        $options = array(
-            "chart" => array(
-                "toolbar" => array(
-                    "show" => false
-                ),
-                "type" => "line",
-                "width" => "100%",
-                "height" => 380,
-                "foreColor" => "#777",
-                "stacked" => false,
-                "events" => array(
-                    "click" => "function"
-                )
-            ),
-            "series" => [
-                array(
-                    "name" => "Fase R",
-                    "data" => $value_a,
-                    "color" => "#FF0000",
-                ),
-                array(
-                    "name" => "Fase S",
-                    "data" => $value_b,
-                    "color" => "#000",
-                ),
-                array(
-                    "name" => "Fase T",
-                    "data" => $value_c,
-                    "color" => "#8B4513",
-                ),
-            ],
-            "stroke" => array(
-                "curve" => "smooth",
-                "width" => 2
-            ),
-            "extra" => array(
-                "tooltip" => array(
-                    "title" => $days,
-                ),
-                "unit" => array("limit" => 0, "sup" => "", "sup_dec" => 1, "inf" => "", "inf_dec" => 1)
-            ),
-            "plotOptions" => array(
-                "bar" => array(
-                    "dataLabels" => array(
-                        "position" => "top"
+        private function chart_factor()
+        {
+            $device   = $this->input->getPost('device', true);
+            $start    = $this->input->getPost('start', true);
+            $end      = $this->input->getPost('end', true);
+            $interval = 'last';
+
+            $limite = "Limite: " . 0.92;
+
+            $semana  = array('Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab');
+            $current = strtotime($start);
+            $value_a = array();
+            $value_b = array();
+            $value_c = array();
+            $labels  = array();
+            $days    = array();
+
+            if ($interval != "day") {
+                while ($current <= strtotime($end . ' 23:59:59')) {
+                    $days[]  = $semana[date('w', $current)];
+                    $current = strtotime('+1 day', $current);
+                }
+            }
+
+            $values = $this->energy_model->get_values_factor($device, $interval, strtotime($start . ' 00:00:00'), strtotime($end . ' 23:59:59'));
+
+            if ($values) {
+
+                foreach ($values as $l) {
+
+                    if (is_null($l->factor_a))
+                        $value_a[] = 0;
+                    else
+                        $value_a[] = ($l->reactive_a >= 0) ? 1 - $l->factor_a : -1 + $l->factor_a;
+
+                    if (is_null($l->factor_b))
+                        $value_b[] = 0;
+                    else
+                        $value_b[] = ($l->reactive_b >= 0) ? 1 - $l->factor_b : -1 + $l->factor_b;
+
+                    if (is_null($l->factor_c))
+                        $value_c[] = 0;
+                    else {
+                        $value_c[] = ($l->reactive_c >= 0) ? 1 - $l->factor_c : -1 + $l->factor_c;
+                    }
+
+                    $labels[]  = $l->label;
+                }
+
+            } else {
+
+                $value_a[] = 0;
+                $value_b[] = 0;
+                $value_c[] = 0;
+                $labels[]  = "";
+            }
+
+            $options = array(
+                "chart" => array(
+                    "toolbar" => array(
+                        "show" => false
+                    ),
+                    "type" => "line",
+                    "width" => "100%",
+                    "height" => 380,
+                    "foreColor" => "#777",
+                    "stacked" => false,
+                    "events" => array(
+                        "click" => "function"
                     )
-                )
-            ),
-            "dataLabels" => array(
-                "enabled" => false,
-                "style" => array(
-                    "colors" => ["#777"]
                 ),
-                "offsetY" => -20,
-                "distributed" => true,
-            ),
-            "xaxis" => array(
-                "categories" => $labels,
-                "axisBorder" => array(
-                    "show" => false
+                "series" => [
+                    array(
+                        "name" => "Fase R",
+                        "data" => $value_a,
+                        "color" => "#FF0000",
+                    ),
+                    array(
+                        "name" => "Fase S",
+                        "data" => $value_b,
+                        "color" => "#000",
+                    ),
+                    array(
+                        "name" => "Fase T",
+                        "data" => $value_c,
+                        "color" => "#8B4513",
+                    ),
+                ],
+                "stroke" => array(
+                    "curve" => "smooth",
+                    "width" => 2
                 ),
-                "axisTicks" => array(
-                    "show" => false
+                "extra" => array(
+                    "tooltip" => array(
+                        "title" => $days,
+                    ),
+                    "unit" => array("limit" => 0, "sup" => "", "sup_dec" => 1, "inf" => "", "inf_dec" => 1)
                 ),
-                "tickAmount" => $interval == "day" ? 24 : count($labels)
-            ),
-            "yaxis" => array(
-                "labels" => array(
-                    "formatter" => "function"
+                "plotOptions" => array(
+                    "bar" => array(
+                        "dataLabels" => array(
+                            "position" => "top"
+                        )
+                    )
                 ),
-                "tickAmount" => 4,
-                "min" => -1,
-                "max" => 1,
-            ),
-            "tooltip" => array(
-                "enabled" => true,
-                "intersect" => false,
-                "shared" => true,
-                "y" => array(
-                    "formatter" => "function",
-                    "title" => array(
+                "dataLabels" => array(
+                    "enabled" => false,
+                    "style" => array(
+                        "colors" => ["#777"]
+                    ),
+                    "offsetY" => -20,
+                    "distributed" => true,
+                ),
+                "xaxis" => array(
+                    "categories" => $labels,
+                    "axisBorder" => array(
+                        "show" => false
+                    ),
+                    "axisTicks" => array(
+                        "show" => false
+                    ),
+                    "tickAmount" => $interval == "day" ? 24 : count($labels)
+                ),
+                "yaxis" => array(
+                    "labels" => array(
                         "formatter" => "function"
                     ),
+                    "tickAmount" => 4,
+                    "min" => -1,
+                    "max" => 1,
                 ),
-                "x" => array(
-                    "formatter" => "function",
-                    "show" => true
-                )
-            ),
-            "annotations" => array(
-                "yaxis" => [
-                    array(
-                        "y" => 0.08,
-                        "borderColor" => "red",
-                        "label" => array(
-                            "text" => $limite,
-                        )
+                "tooltip" => array(
+                    "enabled" => true,
+                    "intersect" => false,
+                    "shared" => true,
+                    "y" => array(
+                        "formatter" => "function",
+                        "title" => array(
+                            "formatter" => "function"
+                        ),
                     ),
-                    array(
-                        "y" => -0.08,
-                        "borderColor" => "red",
-                        "label" => array(
-                            "text" => $limite,
-                        )
+                    "x" => array(
+                        "formatter" => "function",
+                        "show" => true
                     )
-                ]
-            )
-        );
+                ),
+                "annotations" => array(
+                    "yaxis" => [
+                        array(
+                            "y" => 0.08,
+                            "borderColor" => "red",
+                            "label" => array(
+                                "text" => $limite,
+                            )
+                        ),
+                        array(
+                            "y" => -0.08,
+                            "borderColor" => "red",
+                            "label" => array(
+                                "text" => $limite,
+                            )
+                        )
+                    ]
+                )
+            );
 
-        return json_encode($options);
-    }
-*/
+            return json_encode($options);
+        }
+    */
     public function chart_consumption_station()
     {
         $options = array(
@@ -2191,12 +2191,12 @@ class Energia extends UNO_Controller
 
         if (!is_null($min))
             $min    = floatval(str_replace(array('.', ','), array('', '.'), sprintf("%.2f", $this->input->getPost('min'))));
-          
+
         if (!is_null($max))
             $max    = floatval(str_replace(array('.', ','), array('', '.'), sprintf("%.2f", $this->input->getPost('max'))));
-        
 
-    
+
+
 
         $abnormal = "";
         $field    = "activePositive,";
@@ -2528,7 +2528,7 @@ class Energia extends UNO_Controller
         });
 
         $dt->edit('value_read', function ($data) {
-             return str_pad(round($data["value_read"]), 6 , '0' , STR_PAD_LEFT);
+            return str_pad(round($data["value_read"]), 6 , '0' , STR_PAD_LEFT);
         });
 
         $dt->edit('value_last', function ($data) {
@@ -2669,11 +2669,11 @@ class Energia extends UNO_Controller
                 if ($alert) {
                     if ($alert->today > $alert->last) {
                         $values[] = array(
-                                "tipo"    => '1', //info
-                                "titulo"  => 'Consumo hoje maior que a média diária dos últimos 30 dias',
-                                "texto"   => 'O consumo hoje ('.round($alert->today).' kWh) foi maior que a média diária dos últimos 30 dias ('.round($alert->last).' kWh).',
-                                "enviada" => date("Y-m-d H:i:s"),
-                                "device"  => $d->device
+                            "tipo"    => '1', //info
+                            "titulo"  => 'Consumo hoje maior que a média diária dos últimos 30 dias',
+                            "texto"   => 'O consumo hoje ('.round($alert->today).' kWh) foi maior que a média diária dos últimos 30 dias ('.round($alert->last).' kWh).',
+                            "enviada" => date("Y-m-d H:i:s"),
+                            "device"  => $d->device
                         );
                     }
                 }
@@ -2690,11 +2690,11 @@ class Energia extends UNO_Controller
                 $alert = $this->energy_model->GetAlert($aid, $entity, $d->device);
                 if ($alert["current"] > $alert["previous"]) {
                     $values[] = array(
-                            "tipo"    => '1', //info
-                            "titulo"  => 'O consumo previsto para o mês é maior que o consumo do mês anterior',
-                            "texto"   => "O consumo previsto para o mês ({$alert["current"]}) é maior que o consumo do mês anterior ({$alert["previous"]}).",
-                            "enviada" => date("Y-m-d H:i:s"),
-                            "device"  => $d->device
+                        "tipo"    => '1', //info
+                        "titulo"  => 'O consumo previsto para o mês é maior que o consumo do mês anterior',
+                        "texto"   => "O consumo previsto para o mês ({$alert["current"]}) é maior que o consumo do mês anterior ({$alert["previous"]}).",
+                        "enviada" => date("Y-m-d H:i:s"),
+                        "device"  => $d->device
                     );
                 }
             }
@@ -2712,11 +2712,11 @@ class Energia extends UNO_Controller
                 $value = max(array($a->currentA, $a->currentB, $a->currentC));
                 if ($value > $a->disjuntor) {
                     $values[] = array(
-                            "tipo"    => "3", //danger
-                            "titulo"  => "Sobreconsumo de corrente",
-                            "texto"   => "A unidade {$a->nome} consumiu em uma das fases $value A. Este valor é superior ao limite nominal da rede de {$a->disjuntor} A.",
-                            "enviada" => date("Y-m-d H:i:s"),
-                            "device"  => $a->device
+                        "tipo"    => "3", //danger
+                        "titulo"  => "Sobreconsumo de corrente",
+                        "texto"   => "A unidade {$a->nome} consumiu em uma das fases $value A. Este valor é superior ao limite nominal da rede de {$a->disjuntor} A.",
+                        "enviada" => date("Y-m-d H:i:s"),
+                        "device"  => $a->device
                     );
                 }
             }
@@ -2936,10 +2936,10 @@ class Energia extends UNO_Controller
         });
 
         // inclui actions
-		$dt->add('action', function ($data) {
-			return '<a href="#" class="action-download text-primary me-2" data-id="' . $data['id'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>
+        $dt->add('action', function ($data) {
+            return '<a href="#" class="action-download text-primary me-2" data-id="' . $data['id'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>
 				<a href="#" class="action-delete text-danger" data-id="' . $data['id'] . '"><i class="fas fa-trash" title="Excluir"></i></a>';
-		});
+        });
 
         echo $dt->generate();
     }
@@ -2978,12 +2978,12 @@ class Energia extends UNO_Controller
         });
 
         // inclui actions
-		$dt->add('action', function ($data) {
-			return '<a href="#" class="action-download-unity text-primary me-2" data-fid="' . $data['fid'] . '" data-uid="' . $data['uid'] . '" data-eid="' . $data['entrada_id'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
-		});
-        
+        $dt->add('action', function ($data) {
+            return '<a href="#" class="action-download-unity text-primary me-2" data-fid="' . $data['fid'] . '" data-uid="' . $data['uid'] . '" data-eid="' . $data['entrada_id'] . '" title="Baixar Planilha"><i class="fas fa-file-download"></i></a>';
+        });
+
         echo $dt->generate();
-        
+
     }
 
     public function GetFechamentoUnidades($type)
@@ -3051,17 +3051,17 @@ class Energia extends UNO_Controller
         echo $dt->generate();
     }
 
-	// **
-	// Exclui Faturamento
-	// [post] id
-	// [out] Json com status
-	// **
-	public function DeleteLancamento()
-	{
-		$id = $this->input->getPost('id');
+    // **
+    // Exclui Faturamento
+    // [post] id
+    // [out] Json com status
+    // **
+    public function DeleteLancamento()
+    {
+        $id = $this->input->getPost('id');
 
-		echo $this->energy_model->DeleteLancamento($id);
-	}
+        echo $this->energy_model->DeleteLancamento($id);
+    }
 
     public function faturamento()
     {
@@ -3127,18 +3127,18 @@ class Energia extends UNO_Controller
 
         $spreadsheet = new Spreadsheet();
 
-		$titulos = [
-			['Leitura Anterior', 'Leitura Atual', 'Total', 'Ponta', 'Fora Ponta', 'Total', 'Ponta', 'Fora Ponta' ]
-		];
+        $titulos = [
+            ['Leitura Anterior', 'Leitura Atual', 'Total', 'Ponta', 'Fora Ponta', 'Total', 'Ponta', 'Fora Ponta' ]
+        ];
 
         $spreadsheet->getProperties()
-			->setCreator('Easymeter')
-			->setLastModifiedBy('Easymeter')
-			->setTitle('Relatório de Consumo')
-			->setSubject(strftime('%B/%Y', strtotime($fechamento->competencia)))
-			->setDescription('Relatório de Consumo - '.$fechamento->nome.' - '.$fechamento->competencia)
-			->setKeywords($fechamento->nome.' '.(strftime('%B/%Y', strtotime($fechamento->competencia))))
-			->setCategory('Relatório')->setCompany('Easymeter');
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório de Consumo')
+            ->setSubject(strftime('%B/%Y', strtotime($fechamento->competencia)))
+            ->setDescription('Relatório de Consumo - '.$fechamento->nome.' - '.$fechamento->competencia)
+            ->setKeywords($fechamento->nome.' '.(strftime('%B/%Y', strtotime($fechamento->competencia))))
+            ->setCategory('Relatório')->setCompany('Easymeter');
 
         $split = 0;
         if ($this->user->config->split_report) {
@@ -3214,14 +3214,14 @@ class Energia extends UNO_Controller
             'name'   => $filename,
             'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
         );
-        
+
         echo json_encode($response);
     }
 
     public function DownloadLancamentos()
     {
         $group_id = $this->input->getPost('id');
-        
+
         // busca fechamento
         $fechamentos = $this->energy_model->GetLancamentos($group_id);
         $group       = $this->shopping_model->get_group_info($group_id);
@@ -3242,18 +3242,18 @@ class Energia extends UNO_Controller
 
         $spreadsheet = new Spreadsheet();
 
-		$titulos = [
-			['Total', 'Ponta', 'Fora Ponta', '', 'Total', 'Ponta', 'Fora Ponta' ]
-		];
+        $titulos = [
+            ['Total', 'Ponta', 'Fora Ponta', '', 'Total', 'Ponta', 'Fora Ponta' ]
+        ];
 
         $spreadsheet->getProperties()
-			->setCreator('Easymeter')
-			->setLastModifiedBy('Easymeter')
-			->setTitle('Relatório de Lançamentos - Energia')
-			->setSubject($group->group_name)
-			->setDescription('Relatório de Lançamentos - Energia - '.$group->group_name)
-			->setKeywords($group->group_name.' Lançamentos Energia')
-			->setCategory('Relatório')->setCompany('Easymeter');
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório de Lançamentos - Energia')
+            ->setSubject($group->group_name)
+            ->setDescription('Relatório de Lançamentos - Energia - '.$group->group_name)
+            ->setKeywords($group->group_name.' Lançamentos Energia')
+            ->setCategory('Relatório')->setCompany('Easymeter');
 
         $spreadsheet->getActiveSheet()->getStyle('A1:L2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
@@ -3278,15 +3278,15 @@ class Energia extends UNO_Controller
 
         $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'D6');
 
-		$spreadsheet->getActiveSheet()->fromArray($fechamentos, NULL, 'A7');
+        $spreadsheet->getActiveSheet()->fromArray($fechamentos, NULL, 'A7');
 
-		$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
         $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(18);
         $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(18);
         $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(18);
@@ -3297,7 +3297,7 @@ class Energia extends UNO_Controller
 
         $spreadsheet->getActiveSheet()->setCellValue('A'.(count($fechamentos) + 8), 'Gerado em '.date("d/m/Y H:i"));
 
-		$spreadsheet->getActiveSheet()->setSelectedCell('A1');
+        $spreadsheet->getActiveSheet()->setSelectedCell('A1');
 
         $writer = new Xlsx($spreadsheet);
 
@@ -3326,61 +3326,61 @@ class Energia extends UNO_Controller
         $fechamento = $this->energy_model->get_faturamento_unidade($uid, $eid);
         $fechamento['competencia'] = strftime('%B/%Y', strtotime($fechamento['competencia']));
 
-      
+
         //TODO verificar se usuário tem acesso a esse fechamento
 
         // verifica retorno
-        
+
 
         $spreadsheet = new Spreadsheet();
 
-		$titulos = [
-			['Total', 'Ponta', 'Fora Ponta']
-		];
+        $titulos = [
+            ['Total', 'Ponta', 'Fora Ponta']
+        ];
 
         $spreadsheet->getProperties()
-        ->setCreator('Easymeter')
-        ->setLastModifiedBy('Easymeter')
-        ->setTitle('Relatório de Lançamentos - Energia')
-        ->setSubject($fechamento['nome'])
-        ->setDescription('Relatório de Lançamentos - Energia - '.$fechamento['nome'])
-        ->setKeywords($fechamento['nome'].' Lançamentos Energia')
-        ->setCategory('Relatório')->setCompany('Easymeter');
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório de Lançamentos - Energia')
+            ->setSubject($fechamento['nome'])
+            ->setDescription('Relatório de Lançamentos - Energia - '.$fechamento['nome'])
+            ->setKeywords($fechamento['nome'].' Lançamentos Energia')
+            ->setCategory('Relatório')->setCompany('Easymeter');
 
-    $spreadsheet->getActiveSheet()->getStyle('A1:G2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-    $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($fechamento['nome']));
-    $spreadsheet->getActiveSheet()->mergeCells('A1:G1');
-    $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Lançamentos - Energia');
-    $spreadsheet->getActiveSheet()->mergeCells('A2:G2');
+        $spreadsheet->getActiveSheet()->getStyle('A1:G2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($fechamento['nome']));
+        $spreadsheet->getActiveSheet()->mergeCells('A1:G1');
+        $spreadsheet->getActiveSheet()->setCellValue('A2', 'Relatório de Lançamentos - Energia');
+        $spreadsheet->getActiveSheet()->mergeCells('A2:G2');
 
-    $spreadsheet->getActiveSheet()->setCellValue('A4', 'Competência')->mergeCells('A4:A5');
-    $spreadsheet->getActiveSheet()->setCellValue('B4', 'Loja')->mergeCells('B4:B5');
-    $spreadsheet->getActiveSheet()->setCellValue('G4', 'Emissão')->mergeCells('G4:G5');
+        $spreadsheet->getActiveSheet()->setCellValue('A4', 'Competência')->mergeCells('A4:A5');
+        $spreadsheet->getActiveSheet()->setCellValue('B4', 'Loja')->mergeCells('B4:B5');
+        $spreadsheet->getActiveSheet()->setCellValue('G4', 'Emissão')->mergeCells('G4:G5');
 
-    $spreadsheet->getActiveSheet()->setCellValue('C4', 'Consumo - kWh')->mergeCells('C4:E4');
-    $spreadsheet->getActiveSheet()->setCellValue('F4', 'Demanda - kW')->mergeCells('F4:F5');
+        $spreadsheet->getActiveSheet()->setCellValue('C4', 'Consumo - kWh')->mergeCells('C4:E4');
+        $spreadsheet->getActiveSheet()->setCellValue('F4', 'Demanda - kW')->mergeCells('F4:F5');
 
-    $spreadsheet->getActiveSheet()->getStyle('A1:G5')->getFont()->setBold(true);
+        $spreadsheet->getActiveSheet()->getStyle('A1:G5')->getFont()->setBold(true);
         $spreadsheet->getActiveSheet()->getStyle('A4:G5')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-    $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'C5');
+        $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'C5');
 
-    $spreadsheet->getActiveSheet()->fromArray($fechamento, NULL, 'A6');
+        $spreadsheet->getActiveSheet()->fromArray($fechamento, NULL, 'A6');
 
-    $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
-    $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
-    $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
-    $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
-    $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
-    $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
-    $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
 
 
-    $spreadsheet->getActiveSheet()->getStyle('A7:L'.(count($fechamento) + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $spreadsheet->getActiveSheet()->getStyle('A7:L'.(count($fechamento) + 3))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-    $spreadsheet->getActiveSheet()->setCellValue('A'.(count($fechamento) + 4), 'Gerado em '.date("d/m/Y H:i"));
+        $spreadsheet->getActiveSheet()->setCellValue('A'.(count($fechamento) + 4), 'Gerado em '.date("d/m/Y H:i"));
 
-    $spreadsheet->getActiveSheet()->setSelectedCell('A1');
+        $spreadsheet->getActiveSheet()->setSelectedCell('A1');
 
         $writer = new Xlsx($spreadsheet);
 
@@ -3396,14 +3396,14 @@ class Energia extends UNO_Controller
             'name'   => $filename,
             'file'   => "data:application/vnd.ms-excel;base64,".base64_encode($xlsData)
         );
-        
+
         echo json_encode($response);
     }
 
     public function download_lancamento_unity()
     {
         $id = $this->input->getPost('id');
-        
+
         // busca fechamento
         $fechamentos = $this->energy_model->get_faturamentos_unidade($id);
 
@@ -3422,18 +3422,18 @@ class Energia extends UNO_Controller
 
         $spreadsheet = new Spreadsheet();
 
-		$titulos = [
-			['Total', 'Ponta', 'Fora Ponta']
-		];
+        $titulos = [
+            ['Total', 'Ponta', 'Fora Ponta']
+        ];
 
         $spreadsheet->getProperties()
-        ->setCreator('Easymeter')
-        ->setLastModifiedBy('Easymeter')
-        ->setTitle('Relatório de Lançamentos - Energia')
-        ->setSubject($fechamentos[0]['nome'])
-        ->setDescription('Relatório de Lançamentos - Energia - '.$fechamentos[0]['nome'])
-        ->setKeywords($fechamentos[0]['nome'].' Lançamentos Energia')
-        ->setCategory('Relatório')->setCompany('Easymeter');
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório de Lançamentos - Energia')
+            ->setSubject($fechamentos[0]['nome'])
+            ->setDescription('Relatório de Lançamentos - Energia - '.$fechamentos[0]['nome'])
+            ->setKeywords($fechamentos[0]['nome'].' Lançamentos Energia')
+            ->setCategory('Relatório')->setCompany('Easymeter');
 
         $spreadsheet->getActiveSheet()->getStyle('A1:L2')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($fechamentos[0]['nome']));
@@ -3453,22 +3453,22 @@ class Energia extends UNO_Controller
 
         $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'C5');
 
-		$spreadsheet->getActiveSheet()->fromArray($fechamentos, NULL, 'A6');
+        $spreadsheet->getActiveSheet()->fromArray($fechamentos, NULL, 'A6');
 
-		$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(18);
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(18);
 
 
         $spreadsheet->getActiveSheet()->getStyle('A6:G'.(count($fechamentos) + 7))->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
         $spreadsheet->getActiveSheet()->setCellValue('A'.(count($fechamentos) + 8), 'Gerado em '.date("d/m/Y H:i"));
 
-		$spreadsheet->getActiveSheet()->setSelectedCell('A1');
+        $spreadsheet->getActiveSheet()->setSelectedCell('A1');
 
         $writer = new Xlsx($spreadsheet);
 
@@ -3507,18 +3507,18 @@ class Energia extends UNO_Controller
 
         $spreadsheet = new Spreadsheet();
 
-		$titulos = [
-			['Mês', 'Mês Anterior', 'Ponta', 'Fora Ponta', 'Últimas 24h', "Previsão Mês" ]
-		];
+        $titulos = [
+            ['Mês', 'Mês Anterior', 'Ponta', 'Fora Ponta', 'Últimas 24h', "Previsão Mês" ]
+        ];
 
         $spreadsheet->getProperties()
-			->setCreator('Easymeter')
-			->setLastModifiedBy('Easymeter')
-			->setTitle('Relatório Resumo Energia')
-			->setSubject(MonthName(date("m"))."/".date("Y"))
-			->setDescription('Relatório Resumo - '.date("01/m/Y").' - '.date("d/m/Y"))
-			->setKeywords($group->group_name.' Resumo '.MonthName(date("m"))."/".date("Y"))
-			->setCategory('Relatório')->setCompany('Easymeter');
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório Resumo Energia')
+            ->setSubject(MonthName(date("m"))."/".date("Y"))
+            ->setDescription('Relatório Resumo - '.date("01/m/Y").' - '.date("d/m/Y"))
+            ->setKeywords($group->group_name.' Resumo '.MonthName(date("m"))."/".date("Y"))
+            ->setCategory('Relatório')->setCompany('Easymeter');
 
         $split = 0;
         if ($this->user->config->split_report) {
@@ -3618,20 +3618,20 @@ class Energia extends UNO_Controller
 
         $spreadsheet = new Spreadsheet();
 
-		$titulos = [
-			['Fase R', 'Fase S', 'Fase T', 'Fase R', 'Fase S', 'Fase T', 'Fase R', 'Fase S', 'Fase T', 'Fase R', 'Fase S', 'Fase T' ]
-		];
+        $titulos = [
+            ['Fase R', 'Fase S', 'Fase T', 'Fase R', 'Fase S', 'Fase T', 'Fase R', 'Fase S', 'Fase T', 'Fase R', 'Fase S', 'Fase T' ]
+        ];
 
         $unit = type2unit($type);
 
         $spreadsheet->getProperties()
-			->setCreator('Easymeter')
-			->setLastModifiedBy('Easymeter')
-			->setTitle('Relatório de Anormalidades')
-			->setSubject($unit["name"] . date_create_from_format('Y-m-d', $init)->format('d/m/Y') ." a ".date_create_from_format('Y-m-d', $end)->format('d/m/Y'))
-			->setDescription('Relatório de Anormalidades - '.$unit["name"])
-			->setKeywords($group->group_name.' Anormalidades')
-			->setCategory('Relatório')->setCompany('Easymeter');
+            ->setCreator('Easymeter')
+            ->setLastModifiedBy('Easymeter')
+            ->setTitle('Relatório de Anormalidades')
+            ->setSubject($unit["name"] . date_create_from_format('Y-m-d', $init)->format('d/m/Y') ." a ".date_create_from_format('Y-m-d', $end)->format('d/m/Y'))
+            ->setDescription('Relatório de Anormalidades - '.$unit["name"])
+            ->setKeywords($group->group_name.' Anormalidades')
+            ->setCategory('Relatório')->setCompany('Easymeter');
 
         $spreadsheet->getActiveSheet()->getStyle('A1:N3')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
         $spreadsheet->getActiveSheet()->setCellValue('A1', strtoupper($group->group_name));
@@ -3651,15 +3651,15 @@ class Energia extends UNO_Controller
 
         $spreadsheet->getActiveSheet()->fromArray($titulos, NULL, 'B5');
 
-		$spreadsheet->getActiveSheet()->fromArray($data, NULL, 'A6');
+        $spreadsheet->getActiveSheet()->fromArray($data, NULL, 'A6');
 
-		$spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
-		$spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getColumnDimension('A')->setWidth(18);
+        $spreadsheet->getActiveSheet()->getColumnDimension('B')->setWidth(15);
         $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(15);
-		$spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(15);
-		$spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(15);
-		$spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(15);
-		$spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getColumnDimension('D')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getColumnDimension('E')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getColumnDimension('F')->setWidth(15);
+        $spreadsheet->getActiveSheet()->getColumnDimension('G')->setWidth(15);
         $spreadsheet->getActiveSheet()->getColumnDimension('H')->setWidth(15);
         $spreadsheet->getActiveSheet()->getColumnDimension('I')->setWidth(15);
         $spreadsheet->getActiveSheet()->getColumnDimension('J')->setWidth(15);
@@ -3672,7 +3672,7 @@ class Energia extends UNO_Controller
 
         $spreadsheet->getActiveSheet()->setCellValue('A'.(count($data) + 7), 'Gerado em '.date("d/m/Y H:i"));
 
-		$spreadsheet->getActiveSheet()->setSelectedCell('A1');
+        $spreadsheet->getActiveSheet()->setSelectedCell('A1');
 
         $writer = new Xlsx($spreadsheet);
 

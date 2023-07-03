@@ -32,6 +32,8 @@ $routes->set404Override();
 
 // Route site principal
 $routes->get('/', 'Site::index');
+$routes->get('/forum', 'Site::forum');
+$routes->get('/assuntoforum', 'Site::assuntoforum');
 
 // Routes shopping
 $routes->get('/shopping', 'Shopping::index',['filter'=>'checkApiAuth']);
@@ -56,6 +58,12 @@ $routes->get('/frasle', 'Shopping::index',['filter'=>'checkApiAuth']);
 $routes->get('/frasle/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 $routes->get('/frasle/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
 $routes->post('/frasle/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+
+// Routes da Comary para shopping
+$routes->get('/comary', 'Shopping::index',['filter'=>'checkApiAuth']);
+$routes->get('/comary/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
+$routes->get('/comary/(:any)/(:num)', 'Shopping::$1/$2',['filter'=>'checkApiAuth']);
+$routes->post('/comary/(:any)', 'Shopping::$1',['filter'=>'checkApiAuth']);
 
 // Routes da Consigaz para shopping
 $routes->get('/consigaz', 'Consigaz::index',['filter'=>'checkApiAuth']);
@@ -127,10 +135,10 @@ $routes->get('/ambev/(:any)/(:num)', 'Industria::$1/$2',['filter'=>'checkApiAuth
 $routes->post('/ambev/(:any)', 'Industria::$1',['filter'=>'checkApiAuth']);
 
 // Routes Mapa
-$routes->get('/mapa', 'Mapa::index');
-$routes->get('/mapa/(:any)', 'Mapa::$1');
-$routes->get('/mapa/(:any)/(:num)', 'Mapa::$1/$2');
-$routes->post('/mapa/(:any)', 'Mapa::$1');
+$routes->get('/mapa', 'Mapa::index', ['filter'=>'checkApiAuth']);
+$routes->get('/mapa/(:any)', 'Mapa::$1', ['filter'=>'checkApiAuth']);
+$routes->get('/mapa/(:any)/(:num)', 'Mapa::$1/$2', ['filter'=>'checkApiAuth']);
+$routes->post('/mapa/(:any)', 'Mapa::$1', ['filter'=>'checkApiAuth']);
 
 service('auth')->routes($routes);
 

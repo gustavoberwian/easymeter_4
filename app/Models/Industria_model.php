@@ -38,11 +38,11 @@ class Industria_model extends Base_model
 
     public function get_medidores_geral($id, $monitoramento = 'agua', $array = false)
     {
-     $subtipo = " AND esm_medidores.sub_tipo = 'geral'";
+        $subtipo = " AND esm_medidores.sub_tipo = 'geral'";
 
-     if ($monitoramento === 'nivel')
-        $subtipo = '';
-     
+        if ($monitoramento === 'nivel')
+            $subtipo = '';
+
         $query = $this->db->query("
             SELECT 
                 esm_medidores.*, 

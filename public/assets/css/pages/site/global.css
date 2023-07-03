@@ -27,7 +27,6 @@
 h1,
 h3,
 h2 {
-  font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: bold;
   color: #2D343F;
 }
@@ -40,7 +39,6 @@ h5 {
 }
 
 h6 {
-  font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: bold;
   color: #ffffff;
   text-align: left;
@@ -302,7 +300,7 @@ button.modal-button.send {
 .subtitle-banners {
   font-size: 22px;
   font-family: "Square-Roman";
-  text-align: left;
+  text-align: center;
 }
 
 .banner01 {
@@ -325,10 +323,9 @@ button.modal-button.send {
   padding: 15px;
   width: 12rem;
   font-size: 16px;
-  font-family: "Square721 BT";
   letter-spacing: 1px;
   border-radius: 30px;
-  background-color: var(--primary-color);
+  background-color: #27b1e5;
 }
 
 .banner-icons-item {
@@ -411,7 +408,6 @@ button.modal-button.send {
 }
 
 .link_nav {
-  font-family: "Square-Roman", sans-serif !important;
   font-weight: bold;
 }
 
@@ -901,7 +897,6 @@ button.modal-button.send {
   }
 
   h6 {
-    font-family: "Square-Roman", "Helvetica Neue", Helvetica, Arial, sans-serif;
     font-weight: bold;
     color: #ffffff;
     text-align: left;
@@ -942,6 +937,12 @@ button.modal-button.send {
   }
   #aplica > div > div > div > div.stats {
     width: 66%;
+  }
+
+  .subtitle-banners {
+    font-size: 22px;
+    font-family: "Square-Roman";
+    text-align: left;
   }
 }
 @media (min-width: 1280px) {

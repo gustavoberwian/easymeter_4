@@ -1151,4 +1151,37 @@ class Consigaz extends UNO_Controller
         
         echo $this->consigaz_model->delete_user($id);
     }
+    public function md_check_code_add()
+    {
+        $data['eid'] = $this->input->getPost('eid');
+        $data['name'] = $this->input->getPost('name');
+
+
+        echo view('Consigaz/modals/md_check_code_add', $data);
+    }
+    public function md_check_code_delete()
+    {
+        $data['uid'] = $this->input->getPost('uid');
+
+
+        echo view('Consigaz/modals/md_check_code_delete', $data);
+    }
+    public function code_checker()
+    {
+        $code = $this->input->getPost("code");
+
+        $secret_key = $this->consigaz_model->get_secret_key($this->user->id);
+
+        if (is_null($secret_key)) {
+            echo json_encode(array("status" => "error", "message" => "QR Code não gerado!"));
+            return;
+        }
+
+        if (!$this->check_code($code, $secret_key)) {
+            echo json_encode(array("status" => "error", "message" => "Código inválido!"));
+            return;
+        }
+
+        echo json_encode(array('status' => 'success', "message" => "Código válido!"));
+    }
 }

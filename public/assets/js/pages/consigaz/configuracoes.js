@@ -130,9 +130,10 @@
         e.preventDefault();
 
         $.magnificPopup.open( {
-            items: {src: '/consigaz/md_add_user'},
+            items: {src: '/consigaz/md_check_code_add'},
             type: 'ajax',
             modal: true,
+            focus: "#code",
             ajax: {
                 settings: {
                     type: 'POST',
@@ -140,9 +141,10 @@
                         eid: $(this).data('eid'), 
                         name: $(this).data('name') 
                     }
-                },
+                }
             }
         });
+
     })
 
     $(document).on('click', '#md-add-user .modal-dismiss', function (e) {
@@ -209,14 +211,22 @@
     $(document).on('click', '#dt-usuarios .action-delete', function () {
 		var uid = $(this).data('id');
 		// abre a modal
-		$.magnificPopup.open({
-			items: { src: '#modalExclui' }, type: 'inline',
-			callbacks: {
-				beforeOpen: function () {
-					$('#modalExclui .id').data('uid', uid);
-				}
-			}
-		});
+
+        
+        $.magnificPopup.open( {
+            items: {src: '/consigaz/md_check_code_delete'},
+            type: 'ajax',
+            modal: true,
+            focus: "#code",
+            ajax: {
+                settings: {
+                    type: 'POST',
+                    data: { 
+                        uid: uid
+                    }
+                }
+            }
+        });
 	});
 
     $(document).on('click', '#modalExclui .modal-confirm', function () {
@@ -259,6 +269,97 @@
 			});
 	});
 
+    $(document).on('click', '.modal-dismiss', function (e) {
+        e.preventDefault();
 
+        $.magnificPopup.close();
+    });
+
+    $(document).on('click', '#md-pin-check-config .modal-confirm', function (e) {
+        e.preventDefault();
+
+        let eid = $('.eid').data('eid');
+        let name = $('.name').data('name');
+
+
+        let formData = $('.form-check-code-config').serialize();
+
+        console.log(formData);
+
+        $("#md-pin-check .alert").html("").addClass("d-none");
+
+
+        $.ajax({
+            method: 'POST',
+            url: '/consigaz/code_checker',
+            data: formData,
+            dataType: 'json',
+            success: function (json) {
+                if (json.status === "success") {
+                    $.magnificPopup.close();
+                    $.magnificPopup.open( {
+                        items: {src: '/consigaz/md_add_user'},
+                        type: 'ajax',
+                        modal: true,
+                        ajax: {
+                            settings: {
+                                type: 'POST',
+                                data: { 
+                                    eid: eid, 
+                                    name: name 
+                                }
+                            },
+                        }
+                    });
+                } else {
+                    // mostra erro
+                    $("#md-pin-check-config .alert").html(json.message).removeClass("d-none");
+                }
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function () {
+            }
+        });
+    });
+
+    $(document).on('click', '#md-pin-check-del .modal-confirm', function (e) {
+        e.preventDefault();
+
+        let uid = $('.uid').data('uid');
+
+        let formData = $('.form-check-code-del').serialize();
+
+        $("#md-pin-check-del .alert").html("").addClass("d-none");
+
+        $.ajax({
+            method: 'POST',
+            url: '/consigaz/code_checker',
+            data: formData,
+            dataType: 'json',
+            success: function (json) {
+                if (json.status === "success") {
+                    
+                    $.magnificPopup.close();
+
+                    $.magnificPopup.open({
+                        items: { src: '#modalExclui' }, type: 'inline',
+                        callbacks: {
+                            beforeOpen: function () {
+                                $('#modalExclui .id').data('uid', uid);
+                            }
+                        }
+                    });
+                } else {
+                    // mostra erro
+                    $("#md-pin-check-del .alert").html(json.message).removeClass("d-none");
+                }
+            },
+            error: function (xhr, status, error) {
+            },
+            complete: function () {
+            }
+        });
+    });
 
 }.apply(this, [jQuery]));

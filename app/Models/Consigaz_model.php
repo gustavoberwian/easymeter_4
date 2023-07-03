@@ -748,6 +748,98 @@ class Consigaz_model extends Base_model
     
             return $query->getRow();
     }
+
+    public function get_groups_for_select($eid)
+    {
+        $query = $this->db->query("
+        SELECT
+            esm_agrupamentos.nome,
+            esm_agrupamentos.id
+        FROM
+            esm_agrupamentos
+        WHERE
+            esm_agrupamentos.entidade_id = $eid
+        ");
+        $values = array();
+        if ($query->getNumRows() == 0)
+            return false;
+
+        foreach ($query->getResult() as $q) {
+            $values[$q->nome] = $q;
+        }
+        return $values;
+    }
+    public function get_unity_for_select($gid)
+    {
+        $query = $this->db->query("
+        SELECT
+            esm_unidades.nome,
+            esm_unidades.id
+        FROM
+            esm_unidades
+        WHERE
+            esm_unidades.agrupamento_id = $gid
+        ");
+        $values = array();
+        if ($query->getNumRows() == 0)
+            return false;
+
+        foreach ($query->getResult() as $q) {
+            $values[$q->nome] = $q;
+        }
+        return $values;
+    }
+    public function get_unity_by_name($name)
+    {
+        $query = $this->db->query("
+        SELECT
+            esm_unidades.id
+        FROM
+            esm_unidades
+        WHERE
+            esm_unidades.nome = '$name'
+        ");
+        if ($query->getNumRows() == 0)
+            return false;
+        
+        return $query->getRow()->id;
+    }   
+    public function add_user($data) 
+    {
+        $data['page'] = 'consigaz';
+        
+        if (!$this->db->table('auth_groups_users')->set(array('group' => 'gas', 'user_id' => $data['user-id']))->insert()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+        if (!$this->db->table('auth_groups_users')->set(array('group' => 'unity', 'user_id' => $data['user-id']))->insert()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+        if (!$this->db->table('auth_user_relation')->set(array('user_id' => $data['user-id'], 'unidade_id' => $data['unity']))->insert()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+        if ($data['con-prop'] == 'on') {
+            if (!$this->db->table('auth_groups_users')->set(array('group' => 'proprietario', 'user_id' => $data['user-id']))->insert()) {
+                return json_encode(array("status" => "error", "message" => $this->db->error()));
+            } 
+        }
+        if (!$this->db->table('auth_groups_users')->set(array('group' => $data['page'], 'user_id' => $data['user-id']))->insert()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+        if (!$this->db->table('auth_users')->where('id', $data['user-id'])->set(array('page' => $data['page']))->update()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+        return json_encode(array("status" => "success", "message" => "Usuário criado com sucesso."));
+    }
+    public function delete_user($id) 
+    {
+        if (!$this->db->table('auth_groups_users')->where('user_id', $id)->delete()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+        if (!$this->db->table('auth_user_relation')->where('user_id', $id)->delete()) {
+            return json_encode(array("status" => "error", "message" => $this->db->error()));
+        }
+        return json_encode(array("status" => "success", "message" => "Usuário criado com sucesso."));
+    }
     public function get_fechamento_media($fechamento_id, $unidade_id)
     {
         $query = $this->db->query("
@@ -858,5 +950,6 @@ class Consigaz_model extends Base_model
             return false;
 
         return $query->getResultObject();
+
     }
 }

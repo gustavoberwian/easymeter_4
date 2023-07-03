@@ -12,6 +12,8 @@ use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PragmaRX\Google2FA\Google2FA;
+use CodeIgniter\Shield\Entities\User;
+
 
 class Consigaz extends UNO_Controller
 {
@@ -1028,4 +1030,153 @@ class Consigaz extends UNO_Controller
         
         echo $this->render('relatorio', $data);
 	}
+    public function get_usuarios() 
+    {
+        $eid = $this->input->getPost('entidade');
+
+        $query = "
+            SELECT
+                auth_users.id,
+                auth_users.avatar,
+                auth_users.username AS nome, 
+                auth_identities.secret AS email, 
+                esm_agrupamentos.nome AS bloco, 
+                esm_unidades.nome AS apto
+            FROM
+                auth_users
+                INNER JOIN
+                auth_user_relation
+                ON 
+                    auth_users.id = auth_user_relation.user_id
+                INNER JOIN
+                esm_agrupamentos
+                INNER JOIN
+                esm_unidades
+                ON 
+                    esm_agrupamentos.id = esm_unidades.agrupamento_id AND
+                    auth_user_relation.unidade_id = esm_unidades.id
+                INNER JOIN
+                auth_identities
+                ON 
+                    auth_users.id = auth_identities.user_id
+                INNER JOIN
+                esm_entidades
+                ON 
+                    esm_agrupamentos.entidade_id = esm_entidades.id
+            WHERE
+                esm_entidades.id = $eid";
+
+        $dt = $this->datatables->query($query);
+
+       
+        $dt->add('actions', function ($data) {
+            return '
+                <a href="#" data-id="'.$data['id'].'" class="on-default delete-row text-danger action-delete"><i class="fas fa-trash"></i></a>
+            ';
+        });
+
+        // gera resultados
+        echo $dt->generate();
+    }
+
+    public function md_add_user()
+    {
+        $data['eid'] = $this->input->getPost('eid');
+        $data['name'] = $this->input->getPost('name');
+
+        echo view('Consigaz/modals/md_add_user', $data);
+    }
+    public function get_groups_for_select()
+    {
+        $eid = $this->input->getPost('eid');
+        //realiza consulta
+        $p = $this->consigaz_model->get_groups_for_select($eid);
+
+        $result = '';
+        foreach ($p as $option) {
+            $result .= "<option class='select-group' data-val='".$option->id."'>$option->nome</option>";
+        }
+        echo $result;
+    }
+
+    public function get_unity_for_select()
+    {
+        $gid = $this->input->getPost('gid');
+
+        //realiza consulta
+        $p = $this->consigaz_model->get_unity_for_select($gid);
+
+        $result = '';
+        foreach ($p as $option) {
+            $result .= "<option class='select-unity' data-val='".$option->id."'>$option->nome</option>";
+        }
+        echo $result;
+    }
+    public function add_user()
+    {
+        $serializedData = $this->request->getPost('data');
+        $unity = $this->request->getPost('unity');
+
+        parse_str($serializedData, $data);
+
+        
+        $users = auth()->getProvider();
+
+        // Cria novo usuário
+        $user = new User([
+            'username' => $data['con-nome'] ?? '',
+            'email' => $data['con-email'] ?? '',
+            'password' => $data['senha-user'] ?? '',
+            'active' =>  1 
+        ]);
+
+        $users->save($user);
+        $data['user-id'] = $users->getInsertID();
+        $data['unity'] = $unity;
+        
+        echo $this->consigaz_model->add_user($data);
+    }
+    public function delete_user()
+    {
+        $id = $this->input->getPost('uid');
+
+        $users = auth()->getProvider();
+
+        $users->delete($id, true);
+        
+        echo $this->consigaz_model->delete_user($id);
+    }
+    public function md_check_code_add()
+    {
+        $data['eid'] = $this->input->getPost('eid');
+        $data['name'] = $this->input->getPost('name');
+
+
+        echo view('Consigaz/modals/md_check_code_add', $data);
+    }
+    public function md_check_code_delete()
+    {
+        $data['uid'] = $this->input->getPost('uid');
+
+
+        echo view('Consigaz/modals/md_check_code_delete', $data);
+    }
+    public function code_checker()
+    {
+        $code = $this->input->getPost("code");
+
+        $secret_key = $this->consigaz_model->get_secret_key($this->user->id);
+
+        if (is_null($secret_key)) {
+            echo json_encode(array("status" => "error", "message" => "QR Code não gerado!"));
+            return;
+        }
+
+        if (!$this->check_code($code, $secret_key)) {
+            echo json_encode(array("status" => "error", "message" => "Código inválido!"));
+            return;
+        }
+
+        echo json_encode(array('status' => 'success', "message" => "Código válido!"));
+    }
 }

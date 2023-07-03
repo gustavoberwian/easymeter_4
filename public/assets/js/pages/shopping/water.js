@@ -147,6 +147,7 @@
             device  : device,
             start   : start_res.format("YYYY-MM-DD"),
             end     : end_res.format("YYYY-MM-DD"),
+            compare : $('#compare').val(),
         };
 
         $.ajax({

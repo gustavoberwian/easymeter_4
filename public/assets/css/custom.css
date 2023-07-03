@@ -344,7 +344,7 @@ button.nav-link.configs {
     }
 }
 @media only screen and (max-width: 991px) {
-    .card-footer {
+    .card-footer-chart {
         display: none!important;
     }
 }
@@ -426,6 +426,7 @@ table.dataTable td{
     display: none;
     content: none;
  }
+
  /* Progress Bars */
 .progress-bar {
 	background: #CCC;
@@ -606,5 +607,4 @@ table.dataTable td{
 .progress .progress-bar-dark {
 	background-color: #171717;
 }
-
 

@@ -81,7 +81,7 @@
             <section class="card card-easymeter mb-4">
                 <header class="card-header">
                     <div class="card-actions buttons">
-                        <button type="button" class="btn btn-primary btn-incluir-usuario"><i class="fas fa-user-plus"></i> Incluir Usuário</button>
+                        <button type="button" data-eid="<?= $cliente->id ?>"  data-name="<?= $cliente->nome ?>" class="btn btn-primary btn-incluir-usuario"><i class="fas fa-user-plus"></i> Incluir Usuário</button>
                     </div>
                     <h2 class="card-title">Usuários</h2>
                 </header>
@@ -89,6 +89,7 @@
                     <table class="table table-bordered table-striped table-hover table-click dataTable no-footer display responsive nowrap" id="dt-usuarios" data-url="/consigaz/get_usuarios">
                         <thead>
                         <tr role="row">
+                            <th class="text-center"></th>
                             <th class="text-center"></th>
                             <th class="text-center">Nome</th>
                             <th class="text-center">Email</th>
@@ -106,3 +107,10 @@
     </div>
     <!-- end: page -->
 </section>
+<?php
+$data['modal_id'] = 'modalExclui';
+$data['modal_title'] = 'Você tem certeza?';
+$data['modal_message'] = 'Deseja realmente excluir este Usuário?';
+$data['button'] = array('Excluir', 'Cancelar');
+echo view('modals/confirm', $data);
+?>

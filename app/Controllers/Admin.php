@@ -1419,14 +1419,13 @@ class Admin extends UNO_Controller
         if ($this->input->getPost('user-nivel') === 'on') {
             $dados['group']['nivel'] = 'nivel';
         }
-
         $dados['user-id'] = $users->getInsertID();
         $dados['classificacao'] = $this->input->getPost('classificacao-user');
         $dados['page'] = $this->input->getPost('page-user') ?? '';
         $dados['entity-user'] = $this->input->getPost('entity-user') ?? '';
         $dados['unity-user'] = $this->input->getPost('unity-user') ?? '';
         $dados['group-user'] = $this->input->getPost('group-user') ?? '';
-        $dados['groups-user'] = array_map('trim', explode(",", $this->input->getPost('groups-user') ?? ''));
+        $dados['groups-user'] = (empty($this->input->getPost('groups-user')) ? null : array_map('trim', explode(",", $this->input->getPost('groups-user') ?? '')));
 
         if ($dados['page'] === '') {
             if ($dados['entity-user'] != '') {
@@ -1476,7 +1475,6 @@ class Admin extends UNO_Controller
         foreach ($p as $option) {
             $result .= "<option>$option</option>";
         }
-        print_r($result);
         echo $result;
 
     }

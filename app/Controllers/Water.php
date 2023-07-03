@@ -644,7 +644,7 @@ class Water extends UNO_Controller
 
         $spreadsheet->getActiveSheet()->setTitle('Medidores');
 
-        if ($start === $end) {
+        //if ($start === $end) {
             if ($device === "T") {
                 $medidores = $this->shopping_model->get_medidores_by_group($group_id, 'agua');
 
@@ -688,31 +688,61 @@ class Water extends UNO_Controller
                 }
             }
 
-            $startColumn = 'C';
-            $endColumn = chr(ord($startColumn) + 23);
-            $startRow = 5;
-            $spreadsheet->getActiveSheet()->setCellValue($startColumn . '4', 'Consumo - m³')->mergeCells($startColumn . '4:' . $endColumn . '4');
-            for ($hour = 0; $hour < 24; $hour++) {
-                $column = $startColumn;
-                $row = $startRow;
+            if ($start === $end) {
+                $startColumn = 'C';
+                $endColumn = chr(ord($startColumn) + 23);
+                $startRow = 5;
+                $spreadsheet->getActiveSheet()->setCellValue($startColumn . '4', 'Consumo - m³')->mergeCells($startColumn . '4:' . $endColumn . '4');
+                for ($hour = 0; $hour < 24; $hour++) {
+                    $column = $startColumn;
+                    $row = $startRow;
 
-                $hourLabel = $hour . 'h';
+                    $hourLabel = $hour . 'h';
 
-                $spreadsheet->getActiveSheet()->setCellValue($column . $row, $hourLabel);
+                    $spreadsheet->getActiveSheet()->setCellValue($column . $row, $hourLabel);
 
-                $spreadsheet->getActiveSheet()->getColumnDimension($column)->setWidth(11);
+                    $spreadsheet->getActiveSheet()->getColumnDimension($column)->setWidth(11);
 
-                $spreadsheet->getActiveSheet()->getStyle($column . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+                    $spreadsheet->getActiveSheet()->getStyle($column . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
-                $spreadsheet->getActiveSheet()->getStyle($column . $row)->getFont()->setBold(true);
+                    $spreadsheet->getActiveSheet()->getStyle($column . $row)->getFont()->setBold(true);
 
-                $startColumn++;
+                    $startColumn++;
+                }
+            } else {
+
+                $data1 = strtotime($start);
+                $data2 = strtotime($end);
+
+                $dias = abs($data2 - $data1) / (60 * 60 * 24);
+
+                $endColumn = num2alpha($dias);
+
+                $startColumn = 'C';
+                $startRow = 5;
+                $spreadsheet->getActiveSheet()->setCellValue($startColumn . '4', 'Consumo - m³')->mergeCells($startColumn . '4:' . $endColumn . '4');
+                for ($i = 0; $i <= $dias; $i++) {
+                    $column = $startColumn;
+                    $row = $startRow;
+
+                    $label = $hours[$i]->label;
+
+                    $spreadsheet->getActiveSheet()->setCellValue($column . $row, $label);
+
+                    $spreadsheet->getActiveSheet()->getColumnDimension($column)->setWidth(11);
+
+                    $spreadsheet->getActiveSheet()->getStyle($column . $row)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+
+                    $spreadsheet->getActiveSheet()->getStyle($column . $row)->getFont()->setBold(true);
+
+                    $startColumn++;
+                }
             }
-        } else {
+        /*} else {
             $resume = $this->water_model->generateResume($group_id, $this->user->config, strtotime($start . '00:00'), strtotime($end . '23:59'), $this->user->demo);
             $spreadsheet->getActiveSheet()->setCellValue('C4', 'Consumo')->mergeCells('C4:C5');
             $spreadsheet->getActiveSheet()->getColumnDimension('C')->setWidth(18);
-        }
+        }*/
 
         $spreadsheet->getActiveSheet()->setCellValue('A4', 'Medidor')->mergeCells('A4:A5');
         $spreadsheet->getActiveSheet()->setCellValue('B4', 'Nome')->mergeCells('B4:B5');

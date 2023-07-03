@@ -1117,7 +1117,7 @@ class Admin_model extends Base_model
             return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
 
-        if (!$this->db->table('auth_groups_users')->where('user_id', $dados['user_id'])->where('group', 'shopping')->orWhere('group', 'condominio')->orWhere('group', 'unity')->set('group', $dados['page'])->update()) {
+        if (!$this->db->table('auth_groups_users')->where('user_id', $dados['user_id'])->whereIn('group', array('shopping', 'condominio', 'unity'))->set('group', $dados['page'])->update()) {
             return json_encode(array("status" => "error", "message" => $this->db->error()));
         }
 
